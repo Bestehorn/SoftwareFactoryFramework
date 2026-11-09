@@ -42,7 +42,7 @@ USAGE
 from __future__ import annotations
 
 import argparse
-import subprocess
+import subprocess  # nosec B404 — runs git with a fixed argv, never a shell
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -64,7 +64,7 @@ def git_common_dir() -> Path:
     `--show-toplevel` instead is a silent, hard-to-spot bug: from two directories down it
     resolves to a plausible-looking path outside the repository entirely.
     """
-    out = subprocess.run(
+    out = subprocess.run(  # nosec B603 B607 — git rev-parse, fixed argv, no shell
         ["git", "rev-parse", "--git-common-dir"],
         capture_output=True,
         text=True,

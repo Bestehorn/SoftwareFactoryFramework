@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(ruff check:*)",
+      "Bash(ruff format:*)",
+      "Bash(mypy:*)",
+      "Bash(bandit:*)",
+      "Bash(pytest:*)",
+      "Bash(python scripts/run_tests.py:*)",
+      "Bash(python scripts/run_checks.py:*)",
+      "Bash(python scripts/github_wrapper.py:*)",
+      "Bash(git worktree:*)",
+      "Bash(git fetch:*)",
+      "Bash(git rebase:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [
+      "Read(./credentials/**)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-I",
+              "-X",
+              "utf8",
+              "-c",
+              "import os,sys,runpy;p=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR') or os.getcwd(),'.claude','hooks','hooks.py');sys.argv=[p]+sys.argv[1:];os.path.isfile(p) and runpy.run_path(p,run_name='__main__')",
+              "session-start"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|MultiEdit|NotebookEdit|Write|executeBash|execute_bash|execute_cmd|mcp__ccd_session_mgmt__archive_session|shell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-I",
+              "-X",
+              "utf8",
+              "-c",
+              "import os,sys,runpy;p=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR') or os.getcwd(),'.claude','hooks','hooks.py');sys.argv=[p]+sys.argv[1:];os.path.isfile(p) and runpy.run_path(p,run_name='__main__')",
+              "pre-tool-use"
+            ],
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-I",
+              "-X",
+              "utf8",
+              "-c",
+              "import os,sys,runpy;p=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR') or os.getcwd(),'.claude','hooks','hooks.py');sys.argv=[p]+sys.argv[1:];os.path.isfile(p) and runpy.run_path(p,run_name='__main__')",
+              "stop"
+            ],
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-I",
+              "-X",
+              "utf8",
+              "-c",
+              "import os,sys,runpy;p=os.path.join(os.environ.get('CLAUDE_PROJECT_DIR') or os.getcwd(),'.claude','hooks','hooks.py');sys.argv=[p]+sys.argv[1:];os.path.isfile(p) and runpy.run_path(p,run_name='__main__')",
+              "stop-failure"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

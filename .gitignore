@@ -35,3 +35,30 @@ venv/
 # secret-scan allow-list and the pre-commit hook fails on every clone without it.
 # Anchored: an unanchored `reports/` would also ignore docs/reports/, where this repository's reports live.
 /reports/
+
+# Python build artifacts (setuptools / setuptools-scm).
+build/
+dist/
+*.egg-info/
+.eggs/
+src/_version.py
+
+# Type checking and lint caches.
+.mypy_cache/
+.ruff_cache/
+
+# Coverage and security scan output.
+.coverage
+htmlcov/
+bandit-report.json
+bandit_results.json
+
+# IDE.
+.idea/
+*.swp
+*.swo
+
+# Git host credentials (templates and README are tracked).
+credentials/*
+!credentials/*.template
+!credentials/README.md

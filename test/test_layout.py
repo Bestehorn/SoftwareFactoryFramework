@@ -43,10 +43,18 @@ def tracked() -> list[str]:
     return [f for f in out.split("\0") if f]
 
 
+def toolchain_files() -> set[str]:
+    """The installed toolchain copies (config/toolchain.json). Their SOURCES under src/, clients/ and templates/
+    are what this guard checks; the copies are checked against those sources by test_toolchain_integrity.py."""
+    manifest = ROOT / "config" / "toolchain.json"
+    return set(json.loads(manifest.read_text(encoding="utf-8"))["files"]) if manifest.is_file() else set()
+
+
 def live_text_files() -> list[tuple[str, str]]:
     files = []
+    installed = toolchain_files()
     for f in tracked():
-        if HISTORICAL.match(f) or f == "test/test_layout.py":
+        if HISTORICAL.match(f) or f == "test/test_layout.py" or f in installed:
             continue
         try:
             files.append((f, (ROOT / f).read_text(encoding="utf-8")))
@@ -104,8 +112,11 @@ def test_relative_markdown_links_resolve() -> None:
 
 
 def test_python_lives_only_in_src_test_and_scripts() -> None:
-    stray = [f for f in tracked() if f.endswith(".py") and not f.startswith(("src/", "test/", "scripts/"))]
-    assert not stray, f"Python outside src/, test/ and scripts/: {stray}"
+    # `.claude/hooks/` holds the installed hook runtime and this repository's own project gates, beside the
+    # dispatcher that discovers them.
+    allowed = ("src/", "test/", "scripts/", ".claude/hooks/")
+    stray = [f for f in tracked() if f.endswith(".py") and not f.startswith(allowed)]
+    assert not stray, f"Python outside src/, test/, scripts/ and .claude/hooks/: {stray}"
 
 
 @pytest.mark.parametrize("path", sorted((ROOT / "clients" / "kiro" / "agents").glob("*.json")), ids=lambda p: p.stem)

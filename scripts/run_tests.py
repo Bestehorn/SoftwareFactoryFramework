@@ -16,6 +16,14 @@ WHY THIS EXISTS
        the prohibition is mechanical rather than a request, and adds
        `--continue-on-collection-errors` so a broken import in one module cannot suppress
        the rest of the suite.
+    3. UNBOUNDED CONCURRENCY ACROSS SESSIONS. The worker bound is per process. Eight suites
+       from eight sessions and worktrees, each bounded, jointly saturated an 8-vCPU host
+       (measured 2026-10-01). Any run wider than named test FILES therefore holds one of the
+       host-wide slots of scripts/suite_semaphore.py (`max(1, cores // 4)` slots per user,
+       shared by every project and session) and WAITS for one rather than starting another
+       suite; run it as a background task while you do independent work, and collect it with
+       ONE bounded foreground wait (`python .claude/hooks/wait_for.py --file <log> --line
+       <summary regex> --timeout-seconds 540`), never by ending the turn.
 
     Because every caller — the pre-push hook, the CI test job, the agent fleet, the
     `.pre-commit-config.yaml` manual-stage hook — goes through this script, the local run
@@ -30,34 +38,34 @@ WHERE TESTS RUN (the project's contract; see docs/ and the CI-owns-the-test-suit
 USAGE
     python scripts/run_tests.py                          # whole suite, bounded workers
     python scripts/run_tests.py test/test_thing.py       # the affected tests only
-    python scripts/run_tests.py -k "invoke_grant"        # ditto, by expression
+    python scripts/run_tests.py -k "invoke_grant"        # ditto, by expression (a selector collects the
+                                                         #   whole tree, so it takes a suite slot)
+    python scripts/run_tests.py test/api/                # a directory: holds a host-wide suite slot
     python scripts/run_tests.py --workers auto           # CI only: one worker per vCPU
     python scripts/run_tests.py --workers 1              # sequential (flaky shared state)
     python scripts/run_tests.py --coverage               # add the coverage gate
     python scripts/run_tests.py --junit reports/junit.xml
     python scripts/run_tests.py --print-command          # show the argv, run nothing
 
-ADAPTED FOR THIS REPOSITORY (the framework's own repository). Two deviations from
-src/payload/scripts/run_tests.py, both because this repository's Python is not one package:
-
-  * With no test path given, the run covers the three suites in SUITES below: the hook
-    runtime's own suite, the shipped payload tests and the layout guard. It runs from the
-    repository root; the payload tests find their scripts beside them in src/payload/.
-  * `--coverage` measures `src/`, the Python those suites exercise. There is no
-    threshold gate here.
-
-This repository has no CI pipeline, so its suite really is run on demand rather than by
-CI. The bounded-worker and no-fail-fast contract is unchanged, which is the part worth
-dogfooding.
+MIGRATION NOTE: if this project is not pytest-based, replace build_command() with the
+project's runner and keep the contract: bounded local parallelism, no fail-fast, complete
+failure list. Everything else in this file is runner-agnostic.
 """
 
 from __future__ import annotations
 
 import argparse
 import os
-import subprocess
+import subprocess  # nosec B404  # pytest with this script's own argv, never a shell
 import sys
 from pathlib import Path
+
+SLOT_IMPORT_ERROR = ""
+try:
+    from suite_semaphore import suite_slot  # installed beside this script (src/payload/scripts/suite_semaphore.py)
+except ImportError as exc:  # missing, or present but failing to import: run unbounded, and say exactly why
+    suite_slot = None
+    SLOT_IMPORT_ERROR = f"{type(exc).__name__}: {exc}"
 
 # Local parallelism ceiling. A quarter of the cores leaves the machine usable, and capping
 # at MAX_LOCAL_WORKERS keeps a 64-core host from spawning 16 pytest processes per worktree.
@@ -82,12 +90,8 @@ REPORT_ARGS: tuple[str, ...] = (
     "--continue-on-collection-errors",
 )
 
-# The repository root, and the suites a run covers when no test path is given.
-ROOT = Path(__file__).resolve().parent.parent
-SUITES: tuple[str, ...] = ("src/hooks/tests", "src/payload/test", "test")
-
 COVERAGE_SOURCE = "src"
-COVERAGE_THRESHOLD = 0  # no threshold gate in this repo
+COVERAGE_THRESHOLD = 80
 
 
 def local_workers(cpu_count: int | None = None) -> int:
@@ -136,6 +140,20 @@ def has_xdist() -> bool:
     return True
 
 
+def needs_slot(extra: list[str]) -> bool:
+    """True for a run wider than named test FILES: no target, a directory target, or selectors only.
+
+    Paired tests — `run_tests.py test/test_thing.py` — are seconds long and are what TDD runs most, so
+    a run whose every target is an existing file skips the host-wide slot. Anything that can collect a
+    whole tree takes one.
+    """
+    targets = [Path(arg.split("::", 1)[0]) for arg in extra if not arg.startswith("-")]
+    existing = [path for path in targets if path.exists()]
+    if not existing:
+        return True
+    return any(path.is_dir() for path in existing)
+
+
 def build_command(
     *,
     workers: str,
@@ -144,9 +162,7 @@ def build_command(
     extra: list[str],
 ) -> list[str]:
     """Assemble the pytest argv. Named parameters per the project's coding standards."""
-    # The root, explicitly: otherwise pytest takes the hook suite's own pytest.ini as the root of a run that spans
-    # all three suites, and every node id outside src/hooks/tests/ is reported under the wrong path.
-    cmd = [sys.executable, "-m", "pytest", "--rootdir", str(ROOT), *REPORT_ARGS]
+    cmd = [sys.executable, "-m", "pytest", *REPORT_ARGS]
 
     if workers == "auto":
         resolved = "auto"
@@ -165,8 +181,7 @@ def build_command(
         Path(junit).parent.mkdir(parents=True, exist_ok=True)
         cmd += [f"--junitxml={junit}"]
 
-    named = [arg for arg in extra if not arg.startswith("-") and (ROOT / arg.split("::")[0]).exists()]
-    return cmd + extra + ([] if named else list(SUITES))
+    return cmd + extra
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -213,8 +228,21 @@ def main(argv: list[str] | None = None) -> int:
         print(" ".join(cmd))
         return 0
 
-    print(f"run_tests: {' '.join(cmd)}  (cwd={ROOT})", flush=True)
-    return subprocess.call(cmd, cwd=ROOT)
+    print(f"run_tests: {' '.join(cmd)}", flush=True)
+    if not needs_slot(extra):
+        return subprocess.call(cmd)  # nosec B603  # pytest with this script's own argv, no shell
+    if suite_slot is None:
+        print(
+            f"run_tests: WARNING - the host-wide suite cap is NOT held for this run: importing "
+            f"scripts/suite_semaphore.py failed ({SLOT_IMPORT_ERROR}). Concurrent suites on this machine are "
+            "unbounded until it imports; install or repair src/payload/scripts/suite_semaphore.py beside this "
+            "script.",
+            file=sys.stderr,
+            flush=True,
+        )
+        return subprocess.call(cmd)  # nosec B603  # as above
+    with suite_slot(label=f"run_tests {' '.join(extra) or '(whole suite)'}"):
+        return subprocess.call(cmd)  # nosec B603  # as above
 
 
 if __name__ == "__main__":

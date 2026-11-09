@@ -1,0 +1,644 @@
+# Reaching a LIVE session: how an already-running agent picks up new rules
+
+**The question this answers.** You deploy a change to a project's `.claude/` setup — new rules,
+new gate logic, a new contract. The project has several worktrees with agents already working in
+them. Those sessions started *before* the change. **How do they pick it up, without being
+restarted and without losing their place?**
+
+This matters because of what the change usually IS. The gates exist to stop an agent ending a
+turn on unfinished work. A migration mechanism that only reaches *new* sessions leaves exactly
+the long-running sessions — the ones most likely to stop, because they have been going longest
+and have been compacted most — running the old, broken behaviour until they finish or die. The
+population you cannot reach is the population you needed.
+
+Every documentation quote below is from the Claude Code hooks reference
+(`https://code.claude.com/docs/en/hooks`) and hooks guide
+(`https://code.claude.com/docs/en/hooks-guide`), checked 2026-08-30. Where something is
+**observed** rather than documented, it says so.
+
+---
+
+## 1. What a live session CAN and CANNOT pick up
+
+| Change | Reaches a LIVE session? | Basis |
+|---|---|---|
+| **Editing an already-registered hook SCRIPT** | **YES — at its next invocation, guaranteed** | The registration names the interpreter and the script PATH, never the script's contents, so each invocation spawns a fresh interpreter that reads the file from disk. Observed, not documented — see §5. |
+| **Editing a file a registered hook READS** (`CONTRACT_VERSION`, `hooklib.py`, state files) | **YES** | Same reason, one level down: the hook reads it at invocation time. |
+| **Registering a NEW hook in `settings.json`** | **USUALLY, but on the new hook's own event cadence** | "Direct edits to hooks in settings files are normally picked up automatically by the file watcher." So the registration itself lands mid-session. **When it then FIRES depends on the event** — see the two rows below. |
+| → a new **`Stop`** hook | **YES, at the next turn-end attempt** | `Stop` fires on every attempt to end a turn, so a reloaded registration is exercised almost immediately. |
+| → a new **`SessionStart`** hook | **Only at the next SessionStart EVENT** | It will not fire in the middle of a turn. With `matcher: "compact|resume|startup"` it does fire again on a compaction — **observed**: this project's `continuous-work-reinject` fired as `SessionStart:compact` in a long-running session. But the timing is not yours to choose. |
+| **Adding a file under `.claude/rules/`** | **NO, not by itself** | Rules enter context by being loaded. A live session's context already exists; a new file on disk does not walk into it. |
+| **Editing an always-loaded rule the session already loaded** | **PARTIALLY** | Root `CLAUDE.md` and always-loaded rules are re-injected on compaction/resume, so an edit lands at the *next* compaction — unpredictable timing, not a mechanism. |
+| **Adding a slash command** | **NO** | Requires the user to invoke it, which is not "the session picks it up". |
+| **Changing an agent definition** | **NO** | The system prompt is fixed at spawn. |
+
+**The load-bearing consequence:** put every change that must reach a live session inside an
+**already-registered `Stop` hook**. Not because a new registration cannot arrive — it normally
+can — but because that is the only channel whose **timing is guaranteed and self-scheduling**: it
+fires precisely when the agent attempts the act you are trying to change, in every session,
+without waiting for a compaction that may never come.
+
+That is why this design has one library (`hooklib.py`) sourced by all five hooks, and why
+the contract text is compiled into `issue-loop-gate`'s refusal message rather than being read
+out of the rules directory. A rules file is a *hope* that the agent loaded it. A gate's stderr is
+a *fact* about what is in its context.
+
+The watcher carries the docs' own hedge, "**normally** picked up", with no enumerated failure
+conditions. The documented remedy: "If they haven't appeared after a few seconds, the file
+watcher may have missed the change: restart your session to force a reload."
+
+---
+
+## 2. The one channel into a running agent's context
+
+| Channel | Fires when | Usable for migration? |
+|---|---|---|
+| `SessionStart` hook stdout (exit 0) | session start / resume / compaction | **Partly.** "Claude Code adds stdout it treats as plain text to Claude's context" — `SessionStart` is one of four events where that happens. But it only fires on those moments. |
+| **`Stop` hook stderr on exit 2** | **the agent attempts to end a turn** | **YES — this is the mechanism.** "A hook that blocks by exiting 2 routes the same way as `reason`: Claude receives the stderr message as the explanation for why it should continue." |
+| `PreToolUse` stderr on exit 2 | a matching tool call | Possible, but it would have to block real work to speak. Wrong trade. |
+
+`Stop`-hook-stderr is right for a further reason: **the moment of delivery is the moment of
+relevance.** You are not informing the agent about a policy it might need later; you are refusing
+the specific act the new policy forbids, while it is being attempted, and saying why.
+
+### DECISION: exit 2 with stderr, NOT the JSON `decision` form — and the reason is fail-direction
+
+A tidier-looking alternative exists: `{"decision":"block","reason":"..."}`, or
+`hookSpecificOutput.additionalContext`. **Do not migrate to it.** The docs give the asymmetry
+plainly:
+
+- "A hook that exits 2 while printing JSON that fails JSON output schema validation **still
+  blocks**: Claude Code uses stderr as the blocking reason."
+- A JSON-only decision whose object fails schema validation is "**a non-blocking error: the
+  action proceeds**."
+
+So exit 2 **fails closed** and JSON-only **fails open** on the same malformed input — a stray
+line on stdout from a shell profile, an unescaped quote in an interpolated issue title. Swapping
+one for the other is a change that reads like a cleanup and reintroduces the original defect.
+
+Two constraints that follow from the same section:
+
+- **Exit-0 stderr is invisible to the agent.** "Stderr from a hook that exits 0 goes to the debug
+  log only, never the transcript, and Claude never sees it." The message rides on the block, and
+  only on the block. A gate that "warns" without blocking communicates with nobody.
+- **The harness itself stops after 8 consecutive blocks:** "Claude Code overrides the hook and
+  ends the turn after 8 consecutive blocks." That is the vendor-side twin of `the block cap`,
+  whose default of 8 matches it deliberately rather than by coincidence — so a gate that tried to
+  block indefinitely would be overridden anyway, and the counter exists to make the give-up
+  *say so* rather than to invent a limit.
+
+One more reason the contract travels this way: contract text is **imperative** by nature ("a turn
+ends when the WORK IS FINISHED"). The docs warn that for `additionalContext` you should "write the
+text as factual statements rather than imperative system instructions", because "text framed as
+out-of-band system commands can trigger Claude's prompt-injection defenses, which causes Claude to
+surface the text to you instead of treating it as context." A `Stop` blocking reason has no such
+caveat — imperative text is its documented purpose ("Tells Claude why it should continue"). Keep
+imperative content in the gate refusal, and keep the SessionStart injection's *state* half phrased
+as facts (`Phase: IMPLEMENT`, `Issue: 574`).
+
+---
+
+## 3. The mechanism: a versioned contract handshake
+
+`CONTRACT_VERSION` holds one line, e.g. `2026.08.30-continuous-work-1`.
+
+On every `Stop` event, `issue-loop-gate` checks for
+`runs/<run-id>/contract-ack-<version>`:
+
+- **Present** → the run has ingested this contract. Proceed to the normal gate logic.
+- **Absent** → **block once (exit 2)**, print the full contract to stderr, and instruct the agent
+  to create the ack file and continue. The block is counted against `the block cap`, so a run
+  that cannot write the file is never wedged.
+
+Three properties make this safe to deploy under running load:
+
+1. **Idempotent and self-clearing.** Once acked, silence. The agent pays one blocked turn-end,
+   ever, per contract version.
+2. **Fresh sessions never see it.** `session-register` pre-writes the ack when it seeds the
+   run, so only pre-deployment sessions are interrupted. Deployment cost scales with the number of
+   *stale* sessions, not with traffic.
+3. **Bumping the version re-migrates everyone.** To push a revised contract to every live run,
+   edit `CONTRACT_VERSION`. Every run's ack filename stops matching, so each gets the new text
+   once. **That is the whole deployment procedure.**
+
+A blocked turn-end costs one turn; an allowed turn-end on unfinished work costs the work. So an
+unacked contract blocks rather than warns — and the message is written to be actionable inside the
+same turn (create one file, carry on), never to send the agent looking for documentation.
+
+### 3a. A framework revision rides the handshake: `REVISION_NOTICE.md`
+
+A contract bump tells a live run how to *stop*; a framework revision changes how it *works* —
+tiers, caps, the review contract, waves. The run's agent definition and command body were fixed at
+spawn and its rules return only at the next compaction, so the revision has to be delivered where
+the run cannot miss it. `hooks/REVISION_NOTICE.md` is that delivery: `revision_notice` prints
+it inside the loop gate's contract handshake (once per run, keyed on `CONTRACT_VERSION`) and in
+`continuous-work-reinject` at every compaction, resume and startup. Its first line
+`Valid-until: YYYY-MM-DD` retires it, so a notice cannot outlive its rollout and load into every
+session forever. Bumping `CONTRACT_VERSION` alongside the notice is what makes every live run see
+it exactly once. Replace the body at the next revision; never let two notices accumulate.
+
+### 3b. Other machines: the freshness handshake
+
+Everything above assumes the hooks on disk are the new ones. On a machine where nobody has pulled,
+they are not — and the orchestrator is main-checkout-free, so **nothing there ever moves the
+checkout the hooks are read from**. `framework_stale` closes that gap: it compares the
+checkout's `CONTRACT_VERSION` with the one in every fetched trunk ref (`<remote>/main|master`,
+every remote, local refs only — the orchestrator's Remote Sync fetches keep them current). When the
+trunk is newer, the loop gate refuses once per run and version (`runs/<run-id>/framework-ack-<v>`)
+with the update instruction, and `continuous-work-reinject` says the same at session start:
+
+- **The one sanctioned move of local main** (`keep-git-clean.md`): if `git status --porcelain` in
+  the checkout prints nothing and HEAD is an ancestor of the trunk ref, `git merge --ff-only
+  <remote>/<main>`. Reversible via the reflog; moves no one else's branch; every hook re-reads its
+  script on its next call, so the run is on the new framework from that moment.
+- Otherwise the checkout holds someone's work: the run asks the operator in five lines, records
+  `AWAITING_USER`, and continues what does not depend on it.
+
+Like the contract handshake, it never stands the gate down at the cap: it auto-acks and falls
+through to the brake. The rollout is therefore **the merge plus ONE fast-forward of each machine's
+main checkout** — the merge alone is not. A session runs the hooks of the checkout it started in,
+read from disk at every event, and a checkout older than the freshness check carries nothing that
+could announce a newer trunk. So the first fast-forward on a machine is done by hand (or by the
+framework-update run for its own machine, when that checkout is clean and strictly behind — the one
+sanctioned move of local main above); from then on the freshness check in the installed hooks
+announces every later revision to every registered run on that machine: the first Remote Sync
+fetches the new version, the next turn-end delivers the instruction, and the fast-forward brings
+the notice, rules, agents and hooks with it. Ordinary chat sessions (`UNREGISTERED`) are told only
+at session start and never refused.
+
+---
+
+## 4. Deploying to a project with live workers
+
+```
+1. Copy the hooks into <project>/.claude/hooks/:
+       hooks.py  hooklib.py  gate_*.py  red_for_right_reason.py
+       CONTRACT_VERSION  MIGRATION.md  REVISION_NOTICE.md  tests/  tests/pytest.ini
+   and delete any *.sh predecessor there (a bash registration left behind is the inert hook).
+   Merge, never overwrite: the project's own gate_<name>.py (ORDER above 100), its
+   hooks.config.json and the tests/ modules it added stay; a framework gate the project
+   modified is merged on top, never replaced blind.
+2. Copy rules/continuous-work.md into <project>/.claude/rules/ and reference it from CLAUDE.md.
+3. Register the three exec-form `python` entries in <project>/.claude/settings.json
+   (prompts/setup-claude.txt Part 12.2), replacing every `"command": "bash"` entry.
+4. Run the suites and the self-test (§7). Do NOTHING to the running sessions.
+```
+
+**Steps 1–3 are safe to perform while agents are working.** Every file is read at invocation time,
+and a partially-copied library **fails closed**: the dispatcher refuses the stop when `hooklib.py`
+cannot be imported or lacks `selftest` (deliberately its last definition), or when a Stop gate
+raises. The failure mode of a mid-copy Stop event is one spurious refusal, not a silent hole.
+
+### Which live sessions actually acquire a working brake
+
+**Loading the new code is not the same as engaging.** A pre-change session's fate is decided by
+what the OLD `session-register` left on disk, because that is what the identity verdict reads:
+
+| What the old registrar left | Verdict | What happens at the next Stop |
+|---|---|---|
+| A `registry.json` entry for this session (the old jq-only upsert **ran**) | `BROKEN` | The gate **fails closed and refuses**, and the refusal is a repair instruction. Note this is the BROKEN path, not the contract handshake — the run acquires a brake either way. |
+| **No** entry (the old upsert was jq-only and `jq` was **absent**) | `UNREGISTERED` | The gate loads the new code and **exits 0 silently**. This session is **NOT migrated.** |
+| Started after step 3 | `OWNED`, pre-acked | Seeded and never interrupted. |
+
+That second row is not hypothetical — it is the state of the host where this incident was measured
+(`jq` is not installed there, so the old registrar wrote nothing). And `UNREGISTERED` must stay
+benign, because that is exactly what an ordinary chat session looks like; making it block would
+refuse every non-orchestrator session in the project.
+
+**Tell which case you are in, per live session:**
+
+```bash
+# List the sessions the registry knows about. A live session absent from here is row 2.
+python - <<'PY'
+import json, pathlib
+p = pathlib.Path(".claude/agent-state/issue-work-orchestrator/registry.json")
+d = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+print(f"{len(d)} registered sessions")
+for sid, e in d.items():
+    sd = e.get("state_dir", "(none)")
+    seeded = (pathlib.Path(".claude/agent-state/issue-work-orchestrator") / str(sd).rstrip("/") / "resume_state.md").exists()
+    print(f"  {sid[:8]}  state_dir={sd:24s} seeded={seeded}")
+PY
+```
+
+**Recovering a row-2 session without restarting it.** Seed the file the gate looks for, by hand,
+using the session's own id (the `session_id` in that session's transcript filename):
+
+```bash
+mkdir -p .claude/agent-state/issue-work-orchestrator/runs/<first-8-of-session-id>
+cat > .claude/agent-state/issue-work-orchestrator/runs/<first-8-of-session-id>/resume_state.md <<'EOF'
+SESSION_ID: <full-session-id>
+MODE: SINGLE_ISSUE
+Status: IN_PROGRESS
+Phase: FIX
+CURRENT_ISSUE: <N>
+AWAITING_USER: none
+WORKABLE_ISSUES_REMAIN: no
+EOF
+```
+
+**What each line is doing, because a seed that resolves `OWNED` can still leave the gate
+releasing every turn.** The gate holds a turn only while the run has CLAIMED tracked work AND has
+not affirmatively released, so a seed has to satisfy both halves:
+
+- `SESSION_ID:` — the third resolution rung. It is what lets a hook find this state even if the
+  directory name does not match, so do not omit it.
+- `MODE: SINGLE_ISSUE` — **this is the line that CLAIMS the work**, and it is deliberately a
+  literal rather than a template. The claim predicate accepts a non-placeholder `CURRENT_ISSUE`,
+  a `CURRENT_SPEC`, or a `MODE` beginning `ISSUE_LOOP`/`SINGLE_ISSUE`/`SPEC`/`BACKLOG`/`AUTO`
+  (hyphens normalised to underscores, so `single-issue` matches too).
+- `CURRENT_ISSUE: <N>` — substitute the real issue number. **Until you do, this line claims
+  nothing**: `is_placeholder` rejects any angle-bracketed value, along with `none`,
+  `unset`, `unknown`, `tbd`, `n/a` and the rest of that vocabulary. That is exactly why the `MODE`
+  line above is literal — pasted as written, the seed still arms.
+- `Status: IN_PROGRESS` — any value OUTSIDE the idle vocabulary
+  (`NOT_STARTED`/`NOT_YET_STARTED`/`UNSTARTED`/`NOT_IN_PROGRESS`/`NOT_WORKING`/`IDLE`/`PENDING`/
+  `NEW`/`NONE`/`UNSET`) and outside the terminal vocabulary will hold, because the polarity is
+  inverted: an UNRECOGNISED `Status` means work in flight. `IN_PROGRESS` is not magic; it is
+  simply not idle. Seeding `NOT_STARTED` here releases the gate on the spot.
+- `Phase: FIX` — must not be a terminal value. `DONE`, `COMPLETE`, `COMPLETED`, `FINISHED`,
+  `CLOSED`, `ABANDONED`, `ESCALATED`, `CANCELLED` and `CANCELED` release, matched WHOLE-VALUE and
+  case-insensitively.
+- `AWAITING_USER: none` — a placeholder, so no escalation is recorded. A SUBSTANTIVE reason here
+  releases the gate; `none`, `<reason>`, `no`, `false`, `0` and anything shorter than
+  `MIN_ESCALATION_REASON` (`hooklib.py`, 12 characters) do not.
+- `WORKABLE_ISSUES_REMAIN: no` — records that this is a single-issue recovery. It gates NOTHING:
+  it selects the refusal's wording and feeds the progress fingerprint.
+
+**Which placeholders bite silently, and which do not.** The two `<…>` tokens in the PATHS are
+self-announcing: pasted verbatim, bash parses `<first-8-of-session-id>` as a redirection and dies
+with `syntax error near unexpected token`, so nothing is created and you know at once. The FIELD
+values are the quiet ones, and they are why this recipe previously seeded an UNARMED run. MEASURED
+by driving `issue-loop-gate` against the seed: with no `MODE` line and `CURRENT_ISSUE` left as
+the literal `<N>`, the run resolved `OWNED` and the gate exited **0** on every turn-end, acked or
+not — a well-formed state file that looked exactly like a working brake with nothing to hold. With
+the `MODE` line above, the same paste exits **2**. Leaving `<full-session-id>` verbatim is milder
+but not free: the run still resolves from its directory name, but the third rung can no longer
+recover it if the state ever moves.
+
+**Then it takes effect at the NEXT turn-end attempt, in two steps.** The first attempt resolves
+`OWNED`, finds no contract ack, and BLOCKS to deliver the contract — that block is the delivery,
+and it names the ack file to create. Once the agent has written the ack, subsequent attempts are
+judged by the brake proper against the fields above. Nothing happens mid-turn; if the session
+never attempts to end a turn, it is never spoken to.
+
+If you cannot determine the session id, the session must be restarted — there is no way for a hook
+to attribute a run it has no evidence for, and guessing is the defect this whole change removes.
+
+Do not create the ack files yourself to "spare" the running agents the interruption. The
+interruption *is* the delivery.
+
+---
+
+## 5. What is documented, what is observed, and what is neither
+
+This project's signature defect is prose that is true of a mechanism's intent and false of its
+reach. So the evidence class of each load-bearing claim is stated explicitly.
+
+- **DOCUMENTED — settings edits reach a live session.** "Direct edits to hooks in settings files
+  are normally picked up automatically by the file watcher." Corroborating: the `ConfigChange`
+  event "Runs when a configuration file changes during a session", and its decision control says
+  "When blocked, the new settings are not applied to the running session" — the negative entails
+  that unblocked changes *are* applied. The `/hooks` menu also lists a `Session Hooks` source,
+  "registered in memory for the current session".
+  > **A previous revision of this file asserted the opposite** — that "hook configuration is
+  > snapshotted at session start". That was wrong, and nothing in either page supports it: a
+  > case-insensitive search for `snapshot`/`at startup` across the complete 316KB reference returns
+  > zero matches. It is recorded here rather than quietly deleted, because the design decision in
+  > §1 survives the correction while its original justification does not — and a reader who
+  > remembers the old claim needs to know which part changed.
+- **OBSERVED, not documented — a hook SCRIPT is re-read at every invocation.** The docs say
+  nothing in either direction. It follows from process-spawn semantics, and it is checkable in five
+  seconds: hold one invocation constant, edit the script between two calls, and the second call
+  reflects the edit. Treat it as demonstrable rather than as guaranteed.
+- **OBSERVED — a `SessionStart` hook fires mid-session on compaction.** With
+  `matcher: "compact|resume|startup"`, this project's `continuous-work-reinject` fired as
+  `SessionStart:compact` in a long-running session. The reference describes `SessionStart` as
+  running "when a session begins or resumes"; the compaction case is what makes a
+  newly-registered SessionStart hook eventually reachable, at timing you do not control.
+- **NOT DOCUMENTED — whether the 10,000-character output cap covers stderr.** The sentence names
+  `additionalContext`, `systemMessage` and plain stdout only. Moot at current sizes (the gates'
+  largest refusal is ~3KB), so no claim is made.
+- **VERSION-DEPENDENT.** Several documented behaviours carry client-version floors. Check the
+  reference for the release you are on rather than trusting this file.
+
+### Three invariants of `continuous-work-reinject`, so a future edit cannot break them silently
+
+1. **It must `exit 0`.** For `SessionStart`, exit 2 "Shows stderr to user only" and "Claude doesn't
+   see it". A SessionStart hook that signalled by stderr and a non-zero exit would deliver nothing
+   to the agent.
+2. **Its stdout must not both start with `{` and end with `}`** unless it is deliberately valid
+   hook JSON: stdout of that shape is parsed as JSON, and on a parse failure "Claude Code doesn't
+   add the text" — silent, with no error the agent can see. The first line is currently
+   `## Continuous work is in force …`, i.e. plain text.
+3. **It must stay under 10,000 characters** ("Hook output strings, including `additionalContext`,
+   `systemMessage`, and plain stdout, are capped at 10,000 characters"); past the cap the text is
+   replaced by a file path and a preview, which reads as delivered but is not. Currently ~2KB.
+
+---
+
+## 6. What this mechanism does NOT solve
+
+- **A session that runs no gate cannot be reached.** Nothing in a hooks-based design migrates a
+  session whose settings register no hooks at all and whose watcher never reloads.
+- **A row-2 session (no registry entry) is not migrated** by any hook. §4 gives the manual seed;
+  otherwise restart it.
+- **A session that never attempts to end a turn is never spoken to.** That is fine — the contract
+  only constrains turn-end.
+- **`AWAITING_USER` is self-reported.** The gate cannot distinguish a genuine Proven Exception from
+  a fabricated one. It enforces that an escalation was *recorded*, which is a real constraint (an
+  undeclared stop is refused) but not a judgement of the reason's quality.
+- **A determined agent can delete a hook.** Both gates are file-editable. Defence in depth, not a
+  boundary.
+- **A turn an API error ends runs no Stop hook.** No gate can hold or continue it. What the
+  framework does instead (§9): the `stop-failure-recorder` gate records it, the run's own
+  watchdog cron resumes it once the session is idle, and `/supervise` is the host backstop.
+- **The cap is a real exit.** After `the block cap` consecutive blocks the gate allows the stop,
+  saying the work is not done — and the harness ends the turn after 8 consecutive blocks in any
+  case. The gates bound spurious stops; they do not eliminate them.
+
+---
+
+## 7. Verifying a deployment
+
+```bash
+# 1. The REGISTERED launch form executes on THIS machine and every event decides. This is the check
+#    that would have caught the WSL-launcher incident: it resolves `python` on PATH as the harness
+#    does and spawns the dispatcher with no shell.
+python .claude/hooks/hooks.py selftest
+
+# 2. Both Stop gates load their library and reach a decision.
+printf '{"session_id":"probe","cwd":"%s","hook_event_name":"Stop"}' "$PWD" \
+  | python .claude/hooks/hooks.py stop; echo "exit $?"          # expect 0 (unregistered probe)
+
+# 3. The library fails CLOSED, not open. Expect exit 2 — never 0, never 1.
+mkdir -p /tmp/gp/hooks && cp .claude/hooks/hooks.py .claude/hooks/gate_*.py /tmp/gp/hooks/
+( cd /tmp/gp && printf '{"session_id":"x","cwd":"."}' | python hooks/hooks.py stop ); echo "exit $?"
+
+# 4. Every pytest module. A registered run with NO state file must BLOCK; if it is allowed the
+#    deployment is inert. Zero failures is the criterion. Among them:
+python -m pytest .claude/hooks/tests -q -p no:cacheprovider
+#   test_crlf_hygiene       a CR smuggled through a payload, a state file, a version file, a capture
+#   test_hook_state_lib     identity, parsing, counters, cap validation
+#   test_stop_gates         Stop gate decisions, wave captures, the freshness handshake and its cache, fail-closed
+#   test_tdd_gate           push gate, both directions, CI-outage mode
+#   test_no_sleep           the foreground-sleep gate: polls refused, settle sleeps and background waits allowed
+#   test_reinject           no cross-run adoption, delivery invariants, the revision notice
+#   test_gate_overblock     the OVER-block direction: turns that must be ALLOWED
+#   test_unpinned_fixes     handshake BLOCK by text, evidence substance, mtime, cross-gate
+#   test_scoped_temp        the self-writing settings.local.json env block
+#   test_dispatcher         gate discovery and order, a project gate, the disable switch, the launcher
+#   test_no_idle_wait       a turn that ends to wait is refused; a SESSION or Completion Block verdict is not
+#   test_reinject_resume    the resume context and the run-watchdog instruction
+#   test_delivery_gates     HANDED_OFF (single-issue only), the merge-steward gate, stop-failure, watchdog
+
+# 5. Confirm the gates have actually fired in this clone. This directory is created ONLY on a
+#    blocking path, so its absence across many sessions means never-blocked.
+ls -la .claude/agent-state/issue-work-orchestrator/.stop-gate-counters/ 2>/dev/null \
+  || echo "no counters yet — no gate has ever blocked in this clone"
+
+# 6. Read the decision log. Every invocation appends one line, so permanent inertness is now
+#    visible instead of looking identical to compliance.
+tail -40 .claude/agent-state/issue-work-orchestrator/.hook-decisions/*.log
+```
+
+Step 5 is the one that matters most. It is how the original defect was *proved* rather than
+suspected: the counter directory did not exist in a clone with 189 registered sessions, which is
+only possible if neither gate had ever blocked a turn-end.
+
+### Why the library has a suite of its own, and not just the gate suite
+
+`test_hook_state_lib.py` exists because an end-to-end suite can pass over a broken library. A gate
+reaches the library along the paths that gate takes, with the files that gate builds; a defect on
+any other path is invisible to the gate suite until an unrelated change routes a call through it.
+The library suite therefore imports `hooklib` and calls `resolve_run_dir` and `normalize_verdict`
+directly, with no gate in between, and pins the answers whose fail-direction matters most:
+
+- `normalize_verdict` turns ANY unrecognised verdict into `BROKEN`: an empty string, `None`, a typo
+  or a new synonym can never read as "nothing to guard".
+- `registry_lookup` returns `None` for a registry it cannot read — distinct from `"MISS"`, which is a
+  readable registry provably without this session's entry. An unreadable registry must not read as
+  "unregistered".
+- `resolve_run_dir`, on that `None`, probes the raw registry text for the session id as a key; when
+  it is there, the session IS a registered run whose state cannot be resolved, so the verdict is
+  `BROKEN` — never `UNREGISTERED`, which every gate treats as benign. A corrupt registry fails
+  closed.
+
+The general lesson, worth applying beyond this file: **a test that reaches the unit only through
+one caller measures the pair, not the unit.** Each answer above is reachable from a gate only
+through one particular broken file, so a gate suite built from well-formed fixtures passes whether
+or not the library answers correctly; a direct case here reds the moment the answer changes.
+
+---
+
+# Incident record
+
+The measured incidents the loaded rules cite by slug. Each entry is the authoritative
+account; the loaded rules and `.claude/docs/run-identity.md` carry only one-line pointers,
+so this section is what stops a future editor "simplifying" a constraint whose reason they
+cannot see. Append new incidents here; never delete one.
+
+## Incident `invented-run-label` (the 189-session inert-gate failure)
+`session-register` wrote `state_dir: "runs/<sid8>/"` into `registry.json` but created
+nothing on disk. The agent, told by its command to "derive `RUN_ID`", invented a readable
+label (`run-issue574-20260828T194800Z`) and wrote well-formed state there. Both Stop gates
+resolved state from the registry, found nothing, and exited 0 — inert from turn one.
+Across 189 registered sessions in that clone, neither Stop gate had EVER blocked a
+turn-end (provable from the absence of `.stop-gate-counters/`, which only the blocking
+path creates), and a run holding an explicit instruction never to stop without a proven
+reason ended four turns unopposed. Fixes: the hook now SEEDS `runs/<run-id>/`, and a
+registered-but-stateless session resolves `BROKEN` and fails CLOSED.
+
+## Incident `mtime-borrow` (three hand-rolled resolvers, one shared defect)
+Three hooks each hand-rolled a registry read guarded by `command -v jq` with an
+`ls -t … | head -1` fallback. jq was absent on the development host, so all three resolved
+"the most recently touched run" — which handed one session a sibling's issue number,
+branch, and worktree as its own (reproduced live), and gated one session's push on a
+stranger's task ids. Fix: `hooklib.py` is the ONE resolver, every rung
+session-keyed, no mtime rung. Add no fourth copy.
+
+## Incident `seven-synonyms` (the brake armed on one magic string)
+The loop gate armed only on the literal `IN_PROGRESS`. MEASURED on a correctly seeded,
+registered, contract-acked run recording `Phase: IMPLEMENT` and `CURRENT_ISSUE: 574`, all
+of these let the turn end: `in progress`, `In Progress`, `in-progress`, `WORKING`,
+`ACTIVE`, `RUNNING`, `IMPLEMENTING`. Fix: inverted polarity — an unrecognised `Status`
+means work in flight; only an affirmative idle/terminal value releases.
+
+## Incident `whole-value-vs-substring` (two adversarial reviews, opposite failures)
+One review measured the narrative `Status: COMPLETED (was IN_PROGRESS)` being REFUSED and
+called it an over-block. The other measured `IN_PROGRESS - tasks 1-3 completed, 4
+remaining` DISARMING the evidence gate through a prefix/substring match — phrasing that
+"is not adversarial; it is how a progress note is naturally written". Both describe the
+same value shape, so only one rule can hold, and fail direction decides: a whole-value
+match costs a spurious refusal that names its own escape; a substring match lets a
+progress note end a turn. WHOLE-VALUE won. Do not "fix" it back in either direction.
+
+## Incident `untrimmed-whitespace` (one stray space, both fail directions)
+An untrimmed `AWAITING_USER: none ` compared unequal to the placeholder `none` and so
+read as a recorded escalation — DISABLING the primary brake. An untrimmed
+`CURRENT_SPEC: x ` produced the unopenable path `x /tasks.md` and REFUSED every turn-end
+with no escape an agent could find. Fix: values are whitespace-trimmed before both the
+shape test and the word test.
+
+## Incident `placeholder-release` (the gate's own example string released it)
+The substance test on `AWAITING_USER` exists because measured releases included the
+literal `<reason>` — the placeholder the gate itself used to print, so an agent copying
+the instruction verbatim disarmed the brake with the gate's own string. Both gates now
+apply the same `is_substantive_escalation` test; the evidence gate previously
+released on any non-placeholder value, a fail-open wherever it was the only Stop hook.
+
+## Incident `duty-cycle` (the block cap reset itself into a cycle)
+While reaching `the block cap` merely reset the counter, MEASURED over eleven
+consecutive Stop events: attempts 1-8 refused, attempt 9 released and reset, attempts
+10-11 refusing again — eight forced continuations, one exit, eight more, forever. Fix:
+reaching the cap writes a durable `.capped` marker; only a genuine release on the merits
+(or, for the loop gate, a CHANGE in the field fingerprint; for the evidence gate, new
+evidence) clears count and marker.
+
+## Incident `empty-verdict` (a `set -u` slip fell through to ALLOW)
+A single `set -u` abort inside the resolver's subshell produced an EMPTY verdict that
+matched no guard; the gate fell through to its field reads and ALLOWED — while logging a
+line that read like a decision. Fix: an unrecognised verdict is normalised to `BROKEN`.
+
+## Incident `fenced-status` (an example beat the record)
+Before fence tracking, a `Status:` line inside a fenced code block was read as the run's
+Status, and last-occurrence-wins made a late example beat the real record. Fix: fields
+inside fences are ignored.
+
+## Incident `wsl-launcher` (every hook inert on a Windows host, for three months)
+The hooks were bash scripts registered in exec form (`"command": "bash"`, the script in
+`args`). Exec form resolves the command on PATH and spawns it with NO shell, and on a Windows
+host the first `bash` on the Machine+User PATH was `WindowsApps\bash.exe`, the WSL launcher
+alias (Git's `bash.exe` lives in `Git\bin`, which is not on PATH — only `Git\cmd` is). With no
+WSL distribution installed the launcher exited 1 with "Windows Subsystem for Linux has no
+installed distributions", which the harness treats as a NON-BLOCKING error: the action
+proceeds and the transcript shows a one-line notice nobody reads. MEASURED in one clone
+(2,367 transcripts, 2026-07-17 to 2026-09-25): 399,278 of 400,015 recorded project-hook runs
+were that exit 1, the rest timeouts and other non-blocking errors, and ZERO blocks — every
+`.hook-decisions` line in that clone had been written by an agent running a hook by hand.
+Six-hour stalls and 28 operator `/continue-work` resumes followed. A sibling clone on the same
+machine whose settings used SHELL form (`"command": "bash \"<script>\""`, run through Git
+Bash) had 112 real blocks: the registration form alone decided whether a project was gated.
+Behind it sat a second defect: the gates read the command with `jq`, else with a pattern that
+stops at the first `"`, and `jq` was absent, so 99.5 percent of commands were unreadable to
+the two command gates even where the scripts ran.
+Fix: the hooks are Python (standard library only), registered in exec form through `python`,
+which every project already depends on; one dispatcher per event; the payload parsed once as
+JSON; and `hooks.py selftest`, which spawns the dispatcher exactly as the harness does and
+fails when any event cannot start or does not decide — so a hook that cannot start no longer
+looks like an allow. A shell-form registration was rejected because it would make every gate
+depend on a Git Bash installation and its start-up cost.
+
+## Incidents `hour-long-commits`, `pytest-n-auto-host-death`, `fail-fast-cycles`
+The three measured failures of the per-commit-test-suite arrangement, recorded in full in
+the `scripts/run_tests.py` header (WHY THIS EXISTS) and `ci-owns-the-test-suite.md`'s
+history: a 60-minute suite made every commit an hour, so agents batched whole features
+into single unreviewable commits; several worktrees each running `pytest -n auto` (one
+worker per vCPU) made the host unusable and got the agent killed mid-run; fail-fast CI
+reported one failure per run, so a ten-failure branch cost ten pipeline runs. Fixes:
+pre-commit = lint+security only, the evidence gate moved to the PUSH, `run_tests.py`
+bounds local workers and refuses `-x`/`--maxfail`, CI runs everything with no fail-fast.
+
+## 8. Seams a project's own tests and guards may feel (2026-10-05 to 2026-10-10)
+
+Reported by four projects after the Python rewrite; none is a defect in the framework's
+own suite, each is a contract a project had built on and the framework did not know.
+
+- **`hooklib.strip_quoted` is no longer what the env-var gate uses.** Since 2026-10-05
+  `gate_no_env_vars` reads quotes with its own `_strip_quoted` (adjacent strings, `$'…'`,
+  one placeholder word per string). `hooklib.strip_quoted` remains the TDD gate's fallback
+  for a command shlex cannot split. A project test that reached the env-var gate's quoting
+  through `hooklib` now tests the wrong function: point it at the gate.
+- **The launcher spells the dispatcher path as joined parts** —
+  `'.claude','hooks','hooks.py'` — so a guard that greps `settings.json` for the literal
+  `.claude/hooks/` finds nothing. Grep for `hooks.py`.
+- **A missing dispatcher is a fail-OPEN by design.** The launcher exits 0 when
+  `.claude/hooks/hooks.py` is absent, so a checkout without the hooks still runs. A project
+  that fails closed on unreadable input adds that check itself (a SessionStart gate that
+  refuses when its sibling files are missing).
+- **The registration's tool matcher is derived from the gates present.** A gate that
+  declares `TOOLS = {"Write", "Edit"}` joins the PreToolUse matcher the next time
+  `hooks.py registration` is run; a gate that declares no `TOOLS` removes the matcher
+  (it judges every tool). Re-run the registration after adding a gate.
+- **`state_base` resolves env, then payload cwd, then git.** A test harness that isolates
+  scratch trees under ONE `git init` must set `CLAUDE_PROJECT_DIR` or the payload's `cwd`;
+  otherwise the git top-level, the harness root, is the state base.
+- **A compacted ledger row has two copies with one status.** `memory_compile.py reconcile`
+  turns an oversize row into a pointer row and archives the full row VERBATIM, status
+  included. A guard that pins "exactly one row carrying this status" must read the active
+  ledger only.
+- **The self-test leaves project gates out of its scratch project** (an `ORDER` above 100
+  or below 10, read from the source). Their libraries under `scripts/` are not copied
+  there; the project's own `tests/` modules cover them.
+
+## 9. The delivery revision (2026-10-26): what a live project needs, in order
+
+Contract `2026.10.26-delivery-5` (amended 2026-10-30: `2026.10.30-delivery-6`, item 7; 2026-10-31: `2026.10.31-delivery-7`, item 8; 2026-11-02: `2026.11.02-delivery-8`, item 9); the agent-facing contract is `.claude/docs/delivery.md`.
+
+1. **Copy the files** (`hooks/*.py` now includes `gate_merge_steward.py`, `gate_stop_failure.py`,
+   `wait_for.py`, `supervisor.py`; plus `docs/delivery.md`, `commands/supervise.md`) and
+   **re-paste the registration** that `python .claude/hooks/hooks.py registration` prints: it now
+   registers `StopFailure`. Without that paste the recorder never runs and nothing else changes.
+   The paste can also change the PreToolUse matcher — it is the union of the gates' `TOOLS`, so a
+   project gate on `Write`/`Edit` widens it — and a project test that pins it to exactly `Bash`
+   then fails: assert the derived value instead. `python .claude/hooks/hooks.py registration
+   --check` proves the paste: exit 0 when `.claude/settings.json`'s hooks block equals what
+   `registration` prints, 1 with a short diff of the differing events, 2 when the settings file
+   is missing or does not parse; `hooks.py selftest` reports it as one WARN line.
+2. **Nothing changes until `config/delivery.json` exists.** Absent, the mode is `merge: direct` +
+   `verification: session` — today's behaviour — and the `merge-steward` gate allows everything.
+   A broken file fails OPEN the same way (the steward's own CLI refuses it with exit 2).
+3. **Bootstrap, in two PRs.** The FIRST installs `scripts/merge_steward.py`, its test, the steward
+   workflow and the deploy changes, and writes `config/delivery.json` with `merge: direct` and
+   `verification: session` — today's behaviour — but with `host`, `trunk` and the workflow names
+   filled in (the tick reads them; an absent file means GitHub). It merges DIRECTLY: a steward is
+   not live until its workflow is on the default branch, and under `direct` a tick serves only
+   `reverify`, lands nothing and runs green. The SECOND PR, after a tick has run green on the trunk
+   (`merge_steward.py status`), sets `merge: steward` and the verification the project wants; it
+   is the last PR merged directly — from then on the gate refuses direct merges and trunk pushes.
+4. **Live sessions** learn it through the contract handshake (REVISION_NOTICE item 11). A session
+   whose process started before the update has no run watchdog: the issue-loop brake's refusal
+   names the `CronCreate` to arm it, and the session-start context prints it to every new process.
+5. **`/supervise` reaches another session only where that session accepts cross-session
+   messages** — a USER-level setting the operator sets; a project's settings cannot. Without it
+   every `due` request reports `unreachable`, which is still the record a person acts on.
+6. **Labels.** Create `queue`, `queue-failed`, `queue-conflict`, `queue-retried`,
+   `do-not-merge`, `awaiting-verification`, `verified`, `verification-failed`, `needs-rework`,
+   `needs-closeout` and `reverify` once, with a one-line description each (`config/delivery.json`
+   may rename any of them). The steward only ADDS and REMOVES labels; whether a host creates a
+   missing one on first use is not something to depend on.
+
+7. **(2026-10-30) The runner and the deploy admission.** `{{STEWARD_RUNS_ON}}` / `{{DEPLOY_RUNS_ON}}`
+   are the `runs-on` the project's CI already uses: a hosted label in a private repository whose hosted
+   runners start no job fails every tick. On GitHub the steward's `GITHUB_TOKEN` push starts no
+   workflow, so every workflow or job admitted only by a trunk `push` or a `workflow_run` of the CI —
+   typically a deploy chain — must be re-admitted for the steward's dispatch before PR 2, or it never
+   runs again (setup prompt Part 7.1 item 4 has the inventory). The deploy template's guard and verdict
+   read the commit from the event file; a project that audits workflow `env:` maps has none to register.
+8. **(2026-10-31) GitLab and the steward's edges.** The `merge-steward` job moves from `.pre` to a real
+   `merge-steward` stage — add it to `stages:`, or no tick pipeline ever runs. Re-check every job that
+   received `.not-on-tick` through `extends`: a job with its own `rules:` lost it, so put
+   `- !reference [.not-on-tick, rules]` (or the `*not_on_tick` anchor) first in its list. The wrapper's
+   delivery verbs pass its token with `--token-stdin` (`steward_delegate`); a `config/gitlab.json` that git
+   tracks is no longer read for a token. Behind an authenticating proxy set `steward.cookie_file`. A
+   batch id is never reused within one process (a fast runner rebuilt a judged batch), and a deploy job
+   the jobs API reports as allowed to fail no longer returns issues as `needs-rework`.
+
+9. **(2026-11-02) Sessions own their PR until it lands, and end with the SESSION verdict.** Measured on the
+   first steward project: none of ten handed-off issues closed — the train-completion `workflow_run` never fired
+   (a `GITHUB_TOKEN`-started run starts no workflow), a deploy red for an unrelated cause bounced every issue it
+   contained, one hand-off left real work open, and no close-out printed its verdict. A live project:
+   - copies the hooks (two new gates, `gate_session_verdict.py` and `gate_archive_verdict.py`) and
+     RE-PASTES `hooks.py registration`: the PreToolUse matcher now also names
+     `mcp__ccd_session_mgmt__archive_session` (`registration --check` confirms the paste);
+   - installs the steward template (`wait-landed`, `check-handoff`, the red-streak verdict) and the wrapper's two
+     new delivery verbs, removes `workflow_run` from `.github/workflows/merge-steward.yml`, appends the
+     `steward-wake` job (`templates/ci/github-steward-wake.yml.template`) to its CI workflow, and creates the
+     `delivery-status` label (twelve labels);
+   - lets live sessions learn the new phases from the contract handshake: a session already HANDED_OFF on a
+     queued, unlanded PR is NOT done under this revision — `/continue-work` waits for its landing.
+
+What is NOT weakened: every PR still needs its own green CI before the queue takes it, the train
+re-runs the full CI on the exact state that lands, an issue closes only after a green post-deploy
+check on a commit that contains its landing and with its counted checklist complete, and every
+TDD capture, review and gate is unchanged.

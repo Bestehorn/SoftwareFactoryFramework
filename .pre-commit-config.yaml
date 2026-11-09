@@ -5,29 +5,23 @@
 # truth for the commit/push split this repository ships in
 # `templates/pre-commit-config.yaml.template`:
 #
-#   pre-commit  ruff, ruff-format, detect-secrets, detect-private-key, bandit   (< 2 s)
-#   manual      pytest (the hook suite, the shipped payload tests, the layout guard)
+#   pre-commit  ruff, ruff-format, detect-secrets, detect-private-key, bandit, memory-reconcile (< 2 s)
+#   pre-push    mypy over src/ (pyproject.toml carries the recorded baseline)
+#   manual      pytest (the hook suite, the shipped payload tests, this repository's own tests)
 #
 # Do not remove the `stages:` keys. Without them pre-commit defaults a hook to the
 # pre-commit stage, which is exactly how a slow hook ends up running on every commit.
 #
-# WHY THERE IS NO pre-push STAGE HERE
-#   The template puts mypy at pre-push. This repository has no mypy configuration yet (the
-#   self-hosting step adds its pyproject.toml), so mypy is absent and `.githooks/pre-push`
-#   simply finds no pre-push-stage hooks to run. Its other job still applies: if CI-OUTAGE
-#   MODE is ever declared here (`python scripts/ci_outage_mode.py declare`), it runs the suite
-#   at push time.
-#
 # WHY pytest IS `stages: [manual]`
-#   Tests are never a commit gate. This repository has NO CI pipeline of its own yet, so here
-#   the suites are run on demand (`python scripts/run_tests.py`, or
-#   `pre-commit run --hook-stage manual pytest`) rather than by a pipeline. In a project set
-#   up BY these prompts, CI owns it; the shape of the hooks is the same either way, which is
-#   the point of dogfooding them here.
+#   Tests are never a commit gate: CI (.github/workflows/ci.yml, through scripts/run_checks.py)
+#   owns the suite. `python scripts/run_tests.py <paths>` runs the affected tests while you work;
+#   `.githooks/pre-push` runs the suite at push time only while CI-OUTAGE MODE is declared
+#   (`python scripts/ci_outage_mode.py declare`).
 #
 # Python in this repository lives under `src/` (the shipped hook runtime and payload), `test/`
-# and `scripts/`; ruff reads the root `ruff.toml`, and `src/hooks/ruff.toml` for the hooks.
-# Prompt/documentation files are untouched by these hooks.
+# and `scripts/`; ruff reads the root `ruff.toml`, and `src/hooks/ruff.toml` for the hooks. The
+# installed toolchain copy under `.claude/` is excluded: it is checked through its source under
+# `src/` and by test/test_toolchain_integrity.py. Prompt/documentation files are untouched.
 default_install_hook_types: [pre-commit, pre-push]
 
 repos:
@@ -37,10 +31,10 @@ repos:
       - id: ruff
         args: [--fix]
         stages: [pre-commit]
-        exclude: ^(venv/|tmp/|templates/|old/|workspace/)
+        exclude: ^(venv/|tmp/|templates/|old/|workspace/|src/_version\.py|\.claude/)
       - id: ruff-format
         stages: [pre-commit]
-        exclude: ^(venv/|tmp/|templates/|old/|workspace/)
+        exclude: ^(venv/|tmp/|templates/|old/|workspace/|src/_version\.py|\.claude/)
 
   # A pushed credential cannot be un-pushed, so secret detection is the one check that has
   # to be earlier than CI. This repository is full of prompt text describing tokens and
@@ -71,10 +65,29 @@ repos:
         files: ^src/
         exclude: ^(src/hooks/tests/|src/payload/test/)
 
+  # Whole-project type analysis at the push boundary (the template's hook). Scope = CI's `mypy src`
+  # (scripts/run_checks.py); pyproject.toml carries the recorded baseline.
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.17.0
+    hooks:
+      - id: mypy
+        args: [--ignore-missing-imports]
+        stages: [pre-push]
+        files: ^src/
+        exclude: ^(test/|old/|workspace/|tmp/|venv/|scripts/)
+        additional_dependencies: [types-requests, types-python-dateutil]
+
   - repo: local
     hooks:
       # On demand only — CI owns the suite. scripts/run_tests.py runs every suite in one
       # invocation from the repository root.
+      - id: memory-reconcile
+        name: memory-reconcile (ledger and lessons under their caps)
+        entry: python scripts/memory_compile.py reconcile --apply
+        language: system
+        pass_filenames: false
+        files: ^docs/(findings-ledger|lessons-learned)\.md$
+        stages: [pre-commit]
       - id: pytest
         name: pytest (manual — never a commit gate; runs every suite)
         entry: python scripts/run_tests.py

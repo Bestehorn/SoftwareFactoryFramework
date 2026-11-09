@@ -1,0 +1,332 @@
+"""Instruction-corpus and memory budget guard.
+
+Installed from ``src/payload/test/test_instruction_corpus_budget.py`` to
+``test/test_instruction_corpus_budget.py``. Run by CI's tests group and by ``/compile-memory``.
+
+WHY THIS EXISTS
+    The always-loaded instruction corpus — the root ``CLAUDE.md`` plus every ``.claude/rules/*.md``
+    without a ``paths:`` frontmatter (and, on a Kiro project, every ``.kiro/steering/*.md`` with
+    ``inclusion: always``, which per Kiro's documented default includes a file with no front matter
+    or no ``inclusion`` key) — is read into EVERY model call of EVERY session. Measured on three
+    production projects it grew from roughly 130,000 bytes at installation to 428,000 bytes in one
+    of them, because every incident appended a narrative to a rule, and the mandatory pre-work
+    documents grew to 1.7 MB. The average model call then carried 400,000 tokens of context.
+    Prose caps do not hold; a failing test does.
+
+REPAIR ORDER when a cap assertion fails (work the branches in order, stop at the first that applies):
+    1. Unbounded, append-only history inside the corpus (a violation log, an incident list, dated
+       headings)? RELOCATE it — ``python scripts/memory_compile.py extract-rule-incidents --apply`` —
+       leaving the rule's normative statements and one pointer line.
+    2. A bounded instruction the project genuinely needs? RAISE the cap constant by its MEASURED cost
+       and say why in the commit message. That is the documented route, not a workaround.
+    3. Never condense an unrelated rule to make room for a new one.
+
+The caps below are the framework defaults. A project may LOWER them; raising one is branch 2 above.
+
+THE LEDGER AND THE LESSONS ARE SIZE-BOUNDED WINDOWS
+    ``python scripts/memory_compile.py reconcile --apply`` rolls the oldest rows and entries into
+    ``docs/archive/`` until the files fit their caps; it runs at write time (``ledger add``,
+    ``lesson add``) and from the pre-commit hook. A cap failure here means a hand edit bypassed it.
+    Rows are pointers of at most LEDGER_ROW_MAX_BYTES: the analysis lives in the decision log or the
+    issue, and a row over the budget is a row written by hand instead of through ``ledger add``.
+
+FROZEN KIRO TREE
+    A project that keeps its ``.kiro/`` tree as-is records that decision in the marker file
+    ``.kiro/FROZEN`` (one line: date and reason). An assertion that would fail only because of a Kiro
+    steering file is then PRINTED as a note and passes — never a skip: many projects forbid skips as
+    a dodge, and a printed note in the ``-rA``/``-s`` output is the honest record. The ``.claude``
+    side of every test stays strict and names the reported Kiro side in its message.
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+CORPUS_CAP_BYTES = 100_000  # CLAUDE.md + every unscoped .claude/rules/*.md (or always-on Kiro steering)
+RULE_FILE_CAP_BYTES = 12_000  # no single rule file may swallow the budget
+SCOPED_RULES_CAP_BYTES = 45_000  # PER HOST: paths:-scoped rules (Claude) and fileMatch steering (Kiro) are each capped
+FOR_LLM_CAP_BYTES = 40_000  # docs/forLLMConsumption.md is a MAP, not a dump
+LESSONS_CAP_BYTES = 40_000  # docs/lessons-learned.md holds compiled, enforced lessons
+LEDGER_CAP_BYTES = 60_000  # docs/findings-ledger.md holds ACTIVE rows only
+LEDGER_ROW_MAX_BYTES = 240  # a ledger row is a pointer, never the analysis (memory_compile.py ledger add)
+LESSON_ENTRY_MAX_LINES = 6  # heading + Date/Lesson/Enforced-by/Scope + one spare line
+MAX_DATED_HEADINGS_PER_RULE = 1  # two or more dated headings in a rule = a ledger living in the corpus
+
+CLAUDE_MD = ROOT / "CLAUDE.md"
+RULES_DIR = ROOT / ".claude" / "rules"
+STEERING_DIR = ROOT / ".kiro" / "steering"
+KIRO_FROZEN = ROOT / ".kiro" / "FROZEN"  # present: the project keeps .kiro/ as-is; Kiro findings are reported
+FOR_LLM = ROOT / "docs" / "forLLMConsumption.md"
+LESSONS = ROOT / "docs" / "lessons-learned.md"
+LEDGER = ROOT / "docs" / "findings-ledger.md"
+
+_DATED_HEADING = re.compile(r"^#{1,6}\s.*\b\d{4}-\d{2}-\d{2}")
+_FENCE = re.compile(r"^\s*(```|~~~)")
+_FRONTMATTER_PATHS = re.compile(r"^paths\s*:", re.MULTILINE)
+_KIRO_INCLUSION = re.compile(r"^inclusion\s*:\s*(\S+)\s*$", re.MULTILINE)
+_TABLE_SEPARATOR = re.compile(r"^\|\s*:?-+:?\s*\|")
+_DATE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+FROZEN_NOTE = ".kiro/ is frozen (.kiro/FROZEN): the Kiro side is reported, not enforced"
+RECONCILE = "python scripts/memory_compile.py reconcile --apply"
+LEDGER_ADD = "python scripts/memory_compile.py ledger add --subject S --finding F --evidence E --why W"
+
+
+def _read(path: Path) -> str:
+    return path.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n")
+
+
+def _size(path: Path) -> int:
+    return len(_read(path).encode("utf-8")) if path.exists() else 0
+
+
+def _frontmatter(text: str) -> str:
+    if not text.startswith("---"):
+        return ""
+    end = text.find("\n---", 3)
+    return text[3:end] if end != -1 else ""
+
+
+def _rule_files() -> list[Path]:
+    return sorted(RULES_DIR.glob("*.md")) if RULES_DIR.is_dir() else []
+
+
+def _unscoped_rules() -> list[Path]:
+    return [p for p in _rule_files() if not _FRONTMATTER_PATHS.search(_frontmatter(_read(p)))]
+
+
+def _scoped_rules() -> list[Path]:
+    return [p for p in _rule_files() if _FRONTMATTER_PATHS.search(_frontmatter(_read(p)))]
+
+
+def _kiro_inclusion(path: Path) -> str:
+    """Kiro's documented default: no front matter, or front matter without ``inclusion``, means ``always``."""
+    match = _KIRO_INCLUSION.search(_frontmatter(_read(path)))
+    return match.group(1) if match else "always"
+
+
+def _steering(inclusion: str) -> list[Path]:
+    if not STEERING_DIR.is_dir():
+        return []
+    return [p for p in sorted(STEERING_DIR.glob("*.md")) if _kiro_inclusion(p) == inclusion]
+
+
+def _always_on_steering() -> list[Path]:
+    return _steering("always")
+
+
+def _filematch_steering() -> list[Path]:
+    return _steering("fileMatch")
+
+
+def _kiro_frozen() -> bool:
+    return KIRO_FROZEN.exists()
+
+
+def _enforced_and_reported(*, claude: list[Path], kiro: list[Path]) -> tuple[list[Path], list[Path]]:
+    """Split offenders into what the test asserts on and what it only reports: with ``.kiro/FROZEN`` the
+    Kiro side is printed, never failed."""
+    if _kiro_frozen():
+        return claude, kiro
+    return [*claude, *kiro], []
+
+
+def _report_frozen(note: str) -> None:
+    """The frozen Kiro side's record: a printed line (visible with ``-s`` / ``-rA``), then the test passes."""
+    print(f"\nFROZEN KIRO SIDE (reported, not enforced): {note}")
+
+
+def _strip_fences(text: str) -> str:
+    kept: list[str] = []
+    inside = False
+    for line in text.split("\n"):
+        if _FENCE.match(line):
+            inside = not inside
+            continue
+        if not inside:
+            kept.append(line)
+    return "\n".join(kept)
+
+
+def _dated_headings(path: Path) -> int:
+    return sum(1 for line in _strip_fences(_read(path)).split("\n") if _DATED_HEADING.match(line))
+
+
+def _breakdown(paths: list[Path]) -> str:
+    rows = sorted(((_size(p), p.relative_to(ROOT).as_posix()) for p in paths), reverse=True)
+    return "\n".join(f"  {size:>8,d}  {name}" for size, name in rows)
+
+
+def _names(paths: list[Path]) -> str:
+    return ", ".join(p.relative_to(ROOT).as_posix() for p in paths)
+
+
+def _reported_note(reported: list[Path]) -> str:
+    return f"\nReported Kiro side ({FROZEN_NOTE}):\n{_breakdown(reported)}" if reported else ""
+
+
+def _ledger_rows(text: str) -> list[list[str]]:
+    """Every table row of the ledger with its continuation lines, exactly as memory_compile.py reads them: a
+    ``|`` line that is neither a header (directly above a separator) nor a separator; a non-blank line not
+    starting with ``|`` or ``#`` directly after a row belongs to that row."""
+    lines = text.split("\n")
+    rows: list[list[str]] = []
+    last_row_line = -2
+    for index, line in enumerate(lines):
+        next_is_separator = index + 1 < len(lines) and bool(_TABLE_SEPARATOR.match(lines[index + 1]))
+        if line.startswith("|") and not next_is_separator and not _TABLE_SEPARATOR.match(line):
+            rows.append([line])
+            last_row_line = index
+        elif rows and index == last_row_line + 1 and line.strip() and not line.startswith(("|", "#")):
+            rows[-1].append(line)
+            last_row_line = index
+    return rows
+
+
+def _row_date(row: list[str]) -> str:
+    match = _DATE.search(row[0])
+    return match.group(0) if match else "undated"
+
+
+REPAIR = (
+    "Repair order: (1) relocate unbounded history out of the corpus "
+    "(python scripts/memory_compile.py extract-rule-incidents --apply); "
+    "(2) raise the cap by its MEASURED cost with the reason in the commit; "
+    "(3) never condense an unrelated rule to make room."
+)
+
+
+def test_always_loaded_corpus_within_cap() -> None:
+    files = [CLAUDE_MD, *_unscoped_rules()]
+    total = sum(_size(p) for p in files)
+    assert total <= CORPUS_CAP_BYTES, (
+        f"always-loaded corpus is {total:,d} bytes, cap {CORPUS_CAP_BYTES:,d}.\n{_breakdown(files)}\n{REPAIR}"
+    )
+
+
+def test_always_on_kiro_steering_within_cap() -> None:
+    files = _always_on_steering()
+    total = sum(_size(p) for p in files)
+    if total > CORPUS_CAP_BYTES and _kiro_frozen():
+        _report_frozen(f"always-on Kiro steering is {total:,d} bytes, cap {CORPUS_CAP_BYTES:,d}; {FROZEN_NOTE}")
+        assert True
+        return
+    assert total <= CORPUS_CAP_BYTES, (
+        f"always-on Kiro steering is {total:,d} bytes, cap {CORPUS_CAP_BYTES:,d}.\n{_breakdown(files)}\n{REPAIR}"
+    )
+
+
+def test_no_single_rule_dominates_the_corpus() -> None:
+    offenders, reported = _enforced_and_reported(
+        claude=[p for p in _rule_files() if _size(p) > RULE_FILE_CAP_BYTES],
+        kiro=[p for p in _always_on_steering() if _size(p) > RULE_FILE_CAP_BYTES],
+    )
+    assert not offenders, (
+        f"rule files over {RULE_FILE_CAP_BYTES:,d} bytes (a rule this long is carrying history, not rules):\n"
+        f"{_breakdown(offenders)}\n{REPAIR}{_reported_note(reported)}"
+    )
+    if reported:
+        _report_frozen(f"steering files over {RULE_FILE_CAP_BYTES:,d} bytes: {_names(reported)}; {FROZEN_NOTE}")
+        assert True
+
+
+def test_scoped_rules_within_cap() -> None:
+    """Each HOST's scoped corpus is capped on its own: a Claude session loads the ``paths:`` rules and a Kiro
+    session the ``fileMatch`` steering, never both. Summing them double-counted a dual-host project (measured:
+    30,953 bytes on the Claude side passed its cap while the sum of the two copies failed)."""
+    claude, kiro = _scoped_rules(), _filematch_steering()
+    claude_total = sum(_size(p) for p in claude)
+    kiro_total = sum(_size(p) for p in kiro)
+    assert claude_total <= SCOPED_RULES_CAP_BYTES, (
+        f"paths:-scoped rules total {claude_total:,d} bytes, cap {SCOPED_RULES_CAP_BYTES:,d}.\n{_breakdown(claude)}"
+    )
+    if kiro_total <= SCOPED_RULES_CAP_BYTES:
+        return
+    if _kiro_frozen():
+        _report_frozen(
+            f"fileMatch steering total {kiro_total:,d} bytes, cap {SCOPED_RULES_CAP_BYTES:,d}; {FROZEN_NOTE}"
+        )
+        assert True
+        return
+    raise AssertionError(
+        f"fileMatch steering total {kiro_total:,d} bytes, cap {SCOPED_RULES_CAP_BYTES:,d}.\n{_breakdown(kiro)}"
+    )
+
+
+def test_rules_carry_no_incident_ledger() -> None:
+    offenders, reported = _enforced_and_reported(
+        claude=[p for p in _rule_files() if _dated_headings(p) > MAX_DATED_HEADINGS_PER_RULE],
+        kiro=[p for p in _always_on_steering() if _dated_headings(p) > MAX_DATED_HEADINGS_PER_RULE],
+    )
+    counts = {p.relative_to(ROOT).as_posix(): _dated_headings(p) for p in offenders}
+    assert not offenders, (
+        "rule files carrying dated incident headings (a ledger inside the always-loaded corpus): "
+        f"{counts}. Move the narratives to docs/archive/rule-incidents/<rule>.md "
+        "(python scripts/memory_compile.py extract-rule-incidents --apply) and keep the rule normative."
+        f"{_reported_note(reported)}"
+    )
+    if reported:
+        _report_frozen(f"steering files carrying dated incident headings: {_names(reported)}; {FROZEN_NOTE}")
+        assert True
+
+
+def test_llm_map_within_cap() -> None:
+    size = _size(FOR_LLM)
+    assert size <= FOR_LLM_CAP_BYTES, (
+        f"docs/forLLMConsumption.md is {size:,d} bytes, cap {FOR_LLM_CAP_BYTES:,d}. It is a MAP of the project "
+        "(purpose, architecture in brief, where things are, invariants, how to run/test/deploy, pointers); "
+        "detail belongs in a topic doc under docs/ that is read on demand."
+    )
+
+
+def test_lessons_within_cap_and_compiled_format() -> None:
+    size = _size(LESSONS)
+    assert size <= LESSONS_CAP_BYTES, (
+        f"docs/lessons-learned.md is {size:,d} bytes, cap {LESSONS_CAP_BYTES:,d}. The cap drives retention: "
+        f"`{RECONCILE}` rolls the oldest entries into docs/archive/ (it runs at write time through "
+        "`memory_compile.py lesson add` and from the pre-commit hook; a hand edit bypassed it)."
+    )
+    if not LESSONS.exists():
+        return
+    text = _strip_fences(_read(LESSONS))
+    entries: list[list[str]] = []
+    for line in text.split("\n"):
+        if re.match(r"^#{2,3}\s", line):
+            entries.append([line])
+        elif entries and line.strip():
+            entries[-1].append(line)
+    long_entries = [e[0] for e in entries if len(e) > LESSON_ENTRY_MAX_LINES]
+    assert not long_entries, (
+        f"lessons longer than {LESSON_ENTRY_MAX_LINES} lines (narratives belong in docs/archive/incidents/): "
+        f"{long_entries[:10]}"
+    )
+    unenforced = [e[0] for e in entries if not any(re.match(r"^\s*-?\s*\**Enforced-by\**\s*:", ln) for ln in e[1:])]
+    assert not unenforced, (
+        f"lessons without an Enforced-by line (test path, hook, rule line, or none): {unenforced[:10]}"
+    )
+
+
+def test_active_ledger_within_cap() -> None:
+    size = _size(LEDGER)
+    assert size <= LEDGER_CAP_BYTES, (
+        f"docs/findings-ledger.md is {size:,d} bytes, cap {LEDGER_CAP_BYTES:,d}. The cap drives retention: "
+        f"`{RECONCILE}` rolls the oldest rows into docs/archive/ (it runs at write time through "
+        "`memory_compile.py ledger add` and from the pre-commit hook; a hand edit bypassed it)."
+    )
+
+
+def test_ledger_rows_within_row_budget() -> None:
+    if not LEDGER.exists():
+        return
+    rows = _ledger_rows(_read(LEDGER))
+    oversize = [row for row in rows if len(("\n".join(row) + "\n").encode("utf-8")) > LEDGER_ROW_MAX_BYTES]
+    dates = ", ".join(_row_date(row) for row in oversize[:20])
+    assert not oversize, (
+        f"{len(oversize)} ledger row(s) over {LEDGER_ROW_MAX_BYTES} bytes (dates: {dates}). A row is a POINTER, "
+        "never the analysis — the analysis lives in the decision log or the issue. Rows are written only with "
+        f"`{LEDGER_ADD}`, which rejects an oversize row; move each row's detail out and rewrite it through that "
+        "command."
+    )
