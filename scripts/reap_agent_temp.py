@@ -1,0 +1,1205 @@
+#!/usr/bin/env python
+"""Reclaim temp-directory residue left by agent tooling. Read-only unless --apply.
+
+WHY THIS EXISTS
+    Several tools in this stack write into the OS temp directory and never clean up.
+    Measured, reported, and unbounded:
+
+      * every `cdk` invocation creates a `jsii-kernel-XXXXXX` directory that is never
+        removed (aws/jsii#700);
+      * the CDK CLI writes randomized `cdk.out<hash>` cloud assemblies into $TMPDIR, so
+        nothing is ever reused or overwritten — one report accumulated 170 GB in two days
+        (aws/aws-cdk-cli#802);
+      * nested `cdk.out/asset` trees in %TEMP% have broken Windows outright, and were
+        removable only with `robocopy <empty> <target> /purge` because the paths exceeded
+        what rmdir and Explorer handle (aws/aws-cdk#11730).
+
+    There is also a CORRECTNESS reason, not just a disk one: an interrupted bundling
+    leaves `bundling-temp-<hash>` / an empty `asset.<hash>` behind, and CDK SKIPS
+    re-bundling when that directory already exists — so the residue of an aborted session
+    makes a LATER deploy fail (aws/aws-cdk#33201, #25711). Reaping is part of keeping the
+    next run correct.
+
+THE OWNERSHIP RULE, AND WHY IT IS SAFE
+    Concurrent agent sessions share one temp directory, so deleting another session's
+    in-flight scratch would corrupt its run. Two tiers, and neither needs cross-run
+    bookkeeping:
+
+    1. Anything under --scoped-temp is PROVABLY ours (that directory is this tree's own
+       TMPDIR/TEMP/TMP, set per worktree), so its CONTENTS are removed wholesale. The
+       directory itself stays, so a session that is still running keeps a valid TMPDIR.
+    2. In a shared temp root an entry is removed only when its NAME matches a known
+       residue pattern, the entry's own modification time is older than --quiet-minutes,
+       AND it can be renamed. These tools never touch a temp directory again once their
+       process exits, so an entry untouched for 30 minutes belongs to a process that is
+       gone. The rename is the second, stronger test: on Windows a directory cannot be
+       renamed while any process holds a file open inside it, so a sibling's running
+       `cdk synth` refuses the rename and is left alone whatever its timestamps say.
+       (POSIX permits that rename; there the quiet window is the only test.) Anything
+       unmatched is counted and never touched.
+
+    The script never deletes outside a temp root, never follows a symlink or junction out
+    of one, refuses a temp root that is a parent of the project directory, and refuses a
+    --scoped-temp that is the project, a parent of it, the shared OS temp root or a
+    filesystem root. The shared roots are found WITHOUT consulting TMPDIR: under a scoped
+    session `tempfile.gettempdir()` IS the scoped directory.
+
+WHY IT IS FAST, AND WHY IT STOPS ON TIME
+    The first version walked every candidate twice with a stat per file before deleting
+    anything, deleted sequentially, and printed only at the end. On a measured backlog of
+    5,273 residue directories (about ten million files) that was more than an hour of
+    walking before the first unlink; the harness killed it at its 30-minute cap and the
+    transcript showed nothing. Measured phases on one host (48 dirs x 1,000 files, NTFS):
+
+        top-level scan of the temp root                      0.01 s
+        walk with a stat per file (the old census, x2)      10.30 s
+        rename every candidate into quarantine               0.89 s
+        sequential rmtree                                    5.75 s
+        thread pool of 32, rmtree per directory              2.86 s
+        thread pool of 32, counting delete (20 dirs)         3.97 s
+        ONE robocopy /MIR /MT:128 over those 20 dirs        22.37 s
+        robocopy /MIR per directory (16 dirs)               27.69 s
+
+    A process per entry is the wrong shape (the process start dominates), and even one
+    robocopy over the whole queue is six times slower than the pool. robocopy is not used
+    at all: two projects measured `robocopy <empty> <tree> /MIR` deleting THROUGH a
+    junction, with `/XJ` or without, and the long-path prefix removed the reason it was
+    once needed (aws/aws-cdk#11730). A tree that will not go is reported with its first
+    error. Every path the reaper renames or deletes carries that prefix, so a name ending
+    in a space or a dot is addressed as itself and can never resolve to its twin (measured
+    on a project: without it, quarantining `e2e477- ` renamed `e2e477-`). Hence the design:
+      1. Only the TOP LEVEL of a root is listed and judged; its entries carry their stat
+         data, so judging 50,000 entries costs milliseconds.
+      2. A candidate is RENAMED into a quarantine directory on the same volume just before
+         its deletion starts, never further ahead than the pool's window. One syscall
+         (measured 5 ms on weeks-old residue) removes it from where tooling looks, and on
+         Windows the rename is the in-use test. The residue that poisons the NEXT deploy
+         (bundling-temp-*, asset.*) is queued first, then the cloud assemblies (the bytes),
+         then the kernels (the files).
+      3. The quarantine is deleted by a thread pool — `unlink` releases the GIL — counting
+         files and bytes as it goes, so there is no separate census in --apply mode. Only
+         bytes actually FREED count: a file that still has another hard link frees nothing at
+         its unlink, so it is counted once, at its last link, and reported apart.
+      4. A TIME BUDGET (default 28 minutes, just under the 30-minute cap of Claude Code's
+         background shell and similar harnesses) is checked before EVERY unlink, not merely
+         between entries: at the deadline each worker stops at its next file, the partly
+         emptied tree stays in quarantine, the summary prints and the run exits 3:
+         "incomplete, run again". One slow entry can never run past the budget by more
+         than one unlink per worker. Progress lines with LIVE counters (files, bytes,
+         files/s) are printed and flushed every few seconds, so a slow entry is
+         distinguishable from a hang and even a killed run leaves a trail.
+      5. Everything in a quarantine is provably ours, so the next run deletes it FIRST,
+         without any check. A killed or budget-stopped run loses nothing but time.
+
+SLOW HOSTS
+    An endpoint security agent's file-system filter can scan every OLD file on delete.
+    Measured on one Windows host (CrowdStrike Falcon and Tanium present; Defender off): the
+    first 30 unlinks of weeks-old residue ran at 151 files/s, then the host settled at 22 to
+    25 files/s whatever the thread count — 32 threads 23/s, 128 threads 15/s, one thread
+    22/s — with the CPU idle, while fresh files delete in about 1 ms. One jsii-kernel-*
+    directory of 4,000 files is then about three minutes, and a 28-minute run clears some
+    40,000 files. The previous version's one shutil.rmtree per entry had no clock inside
+    the entry and was killed at the harness cap on exactly such a host. Here the budget
+    holds regardless; the summary prints the rate, flags a slow host (below 20 files/s per
+    worker over at least 2,000 files and 10 s), and estimates how much longer the backlog
+    needs at that rate. More threads do not help against a serializing filter; an exclusion
+    for the temp directory in the agent's policy does.
+
+CONCURRENT RUNS
+    Each run quarantines into its own subdirectory, `<root>/.reap-quarantine/<token>/`,
+    and keeps an OWNER file there open for its lifetime. Two runs racing for one candidate:
+    the rename succeeds for one and raises FileNotFoundError for the other, which treats
+    the entry as taken. A quarantine whose owner is gone is ADOPTED by the next run: on
+    Windows the rename of the subdirectory decides (it fails while the owner holds OWNER
+    open); elsewhere the OWNER file's age against the budget its owner declared decides,
+    and an owner that exits with leftovers marks the file released so adoption is immediate.
+
+USAGE
+    python scripts/reap_agent_temp.py                      # report only (default)
+    python scripts/reap_agent_temp.py --apply              # delete what it reports
+    python scripts/reap_agent_temp.py --scoped-temp tmp/os-temp --apply
+    python scripts/reap_agent_temp.py --apply --budget-minutes 9   # fits a 10-minute call
+    python scripts/reap_agent_temp.py --json               # machine-readable summary
+
+EXIT CODES
+    0  complete; in-use and too-recent entries are reported, they are not failures
+    1  complete, but at least one entry could not be deleted (named in the output)
+    3  incomplete: the budget ran out; the rest is quarantined — run the same command again
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import socket
+import stat
+import sys
+import tempfile
+import threading
+import time
+import uuid
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import IO, Iterable, Iterator, Optional
+
+# Directory-name patterns that are unbounded agent-tool residue. Anchored, case-insensitive.
+# Deliberately NOT included: package caches (npm _cacache, pip, uv). Those are bounded,
+# self-managing, and deleting them costs rebuild time without fixing a leak.
+RESIDUE_PATTERNS: tuple[str, ...] = (
+    r"jsii-kernel-.+",  # aws/jsii#700 — one per cdk invocation, never removed
+    r"jsii-runtime-.+",
+    r"cdk\.out.*",  # aws/aws-cdk-cli#802 — randomized cloud assemblies
+    r"cdk-outdir-.+",
+    r"bundling-temp-.+",  # aws/aws-cdk#33201 — poisons the NEXT deploy
+    r"asset\.[0-9a-f]{16,}",  # staged asset dirs orphaned by an aborted synth
+    r"cdk-docker-.+",
+    r"pytest-of-.+",  # pytest self-prunes to 3, but an aborted run can orphan
+)
+
+#: Deletion order in a shared root: the residue that poisons the NEXT deploy first, then the cloud
+#: assemblies (the bulk of the bytes), then the kernels (the bulk of the files).
+PRIORITY: dict[str, int] = {
+    r"bundling-temp-.+": 0,
+    r"asset\.[0-9a-f]{16,}": 0,
+    r"cdk\.out.*": 1,
+    r"cdk-outdir-.+": 1,
+    r"cdk-docker-.+": 1,
+}
+PRIORITY_DEFAULT = 2
+#: Below this many files per second per worker the host, not the reaper, is the bottleneck.
+SLOW_HOST_FILES_PER_SECOND_PER_WORKER = 20.0
+
+DEFAULT_QUIET_MINUTES = 30.0
+#: Just under the 30-minute cap of Claude Code's background shell (and similar harnesses): the
+#: deletion phase stops submitting work here, finishes what is in flight, prints its summary and
+#: exits 3. Lower it to fit a shorter call (`--budget-minutes 9` for a 10-minute foreground call);
+#: 0 means no budget.
+DEFAULT_BUDGET_MINUTES = 28.0
+#: unlink releases the GIL, so threads scale until the disk and the virus scanner saturate.
+DEFAULT_WORKERS = max(4, min(32, 4 * (os.cpu_count() or 2)))
+QUARANTINE_NAME = ".reap-quarantine"
+OWNER_FILE = "OWNER"
+ADOPTED_PREFIX = "_adopted-"
+#: A run cannot outlive its budget by more than its in-flight tail.
+ADOPT_GRACE_MINUTES = 2.0
+PROGRESS_EVERY_SECONDS = 5.0
+LONG_PATH_PREFIX = "\\\\?\\"
+REASON_SCOPED = "scoped"
+REASON_EARLIER = "quarantined earlier"
+EXIT_OK = 0
+EXIT_FAILED = 1
+EXIT_INCOMPLETE = 3
+
+
+class Clock:
+    """The run's budget. `expired()` is polled between units of work, never inside one."""
+
+    def __init__(self, budget_minutes: float) -> None:
+        self.start = time.monotonic()
+        self.budget_minutes = budget_minutes
+        self.deadline: Optional[float] = None if budget_minutes <= 0 else self.start + budget_minutes * 60.0
+
+    def elapsed(self) -> float:
+        return time.monotonic() - self.start
+
+    def expired(self) -> bool:
+        return self.deadline is not None and time.monotonic() >= self.deadline
+
+
+@dataclass
+class Candidate:
+    """One top-level entry judged reclaimable, through its states:
+    pending -> quarantined -> deleted | failed; or in_use / taken / remaining / skipped_recent."""
+
+    path: Path
+    reason: str
+    age_minutes: float
+    state: str = "pending"
+    files: int = 0
+    size: int = 0
+    error: str = ""
+    linked: int = 0  # files unlinked while another hard link kept their data: no bytes freed
+
+
+@dataclass
+class RootReport:
+    root: Path
+    kind: str  # scoped | shared | refused
+    note: str = ""
+    unmatched: int = 0
+
+
+@dataclass
+class Report:
+    applied: bool = False
+    roots: list[RootReport] = field(default_factory=list)
+    entries: list[Candidate] = field(default_factory=list)
+    skipped_recent: list[Candidate] = field(default_factory=list)
+    adopted: int = 0
+    census_complete: bool = True
+    elapsed: float = 0.0
+
+    def in_state(self, *states: str) -> list[Candidate]:
+        return [entry for entry in self.entries if entry.state in states]
+
+    @property
+    def files(self) -> int:
+        return sum(entry.files for entry in self.entries)
+
+    @property
+    def reclaimable(self) -> int:
+        return sum(entry.size for entry in self.entries)
+
+    @property
+    def reclaimed(self) -> int:
+        """Bytes an --apply run actually FREED: finished entries AND the partly emptied ones. A file is
+        counted only when its unlink removes its LAST link (`st_nlink == 1` just before the unlink), so a
+        hard-linked pair deleted in one run counts its bytes once, and a file whose other link lives
+        outside the quarantine counts nothing — it is reported in `linked` instead."""
+        return self.reclaimable if self.applied else 0
+
+    @property
+    def linked(self) -> int:
+        return sum(entry.linked for entry in self.entries)
+
+    @property
+    def remaining(self) -> list[Candidate]:
+        """Entries an --apply run did not finish: partly emptied, quarantined but not started, or
+        never reached."""
+        return self.in_state("remaining")
+
+    @property
+    def partial(self) -> list[Candidate]:
+        return [entry for entry in self.remaining if entry.files]
+
+    @property
+    def rate(self) -> float:
+        return self.files / self.elapsed if self.elapsed > 0 else 0.0
+
+    def estimated_remaining_seconds(self) -> Optional[float]:
+        """How long the rest would take at this run's rate, from this run's finished entries. None
+        when nothing finished or nothing was removed, because then there is no basis for a figure."""
+        finished = self.in_state("deleted")
+        if not finished or self.rate <= 0 or not self.remaining:
+            return None
+        per_entry = sum(e.files for e in finished) / len(finished)
+        left = per_entry * len(self.remaining) - sum(e.files for e in self.partial)
+        return max(left, 0.0) / self.rate
+
+
+def human(n: int) -> str:
+    """Bytes as a short human string. Sizes are the whole point of the report."""
+    step = 1024.0
+    val = float(n)
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if val < step or unit == "TB":
+            return f"{val:.1f} {unit}" if unit != "B" else f"{int(val)} B"
+        val /= step
+    return f"{val:.1f} TB"
+
+
+def clock_text(seconds: float) -> str:
+    minutes, secs = divmod(int(seconds), 60)
+    return f"{minutes:02d}:{secs:02d}"
+
+
+def matches_residue(name: str) -> str:
+    for pat in RESIDUE_PATTERNS:
+        if re.fullmatch(pat, name, flags=re.IGNORECASE):
+            return pat
+    return ""
+
+
+def long_path(path: str) -> str:
+    r"""The \\?\ form on Windows: it lifts the 260-character MAX_PATH limit that defeats
+    ordinary deletion of nested CDK asset trees, AND it switches off Win32 name normalisation,
+    which strips a trailing space or dot — without it `e2e477- ` and `e2e477-` are the same
+    file to every call. An absolute path is prefixed as it is (abspath would normalise it);
+    only a relative one is made absolute first. A no-op elsewhere."""
+    if os.name != "nt" or path.startswith(LONG_PATH_PREFIX):
+        return path
+    if not os.path.isabs(path):
+        path = os.path.abspath(path)
+    return LONG_PATH_PREFIX + path.replace("/", "\\")
+
+
+def is_reparse(st: os.stat_result) -> bool:
+    """A symlink on any OS, or a Windows reparse point (junction, mount point). Never descended;
+    removed as a single entry, so nothing outside the temp root is ever touched."""
+    if stat.S_ISLNK(st.st_mode):
+        return True
+    attributes = getattr(st, "st_file_attributes", 0)
+    return bool(attributes & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0))
+
+
+def _link_count(path: str, st: os.stat_result) -> int:
+    """The entry's hard-link count just before its unlink. POSIX `scandir` stats it at the call; on Windows
+    `DirEntry.stat()` leaves `st_nlink` at 0, so a non-empty file there is asked once more (`lstat`). An
+    unreadable count is taken as 1: the figure then errs toward the old, per-link one, never below zero."""
+    count = st.st_nlink
+    if count == 0 and st.st_size:
+        try:
+            count = os.lstat(path).st_nlink
+        except OSError:
+            count = 1
+    return max(1, count)
+
+
+def _remove_entry(path: str, st: os.stat_result) -> str:
+    """Remove one non-directory entry: a file, a symlink, a junction. A read-only attribute is
+    cleared and the removal retried once; a directory-shaped link falls back to rmdir."""
+    use_rmdir = stat.S_ISDIR(st.st_mode)
+    for attempt in (0, 1):
+        try:
+            if use_rmdir:
+                os.rmdir(path)
+            else:
+                os.unlink(path)
+            return ""
+        except FileNotFoundError:
+            return ""
+        except OSError as exc:
+            if attempt:
+                return f"{type(exc).__name__}: {exc}"
+            try:
+                os.chmod(path, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC)
+            except OSError:
+                pass
+            if is_reparse(st):
+                use_rmdir = not use_rmdir
+    return "not removed"
+
+
+def _remove_dir(path: str) -> str:
+    for attempt in (0, 1):
+        try:
+            os.rmdir(path)
+            return ""
+        except FileNotFoundError:
+            return ""
+        except OSError as exc:
+            if attempt:
+                return f"{type(exc).__name__}: {exc}"
+            try:
+                os.chmod(path, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC)
+            except OSError:
+                pass
+    return "not removed"
+
+
+def _delete_listing(
+    current: str, stack: list[tuple[str, bool]], clock: Clock, progress: Optional[Progress]
+) -> tuple[int, int, list[str], bool, int]:
+    """Remove the non-directory entries of one directory and push its subdirectories onto the stack.
+    The budget is checked before EVERY unlink. Returns (files, freed bytes, errors, stopped, linked)."""
+    files = 0
+    size = 0
+    linked = 0
+    errors: list[str] = []
+    try:
+        with os.scandir(current) as it:
+            for entry in it:
+                if clock.expired():
+                    return files, size, errors, True, linked
+                try:
+                    st = entry.stat(follow_symlinks=False)
+                    if stat.S_ISDIR(st.st_mode) and not is_reparse(st):
+                        stack.append((entry.path, False))
+                        continue
+                    links = _link_count(entry.path, st)
+                    error = _remove_entry(entry.path, st)
+                    if error:
+                        errors.append(f"{entry.path}: {error}")
+                    else:
+                        freed = st.st_size if links == 1 else 0
+                        files += 1
+                        size += freed
+                        linked += 0 if links == 1 else 1
+                        if progress is not None:
+                            progress.tick(freed)
+                except OSError as exc:
+                    errors.append(f"{entry.path}: {type(exc).__name__}: {exc}")
+    except FileNotFoundError:
+        pass
+    except OSError as exc:
+        errors.append(f"{current}: {type(exc).__name__}: {exc}")
+    return files, size, errors, False, linked
+
+
+def _outcome(files: int, size: int, errors: list[str], linked: int) -> tuple[int, int, str, bool, int]:
+    """The entry's result: the first error names the failure and how many there were. No robocopy
+    fallback: `/MIR` was measured deleting through a junction, exactly in the tree a walk could not empty."""
+    if not errors:
+        return files, size, "", False, linked
+    more = f" (+{len(errors) - 1} more)" if len(errors) > 1 else ""
+    return files, size, errors[0] + more, False, linked
+
+
+def delete_tree(path: Path, clock: Clock, progress: Optional[Progress] = None) -> tuple[int, int, str, bool, int]:
+    """Delete one quarantined entry, counting files and bytes as it goes, WITHIN the budget.
+
+    Iterative post-order over scandir entries, whose stat data comes with the listing. A symlink
+    or junction is removed as one entry and never followed. The budget is checked before every
+    unlink: at the deadline the walk stops and the partly emptied tree stays in quarantine for the
+    next run, so one slow entry can never run past the budget by more than one unlink.
+    Returns (files, freed bytes, error, stopped, linked): the error names the first failure and how many there
+    were; `linked` counts the files whose data another hard link kept, so they freed no bytes."""
+    raw = long_path(str(path))
+    try:
+        top = os.lstat(raw)
+    except FileNotFoundError:
+        return 0, 0, "", False, 0
+    except OSError as exc:
+        return 0, 0, f"{type(exc).__name__}: {exc}", False, 0
+    if not stat.S_ISDIR(top.st_mode) or is_reparse(top):
+        links = _link_count(raw, top)
+        error = _remove_entry(raw, top)
+        if error:
+            return 0, 0, error, False, 0
+        freed = top.st_size if links == 1 else 0
+        if progress is not None:
+            progress.tick(freed)
+        return 1, freed, "", False, 0 if links == 1 else 1
+
+    files = 0
+    size = 0
+    linked = 0
+    errors: list[str] = []
+    stack: list[tuple[str, bool]] = [(raw, False)]
+    while stack:
+        current, listed = stack.pop()
+        if listed:
+            error = _remove_dir(current)
+            if error:
+                errors.append(f"{current}: {error}")
+            continue
+        stack.append((current, True))
+        more_files, more_size, more_errors, stopped, more_linked = _delete_listing(current, stack, clock, progress)
+        files += more_files
+        size += more_size
+        linked += more_linked
+        errors += more_errors
+        if stopped:
+            return files, size, "", True, linked
+    return _outcome(files, size, errors, linked)
+
+
+def census(path: Path, clock: Clock) -> tuple[int, int, bool]:
+    """Files and bytes under one entry, from scandir's own stat data (report mode only; --apply
+    counts while deleting). Stops at the budget: the third value says whether it finished. Bytes are
+    counted per link here, so for hard-linked residue the report's figure is an upper bound; --apply
+    reports what it actually freed."""
+    files = 0
+    size = 0
+    stack = [long_path(str(path))]
+    while stack:
+        if clock.expired():
+            return files, size, False
+        current = stack.pop()
+        try:
+            st = os.lstat(current)
+        except OSError:
+            continue
+        if not stat.S_ISDIR(st.st_mode) or is_reparse(st):
+            files += 1
+            size += st.st_size
+            continue
+        try:
+            with os.scandir(current) as it:
+                for entry in it:
+                    try:
+                        st = entry.stat(follow_symlinks=False)
+                    except OSError:
+                        continue
+                    if stat.S_ISDIR(st.st_mode) and not is_reparse(st):
+                        stack.append(entry.path)
+                    else:
+                        files += 1
+                        size += st.st_size
+        except OSError:
+            continue
+    return files, size, True
+
+
+def _windows_local_app_data() -> Optional[Path]:
+    """The user's Local AppData folder from the shell's known-folder API (FOLDERID_LocalAppData), which
+    honours a redirected profile — with no environment variable read. None off Windows or on failure."""
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        class _Guid(ctypes.Structure):
+            _fields_ = [
+                ("data1", wintypes.DWORD),
+                ("data2", wintypes.WORD),
+                ("data3", wintypes.WORD),
+                ("data4", ctypes.c_ubyte * 8),
+            ]
+
+        folder = _Guid(0xF1B32785, 0x6FBA, 0x4FCF, (ctypes.c_ubyte * 8)(0x9D, 0x55, 0x7B, 0x8E, 0x7F, 0x15, 0x70, 0x91))
+        pointer = ctypes.c_wchar_p()
+        shell32 = ctypes.windll.shell32  # type: ignore[attr-defined]
+        if shell32.SHGetKnownFolderPath(ctypes.byref(folder), 0, None, ctypes.byref(pointer)) != 0:
+            return None
+        try:
+            return Path(pointer.value) if pointer.value else None
+        finally:
+            ctypes.windll.ole32.CoTaskMemFree(pointer)  # type: ignore[attr-defined]
+    except (AttributeError, OSError, ValueError):
+        return None
+
+
+def os_default_temp_roots() -> list[Path]:
+    """The shared temp roots of this OS, independent of TMPDIR/TEMP/TMP."""
+    roots: list[Path] = []
+    if os.name == "nt":
+        local = _windows_local_app_data()
+        if local is not None:
+            roots.append(local / "Temp")
+        try:
+            roots.append(Path.home() / "AppData" / "Local" / "Temp")  # the default profile layout
+        except RuntimeError:
+            pass
+    else:
+        roots += [Path("/tmp"), Path("/var/tmp")]  # nosec B108  # these ARE the temp roots under inspection
+    return _resolved_dirs(roots)
+
+
+def shared_temp_roots(extra: Iterable[Path], defaults: bool = True) -> list[Path]:
+    """Every distinct temp root to inspect: the process's own temp dir, the OS defaults (found
+    without TMPDIR — under a scoped session gettempdir() IS the scoped directory), and --temp-root."""
+    roots: list[Path] = []
+    if defaults:
+        roots.append(Path(tempfile.gettempdir()))
+        roots += os_default_temp_roots()
+    roots += list(extra)
+    return _resolved_dirs(roots)
+
+
+def _resolved_dirs(paths: Iterable[Path]) -> list[Path]:
+    seen: dict[Path, None] = {}
+    for cand in paths:
+        try:
+            resolved = cand.resolve()
+        except OSError:
+            continue
+        if resolved.is_dir():
+            seen.setdefault(resolved, None)
+    return list(seen)
+
+
+def scoped_problem(scoped: Path, project: Path) -> str:
+    """Why a --scoped-temp must be refused, or "" when it is acceptable."""
+    if scoped == project or scoped in project.parents:
+        return f"--scoped-temp {scoped} is the project directory or a parent of it; its contents are not temp"
+    if scoped.parent == scoped:
+        return f"--scoped-temp {scoped} is a filesystem root"
+    if scoped in os_default_temp_roots():
+        return (
+            f"--scoped-temp {scoped} is the shared OS temp root; a shared root is reaped by pattern, "
+            "never wholesale (pass it as --temp-root)"
+        )
+    return ""
+
+
+def scan_root(root: Path, kind: str, now: float, quiet_minutes: float) -> tuple[list[Candidate], list[Candidate], int]:
+    """Judge the TOP LEVEL of a root from its listing. Returns (candidates, skipped_recent, unmatched)."""
+    candidates: list[Candidate] = []
+    recent: list[Candidate] = []
+    unmatched = 0
+    try:
+        with os.scandir(str(root)) as it:
+            listing = sorted(it, key=lambda e: e.name)
+    except OSError:
+        return candidates, recent, unmatched
+    for entry in listing:
+        if entry.name == QUARANTINE_NAME:
+            continue
+        if kind == "scoped":
+            reason = REASON_SCOPED
+        else:
+            reason = matches_residue(entry.name)
+            if not reason:
+                unmatched += 1
+                continue
+        try:
+            st = entry.stat(follow_symlinks=False)
+        except OSError:
+            continue
+        candidate = Candidate(Path(entry.path), reason, (now - st.st_mtime) / 60.0)
+        if kind == "shared" and candidate.age_minutes < quiet_minutes:
+            candidate.state = "skipped_recent"
+            recent.append(candidate)
+        else:
+            candidates.append(candidate)
+    return candidates, recent, unmatched
+
+
+def _flatten_quarantine(directory: Path) -> Iterator[Path]:
+    """The deletable entries of a quarantine directory: its children, descending only through
+    adopted quarantines (which hold another run's entries one level down), never OWNER files."""
+    try:
+        children = sorted(directory.iterdir())
+    except OSError:
+        return
+    for child in children:
+        if child.name == OWNER_FILE:
+            continue
+        if child.name.startswith(ADOPTED_PREFIX) and child.is_dir() and not child.is_symlink():
+            yield from _flatten_quarantine(child)
+        else:
+            yield child
+
+
+def quarantined_earlier(root: Path) -> list[Candidate]:
+    """Entries earlier runs left quarantined under a root (report mode lists them as reclaimable)."""
+    base = root / QUARANTINE_NAME
+    if not base.is_dir():
+        return []
+    out: list[Candidate] = []
+    try:
+        subdirs = sorted(p for p in base.iterdir() if p.is_dir())
+    except OSError:
+        return out
+    for sub in subdirs:
+        for path in _flatten_quarantine(sub):
+            out.append(Candidate(path, matches_residue(path.name) or REASON_EARLIER, 0.0, state="quarantined"))
+    return out
+
+
+class Quarantine:
+    """One run's quarantine under a temp root: `<root>/.reap-quarantine/<token>/` with an OWNER
+    file held open for the run's lifetime."""
+
+    def __init__(self, root: Path, budget_minutes: float) -> None:
+        self.base = root / QUARANTINE_NAME
+        token = f"{time.strftime('%Y%m%dT%H%M%S')}-{os.getpid()}-{uuid.uuid4().hex[:8]}"
+        self.own = self.base / token
+        self.budget_minutes = budget_minutes
+        self._handle: Optional[IO[str]] = None
+
+    def claim(self) -> str:
+        try:
+            self.own.mkdir(parents=True, exist_ok=False)
+            self._handle = open(self.own / OWNER_FILE, "a", encoding="utf-8")  # noqa: SIM115 — held open on purpose
+            self._handle.write(
+                f"pid={os.getpid()}\nhost={socket.gethostname()}\n"
+                f"started={time.strftime('%Y-%m-%dT%H:%M:%S')}\nbudget_minutes={self.budget_minutes:g}\n"
+            )
+            self._handle.flush()
+        except OSError as exc:
+            return f"{type(exc).__name__}: {exc}"
+        return ""
+
+    def adopt(self, now: float) -> int:
+        """Take over the quarantines of runs that can no longer be alive. Returns how many."""
+        adopted = 0
+        try:
+            subdirs = [p for p in self.base.iterdir() if p.is_dir() and p != self.own]
+        except OSError:
+            return 0
+        for sub in subdirs:
+            if not self._orphaned(sub, now):
+                continue
+            try:
+                os.rename(long_path(str(sub)), long_path(str(self.own / (ADOPTED_PREFIX + sub.name))))
+            except OSError:
+                continue  # its owner is alive after all (Windows), or a sibling adopted it first
+            adopted += 1
+        return adopted
+
+    def _orphaned(self, sub: Path, now: float) -> bool:
+        owner = sub / OWNER_FILE
+        text = ""
+        try:
+            text = owner.read_text(encoding="utf-8")
+            stamp = owner.stat().st_mtime
+        except OSError:
+            try:
+                stamp = sub.stat().st_mtime
+            except OSError:
+                return False
+        if "released=1" in text:
+            return True
+        if os.name == "nt":
+            return True  # the rename decides: it fails while the owner holds OWNER open
+        match = re.search(r"budget_minutes=([0-9.]+)", text)
+        budget = float(match.group(1)) if match else self.budget_minutes
+        if budget <= 0:
+            budget = DEFAULT_BUDGET_MINUTES
+        return (now - stamp) / 60.0 > budget + ADOPT_GRACE_MINUTES
+
+    def take(self, candidate: Candidate) -> None:
+        """Rename one candidate into this quarantine; the outcome is the candidate's new state."""
+        target = self.own / candidate.path.name
+        try:
+            # Both sides in long-path form: a name ending in a space or a dot must be moved as ITSELF, never as
+            # the twin Win32 normalisation would resolve it to.
+            os.rename(long_path(str(candidate.path)), long_path(str(target)))
+        except FileNotFoundError:
+            candidate.state = "taken"
+        except OSError as exc:
+            candidate.state = "in_use"
+            candidate.error = f"{type(exc).__name__}: {exc}"
+        else:
+            candidate.state = "quarantined"
+            candidate.path = target
+
+    def adopted_tasks(self) -> list[Candidate]:
+        out: list[Candidate] = []
+        try:
+            adopted_dirs = sorted(p for p in self.own.iterdir() if p.name.startswith(ADOPTED_PREFIX) and p.is_dir())
+        except OSError:
+            return out
+        for directory in adopted_dirs:
+            for path in _flatten_quarantine(directory):
+                out.append(Candidate(path, matches_residue(path.name) or REASON_EARLIER, 0.0, state="quarantined"))
+        return out
+
+    def finish(self, leftovers: bool) -> None:
+        """Release the quarantine. With leftovers it stays, marked released for immediate adoption;
+        otherwise OWNER files and the empty directories go, leaving the root as it was found."""
+        if self._handle is not None:
+            if leftovers:
+                try:
+                    self._handle.write("released=1\n")
+                except OSError:
+                    pass
+            self._handle.close()
+            self._handle = None
+        if leftovers:
+            return
+        for current, dirs, files in os.walk(str(self.own), topdown=False):
+            for name in files:
+                if name == OWNER_FILE:
+                    _remove_entry(os.path.join(current, name), os.lstat(os.path.join(current, name)))
+            _remove_dir(current)
+        _remove_dir(str(self.base))
+
+
+class Progress:
+    """Flushed progress lines with LIVE counters: every worker thread ticks per unlink, so a slow
+    host shows as a low files/s rate instead of a silent run, and a killed run leaves a trail."""
+
+    def __init__(self, total: int, clock: Clock, stream: IO[str]) -> None:
+        self.total = total
+        self.clock = clock
+        self.stream = stream
+        self.finished = 0
+        self.partial = 0
+        self.failed = 0
+        self.files = 0
+        self.size = 0
+        self.last = time.monotonic()
+        self._lock = threading.Lock()
+
+    def tick(self, size: int) -> None:
+        with self._lock:
+            self.files += 1
+            self.size += size
+
+    def drop(self) -> None:
+        """An entry that will never finish here (in use, or taken by a sibling) leaves the total."""
+        with self._lock:
+            self.total -= 1
+
+    def record(self, candidate: Candidate) -> None:
+        with self._lock:
+            if candidate.state == "deleted":
+                self.finished += 1
+            elif candidate.state == "failed":
+                self.failed += 1
+            else:
+                self.partial += 1
+
+    def rate(self) -> float:
+        elapsed = self.clock.elapsed()
+        return self.files / elapsed if elapsed > 0 else 0.0
+
+    def maybe_print(self, force: bool = False) -> None:
+        now = time.monotonic()
+        if not force and now - self.last < PROGRESS_EVERY_SECONDS:
+            return
+        self.last = now
+        with self._lock:
+            line = (
+                f"[{clock_text(self.clock.elapsed())}] {self.finished:,}/{self.total:,} entries"
+                f" | {self.files:,} files | {human(self.size)} | {self.rate():,.0f} files/s"
+            )
+            if self.failed:
+                line += f" | {self.failed} failed"
+        print(line, file=self.stream, flush=True)
+
+
+def _delete_candidate(candidate: Candidate, clock: Clock, progress: Progress) -> Candidate:
+    files, size, error, stopped, linked = delete_tree(candidate.path, clock, progress)
+    candidate.files = files
+    candidate.size = size
+    candidate.linked = linked
+    candidate.error = error
+    if error:
+        candidate.state = "failed"
+    elif stopped:
+        candidate.state = "remaining"  # partly emptied; the next run finishes it
+    else:
+        candidate.state = "deleted"
+    return candidate
+
+
+def _priority(candidate: Candidate) -> tuple[int, str]:
+    """Correctness residue first (it poisons the NEXT deploy), then cloud assemblies, then kernels."""
+    return PRIORITY.get(candidate.reason, PRIORITY_DEFAULT), candidate.path.name.lower()
+
+
+def drain(queue: list[Candidate], quarantine: Quarantine, workers: int, clock: Clock, progress: Progress) -> None:
+    """Delete the queue with a thread pool until done or the budget runs out. A candidate still in
+    place is quarantined just before it is submitted, so the renames never run ahead of the deleting
+    by more than the pool's window. Work in flight at the deadline stops at its next unlink."""
+    pending: set[Future[Candidate]] = set()
+    index = 0
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        while True:
+            while index < len(queue) and len(pending) < 2 * workers and not clock.expired():
+                candidate = queue[index]
+                index += 1
+                if candidate.state == "pending":
+                    quarantine.take(candidate)
+                if candidate.state == "quarantined":
+                    pending.add(pool.submit(_delete_candidate, candidate, clock, progress))
+                else:
+                    progress.drop()
+            if not pending:
+                break
+            done, pending = wait(pending, timeout=1.0, return_when=FIRST_COMPLETED)
+            for future in done:
+                progress.record(future.result())
+            progress.maybe_print()
+    for candidate in queue[index:]:
+        candidate.state = "remaining"  # never reached: the budget ran out first
+
+
+def plan_roots(scoped: Optional[Path], shared: Iterable[Path], project: Path, report: Report) -> list[tuple[Path, str]]:
+    plan: list[tuple[Path, str]] = []
+    if scoped is not None:
+        if scoped.is_dir():
+            plan.append((scoped, "scoped"))
+        else:
+            report.roots.append(RootReport(scoped, "refused", "scoped temp does not exist (unscoped temp)"))
+    for root in shared:
+        if scoped is not None and (root == scoped or scoped in root.parents):
+            continue
+        if root == project or root in project.parents:
+            # Refuse a temp root that contains the project — a mistyped TMPDIR must never
+            # turn this into a source-tree deleter.
+            report.roots.append(RootReport(root, "refused", "contains the project directory"))
+            continue
+        plan.append((root, "shared"))
+    return plan
+
+
+def reap_root(root: Path, kind: str, args: argparse.Namespace, clock: Clock, report: Report, stream: IO[str]) -> None:
+    now = time.time()
+    candidates, recent, unmatched = scan_root(root, kind, now, args.quiet_minutes)
+    report.roots.append(RootReport(root, kind, unmatched=unmatched))
+    report.skipped_recent += recent
+    if args.apply:
+        _apply_root(root, kind, candidates, args, clock, report, stream, now)
+    else:
+        _report_root(root, candidates, clock, report)
+
+
+def _report_root(root: Path, candidates: list[Candidate], clock: Clock, report: Report) -> None:
+    """Report mode: the candidates plus whatever earlier runs left quarantined, sized within the budget."""
+    for candidate in candidates + quarantined_earlier(root):
+        report.entries.append(candidate)
+        if report.census_complete:
+            candidate.files, candidate.size, report.census_complete = census(candidate.path, clock)
+
+
+def _apply_root(
+    root: Path,
+    kind: str,
+    candidates: list[Candidate],
+    args: argparse.Namespace,
+    clock: Clock,
+    report: Report,
+    stream: IO[str],
+    now: float,
+) -> None:
+    """Apply mode: adopt orphaned quarantines, quarantine the candidates, delete under the budget."""
+    quarantine = Quarantine(root, args.budget_minutes)
+    error = quarantine.claim()
+    if error:
+        for candidate in candidates:
+            candidate.state = "failed"
+            candidate.error = f"quarantine unavailable: {error}"
+        report.entries += candidates
+        return
+    report.adopted += quarantine.adopt(now)
+    adopted = quarantine.adopted_tasks()  # partly deleted already: finish them first
+    queue = adopted + sorted(candidates, key=_priority)
+    report.entries += queue
+
+    if queue:
+        print(
+            f"{kind} {root}: {len(queue):,} entries to delete"
+            f" ({len(adopted):,} adopted from earlier runs) | {args.workers} workers",
+            file=stream,
+            flush=True,
+        )
+    progress = Progress(len(queue), clock, stream)
+    drain(queue, quarantine, args.workers, clock, progress)
+    if queue:
+        progress.maybe_print(force=True)
+    leftovers = any(c.state == "remaining" and QUARANTINE_NAME in c.path.parts for c in queue)
+    quarantine.finish(leftovers=leftovers)
+
+
+def run(
+    args: argparse.Namespace,
+    scoped: Optional[Path],
+    shared: list[Path],
+    project: Path,
+    clock: Clock,
+    stream: IO[str],
+) -> tuple[Report, int]:
+    report = Report(applied=args.apply)
+    for root, kind in plan_roots(scoped, shared, project, report):
+        reap_root(root, kind, args, clock, report, stream)
+    report.elapsed = clock.elapsed()
+    if not args.apply:
+        return report, EXIT_OK
+    if report.remaining:
+        return report, EXIT_INCOMPLETE
+    if report.in_state("failed"):
+        return report, EXIT_FAILED
+    return report, EXIT_OK
+
+
+def _groups(entries: Iterable[Candidate]) -> list[tuple[str, int, int]]:
+    groups: dict[str, tuple[int, int]] = {}
+    for entry in entries:
+        key = "session-scoped temp" if entry.reason == REASON_SCOPED else entry.reason
+        count, size = groups.get(key, (0, 0))
+        groups[key] = (count + 1, size + entry.size)
+    return [(key, count, size) for key, (count, size) in sorted(groups.items(), key=lambda kv: -kv[1][1])]
+
+
+def _duration(seconds: float) -> str:
+    if seconds < 60:
+        return "under a minute"
+    if seconds < 3600:
+        return f"{seconds / 60:.0f} min"
+    if seconds < 86400:
+        return f"{seconds / 3600:.1f} h"
+    return f"{seconds / 86400:.1f} days"
+
+
+def _slow_host(report: Report, workers: int) -> bool:
+    """Enough work to judge a rate, and a rate that says the host serializes deletes."""
+    return (
+        report.files >= 2000 and report.elapsed >= 10 and report.rate < SLOW_HOST_FILES_PER_SECOND_PER_WORKER * workers
+    )
+
+
+def _emit_roots(report: Report) -> None:
+    for root in report.roots:
+        if root.kind == "refused":
+            print(f"refused {root.root}: {root.note}")
+        elif root.kind == "shared":
+            print(f"shared  {root.root} ({root.unmatched:,} other entries untouched)")
+        else:
+            print(f"scoped  {root.root}")
+
+
+def _emit_apply_summary(report: Report, args: argparse.Namespace) -> None:
+    deleted = report.in_state("deleted")
+    partly = f" + {len(report.partial):,} partly" if report.partial else ""
+    print(
+        f"Cleaned: {human(report.reclaimed)} ({len(deleted):,} entries{partly}, {report.files:,} files)"
+        f" in {clock_text(report.elapsed)} | {report.rate:,.0f} files/s"
+    )
+    for key, count, size in _groups(deleted):
+        print(f"  {count}x {key}  ({human(size)})")
+    if report.linked:
+        print(
+            f"  {report.linked:,} hard-linked file(s) removed with another link still holding their data:"
+            " no bytes counted for them"
+        )
+    if _slow_host(report, args.workers):
+        print(
+            f"  SLOW HOST: {report.rate:,.0f} files/s across {args.workers} workers with the CPU idle means a"
+            " file-system filter (an endpoint security agent) scans each old file on delete; more threads do"
+            " not help. The budget still holds; the backlog needs more runs, or an exclusion for the temp"
+            " directory in the agent's policy."
+        )
+
+
+def _emit_report_summary(report: Report) -> None:
+    suffix = "" if report.census_complete else " - census stopped at the budget: a lower bound"
+    print(f"Reclaimable: {human(report.reclaimable)} ({len(report.entries):,} entries, {report.files:,} files){suffix}")
+    for key, count, size in _groups(e for e in report.entries if e.state != "quarantined"):
+        print(f"  {count}x {key}  ({human(size)})")
+    earlier = report.in_state("quarantined")
+    if earlier:
+        print(
+            f"  {len(earlier)} quarantined by an earlier run, awaiting deletion ({human(sum(e.size for e in earlier))})"
+        )
+
+
+def emit_text(report: Report, args: argparse.Namespace) -> None:
+    """One-glance output. Sizes first; detail only where it is actionable."""
+    _emit_roots(report)
+    if args.apply:
+        _emit_apply_summary(report, args)
+    else:
+        _emit_report_summary(report)
+
+    in_use = report.in_state("in_use")
+    if in_use:
+        print(f"  in use (rename refused - another process holds it): {len(in_use)}")
+    if report.skipped_recent:
+        print(
+            f"  skipped {len(report.skipped_recent)} touched <{args.quiet_minutes:g} min ago"
+            " - may be another session's live work"
+        )
+    for entry in report.in_state("failed"):
+        print(f"  FAILED {entry.path}: {entry.error}")
+    remaining = report.remaining
+    if remaining:
+        quarantined = sum(1 for e in remaining if QUARANTINE_NAME in e.path.parts)
+        print(
+            f"INCOMPLETE: budget of {args.budget_minutes:g} min reached - {len(remaining):,} entries remain"
+            f" ({quarantined:,} quarantined, {len(remaining) - quarantined:,} not yet reached);"
+            f" run the same command again (exit {EXIT_INCOMPLETE})"
+        )
+        estimate = report.estimated_remaining_seconds()
+        if estimate is not None:
+            print(f"  at this run's rate that is roughly {_duration(estimate)} more")
+    elif not args.apply and report.reclaimable:
+        print("  (report only - re-run with --apply to delete)")
+
+
+def emit_json(report: Report, args: argparse.Namespace, code: int) -> None:
+    def entry_json(entry: Candidate) -> dict:
+        return {
+            "path": str(entry.path),
+            "reason": entry.reason,
+            "age_minutes": round(entry.age_minutes, 1),
+            "state": entry.state,
+            "files": entry.files,
+            "bytes": entry.size,
+            "error": entry.error,
+        }
+
+    deleted = report.in_state("deleted")
+    estimate = report.estimated_remaining_seconds()
+    print(
+        json.dumps(
+            {
+                "applied": args.apply,
+                "complete": not report.remaining and report.census_complete,
+                "exit_code": code,
+                "elapsed_seconds": round(report.elapsed, 1),
+                "budget_minutes": args.budget_minutes,
+                "workers": args.workers,
+                "files_per_second": round(report.rate, 1),
+                "estimated_remaining_seconds": None if estimate is None else round(estimate),
+                "slow_host": _slow_host(report, args.workers),
+                "partial_entries": len(report.partial),
+                "roots": [
+                    {"path": str(r.root), "kind": r.kind, "note": r.note, "unmatched": r.unmatched}
+                    for r in report.roots
+                ],
+                "reclaimable_bytes": report.reclaimable,
+                "reclaimed_bytes": report.reclaimed,
+                "deleted_entries": len(deleted),
+                "deleted_files": report.files,
+                "hard_linked_files": report.linked,
+                "remaining_entries": len(report.remaining),
+                "in_use": len(report.in_state("in_use")),
+                "taken_by_sibling": len(report.in_state("taken")),
+                "adopted": report.adopted,
+                "failed": [{"path": str(e.path), "error": e.error} for e in report.in_state("failed")],
+                "entries": [entry_json(e) for e in report.entries],
+                "skipped_recent": [entry_json(e) for e in report.skipped_recent],
+            },
+            indent=2,
+        )
+    )
+
+
+def _utf8_streams() -> None:
+    """UTF-8 out, whatever the pipe's locale says: a harness reads the output as UTF-8, and a path
+    may hold any character. The script's own words are ASCII."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            try:
+                reconfigure(encoding="utf-8", errors="replace")
+            except (ValueError, OSError):
+                pass
+
+
+def main(argv: Optional[list[str]] = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--apply", action="store_true", help="delete; default is report only")
+    parser.add_argument(
+        "--scoped-temp", type=Path, default=None, help="this tree's own TMPDIR; its CONTENTS are removed wholesale"
+    )
+    parser.add_argument(
+        "--temp-root", type=Path, action="append", default=[], help="an additional temp root to inspect (repeatable)"
+    )
+    parser.add_argument(
+        "--no-default-roots",
+        action="store_true",
+        help="inspect only --scoped-temp and --temp-root, not the OS temp roots",
+    )
+    parser.add_argument(
+        "--project-dir", type=Path, default=Path.cwd(), help="project root; a temp root containing it is refused"
+    )
+    parser.add_argument(
+        "--quiet-minutes",
+        type=float,
+        default=DEFAULT_QUIET_MINUTES,
+        help=f"in a shared root, skip entries touched more recently (default {DEFAULT_QUIET_MINUTES:g})",
+    )
+    parser.add_argument(
+        "--budget-minutes",
+        type=float,
+        default=DEFAULT_BUDGET_MINUTES,
+        help=f"stop starting work after this long, summarise and exit {EXIT_INCOMPLETE} "
+        f"(default {DEFAULT_BUDGET_MINUTES:g}; 0 = no budget)",
+    )
+    parser.add_argument(
+        "--workers", type=int, default=DEFAULT_WORKERS, help=f"deletion threads (default {DEFAULT_WORKERS})"
+    )
+    parser.add_argument("--json", action="store_true", help="machine-readable summary")
+    args = parser.parse_args(argv)
+    args.workers = max(1, args.workers)
+    _utf8_streams()
+
+    project = args.project_dir.resolve()
+    scoped = args.scoped_temp.resolve() if args.scoped_temp else None
+    if scoped is not None:
+        problem = scoped_problem(scoped, project)
+        if problem:
+            parser.error(problem)
+    shared = shared_temp_roots(args.temp_root, defaults=not args.no_default_roots)
+    clock = Clock(args.budget_minutes)
+    stream = sys.stderr if args.json else sys.stdout
+    report, code = run(args, scoped, shared, project, clock, stream)
+    if args.json:
+        emit_json(report, args, code)
+    else:
+        emit_text(report, args)
+    return code
+
+
+if __name__ == "__main__":
+    sys.exit(main())

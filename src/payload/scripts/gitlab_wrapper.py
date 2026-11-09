@@ -59,7 +59,7 @@ PLACEHOLDER_MARKER = "PASTE_"
 
 FIELD_HOSTNAME = "hostname"
 FIELD_PROJECT_ID = "project_id"
-FIELD_TOKEN = "token"
+FIELD_TOKEN = "token"  # nosec B105 — a config field name, not a secret
 FIELD_TITLE = "title"
 FIELD_DESCRIPTION = "description"
 FIELD_LABELS = "labels"
@@ -105,7 +105,7 @@ def _api_request(
     if body is not None:
         req.add_header("Content-Type", "application/json")
     try:
-        with urlopen(req) as resp:
+        with urlopen(req) as resp:  # nosec B310 — https URL with a fixed scheme
             data = resp.read().decode("utf-8")
             return json.loads(data) if data else {}
     except HTTPError as exc:

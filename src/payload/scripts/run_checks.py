@@ -57,7 +57,7 @@ import json
 import os
 import shlex
 import shutil
-import subprocess
+import subprocess  # nosec B404 — runs git and this interpreter with fixed argv lists, never a shell
 import sys
 import time
 from collections.abc import Callable
@@ -71,7 +71,8 @@ Argv = tuple[str, ...]
 
 def tracked_files() -> list[str]:
     """Every git-tracked file, for checks that need an explicit file list."""
-    out = subprocess.run(["git", "ls-files"], capture_output=True, text=True, check=False)
+    # git ls-files: a fixed argv, no shell.
+    out = subprocess.run(["git", "ls-files"], capture_output=True, text=True, check=False)  # nosec B603 B607
     return [line for line in out.stdout.splitlines() if line.strip()]
 
 
@@ -162,28 +163,43 @@ def hook_suite_argv() -> Argv:
     return (PY, "-c", f"print({HOOK_SUITE_ABSENT_MESSAGE!r})")
 
 
+# The paths the lint and security checks cover, kept to those the project HAS: a missing path (no `cdk/` in a
+# project without CDK) is an error to ruff (exit 2) and bandit, which failed the group for a reason that is not
+# a finding (measured on the framework's own repository).
+LINT_PATHS: tuple[str, ...] = ("src", "test", "scripts", "cdk")
+BANDIT_PATHS: tuple[str, ...] = ("src", "scripts")
+
+
+def existing(paths: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(path for path in paths if Path(path).exists())
+
+
+def ruff_check_argv() -> Argv:
+    return (PY, "-m", "ruff", "check", *existing(LINT_PATHS))
+
+
+def ruff_format_argv() -> Argv:
+    return (PY, "-m", "ruff", "format", "--check", *existing(LINT_PATHS))
+
+
+def bandit_argv() -> Argv:
+    """bandit with the project's `[tool.bandit]` config — the `-c pyproject.toml` the pre-commit bandit hook
+    passes too, so CI and the commit hook judge alike. Without it bandit ignored the configured skips and
+    excluded directories, and flagged every `assert` of a test directory under `src/`."""
+    config = ("-c", "pyproject.toml") if Path("pyproject.toml").is_file() else ()
+    return (PY, "-m", "bandit", *config, "-r", *existing(BANDIT_PATHS), "-x", "src/_version.py")
+
+
 # The check inventory. Each entry: (group, name, argv-or-argv-factory).
 # `tests` delegates to run_tests.py so the test invocation has ONE definition (bounded
 # local workers, no fail-fast) shared with the pre-push hook and the agent fleet.
 # `hook-suite` runs the vendored hooks' own suite (hook_suite_argv); CI must run it.
 # `e2e` is the post-merge end-to-end job; see e2e_argv and the module docstring.
 CHECKS: tuple[tuple[str, str, Argv | Callable[[], Argv]], ...] = (
-    (
-        "lint",
-        "ruff-check",
-        (PY, "-m", "ruff", "check", "src", "test", "scripts", "cdk"),
-    ),
-    (
-        "lint",
-        "ruff-format",
-        (PY, "-m", "ruff", "format", "--check", "src", "test", "scripts", "cdk"),
-    ),
+    ("lint", "ruff-check", ruff_check_argv),
+    ("lint", "ruff-format", ruff_format_argv),
     ("types", "mypy", (PY, "-m", "mypy", "src", "--ignore-missing-imports")),
-    (
-        "security",
-        "bandit",
-        (PY, "-m", "bandit", "-r", "src", "scripts", "-x", "src/_version.py"),
-    ),
+    ("security", "bandit", bandit_argv),
     ("security", "detect-secrets", detect_secrets_argv),
     (
         "tests",
@@ -243,7 +259,7 @@ CONSOLE_SCRIPTS: dict[str, str] = {
 
 
 def importable(module: str) -> bool:
-    probe = subprocess.run(
+    probe = subprocess.run(  # nosec B603 — this interpreter probing a module name
         [
             PY,
             "-c",
@@ -316,7 +332,7 @@ def run_check(group: str, name: str, spec: Argv | Callable[[], Argv]) -> Result:
     print(f"--- RUN  {group}/{name}: {shown}", flush=True)
     started = time.monotonic()
     try:
-        code = subprocess.call(list(argv))
+        code = subprocess.call(list(argv))  # nosec B603 — an argv from the fixed CHECKS inventory
     except OSError as exc:  # tool vanished mid-run, exec failed, ...
         print(f"--- ERROR {group}/{name}: {exc}", flush=True)
         code = 127

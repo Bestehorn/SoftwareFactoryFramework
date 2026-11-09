@@ -1,0 +1,58 @@
+# The authoritative pipeline (ci-owns-the-test-suite.md). It must NOT fail fast: one job per check group, no
+# `needs:` between them, `fail-fast: false`, ONE command per check job (scripts/run_checks.py continues past a
+# failing check and ends with `=== FAILED CHECKS (n) ===`), and a report job that always runs and decides.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # Superseded PR runs are cancelled; a run on main never is.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false            # one failing leg must not cancel the others
+      matrix:
+        group: [lint, types, security, tests]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: the toolchain integrity check reads the pinned framework commit
+          # (.claude/FRAMEWORK_COMMIT), and setuptools-scm reads the release tags.
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.10'}
+      - run: pip install -e ".[dev]"
+      - run: python scripts/run_checks.py --group ${{ matrix.group }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checks-${{ matrix.group }}
+          path: reports/
+
+  report:
+    runs-on: ubuntu-latest
+    needs: [verify]
+    if: always()                  # WITHOUT this, a failed verify leg skips the verdict
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.10'}
+      - uses: actions/download-artifact@v4
+        with: {path: reports/, merge-multiple: true}
+      - name: Consolidated verdict
+        run: |
+          python scripts/run_checks.py --summary-from reports | tee verdict.txt
+          status=${PIPESTATUS[0]}
+          cat verdict.txt >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"

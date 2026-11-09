@@ -3,3 +3,8 @@
 # the framework checks it: 120 columns, the py39 floor, isort, mccabe 10. src/hooks/ keeps its own ruff.toml
 # because that file is installed with the hooks; ruff uses the nearest configuration file.
 extend = "src/hooks/ruff.toml"
+# The installed toolchain copy (config/toolchain.json) is checked through its source under src/, so it is not
+# linted or reformatted in place.
+# scripts/github_wrapper.py is a recorded deviation (config/toolchain.json): the chess project's implementation,
+# adopted verbatim and linted in its own repository, until the product wrapper rewrite is released.
+extend-exclude = [".claude/", "scripts/github_wrapper.py"]

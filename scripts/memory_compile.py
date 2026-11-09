@@ -1,0 +1,1153 @@
+#!/usr/bin/env python
+"""Compile the project's agent memory: keep the findings ledger and the lessons inside their byte caps,
+report budgets, archive aged rows and lessons, move incident narratives out of the always-loaded rules.
+
+Installed from ``src/payload/scripts/memory_compile.py`` to ``scripts/memory_compile.py``. The mechanical
+half of ``/compile-memory``; the judgment half (promote a finding to an issue, turn a lesson into a test)
+stays with the agent running that command.
+
+Nothing is deleted. Archived material moves verbatim to ``docs/archive/`` and stays in git; what changes
+is what a session loads. Paths are resolved from this file's location, never from the cwd.
+
+THE CAP DRIVES RETENTION
+    Measured on one project: 47 ledger rows written in five days, median row 1,228 bytes, none under 240;
+    the lessons file 12 bytes under its cap. A six-week age rule can never fire at that churn, so the next
+    write broke the build while two always-loaded rules told agents to write exactly those rows. Hence:
+    the active files are size-bounded WINDOWS. ``reconcile`` drops exact duplicate ledger rows (the files
+    merge with git's ``union`` driver, so parallel branches never conflict over an appended row and a row
+    both branches carry can arrive twice), runs the age pass, then rolls the OLDEST
+    rows and entries (status ignored; undated ones count as oldest) into the dated archive until the file
+    fits its cap. It runs automatically at write time (``ledger add``, ``lesson add``) and from the
+    pre-commit hook ``memory-reconcile``; ``/compile-memory`` keeps only the judgment (promote, enforce).
+    A ledger row is a POINTER of at most LEDGER_ROW_MAX_BYTES — the analysis lives in the decision log or
+    the issue. Recurrence is checked with ``search``, which spans the archive, never by loading the files.
+
+USAGE
+    python scripts/memory_compile.py report                          # sizes vs caps; LISTS what /compile-memory decides
+    python scripts/memory_compile.py reconcile [--weeks 6] [--apply]  # age pass, then oldest-first to the caps
+    python scripts/memory_compile.py ledger add --subject S --finding F --evidence E --why W
+                                                [--status open] [--date YYYY-MM-DD]
+    python scripts/memory_compile.py lesson add --lesson L --enforced-by X --scope S [--date YYYY-MM-DD]
+    python scripts/memory_compile.py search <term> [<term> ...]      # ledger + lessons + docs/archive/
+    python scripts/memory_compile.py archive-ledger  [--weeks 6] [--until-under-cap] [--apply]
+    python scripts/memory_compile.py archive-lessons [--weeks 6] [--until-under-cap] [--apply]
+        # The plain age pass moves what is older than the window and still unresolved: ledger rows whose
+        # Status is not ``promoted …``/``enforced …``, lessons without an Enforced-by. Resolved rows stay
+        # in place so their resolution remains visible for the window.
+        # --until-under-cap: after the age pass, keep archiving oldest-first until the active file fits
+        # its cap, unresolved rows first. ``reconcile`` is the automatic form of this: oldest first, full stop.
+    python scripts/memory_compile.py extract-rule-incidents [--apply]
+
+Without ``--apply``, ``reconcile``, ``archive-*`` and ``extract-rule-incidents`` are dry runs that print what
+they would move. ``ledger add`` and ``lesson add`` always write, then reconcile their file with apply.
+
+LEDGER PARSING
+    The ledger is read line by line over the whole file. A row is a ``|`` line that is neither a table
+    header (the ``|`` line directly above a ``|---|`` separator) nor the separator itself. A non-blank line
+    that does not start with ``|`` or ``#`` and directly follows a row is that row's continuation and moves
+    with it. Archived rows are removed in place, so prose, headings and a second table keep their position.
+    ``ledger add`` appends after the last row of the last table (after its header when the table is empty)
+    and creates the file with ``# Findings Ledger`` and the table header when it is absent.
+
+ARCHIVE HYGIENE
+    CI-skip tokens in everything written to ``docs/archive/`` are defanged (``[skip ci]`` -> ``[skip-ci]``,
+    ``***NO_CI***`` -> ``**NO_CI**``): an archived line is quoted into commit messages, and a project's
+    CI-skip guard would then suppress the pipeline.
+
+FROZEN KIRO TREE
+    A project that keeps its ``.kiro/`` tree as-is records that decision in the marker file ``.kiro/FROZEN``
+    (one line: date and reason). ``report`` still prints the Kiro rows and the per-file flags of steering
+    files, but they never set the exit code.
+
+EXIT CODES
+    0 = ran. ``report`` exits 1 when an enforced cap is exceeded, so CI or a hook can consume it.
+    ``reconcile`` exits 1 when a file still exceeds its cap afterwards (a single row or entry larger than
+    the cap, or a preamble that is). ``ledger add`` / ``lesson add`` exit 2 and write nothing when the row
+    or entry fails validation (oversize, several lines, a ``|`` in a ledger cell, an unknown status), else
+    they return the reconcile's code. ``search`` exits 1 when nothing matched, like grep.
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import io
+import re
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable, Protocol, TypeVar
+
+# This script lives in scripts/; the project root is its parent, whatever the cwd is.
+ROOT = Path(__file__).resolve().parents[1]
+CLAUDE_MD = ROOT / "CLAUDE.md"
+RULES_DIR = ROOT / ".claude" / "rules"
+STEERING_DIR = ROOT / ".kiro" / "steering"
+KIRO_FROZEN = ROOT / ".kiro" / "FROZEN"
+FOR_LLM = ROOT / "docs" / "forLLMConsumption.md"
+LESSONS = ROOT / "docs" / "lessons-learned.md"
+LEDGER = ROOT / "docs" / "findings-ledger.md"
+ARCHIVE = ROOT / "docs" / "archive"
+
+# Keep these equal to the constants in test/test_instruction_corpus_budget.py.
+CORPUS_CAP_BYTES = 100_000
+RULE_FILE_CAP_BYTES = 12_000
+SCOPED_RULES_CAP_BYTES = 45_000
+FOR_LLM_CAP_BYTES = 40_000
+LESSONS_CAP_BYTES = 40_000
+LEDGER_CAP_BYTES = 60_000
+LEDGER_ROW_MAX_BYTES = 240  # a row is a pointer to the decision log or the issue, never the analysis
+LESSON_ENTRY_MAX_BYTES = 600  # heading + Date/Lesson/Enforced-by/Scope, compiled
+
+DEFAULT_WEEKS = 6
+LESSON_HEADING_CHARS = 60  # the lesson's first characters become its heading
+
+DATE_RE = re.compile(pattern=r"\b(\d{4}-\d{2}-\d{2})\b")
+DATED_HEADING_RE = re.compile(pattern=r"^(#{2,6})\s.*\b\d{4}-\d{2}-\d{2}")
+HEADING_RE = re.compile(pattern=r"^(#{1,6})\s")
+LESSON_HEADING_RE = re.compile(pattern=r"^#{2,3}\s")
+FENCE_RE = re.compile(pattern=r"^\s*(```|~~~)")
+TABLE_SEPARATOR_RE = re.compile(pattern=r"^\|\s*:?-+:?\s*\|")
+FRONTMATTER_PATHS_RE = re.compile(pattern=r"^paths\s*:", flags=re.MULTILINE)
+KIRO_INCLUSION_RE = re.compile(pattern=r"^inclusion\s*:\s*(\S+)\s*$", flags=re.MULTILINE)
+ENFORCED_RE = re.compile(pattern=r"^\s*-?\s*\**Enforced-by\**\s*:\s*(.+?)\s*$", flags=re.IGNORECASE)
+RESOLVED_STATUS_PREFIXES = ("promoted", "enforced")
+LEDGER_TITLE = "# Findings Ledger\n\n"
+LEDGER_HEADER = "| Date | Subject | Finding | Evidence | Why not filed | Status |\n|---|---|---|---|---|---|\n"
+LESSONS_TITLE = "# Lessons Learned\n\n"
+
+# An archived line is quoted into commit messages (the compile commit names what it moved; a later fix
+# cites the row), and a project's CI-skip guard then suppresses the pipeline. Defang the tokens GitHub,
+# GitLab and Azure Pipelines honour: the space becomes a hyphen, the triple stars a pair.
+CI_SKIP_BRACKET_RE = re.compile(pattern=r"\[(skip ci|ci skip|no ci|skip actions|actions skip)\]", flags=re.IGNORECASE)
+CI_SKIP_STARS = "***NO_CI***"
+CI_SKIP_STARS_DEFANGED = "**NO_CI**"
+
+
+def _utf8_streams() -> None:
+    """Emit UTF-8 whatever the console code page. A piped stdout on Windows (pre-commit, CI, a parent
+    process) otherwise uses the ANSI code page: an em dash arrives as a cp1252 byte in a UTF-8 consumer,
+    and a row quoting an arrow or a non-Latin name raises UnicodeEncodeError inside the hook."""
+    for stream in (sys.stdout, sys.stderr):
+        if isinstance(stream, io.TextIOWrapper):
+            stream.reconfigure(encoding="utf-8", errors="backslashreplace")
+
+
+def _read(path: Path) -> str:
+    return path.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n")
+
+
+def _bytes(text: str) -> int:
+    return len(text.encode("utf-8"))
+
+
+def _write(*, path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # `Path.write_text(newline=...)` only exists from Python 3.10; `open()` has had it since 3.0.
+    with path.open(mode="w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
+def _rel(path: Path) -> str:
+    return path.relative_to(ROOT).as_posix()
+
+
+def _defang_ci_tokens(text: str) -> tuple[str, int]:
+    """Neutralise CI-skip tokens; returns the text and how many tokens were changed."""
+    text, bracket_count = CI_SKIP_BRACKET_RE.subn(
+        repl=lambda m: "[" + m.group(1).replace(" ", "-") + "]",
+        string=text,
+    )
+    star_count = text.count(CI_SKIP_STARS)
+    return text.replace(CI_SKIP_STARS, CI_SKIP_STARS_DEFANGED), bracket_count + star_count
+
+
+def _append_archive(*, path: Path, header: str, body: str) -> None:
+    """Append ``body`` to an archive file under docs/archive/, creating it with ``header`` first."""
+    text, defanged = _defang_ci_tokens(text=header + body)
+    if defanged:
+        print(f"  defanged {defanged} CI-skip token(s) in {_rel(path)}")
+    header_len = len(header)
+    header, body = text[:header_len], text[header_len:]
+    existing = _read(path) if path.exists() else ""
+    if not existing:
+        existing = header
+    if not existing.endswith("\n"):
+        existing += "\n"
+    _write(path=path, text=existing + body)
+
+
+def _size(path: Path) -> int:
+    return _bytes(_read(path)) if path.exists() else 0
+
+
+def _frontmatter(text: str) -> str:
+    """The YAML block between the opening and closing ``---`` lines; '' when the file has none."""
+    if not text.startswith("---"):
+        return ""
+    rest = text[3:]
+    end = rest.find("\n---")
+    return rest[:end] if end != -1 else ""
+
+
+def _kiro_inclusion(path: Path) -> str:
+    """The steering file's effective ``inclusion``. Kiro documents that a file with no front matter, or
+    with front matter lacking the key, is ``always``."""
+    match = KIRO_INCLUSION_RE.search(_frontmatter(_read(path)))
+    return match.group(1) if match else "always"
+
+
+def _steering_files(*, inclusion: str) -> list[Path]:
+    if not STEERING_DIR.is_dir():
+        return []
+    return [p for p in sorted(STEERING_DIR.glob("*.md")) if _kiro_inclusion(p) == inclusion]
+
+
+def _claude_rules() -> list[Path]:
+    return sorted(RULES_DIR.glob("*.md")) if RULES_DIR.is_dir() else []
+
+
+def _rule_files() -> list[Path]:
+    """Every .claude rule plus the always-on Kiro steering: the files a session may load without asking."""
+    return _claude_rules() + _steering_files(inclusion="always")
+
+
+def _unscoped_rules() -> list[Path]:
+    return [p for p in _rule_files() if not FRONTMATTER_PATHS_RE.search(_frontmatter(_read(p)))]
+
+
+def _scoped_rules() -> list[Path]:
+    """Loaded only when a matching file is touched: ``paths:``-scoped rules and ``fileMatch`` steering."""
+    scoped = [p for p in _claude_rules() if FRONTMATTER_PATHS_RE.search(_frontmatter(_read(p)))]
+    return scoped + _steering_files(inclusion="fileMatch")
+
+
+def _kiro_frozen() -> bool:
+    return KIRO_FROZEN.exists()
+
+
+def _cutoff(weeks: int) -> dt.date:
+    return dt.date.today() - dt.timedelta(weeks=weeks)
+
+
+def _parse_date(text: str) -> dt.date | None:
+    match = DATE_RE.search(text)
+    if not match:
+        return None
+    try:
+        return dt.date.fromisoformat(match.group(1))
+    except ValueError:
+        return None
+
+
+def _month_key(date: dt.date | None) -> str:
+    """The archive file a dated item belongs to; undated items share one file."""
+    return date.strftime("%Y-%m") if date else "undated"
+
+
+# -------------------------------------------------------------------------------------- cap-driven picks
+
+
+class Dated(Protocol):
+    """What a ledger row and a lessons entry have in common for the oldest-first pass."""
+
+    @property
+    def date(self) -> dt.date | None: ...
+
+    def text(self) -> str: ...
+
+
+D = TypeVar("D", bound=Dated)
+
+
+def _oldest_until_under_cap(*, items: list[D], already: list[D], cap: int, render: Callable[[set[D]], str]) -> list[D]:
+    """Oldest-first picks beyond ``already`` until the file rendered without them fits ``cap``.
+
+    Status is ignored and undated items count as oldest: the cap drives retention. The newest item is never
+    moved by this pass: a file that still exceeds its cap with one row left has a row (or a preamble) larger
+    than the cap, which only a human can fix, and ``reconcile`` exits 1 instead of hiding it in the archive.
+    The running figure subtracts each pick's own bytes; before stopping, the real text is measured once, so
+    separators the renderer adds or collapses cannot leave the file a few bytes over."""
+    dropped = set(already)
+    size = _bytes(render(dropped))
+    picked: list[D] = []
+    candidates = sorted((i for i in items if i not in dropped), key=lambda i: i.date or dt.date.min)
+    for item in candidates[:-1]:
+        if size <= cap:
+            size = _bytes(render(dropped | set(picked)))
+            if size <= cap:
+                break
+        picked.append(item)
+        size -= _bytes(item.text())
+    return picked
+
+
+@dataclass(eq=False)
+class Reconciled:
+    path: Path
+    before: int
+    after: int
+    cap: int
+    moved: int
+    unit: str  # "rows" or "entries"
+    present: bool = True
+
+    @property
+    def fits(self) -> bool:
+        return self.after <= self.cap
+
+    def summary(self, *, apply: bool) -> str:
+        if not self.present:
+            return f"{_rel(self.path)}: absent"
+        verb = "moved" if apply else "to move"
+        flag = "" if self.fits else "  STILL OVER THE CAP"
+        return (
+            f"{_rel(self.path)}: before {self.before:,d} B, after {self.after:,d} B, cap {self.cap:,d} B, "
+            f"{self.unit} {verb}: {self.moved}{flag}"
+        )
+
+
+# ----------------------------------------------------------------------------------------------- ledger
+
+
+@dataclass(eq=False)
+class LedgerRow:
+    lines: list[str]  # the `|` line plus its continuation lines, verbatim
+    date: dt.date | None
+    status: str
+
+    @property
+    def resolved(self) -> bool:
+        return self.status.lower().startswith(RESOLVED_STATUS_PREFIXES)
+
+    @property
+    def subject(self) -> str:
+        cells = _cells(self.lines[0])
+        return cells[1] if len(cells) > 1 else ""
+
+    def text(self) -> str:
+        return "\n".join(self.lines) + "\n"
+
+
+def _cells(line: str) -> list[str]:
+    return [c.strip() for c in line.strip().strip("|").split("|")]
+
+
+def _parse_ledger(text: str) -> list[str | LedgerRow]:
+    """Every line of the file, in order: plain lines verbatim, table rows as LedgerRow (continuation lines
+    attached). A header row is the ``|`` line directly above a separator; separators are plain lines."""
+    lines = text.split("\n")
+    blocks: list[str | LedgerRow] = []
+    for index, line in enumerate(lines):
+        next_is_separator = index + 1 < len(lines) and bool(TABLE_SEPARATOR_RE.match(lines[index + 1]))
+        if line.startswith("|") and not next_is_separator and not TABLE_SEPARATOR_RE.match(line):
+            cells = _cells(line)
+            blocks.append(
+                LedgerRow(
+                    lines=[line],
+                    date=_parse_date(cells[0] if cells else ""),
+                    status=(cells[-1] if cells else ""),
+                )
+            )
+        elif blocks and isinstance(blocks[-1], LedgerRow) and line.strip() and not line.startswith(("|", "#")):
+            blocks[-1].lines.append(line)
+        else:
+            blocks.append(line)
+    return blocks
+
+
+def _ledger_rows(blocks: list[str | LedgerRow]) -> list[LedgerRow]:
+    return [b for b in blocks if isinstance(b, LedgerRow)]
+
+
+def _render_ledger(*, blocks: list[str | LedgerRow], drop: set[LedgerRow]) -> str:
+    """The file with the ``drop`` rows removed in place; everything else keeps its position."""
+    out: list[str] = []
+    for block in blocks:
+        if isinstance(block, LedgerRow):
+            if block not in drop:
+                out.extend(block.lines)
+        else:
+            out.append(block)
+    text = "\n".join(out)
+    return text if text.endswith("\n") else text + "\n"
+
+
+def _aged_rows(*, rows: list[LedgerRow], weeks: int) -> list[LedgerRow]:
+    cutoff = _cutoff(weeks)
+    return [r for r in rows if r.date is not None and r.date < cutoff and not r.resolved]
+
+
+def _rows_until_under_cap(
+    *, rows: list[LedgerRow], already: list[LedgerRow], file_bytes: int
+) -> tuple[list[LedgerRow], str]:
+    """Oldest-first picks beyond ``already`` so the active ledger fits LEDGER_CAP_BYTES, with the rule it used.
+
+    Unresolved rows go first. When even all of them would leave the file over the cap, the oldest rows move
+    regardless of status — a ledger full of promoted/enforced rows could otherwise never fit."""
+    taken = set(already)
+    size = file_bytes - sum(_bytes(r.text()) for r in already)
+    remaining = sorted(
+        (r for r in rows if r.date is not None and r not in taken),
+        key=lambda r: r.date or dt.date.min,
+    )
+    unresolved = [r for r in remaining if not r.resolved]
+    if size - sum(_bytes(r.text()) for r in unresolved) <= LEDGER_CAP_BYTES:
+        pool, rule = unresolved, "unresolved rows only"
+    else:
+        pool, rule = remaining, "regardless of status: the unresolved rows alone do not bring the file under the cap"
+    picked: list[LedgerRow] = []
+    for r in pool:
+        if size <= LEDGER_CAP_BYTES:
+            break
+        picked.append(r)
+        size -= _bytes(r.text())
+    return picked, rule
+
+
+def _move_ledger_rows(
+    *, blocks: list[str | LedgerRow], rows: list[LedgerRow], moving: list[LedgerRow], apply: bool
+) -> str:
+    """Archive ``moving`` by month, in file order, and drop them from the ledger. Returns the ledger text as
+    it is afterwards (with ``apply``) or would be (without)."""
+    moving_set = set(moving)
+    by_month: dict[str, list[LedgerRow]] = {}
+    for r in rows:  # file order, so the archive reads like the ledger did
+        if r in moving_set:
+            by_month.setdefault(_month_key(r.date), []).append(r)
+    for month, group in sorted(by_month.items()):
+        target = ARCHIVE / f"findings-ledger-{month}.md"
+        print(f"  -> {_rel(target)}: {len(group)} rows")
+        if not apply:
+            for r in group:
+                print(f"       {str(r.date or 'undated'):<10}  {r.subject[:80]}")
+        if apply:
+            _append_archive(
+                path=target,
+                header=f"# Findings Ledger — archived rows ({month})\n\n{LEDGER_HEADER}",
+                body="".join(r.text() for r in group),
+            )
+    text = _render_ledger(blocks=blocks, drop=moving_set)
+    if apply and moving:
+        _write(path=LEDGER, text=text)
+    return text
+
+
+def archive_ledger(*, weeks: int, apply: bool, until_under_cap: bool = False) -> int:
+    if not LEDGER.exists():
+        print("no docs/findings-ledger.md")
+        return 0
+    text = _read(LEDGER)
+    blocks = _parse_ledger(text)
+    rows = _ledger_rows(blocks)
+    moving = _aged_rows(rows=rows, weeks=weeks)
+    print(f"ledger rows: {len(rows)} total, {len(moving)} older than {weeks} weeks and not promoted/enforced")
+    if until_under_cap:
+        extra, rule = _rows_until_under_cap(rows=rows, already=moving, file_bytes=_bytes(text))
+        if extra:
+            print(
+                f"  +{len(extra)} more (oldest first, {rule}) "
+                f"so the active ledger fits under {LEDGER_CAP_BYTES:,d} bytes"
+            )
+        moving = moving + extra
+    if not moving:
+        return 0
+    _move_ledger_rows(blocks=blocks, rows=rows, moving=moving, apply=apply)
+    if apply:
+        print(f"archived {len(moving)} rows; active ledger now {_size(LEDGER):,d} bytes")
+    else:
+        print("dry run — pass --apply to move them")
+    return 0
+
+
+def _duplicate_rows(rows: list[LedgerRow]) -> list[LedgerRow]:
+    """Every row whose exact text an EARLIER row already has. The ledger merges with git's ``union`` driver
+    (``.gitattributes``), so two branches never conflict over appended rows; the price is that a row both
+    branches carry (a cherry-pick, a rebase replaying an older commit) can arrive twice. The copy adds nothing."""
+    seen: set[str] = set()
+    duplicates: list[LedgerRow] = []
+    for row in rows:
+        key = row.text()
+        if key in seen:
+            duplicates.append(row)
+        else:
+            seen.add(key)
+    return duplicates
+
+
+def _reconcile_ledger(*, weeks: int, apply: bool) -> Reconciled:
+    """Exact duplicate rows dropped, then the age pass, then oldest-first (status ignored) until the active
+    ledger fits LEDGER_CAP_BYTES."""
+    if not LEDGER.exists():
+        return Reconciled(path=LEDGER, before=0, after=0, cap=LEDGER_CAP_BYTES, moved=0, unit="rows", present=False)
+    text = _read(LEDGER)
+    blocks = _parse_ledger(text)
+    duplicates = _duplicate_rows(_ledger_rows(blocks))
+    if duplicates:
+        print(f"ledger: {len(duplicates)} exact duplicate rows (a union merge carried them twice) dropped")
+        deduplicated = _render_ledger(blocks=blocks, drop=set(duplicates))
+        if apply:
+            _write(path=LEDGER, text=deduplicated)
+        blocks = _parse_ledger(deduplicated)
+    rows = _ledger_rows(blocks)
+    aged = _aged_rows(rows=rows, weeks=weeks)
+    extra = _oldest_until_under_cap(
+        items=rows,
+        already=aged,
+        cap=LEDGER_CAP_BYTES,
+        render=lambda drop: _render_ledger(blocks=blocks, drop=drop),
+    )
+    moving = aged + extra
+    if moving:
+        print(
+            f"ledger: {len(aged)} rows older than {weeks} weeks and not promoted/enforced, "
+            f"{len(extra)} more oldest-first so the file fits {LEDGER_CAP_BYTES:,d} bytes"
+        )
+    after = _move_ledger_rows(blocks=blocks, rows=rows, moving=moving, apply=apply)
+    return Reconciled(
+        path=LEDGER, before=_bytes(text), after=_bytes(after), cap=LEDGER_CAP_BYTES, moved=len(moving), unit="rows"
+    )
+
+
+class RowError(ValueError):
+    """A ledger row or lesson entry that must not be written as given."""
+
+
+def _one_line(*, name: str, value: str, table: bool) -> str:
+    value = value.strip()
+    if not value:
+        raise RowError(f"--{name} is empty")
+    if "\n" in value or "\r" in value:
+        raise RowError(f"--{name} spans several lines; a row is one line")
+    if table and "|" in value:
+        raise RowError(f"--{name} contains '|', the table delimiter")
+    return value
+
+
+def _ledger_with_row(*, text: str, row: str) -> str:
+    """The ledger text with ``row`` appended to its table: after the last row (or the header of an empty
+    table), else as a new table at the end; an absent or empty file gets the title and the header."""
+    if not text.strip():
+        return LEDGER_TITLE + LEDGER_HEADER + row
+    blocks = _parse_ledger(text)
+    anchors = [
+        i
+        for i, b in enumerate(blocks)
+        if isinstance(b, LedgerRow) or (isinstance(b, str) and TABLE_SEPARATOR_RE.match(b))
+    ]
+    if not anchors:
+        return text.rstrip("\n") + "\n\n" + LEDGER_HEADER + row
+    blocks.insert(anchors[-1] + 1, LedgerRow(lines=[row.rstrip("\n")], date=None, status=""))
+    return _render_ledger(blocks=blocks, drop=set())
+
+
+def _shorten(text: str, limit: int) -> str:
+    return text if len(text) <= limit else text[: max(limit - 3, 1)].rstrip() + "..."
+
+
+def _pointer_row(*, row: LedgerRow, target: Path) -> str:
+    """The row as a pointer: date, subject, a shortened finding, the archive file that holds the full row, the
+    marker ``compacted`` and the status, within LEDGER_ROW_MAX_BYTES."""
+    cells = _cells(row.lines[0])
+    cells += [""] * (6 - len(cells))
+    date, subject, finding, _evidence, _why, status = cells[:6]
+    evidence = f"full row: {_rel(target)}"
+    limit = 120
+    while True:
+        pointer = (
+            "| "
+            + " | ".join([date, _shorten(subject, 48), _shorten(finding, limit), evidence, "compacted", status])
+            + " |"
+        )
+        if _bytes(pointer + "\n") <= LEDGER_ROW_MAX_BYTES or limit <= 8:
+            return pointer
+        limit -= 8
+
+
+def compact_ledger(*, apply: bool) -> int:
+    """Every row over LEDGER_ROW_MAX_BYTES becomes a POINTER row in place; the full row is appended VERBATIM
+    (status included) to the month's archive file. Idempotent: a pointer row fits, so it is never compacted
+    again. This is the migration path for a ledger written before the row budget existed — four projects
+    rewrote 69 to 87 rows by hand before it existed. Returns the number of rows compacted."""
+    if not LEDGER.exists():
+        return 0
+    text = _read(LEDGER)
+    blocks = _parse_ledger(text)
+    oversize = [r for r in _ledger_rows(blocks) if _bytes(r.text()) > LEDGER_ROW_MAX_BYTES]
+    if not oversize:
+        return 0
+    by_month: dict[str, list[LedgerRow]] = {}
+    for r in oversize:
+        by_month.setdefault(_month_key(r.date), []).append(r)
+    pointers: dict[LedgerRow, str] = {}
+    for month, group in sorted(by_month.items()):
+        target = ARCHIVE / f"findings-ledger-{month}.md"
+        print(
+            f"ledger: {len(group)} rows over {LEDGER_ROW_MAX_BYTES} bytes -> pointer rows; full rows to {_rel(target)}"
+        )
+        for r in group:
+            pointers[r] = _pointer_row(row=r, target=target)
+            if not apply:
+                print(f"       {str(r.date or 'undated'):<10}  {_bytes(r.text()):>5} B  {r.subject[:70]}")
+        if apply:
+            _append_archive(
+                path=target,
+                header=f"# Findings Ledger — archived rows ({month})\n\n{LEDGER_HEADER}",
+                body="".join(r.text() for r in group),
+            )
+    if apply:
+        _write(path=LEDGER, text=_render_with_pointers(blocks=blocks, pointers=pointers))
+    return len(oversize)
+
+
+def _render_with_pointers(*, blocks: list[str | LedgerRow], pointers: dict[LedgerRow, str]) -> str:
+    """The ledger text with each row in ``pointers`` replaced by its pointer line, everything else in place."""
+    out: list[str] = []
+    for block in blocks:
+        if isinstance(block, LedgerRow) and block in pointers:
+            out.append(pointers[block])
+        elif isinstance(block, LedgerRow):
+            out.extend(block.lines)
+        else:
+            out.append(block)
+    text = "\n".join(out)
+    return text if text.endswith("\n") else text + "\n"
+
+
+def ledger_add(*, subject: str, finding: str, evidence: str, why: str, status: str, date: dt.date) -> int:
+    """Validate one row, append it, reconcile the ledger with apply, print the row as written."""
+    try:
+        named = (("subject", subject), ("finding", finding), ("evidence", evidence), ("why", why), ("status", status))
+        cells = [_one_line(name=name, value=value, table=True) for name, value in named]
+        if cells[-1] != "open" and not cells[-1].startswith(("promoted ", "enforced ")):
+            raise RowError(f"--status must be 'open', 'promoted #N' or 'enforced <path>', not {cells[-1]!r}")
+    except RowError as exc:
+        print(f"ledger add: {exc}", file=sys.stderr)
+        return 2
+    row = "| " + " | ".join([date.isoformat(), *cells]) + " |\n"
+    size = _bytes(row)
+    if size > LEDGER_ROW_MAX_BYTES:
+        print(
+            f"ledger add: the row is {size:,d} bytes, limit {LEDGER_ROW_MAX_BYTES}: put the detail in the decision "
+            "log or the issue; the ledger row is the pointer",
+            file=sys.stderr,
+        )
+        return 2
+    _write(path=LEDGER, text=_ledger_with_row(text=_read(LEDGER) if LEDGER.exists() else "", row=row))
+    print(row, end="")
+    result = _reconcile_ledger(weeks=DEFAULT_WEEKS, apply=True)
+    print(result.summary(apply=True))
+    return 0 if result.fits else 1
+
+
+# ---------------------------------------------------------------------------------------------- lessons
+
+
+@dataclass(eq=False)
+class Entry:
+    heading: str
+    body: list[str]
+
+    @property
+    def date(self) -> dt.date | None:
+        return _parse_date(self.heading) or next((d for d in (_parse_date(ln) for ln in self.body) if d), None)
+
+    @property
+    def enforced(self) -> bool:
+        for ln in self.body:
+            m = ENFORCED_RE.match(ln)
+            if m and m.group(1).strip().lower() not in {"none", "-", "n/a", "tbd", ""}:
+                return True
+        return False
+
+    def text(self) -> str:
+        return "\n".join([self.heading, *self.body]).rstrip("\n") + "\n"
+
+
+def _entries(*, text: str, level_re: re.Pattern[str]) -> tuple[list[str], list[Entry]]:
+    preamble: list[str] = []
+    entries: list[Entry] = []
+    inside_fence = False
+    for line in text.split("\n"):
+        if FENCE_RE.match(line):
+            inside_fence = not inside_fence
+        if not inside_fence and level_re.match(line):
+            entries.append(Entry(heading=line, body=[]))
+            continue
+        (entries[-1].body if entries else preamble).append(line)
+    return preamble, entries
+
+
+def _render_lessons(*, preamble: list[str], entries: list[Entry]) -> str:
+    head = "\n".join(preamble).rstrip("\n")
+    body = "\n".join(e.text() for e in entries)
+    if not head:
+        return body
+    return head + "\n\n" + body if body else head + "\n"
+
+
+def _lessons_until_under_cap(*, entries: list[Entry], already: list[Entry]) -> list[Entry]:
+    """Oldest-first unenforced entries beyond ``already`` so the lessons file fits LESSONS_CAP_BYTES."""
+    size = _size(LESSONS) - sum(_bytes(e.text()) for e in already)
+    candidates = (e for e in entries if e.date is not None and not e.enforced and e not in already)
+    picked: list[Entry] = []
+    for e in sorted(candidates, key=lambda e: e.date or dt.date.min):
+        if size <= LESSONS_CAP_BYTES:
+            break
+        picked.append(e)
+        size -= _bytes(e.text())
+    return picked
+
+
+def _aged_lessons(*, entries: list[Entry], weeks: int) -> list[Entry]:
+    cutoff = _cutoff(weeks)
+    return [e for e in entries if e.date is not None and e.date < cutoff and not e.enforced]
+
+
+def _move_lessons(*, preamble: list[str], entries: list[Entry], moving: list[Entry], apply: bool) -> str:
+    """Archive ``moving`` by month, in file order, and drop them from the lessons. Returns the lessons text
+    as it is afterwards (with ``apply``) or would be (without)."""
+    moving_set = set(moving)
+    by_month: dict[str, list[Entry]] = {}
+    for e in entries:
+        if e in moving_set:
+            by_month.setdefault(_month_key(e.date), []).append(e)
+    for month, group in sorted(by_month.items()):
+        target = ARCHIVE / f"lessons-learned-{month}.md"
+        print(f"  -> {_rel(target)}: {len(group)} entries")
+        if not apply:
+            for e in group:
+                print(f"       {e.heading[:90]}")
+        if apply:
+            _append_archive(
+                path=target,
+                header=f"# Lessons Learned — archived entries ({month})\n\n",
+                body="\n".join(e.text() for e in group),
+            )
+    text = _render_lessons(preamble=preamble, entries=[e for e in entries if e not in moving_set])
+    if apply and moving:
+        _write(path=LESSONS, text=text)
+    return text
+
+
+def archive_lessons(*, weeks: int, apply: bool, until_under_cap: bool = False) -> int:
+    if not LESSONS.exists():
+        print("no docs/lessons-learned.md")
+        return 0
+    preamble, entries = _entries(text=_read(LESSONS), level_re=LESSON_HEADING_RE)
+    aged = _aged_lessons(entries=entries, weeks=weeks)
+    print(f"lessons: {len(entries)} entries, {len(aged)} older than {weeks} weeks without Enforced-by")
+    if until_under_cap:
+        extra = _lessons_until_under_cap(entries=entries, already=aged)
+        if extra:
+            print(f"  +{len(extra)} more (oldest first) so the file fits under {LESSONS_CAP_BYTES:,d} bytes")
+        aged = aged + extra
+    if not aged:
+        return 0
+    _move_lessons(preamble=preamble, entries=entries, moving=aged, apply=apply)
+    if apply:
+        print(f"archived {len(aged)} entries; lessons now {_size(LESSONS):,d} bytes")
+    else:
+        print("dry run — pass --apply to move them")
+    return 0
+
+
+def _reconcile_lessons(*, weeks: int, apply: bool) -> Reconciled:
+    """Age pass, then oldest-first (Enforced-by ignored) until the lessons file fits LESSONS_CAP_BYTES."""
+    if not LESSONS.exists():
+        return Reconciled(
+            path=LESSONS, before=0, after=0, cap=LESSONS_CAP_BYTES, moved=0, unit="entries", present=False
+        )
+    text = _read(LESSONS)
+    preamble, entries = _entries(text=text, level_re=LESSON_HEADING_RE)
+    aged = _aged_lessons(entries=entries, weeks=weeks)
+    extra = _oldest_until_under_cap(
+        items=entries,
+        already=aged,
+        cap=LESSONS_CAP_BYTES,
+        render=lambda drop: _render_lessons(preamble=preamble, entries=[e for e in entries if e not in drop]),
+    )
+    moving = aged + extra
+    if moving:
+        print(
+            f"lessons: {len(aged)} entries older than {weeks} weeks without Enforced-by, "
+            f"{len(extra)} more oldest-first so the file fits {LESSONS_CAP_BYTES:,d} bytes"
+        )
+    after = _move_lessons(preamble=preamble, entries=entries, moving=moving, apply=apply)
+    return Reconciled(
+        path=LESSONS,
+        before=_bytes(text),
+        after=_bytes(after),
+        cap=LESSONS_CAP_BYTES,
+        moved=len(moving),
+        unit="entries",
+    )
+
+
+def lesson_add(*, lesson: str, enforced_by: str, scope: str, date: dt.date) -> int:
+    """Validate one compiled five-line entry, append it, reconcile the lessons with apply, print it."""
+    try:
+        lesson = _one_line(name="lesson", value=lesson, table=False)
+        enforced_by = _one_line(name="enforced-by", value=enforced_by, table=False)
+        scope = _one_line(name="scope", value=scope, table=False)
+    except RowError as exc:
+        print(f"lesson add: {exc}", file=sys.stderr)
+        return 2
+    entry = Entry(
+        heading=f"## {date.isoformat()} — {lesson[:LESSON_HEADING_CHARS].rstrip()}",
+        body=[
+            f"- Date: {date.isoformat()}",
+            f"- Lesson: {lesson}",
+            f"- Enforced-by: {enforced_by}",
+            f"- Scope: {scope}",
+        ],
+    )
+    size = _bytes(entry.text())
+    if size > LESSON_ENTRY_MAX_BYTES:
+        print(
+            f"lesson add: the entry is {size:,d} bytes, limit {LESSON_ENTRY_MAX_BYTES}: put the narrative in "
+            "docs/archive/incidents/<date>-<slug>.md or the decision log; the lesson entry is the compiled line",
+            file=sys.stderr,
+        )
+        return 2
+    existing = _read(LESSONS) if LESSONS.exists() else ""
+    head = existing.rstrip("\n") or LESSONS_TITLE.rstrip("\n")
+    _write(path=LESSONS, text=head + "\n\n" + entry.text())
+    print(entry.text(), end="")
+    result = _reconcile_lessons(weeks=DEFAULT_WEEKS, apply=True)
+    print(result.summary(apply=True))
+    return 0 if result.fits else 1
+
+
+# -------------------------------------------------------------------------------------------- reconcile
+
+
+def reconcile(*, weeks: int, apply: bool) -> int:
+    """The single automatic reconciler: oversize ledger rows become pointer rows first, then both files get
+    the age pass and the oldest-first pass to their caps. Runs from the pre-commit hook, so a ledger written
+    before the row budget existed is brought under it without a hand edit."""
+    compacted = compact_ledger(apply=apply)
+    if compacted:
+        print(f"ledger: {compacted} oversize rows compacted to pointer rows{'' if apply else ' (dry run)'}")
+    results = [_reconcile_ledger(weeks=weeks, apply=apply), _reconcile_lessons(weeks=weeks, apply=apply)]
+    for result in results:
+        print(result.summary(apply=apply))
+    if not apply and (compacted or any(r.moved for r in results)):
+        print("dry run — pass --apply to move them")
+    return 0 if all(r.fits for r in results) else 1
+
+
+# ----------------------------------------------------------------------------------------------- search
+
+
+def _searchable_files() -> list[Path]:
+    files = [p for p in (LEDGER, LESSONS) if p.exists()]
+    if ARCHIVE.is_dir():
+        files += sorted(p for p in ARCHIVE.rglob("*") if p.is_file())
+    return files
+
+
+def search(*, terms: list[str]) -> int:
+    """Case-insensitive substring search; a line hits when it contains EVERY term. Spans the active ledger,
+    the lessons and everything under docs/archive/ — recurrence is checked here, not by loading the files."""
+    needles = [t.lower() for t in terms if t.strip()]
+    if not needles:
+        print("search: give at least one non-empty term", file=sys.stderr)
+        return 2
+    hits = 0
+    files_hit = 0
+    for path in _searchable_files():
+        found = False
+        for line in _read(path).split("\n"):
+            lowered = line.lower()
+            if all(n in lowered for n in needles):
+                print(f"{_rel(path)}: {line.strip()}")
+                hits += 1
+                found = True
+        files_hit += int(found)
+    if not hits:
+        print(f"no hits for {' '.join(terms)} in the ledger, the lessons or docs/archive/")
+        return 1
+    print(f"{hits} hit(s) in {files_hit} file(s)")
+    return 0
+
+
+# ---------------------------------------------------------------------------------------- rule incidents
+
+
+def _dated_sections(text: str) -> tuple[str, list[str]]:
+    """Split out every section whose heading carries a date (to the next heading of the same or higher level)."""
+    lines = text.split("\n")
+    kept: list[str] = []
+    moved: list[str] = []
+    i = 0
+    inside_fence = False
+    while i < len(lines):
+        line = lines[i]
+        if FENCE_RE.match(line):
+            inside_fence = not inside_fence
+        m = DATED_HEADING_RE.match(line) if not inside_fence else None
+        if not m:
+            kept.append(line)
+            i += 1
+            continue
+        level = len(m.group(1))
+        section = [line]
+        i += 1
+        while i < len(lines):
+            nxt = lines[i]
+            hm = HEADING_RE.match(nxt)
+            if hm and len(hm.group(1)) <= level:
+                break
+            section.append(nxt)
+            i += 1
+        moved.append("\n".join(section).rstrip("\n") + "\n")
+    return "\n".join(kept), moved
+
+
+def extract_rule_incidents(apply: bool) -> int:
+    moved_total = 0
+    frozen = _kiro_frozen()
+    for rule in _rule_files():
+        if frozen and STEERING_DIR in rule.parents:
+            continue  # a frozen .kiro/ tree is kept as-is: reported by `report`, never rewritten here
+        kept, moved = _dated_sections(_read(rule))
+        if not moved:
+            continue
+        target = ARCHIVE / "rule-incidents" / f"{rule.stem}.md"
+        rel_rule = _rel(rule)
+        rel_target = _rel(target)
+        print(f"{rel_rule}: {len(moved)} dated section(s) -> {rel_target}")
+        moved_total += len(moved)
+        if apply:
+            header = f"# {rule.stem} — incident records moved out of the always-loaded rule\n\n"
+            _append_archive(path=target, header=header, body="\n".join(moved))
+            pointer = f"\nIncident records for this rule: `{rel_target}` (read on demand).\n"
+            if pointer.strip() not in kept:
+                kept = kept.rstrip("\n") + "\n" + pointer
+            _write(path=rule, text=kept)
+    if moved_total and not apply:
+        print("dry run — pass --apply to move them")
+    if not moved_total:
+        print("no dated incident sections in the rules")
+    return 0
+
+
+# ----------------------------------------------------------------------------------------------- report
+
+
+FROZEN_NOTE = "not enforced: .kiro/FROZEN"
+
+
+@dataclass(eq=False)
+class BudgetRow:
+    name: str
+    size: int
+    cap: int
+    kiro_bytes: int = 0  # the share contributed by .kiro/steering; reported, not enforced, when the tree is frozen
+
+    def status(self, *, frozen: bool) -> str:
+        enforced = self.size - self.kiro_bytes if frozen else self.size
+        if enforced > self.cap:
+            return "OVER"
+        if self.size > self.cap:
+            return f"OVER ({FROZEN_NOTE})"
+        return "OK"
+
+
+def _budget_rows() -> tuple[list[BudgetRow], list[Path]]:
+    """The capped files with their sizes, plus the always-loaded corpus the per-file listing walks."""
+    # Each host's corpus — the always-loaded one AND the scoped one — is capped SEPARATELY, exactly as
+    # test_instruction_corpus_budget.py caps them: a dual-host project loads .claude/rules into Claude Code
+    # sessions and the steering into Kiro sessions, never both into one. Summing them reported OVER where the
+    # test passed (measured on a dual-host project: 70,149 B of scoped files against one 45,000 B cap).
+    unscoped = _unscoped_rules()
+    claude_corpus = [CLAUDE_MD, *[p for p in unscoped if p.parent == RULES_DIR]]
+    kiro_corpus = [p for p in unscoped if p.parent == STEERING_DIR]
+    scoped = _scoped_rules()
+    rows: list[BudgetRow] = []
+    if CLAUDE_MD.exists() or RULES_DIR.is_dir():
+        claude_bytes = sum(_size(p) for p in claude_corpus)
+        rows.append(BudgetRow(name="CLAUDE.md + unscoped rules", size=claude_bytes, cap=CORPUS_CAP_BYTES))
+    if STEERING_DIR.is_dir():
+        kiro_bytes = sum(_size(p) for p in kiro_corpus)
+        rows.append(
+            BudgetRow(name="Kiro always-on steering", size=kiro_bytes, cap=CORPUS_CAP_BYTES, kiro_bytes=kiro_bytes)
+        )
+    claude_scoped = sum(_size(p) for p in scoped if p.parent != STEERING_DIR)
+    kiro_scoped = sum(_size(p) for p in scoped if p.parent == STEERING_DIR)
+    rows.append(BudgetRow(name="paths:-scoped rules", size=claude_scoped, cap=SCOPED_RULES_CAP_BYTES))
+    if STEERING_DIR.is_dir():
+        rows.append(
+            BudgetRow(name="fileMatch steering", size=kiro_scoped, cap=SCOPED_RULES_CAP_BYTES, kiro_bytes=kiro_scoped)
+        )
+    rows += [
+        BudgetRow(name="docs/forLLMConsumption.md", size=_size(FOR_LLM), cap=FOR_LLM_CAP_BYTES),
+        BudgetRow(name="docs/lessons-learned.md", size=_size(LESSONS), cap=LESSONS_CAP_BYTES),
+        BudgetRow(name="docs/findings-ledger.md", size=_size(LEDGER), cap=LEDGER_CAP_BYTES),
+    ]
+    return rows, [*claude_corpus, *kiro_corpus]
+
+
+def _print_largest_files(*, corpus: list[Path], frozen: bool) -> bool:
+    """List the twelve largest always-loaded files; True when an enforced per-file cap is exceeded."""
+    over = False
+    print("\nLargest always-loaded files:")
+    ranked = sorted(((_size(p), p) for p in corpus), key=lambda t: (t[0], t[1].as_posix()), reverse=True)
+    for size, path in ranked[:12]:
+        flag = ""
+        if size > RULE_FILE_CAP_BYTES and path != CLAUDE_MD:
+            if frozen and path.parent == STEERING_DIR:
+                flag = f"  OVER-PER-FILE ({FROZEN_NOTE})"
+            else:
+                flag = "  OVER-PER-FILE"
+                over = True
+        print(f"  {size:>8,d}  {_rel(path)}{flag}")
+    return over
+
+
+def _print_dated_rules(*, frozen: bool) -> bool:
+    """List the rules carrying dated incident sections; True when one of them is enforced."""
+    dated = [(p, len(_dated_sections(_read(p))[1])) for p in _rule_files()]
+    dated = [(p, n) for p, n in dated if n]
+    over = False
+    if dated:
+        print("\nRules carrying dated incident sections:")
+    for p, n in dated:
+        frozen_file = frozen and p.parent == STEERING_DIR
+        over |= not frozen_file
+        note = f"  ({FROZEN_NOTE})" if frozen_file else ""
+        print(f"  {n:>3}  {_rel(p)}{note}")
+    return over
+
+
+def report(weeks: int) -> int:
+    frozen = _kiro_frozen()
+    rows, corpus = _budget_rows()
+    over = False
+    if frozen:
+        print(".kiro/FROZEN present: the Kiro figures below are printed but do not set the exit code\n")
+    print(f"{'File':<42} {'Bytes':>10} {'Cap':>10}  Status")
+    for row in rows:
+        status = row.status(frozen=frozen)
+        over |= status == "OVER"
+        print(f"{row.name:<42} {row.size:>10,d} {row.cap:>10,d}  {status}")
+    over |= _print_largest_files(corpus=corpus, frozen=frozen)
+    over |= _print_dated_rules(frozen=frozen)
+    if LEDGER.exists():
+        ledger_rows = _ledger_rows(_parse_ledger(_read(LEDGER)))
+        aged = _aged_rows(rows=ledger_rows, weeks=weeks)
+        oversize = sum(1 for r in ledger_rows if _bytes(r.text()) > LEDGER_ROW_MAX_BYTES)
+        print(
+            f"\nLedger: {len(ledger_rows)} active rows; rows over {LEDGER_ROW_MAX_BYTES} B: {oversize}; "
+            f"{len(aged)} UNRESOLVED (status not {'/'.join(RESOLVED_STATUS_PREFIXES)}) and older than {weeks} "
+            "weeks — decide each: promote, enforce or archive"
+        )
+        _print_decisions([f"{r.date}  {r.subject[:90]}" for r in aged])
+    if LESSONS.exists():
+        _, entries = _entries(text=_read(LESSONS), level_re=LESSON_HEADING_RE)
+        aged_lessons = _aged_lessons(entries=entries, weeks=weeks)
+        print(
+            f"Lessons: {len(entries)} entries; {len(aged_lessons)} with `Enforced-by: none` and older than {weeks} "
+            "weeks — decide each: enforce or archive"
+        )
+        _print_decisions([e.heading.lstrip("# ").strip()[:100] for e in aged_lessons])
+    return 1 if over else 0
+
+
+def _print_decisions(items: list[str], limit: int = 40) -> None:
+    """The items /compile-memory must decide, one per line (resolved ones are not listed: reconcile archives
+    them mechanically when the cap needs the room)."""
+    for item in items[:limit]:
+        print(f"  - {item}")
+    if len(items) > limit:
+        print(f"  ... and {len(items) - limit} more (archive-ledger / archive-lessons without --apply lists all)")
+
+
+# ------------------------------------------------------------------------------------------------- main
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Compile the project's agent memory")
+    sub = parser.add_subparsers(dest="command", required=True)
+    for name in ("report", "archive-ledger", "archive-lessons", "extract-rule-incidents"):
+        p = sub.add_parser(name)
+        p.add_argument("--weeks", type=int, default=DEFAULT_WEEKS)
+        p.add_argument("--apply", action="store_true")
+        p.add_argument(
+            "--until-under-cap",
+            action="store_true",
+            help=(
+                "after the age pass, keep archiving oldest-first until the active file fits its cap; "
+                "for the ledger this moves the oldest rows regardless of status (promoted/enforced included) "
+                "once the unresolved rows alone do not bring the file under the cap"
+            ),
+        )
+    rec = sub.add_parser(
+        "reconcile",
+        help="age pass, then oldest-first into docs/archive/ until the ledger and the lessons fit their caps",
+    )
+    rec.add_argument("--weeks", type=int, default=DEFAULT_WEEKS)
+    rec.add_argument("--apply", action="store_true", help="move the rows; without it, print what would move")
+    ledger = sub.add_parser("ledger").add_subparsers(dest="action", required=True)
+    row = ledger.add_parser("add", help=f"append one validated row (one line, at most {LEDGER_ROW_MAX_BYTES} bytes)")
+    for name in ("subject", "finding", "evidence", "why"):
+        row.add_argument(f"--{name}", required=True)
+    row.add_argument("--status", default="open", help="open | promoted #N | enforced <path>")
+    row.add_argument("--date", type=dt.date.fromisoformat, default=None, help="YYYY-MM-DD, default today")
+    compact = ledger.add_parser(
+        "compact",
+        help=f"turn every row over {LEDGER_ROW_MAX_BYTES} bytes into a pointer row, archiving the full row verbatim",
+    )
+    compact.add_argument("--apply", action="store_true", help="rewrite; without it, list the rows")
+    lesson = sub.add_parser("lesson").add_subparsers(dest="action", required=True)
+    entry = lesson.add_parser("add", help=f"append one compiled entry (at most {LESSON_ENTRY_MAX_BYTES} bytes)")
+    for name in ("lesson", "enforced-by", "scope"):
+        entry.add_argument(f"--{name}", required=True)
+    entry.add_argument("--date", type=dt.date.fromisoformat, default=None, help="YYYY-MM-DD, default today")
+    find = sub.add_parser("search", help="case-insensitive; a line hits when it contains every term")
+    find.add_argument("terms", nargs="+")
+    return parser
+
+
+def _ledger_command(*, args: argparse.Namespace, today: dt.date) -> int:
+    if args.action == "compact":
+        compacted = compact_ledger(apply=args.apply)
+        if compacted and not args.apply:
+            print("dry run — pass --apply to rewrite them")
+        elif not compacted:
+            print(f"ledger: every row is within {LEDGER_ROW_MAX_BYTES} bytes")
+        return 0
+    return ledger_add(
+        subject=args.subject,
+        finding=args.finding,
+        evidence=args.evidence,
+        why=args.why,
+        status=args.status,
+        date=args.date or today,
+    )
+
+
+def main() -> int:
+    _utf8_streams()
+    args = _build_parser().parse_args()
+    today = dt.date.today()
+    if args.command == "report":
+        return report(weeks=args.weeks)
+    if args.command == "archive-ledger":
+        return archive_ledger(weeks=args.weeks, apply=args.apply, until_under_cap=args.until_under_cap)
+    if args.command == "archive-lessons":
+        return archive_lessons(weeks=args.weeks, apply=args.apply, until_under_cap=args.until_under_cap)
+    if args.command == "extract-rule-incidents":
+        return extract_rule_incidents(apply=args.apply)
+    if args.command == "reconcile":
+        return reconcile(weeks=args.weeks, apply=args.apply)
+    if args.command == "ledger":
+        return _ledger_command(args=args, today=today)
+    if args.command == "lesson":
+        return lesson_add(lesson=args.lesson, enforced_by=args.enforced_by, scope=args.scope, date=args.date or today)
+    return search(terms=args.terms)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

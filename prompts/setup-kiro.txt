@@ -3863,6 +3863,7 @@ cp src/hooks/kiro_hooks.py           .kiro/hooks-bin/   # the Kiro entry point
 cp src/hooks/CONTRACT_VERSION        .kiro/hooks-bin/   # keys the contract handshake
 cp src/hooks/REVISION_NOTICE.md      .kiro/hooks-bin/   # printed at spawn while valid
 cp src/hooks/tests/*.py              .kiro/hooks-bin/tests/
+cp src/hooks/tests/pytest.ini        .kiro/hooks-bin/tests/   # makes the suite its own pytest root
 rm -f .kiro/hooks-bin/*.sh                                                       # the bash predecessors, if any
 python -m pytest .kiro/hooks-bin/tests -q -p no:cacheprovider                    # every module must pass
 ```
