@@ -449,7 +449,7 @@ def test_a_scoped_temp_that_is_the_project_is_refused(project):
 
 def _make_link(link: Path, target: Path) -> bool:
     try:
-        if os.name == "nt":
+        if sys.platform == "win32":  # not os.name: mypy narrows on sys.platform, and CreateJunction is Windows-only
             import _winapi
 
             _winapi.CreateJunction(str(target), str(link))
