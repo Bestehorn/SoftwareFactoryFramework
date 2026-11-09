@@ -118,7 +118,7 @@ def _api_request(
     if body is not None:
         req.add_header("Content-Type", "application/json")
     try:
-        with urlopen(req) as resp:
+        with urlopen(req) as resp:  # nosec B310 — https URL built from the fixed API_ROOT
             data = resp.read().decode("utf-8")
             return json.loads(data) if data else {}
     except HTTPError as exc:

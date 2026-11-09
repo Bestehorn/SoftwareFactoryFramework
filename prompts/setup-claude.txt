@@ -2647,6 +2647,7 @@ cp src/hooks/MIGRATION.md                    .claude/hooks/
 cp src/hooks/REVISION_NOTICE.md              .claude/hooks/
 mkdir -p .claude/hooks/tests
 cp src/hooks/tests/*.py                      .claude/hooks/tests/   # every module + conftest.py
+cp src/hooks/tests/pytest.ini                .claude/hooks/tests/   # makes the suite its own pytest root
 rm -f .claude/hooks/*.sh .claude/hooks/tests/*.sh                      # the bash predecessors, if any
 grep -q '^.claude/hooks/\*\* text eol=lf' .gitattributes 2>/dev/null || printf '.claude/hooks/** text eol=lf\n' >> .gitattributes   # same commit as the files
 ```

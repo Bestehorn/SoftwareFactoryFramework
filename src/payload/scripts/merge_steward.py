@@ -2193,7 +2193,7 @@ def read_token(args: argparse.Namespace, settings: Settings) -> str:
         token = path.read_text(encoding="utf-8").strip() if path.is_file() else ""
     else:
         path = ROOT / "config" / "gitlab.json"
-        token = ""
+        token = ""  # nosec B105 — an empty default, filled from the file below
         if path.is_file():
             ignored = Git(ROOT, "x", "x")
             try:

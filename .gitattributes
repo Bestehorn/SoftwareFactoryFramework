@@ -15,3 +15,9 @@
 src/hooks/** text eol=lf
 # CONTRACT_VERSION is read line-wise by the hooks; keep it LF for the same reason.
 src/hooks/CONTRACT_VERSION text eol=lf
+
+# Shipped hook and shell templates: a consumer copies them from a `git archive` export, which on a
+# core.autocrlf=true clone carries CRLF unless an attribute pins LF — and `*.sh` does not match
+# `setup-hooks.sh.template`. A CRLF bash hook fails at its first line.
+templates/githooks/** text eol=lf
+templates/*.sh.template text eol=lf
