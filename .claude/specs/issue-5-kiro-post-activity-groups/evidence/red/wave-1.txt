@@ -1,0 +1,43 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_post_activity_prompts.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-5
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+FFF.F......                                                              [100%]
+================================== FAILURES ===================================
+___________ test_claude_porting_paragraph_names_the_non_test_groups ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_post_activity_prompts.py:231: in test_claude_porting_paragraph_names_the_non_test_groups
+    assert not missing, f"the porting paragraph lacks {missing}"
+E   AssertionError: the porting paragraph lacks ['`post-activity.md` step 2', 'non-test groups', 'python scripts/run_checks.py --group lint --group types --group security']
+E   assert not ['`post-activity.md` step 2', 'non-test groups', 'python scripts/run_checks.py --group lint --group types --group security']
+__________________ test_kiro_step2_runs_the_non_test_groups ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_post_activity_prompts.py:210: in test_kiro_step2_runs_the_non_test_groups
+    assert NON_TEST_RUN_CHECKS in stripped_lines(text=step_2), f"step 2 has no line that is `{NON_TEST_RUN_CHECKS}`"
+E   AssertionError: step 2 has no line that is `python scripts/run_checks.py --group lint --group types --group security`
+E   assert 'python scripts/run_checks.py --group lint --group types --group security' in ['2. **Run every project check, locally, in one pass:**', '```bash', 'python scripts/run_checks.py', '```', 'This is t...the two cannot drift apart. It runs', 'lint, type, security and test groups, continues past a failure instead of', ...]
+E    +  where ['2. **Run every project check, locally, in one pass:**', '```bash', 'python scripts/run_checks.py', '```', 'This is t...the two cannot drift apart. It runs', 'lint, type, security and test groups, continues past a failure instead of', ...] = stripped_lines(text='2. **Run every project check, locally, in one pass:**\n   ```bash\n   python scripts/run_checks.py\n   ```\n   This i... failure it lists before continuing — all of them, in this\n   pass.** Do not fix one and re-run to discover the next.')
+_______________ test_claude_self_check_flags_a_plain_run_checks _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_post_activity_prompts.py:238: in test_claude_self_check_flags_a_plain_run_checks
+    assert not missing, f"self-check item 6 lacks {missing}"
+E   AssertionError: self-check item 6 lacks ['plain `python scripts/run_checks.py`', 'no `--group`', '`tests` group']
+E   assert not ['plain `python scripts/run_checks.py`', 'no `--group`', '`tests` group']
+__________________ test_kiro_body_never_runs_the_tests_group __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_post_activity_prompts.py:222: in test_kiro_body_never_runs_the_tests_group
+    assert not missing, f"step 2 of 8.6 lacks {missing}"
+E   AssertionError: step 2 of 8.6 lacks ['Run the other project checks, locally, in one pass:', 'the lint, type and security groups', "the `tests` group is CI's"]
+E   assert not ['Run the other project checks, locally, in one pass:', 'the lint, type and security groups', "the `tests` group is CI's"]
+=========================== short test summary info ===========================
+FAILED test/test_post_activity_prompts.py::test_claude_porting_paragraph_names_the_non_test_groups
+FAILED test/test_post_activity_prompts.py::test_kiro_step2_runs_the_non_test_groups
+FAILED test/test_post_activity_prompts.py::test_claude_self_check_flags_a_plain_run_checks
+FAILED test/test_post_activity_prompts.py::test_kiro_body_never_runs_the_tests_group
+========================= 4 failed, 7 passed in 3.98s =========================
