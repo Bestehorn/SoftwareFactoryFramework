@@ -49,10 +49,8 @@ transport 205-206, 235, 268-269, 310, 327, 395-396, 418, 424, 448-449, 458, 472,
 registry 200, 259, 269, 323-327, 350, 354; commands/issue 107, 143; commands/pipeline 108, 115, 123, 147, 260-263;
 gitlab_wrapper 85, 138-140, 144, 309, 332-333; run_checks 406-408 (the only miss among its new lines).
 
-- **transport.py 424**: `return join_pairs(pairs=form).encode(...), CONTENT_TYPE_FORM` is AC-2.3's "in a form body"
-  clause. `form=` appears in no GitLab test except the multipart one, and R's `form-body` case stops at
-  `registry.encode`. Mutant 2q, sending the form pairs as `json.dumps(dict(form))` with `application/json`, passes
-  W2 (60 passed). **REFUTED AC-2.3.**
+- **transport.py 424** (AC-2.3 "in a form body"): no GitLab test sent `form=` without a file; mutant 2q
+  (`json.dumps(dict(form))`, `application/json`) passed W2 (60 passed). **REFUTED AC-2.3.**
 - transport 235 (a non-GET/HEAD redirect is not followed, D4) survives as 2r. It serves no AC: CPython
   `HTTPRedirectHandler.redirect_request` (request.py) follows only POST 301/302/303, as a GET, and raises for every
   other method, and the strip loop (killed in 2a) still drops the credential, so AC-3.1 holds.
@@ -62,15 +60,32 @@ gitlab_wrapper 85, 138-140, 144, 309, 332-333; run_checks 406-408 (the only miss
 
 ## Observations (not refutations; route per issue-filing-discipline)
 
-- O1 UB-2 guard: x1 (`from os import environ`, token from `GITLAB_API_TOKEN`) and 2p (`__import__("os").environ`)
-  pass P and C (21 and 60 passed). The scan's substring oracle is the Correctness Property verbatim, and the shipped
-  code reads no environment.
-- O2 run_checks: z1 (the fixed head not adjusted for the console-script fallback) and w1 (`invoke` returns 0, not
-  127, for a command that cannot start; the branch predates this change) pass RC (21 passed). DL-006's stated
-  behaviour is killed-tested.
+- O1: x1 (`from os import environ`) and 2p (`__import__("os").environ`) passed P and C. O2: z1 (console-script head
+  not adjusted) and w1 (`invoke` returns 0, not 127) passed RC. All four are killed in the re-verification below.
 - O3 3g is equivalent: with `required=False` the top-level parser still exits 2 through `parser.error`.
 
 Tree: 61 mutants each `restored=True` (SHA-256 equal); `git status --porcelain` empty after every wave; scratch
 `tmp/verify/` deleted; the only new path is this report.
 
 Verdict: REFUTED AC-2.3
+
+## Re-verification — 2026-11-11, HEAD 9e78001
+
+`git diff c3efdcb 9e78001 -- src/payload/scripts prompts docs templates`: empty. Mutants applied alone (Edit),
+restored, SHA-256 equal to before, `git status --porcelain` empty after each.
+
+| Claim | Command | Result | Evidence |
+|---|---|---|---|
+| Whole suite | `get-pr-checks 34` | FAILED-TO-REFUTE | head `9e78001a…`; `report`, `verify (lint/types/security/tests)` all `completed`/`success` |
+| AC-2.3 | 2q; W2 | FAILED-TO-REFUTE | `12 failed, 60 passed`: every `test_form_pairs_send_a_form_body` case, got `application/json` |
+| O1 | x1, 2p in `_load_config`; `P C` | killed | `1 failed, 86 passed` each; `test_standard_library_only` names `from os import environ` / `__import__('os').environ` |
+| O2 | z1, w1; RC | killed | z1 `1 failed, 23 passed` (`…keep_the_console_script_head`); w1 `2 failed, 22 passed` (`…fails_with_127`, `0 == 127`) |
+| Restored tree; AST check on shipped code | rework-1's seven modules | FAILED-TO-REFUTE | `253 passed`; the admitted calls are `command_modules` and `discover_families` |
+| No vacuous test | Grep skip/xfail/commented/`assert True`/deselect, T RC P | FAILED-TO-REFUTE | no match; every kill is an `AssertionError` |
+
+O4 (observation): probe g1 `getattr(os, "environ")` passes `P C` (`87 passed`): the scan reads names, not strings;
+the shipped files hold no such construct (Grep `environ|getenv`: prose and paths only).
+
+Tree restored and clean, `tmp/` empty; this section is the only change.
+
+Verdict: VERIFIED
