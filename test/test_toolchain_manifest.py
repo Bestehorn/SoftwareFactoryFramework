@@ -17,8 +17,10 @@ with fetch-depth 0).
 from __future__ import annotations
 
 import ast
+import fnmatch
 import importlib.util
 import json
+import os
 import re
 import subprocess
 import sys
@@ -58,6 +60,8 @@ NEW_TAG = "v2026.12.24"
 NEW_DATE = "2026-12-24"
 REASON = "a reason this source is not installed here"
 ABSENT_TAG = "v0000.00.00"
+# `--release` values that are no release tag: a branch, HEAD, and a git option (change.md AC-3 lists refs/tags/<tag>).
+NOT_A_TAG = ("main", "HEAD", "--full-tree")
 
 # One source per row of the install layout (change.md AC-2), nested paths included: (source, install path).
 MAPPING = (
@@ -78,6 +82,8 @@ MAPPING = (
 )
 CI_TEMPLATES = ("templates/ci/github-deploy.yml.template", "templates/ci/github-merge-steward.yml.template")
 CI_PATTERN = "templates/ci/*"
+# CI_PATTERN differing only in case, derived so that no tracked text names it as a path.
+CI_PATTERN_OTHER_CASE = CI_PATTERN.upper()
 CONFIG_PATTERN = "templates/config/*"
 MERGE_STEWARD = "src/payload/scripts/merge_steward.py"
 KIRO_HOOKS = "src/hooks/kiro_hooks.py"
@@ -233,6 +239,38 @@ def test_files_are_sorted_by_install_path_and_named_sources_are_left_out(tool: M
     assert list(manifest[KEY_FILES]) == sorted(expected), "files must be sorted by install path"
 
 
+def test_a_not_installed_pattern_differing_only_in_case_names_no_source(
+    tool: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`fnmatch.fnmatchcase`, never `fnmatch.fnmatch`: with `os.path.normcase` folding case, as it does on Windows,
+    `fnmatch.fnmatch` matches the pattern. No layout row maps the source, so the entry is the only thing that could
+    leave it out, and the derivation must refuse the source as unmapped."""
+    source = CI_TEMPLATES[0]
+    previous = previous_manifest(not_installed={CI_PATTERN_OTHER_CASE: REASON})
+    with monkeypatch.context() as patch:
+        patch.setattr(target=os.path, name="normcase", value=str.lower)
+        assert fnmatch.fnmatch(name=source, pat=CI_PATTERN_OTHER_CASE), "os.path.normcase must fold case here"
+        with pytest.raises(tool.ManifestError) as raised:
+            tool.derive(
+                release_paths=[RUN_TESTS_SOURCE, source], previous=previous, release_tag=NEW_TAG, installed=NEW_DATE
+            )
+    assert source in str(raised.value)
+
+
+def test_a_not_installed_pattern_in_the_exact_case_names_the_source(
+    tool: ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = CI_TEMPLATES[0]
+    previous = previous_manifest(not_installed={CI_PATTERN: REASON})
+    with monkeypatch.context() as patch:
+        patch.setattr(target=os.path, name="normcase", value=str.lower)
+        manifest, _ = tool.derive(
+            release_paths=[RUN_TESTS_SOURCE, source], previous=previous, release_tag=NEW_TAG, installed=NEW_DATE
+        )
+    assert manifest[KEY_FILES] == {RUN_TESTS_INSTALLED: RUN_TESTS_SOURCE}
+    assert manifest[KEY_NOT_INSTALLED] == {CI_PATTERN: REASON}
+
+
 @pytest.mark.parametrize("source", UNMAPPED)
 def test_an_unmapped_source_without_a_not_installed_entry_raises_naming_it(tool: ModuleType, source: str) -> None:
     with pytest.raises(tool.ManifestError) as raised:
@@ -278,6 +316,29 @@ def test_the_tool_imports_only_the_standard_library(tool: ModuleType) -> None:
             imported.add(node.module.split(".")[0])
     outside = sorted(imported - set(sys.stdlib_module_names))
     assert imported and not outside, f"imports outside the standard library: {outside}"
+
+
+@pytest.mark.usefixtures("tool")
+@pytest.mark.parametrize("value", NOT_A_TAG)
+def test_a_release_that_is_not_a_tag_exits_two_and_writes_nothing(tmp_path: Path, value: str) -> None:
+    """The release is read from `refs/tags/<tag>` only: a branch or HEAD is no release, and an option never reaches
+    git as one."""
+    probe = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", f"refs/tags/{value}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    assert probe.returncode != 0, f"{value} must not be a tag of this clone"
+    copy = tmp_path / "toolchain.json"
+    original = COMMITTED.read_bytes()
+    copy.write_bytes(original)
+    installed = committed_manifest()[KEY_INSTALLED]
+    result = run_tool(
+        arguments=[f"{FLAG_RELEASE}={value}", FLAG_INSTALLED, installed, FLAG_MANIFEST, str(copy), FLAG_CHECK]
+    )
+    assert result.returncode == EXIT_TOOL_ERROR, described(result=result)
+    assert copy.read_bytes() == original, "a refused listing writes nothing"
 
 
 # --- AC-4: the regeneration reproduces the committed manifest, in the committed form -------------------------------
