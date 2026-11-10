@@ -22,7 +22,7 @@ BLOCK = 2
 
 
 def decide(command: str, tmp_path: Path, background: bool = False, tool: str = "Bash") -> lib.Decision:
-    tool_input = {"command": command}
+    tool_input: dict[str, object] = {"command": command}
     if background:
         tool_input["run_in_background"] = True
     payload = json.dumps(

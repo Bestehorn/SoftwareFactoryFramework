@@ -1,6 +1,6 @@
 {
   "comment": "The toolchain of this repository: files installed 1:1 from the framework release named by release_tag, whose commit .claude/FRAMEWORK_COMMIT pins. The CI integrity check (test/test_toolchain_integrity.py) requires each to equal its source there; the toolchain-paths gate refuses hand edits of them outside a framework-update-* branch. A promotion (prompts/update.txt) rewrites this file and the pin.",
-  "release_tag": "v2026.11.10",
+  "release_tag": "v2026.11.10.1",
   "installed": "2026-11-10",
   "files": {
     ".claude/agents/adversarial-verifier.md": "clients/claude/agents/adversarial-verifier.md",
@@ -122,6 +122,7 @@
     "src/payload/test/test_merge_steward.py": "no steward installed; the product suite runs it on every change",
     "src/payload/test/test_wrapper_delivery.py": "no steward delivery verbs in use; the product suite runs it",
     "src/payload/test/test_reap_agent_temp.py": "the product suite (src/payload/test/) runs it on every change",
+    "src/payload/test/test_run_checks.py": "the product suite (src/payload/test/) runs it on every change",
     "src/payload/scripts/gitlab_wrapper.py": "the repository is on GitHub",
     "src/payload/src/aws_config.py": "not an AWS project",
     "src/hooks/kiro_hooks.py": "Claude toolchain only (self-hosting decision S1 note: Kiro later)",

@@ -44,10 +44,10 @@ facts the rules cannot know go under "This project".
   `config/toolchain.json` (installed from the release in `.claude/FRAMEWORK_COMMIT`): never edit
   it by hand — the `toolchain-paths` gate refuses it and `test/test_toolchain_integrity.py` fails.
   Change the product file; it reaches the toolchain when a release is tagged (`vYYYY.MM.DD[.N]`)
-  and promoted with `prompts/update.txt` on a `framework-update-*` branch, which also rewrites
-  `config/toolchain.json`.
+  and promoted with `prompts/update.txt` on a `framework-update-*` branch, which also regenerates
+  `config/toolchain.json` (`python scripts/toolchain_manifest.py --release <tag>`).
 - GitHub, merge mode direct (no `config/delivery.json`, no merge steward). The toolchain wrapper
   is a recorded deviation (the chess project's implementation) until the product wrapper rewrite
   is released; new subcommands go into `src/payload/scripts/github_wrapper.py`.
 - Forge-facing tests use ephemeral `sff-test-*` repositories they create and delete, never this
-  backlog. `pyproject.toml` carries a mypy baseline of 10 modules, removed as each is fixed.
+  backlog. `mypy src` is clean with no override (`test/test_mypy_baseline.py`).
