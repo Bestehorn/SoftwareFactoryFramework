@@ -119,29 +119,29 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_wrapper_compat.py
 
 Run: `python scripts/run_tests.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py test/test_setup_prompts_github_wrapper.py test/test_layout.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_setup_prompts_gitignore.py test/test_agent_rule_references.py test/test_no_ai_attribution_rule.py test/test_post_activity_prompts.py`
 
-- [ ] 5.1 TEST: `CASES` rows for each claim, pull-request and CI subcommand of UB-1.1 and each nested `issue …`
+- [x] 5.1 TEST: `CASES` rows for each claim, pull-request and CI subcommand of UB-1.1 and each nested `issue …`
   spelling: exit 3 (`claim-check` on an open unclaimed issue); 10 and 11 (`wait-run`, `--timeout-seconds 0`);
   `start-issue` and `issue start` on an open unclaimed issue (exit 0); `get-logs` served the `302` to a storage host;
   each with its expected non-GET requests. — Files: src/payload/test/github_wrapper_fixtures.py — Validates: UB-1.1
-- [ ] 5.2 TEST: P — adds `test_the_parsers_match_option_by_option`, comparing the fork's and the product's
+- [x] 5.2 TEST: P — adds `test_the_parsers_match_option_by_option`, comparing the fork's and the product's
   `_build_parser()` subparsers for each caller-used subcommand of the fork's parser and each nested spelling, except
   the fork's `--token-stdin`. — Files: test/test_github_wrapper_fork_parity.py —
   Validates: UB-1.1
-- [ ] 5.3 TEST: S — `test_the_setup_prompts_copy_the_package`: Part 5.3 of `prompts/setup-claude.txt` and Part 6.2
+- [x] 5.3 TEST: S — `test_the_setup_prompts_copy_the_package`: Part 5.3 of `prompts/setup-claude.txt` and Part 6.2
   of `prompts/setup-kiro.txt`, each cut to the next `### Part` heading as `test/test_setup_prompts_gitignore.py` cuts
   PART 3, name `src/payload/scripts/github_api/` beside `src/payload/scripts/github_wrapper.py`; each shipped-Python
   list, cut to the next `###` heading, names `scripts/github_api/`. — Files: test/test_setup_prompts_github_wrapper.py
   — Validates: UB-1.3
-- [ ] 5.4 IMPL: `commands/claim.py` — `start-issue`, `release-issue`, `claim-check`, `label-add`, `label-remove`,
+- [x] 5.4 IMPL: `commands/claim.py` — `start-issue`, `release-issue`, `claim-check`, `label-add`, `label-remove`,
   `assign` and the nested `issue` group, both spellings sharing one argument helper and one handler (the fork's
   `ISSUE_GROUP_DISPATCH`). — Files: src/payload/scripts/github_api/commands/claim.py — Validates: UB-1.1
-- [ ] 5.5 IMPL: `commands/pulls.py` — `create-pr`, `get-pr`, `get-pr-checks`, `approve-pr`, `merge-pr`,
+- [x] 5.5 IMPL: `commands/pulls.py` — `create-pr`, `get-pr`, `get-pr-checks`, `approve-pr`, `merge-pr`,
   `delete-remote-branch`; the module docstring carries the PR endpoints and `cmd_approve_pr`'s own-PR approval caveat.
   — Files: src/payload/scripts/github_api/commands/pulls.py — Validates: UB-1.1
-- [ ] 5.6 IMPL: `commands/ci.py` — `list-workflows`, `list-runs`, `get-run`, `wait-run` (the fork's poll, deadline
+- [x] 5.6 IMPL: `commands/ci.py` — `list-workflows`, `list-runs`, `get-run`, `wait-run` (the fork's poll, deadline
   check, sleep order and defaults), `get-logs` (`Transport.download`, the fork's archive printing). — Files:
   src/payload/scripts/github_api/commands/ci.py — Validates: UB-1.1
-- [ ] 5.7 IMPL: D8's edits — Part 5.3 (copy step, the docstring pointers, the skeletons sentence's GitHub half) and
+- [x] 5.7 IMPL: D8's edits — Part 5.3 (copy step, the docstring pointers, the skeletons sentence's GitHub half) and
   the shipped-Python list of `setup-claude.txt`; Part 6.2 (copy step, skeletons sentence), the APPENDIX directory
   structure and the shipped-Python list of `setup-kiro.txt`, each GitLab half as the tree holds it; and the map
   `docs/forLLMConsumption.md` names `src/payload/scripts/github_api/`, under its cap. — Files: prompts/setup-claude.txt,

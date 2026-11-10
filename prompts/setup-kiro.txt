@@ -1056,6 +1056,8 @@ a real (non-placeholder) token.
     template, for the developer to overwrite.
   - `scripts/github_wrapper.py`: copy from
     `src/payload/scripts/github_wrapper.py`.
+  - `scripts/github_api/`: copy from `src/payload/scripts/github_api/`
+    (the package the entry script imports; the two are copied together).
 - GitLab:
   - `config/gitlab.json.template` (checked in): copy from
     `templates/config/gitlab.json.template`.
@@ -1064,9 +1066,14 @@ a real (non-placeholder) token.
   - `scripts/gitlab_wrapper.py`: copy from
     `src/payload/scripts/gitlab_wrapper.py`.
 
-The template wrapper scripts are skeletons. The agent should extend
-them with the subcommands needed for the current project (see the
-docstring in each template). Required minimum subcommands:
+The GitHub wrapper implements the subcommands the framework's agents
+and hooks invoke; of the minimum below, `get-jobs`, `rerun` and
+`cancel` arrive in a later framework release, and a further subcommand
+is added as a module of `scripts/github_api/commands/` (see the
+docstring of `scripts/github_wrapper.py`). The GitLab template wrapper
+script is a skeleton. The agent should extend it with the subcommands
+needed for the current project (see the docstring in the template).
+Required minimum subcommands:
 
 GitHub: `list-workflows`, `list-runs`, `get-run`, `get-jobs`,
 `get-logs` (must strip `Authorization` header before following the
@@ -5050,6 +5057,7 @@ project/
 │   ├── run_checks.py            # every check, every failure, one pass — CI calls this
 │   ├── ci_outage_mode.py        # declare/clear the CI-outage marker
 │   ├── github_wrapper.py        # if GitHub
+│   ├── github_api/              # if GitHub
 │   └── gitlab_wrapper.py        # if GitLab
 ├── src/
 │   └── aws_config.py            # if AWS
@@ -5137,6 +5145,7 @@ All under `src/payload/` in the prompt repository, laid out like the project:
 - `src/aws_config.py`
 - `scripts/gitlab_wrapper.py`
 - `scripts/github_wrapper.py`
+- `scripts/github_api/` (the package `scripts/github_wrapper.py` imports; copied with it, PART 6.2)
 - `scripts/run_tests.py` (bounded workers, no fail-fast; holds a host-wide suite slot, PART 2.2)
 - `scripts/suite_semaphore.py` (the host-wide cap on concurrent suites and synths, PART 2.2)
 - `test/test_instruction_corpus_budget.py` (the memory-budget guard, PART 12)

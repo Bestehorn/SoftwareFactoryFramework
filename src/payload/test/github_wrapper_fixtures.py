@@ -17,6 +17,9 @@ case-insensitive.
   while items remain.
 * A list failure route answers ``GET`` on a list endpoint with one scripted reply whatever page is asked for, so a
   caller's own paging parameters meet it as they meet a list route.
+* An uncredentialed route answers as a static route does, but only a request that carries no ``authorization``
+  header: a storage host's, which a download's redirect reaches without the GitHub credential. A request that carries
+  one is unrouted.
 * A request no route answers fails the test with ``pytest.fail``, which no ``except Exception`` swallows, and stays in
   ``unrouted`` for the teardown check.
 
@@ -45,12 +48,13 @@ import socket
 import sys
 import urllib.request
 import urllib.response
+import zipfile
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Type, Union
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 import pytest
@@ -64,6 +68,7 @@ FIRST_PAGE = 1
 QUERY_PAGE = "page"
 QUERY_PER_PAGE = "per_page"
 PAGING_PARAMETERS = (QUERY_PAGE, QUERY_PER_PAGE)
+HEADER_AUTHORIZATION = "authorization"
 HEADER_CONTENT_TYPE = "content-type"
 HEADER_LINK = "link"
 HEADER_LOCATION = "location"
@@ -279,6 +284,17 @@ class Route:
 
 
 @dataclass
+class UncredentialedRoute(Route):
+    """A static route that answers only a request carrying no ``authorization`` header: a storage host's, which a
+    download's redirect reaches without the GitHub credential. A request that carries one stays unrouted."""
+
+    def matches(self, *, request: RecordedRequest, endpoint: Endpoint) -> bool:
+        """Whether this route answers ``request``, sent to ``endpoint`` without a credential."""
+        uncredentialed = request.header(name=HEADER_AUTHORIZATION) is None
+        return uncredentialed and super().matches(request=request, endpoint=endpoint)
+
+
+@dataclass
 class ListRoute:
     """A list route: ``GET`` on one endpoint and decoded query (``page`` and ``per_page`` aside), answered with that
     page's slice of ``items`` (inside ``{"total_count": ..., <item_key>: [...]}`` when ``item_key`` is given) and a
@@ -346,10 +362,35 @@ class FakeGitHub:
     ) -> None:
         """Answer ``method`` on ``url`` (a path on the API host, or an absolute URL) with ``replies`` in order, the last
         repeating. The decoded query a request must carry is the URL's own, updated with ``query``."""
+        self._routes.append(self._static_route(kind=Route, method=method, url=url, replies=replies, query=query))
+
+    def uncredentialed_route(
+        self,
+        *,
+        method: str,
+        url: str,
+        replies: Sequence[Reply],
+        query: Optional[Mapping[str, QueryValue]] = None,
+    ) -> None:
+        """As ``route``, but only for a request that carries no ``authorization`` header; one that carries it is left
+        unrouted, so the test fails."""
+        self._routes.append(
+            self._static_route(kind=UncredentialedRoute, method=method, url=url, replies=replies, query=query)
+        )
+
+    @staticmethod
+    def _static_route(
+        *,
+        kind: Type[Route],
+        method: str,
+        url: str,
+        replies: Sequence[Reply],
+        query: Optional[Mapping[str, QueryValue]],
+    ) -> Route:
         assert replies, f"the route {method} {url} needs at least one reply"
         endpoint, decoded = _target_of(url=url)
         decoded.update(query_of(values=query))
-        self._routes.append(Route(method=method.upper(), endpoint=endpoint, query=decoded, replies=list(replies)))
+        return kind(method=method.upper(), endpoint=endpoint, query=decoded, replies=list(replies))
 
     def list_route(
         self,
@@ -428,7 +469,6 @@ EXIT_OF_A_MESSAGE = 1  # what the interpreter exits with when ``sys.exit`` is ha
 
 METHOD_POST = "POST"
 METHOD_PATCH = "PATCH"
-HEADER_AUTHORIZATION = "authorization"
 QUERY_STATE = "state"
 QUERY_LABELS = "labels"
 QUERY_ASSIGNEE = "assignee"
@@ -442,6 +482,7 @@ FIELD_NAME = "name"
 FIELD_ID = "id"
 FIELD_USER = "user"
 FIELD_LOGIN = "login"
+FIELD_ASSIGNEES = "assignees"
 FIELD_URL = "url"
 FIELD_HTML_URL = "html_url"
 FIELD_PULL_REQUEST = "pull_request"
@@ -545,16 +586,27 @@ class StaticRouteSpec(RouteSpec):
 
 
 @dataclass(frozen=True)
+class UncredentialedRouteSpec(StaticRouteSpec):
+    """``FakeGitHub.uncredentialed_route``'s arguments: a static route that a request carrying a credential misses."""
+
+    def install(self, *, host: FakeGitHub) -> None:
+        """Add the uncredentialed route to ``host``."""
+        host.uncredentialed_route(method=self.method, url=self.url, replies=self.replies, query=self.query)
+
+
+@dataclass(frozen=True)
 class ListRouteSpec(RouteSpec):
-    """``FakeGitHub.list_route``'s arguments: ``items`` served as ``page``/``per_page`` slices with a ``link``."""
+    """``FakeGitHub.list_route``'s arguments: ``items`` served as ``page``/``per_page`` slices with a ``link``, inside
+    ``{"total_count": ..., <item_key>: [...]}`` when ``item_key`` is given."""
 
     url: str
     items: Tuple[Any, ...]
     query: Mapping[str, QueryValue] = field(default_factory=dict)
+    item_key: Optional[str] = None
 
     def install(self, *, host: FakeGitHub) -> None:
         """Add the list route to ``host``."""
-        host.list_route(url=self.url, items=self.items, query=self.query)
+        host.list_route(url=self.url, items=self.items, query=self.query, item_key=self.item_key)
 
 
 @dataclass(frozen=True)
@@ -625,9 +677,11 @@ def issue_entry(
     body: Optional[str] = None,
     labels: Sequence[str] = (),
     pull_request: bool = False,
+    assignees: Optional[Sequence[str]] = None,
 ) -> Dict[str, Any]:
     """An issue as the issues endpoints return it, cut to the fields the commands read; with ``pull_request``, an entry
-    of the issue list that is a pull request."""
+    of the issue list that is a pull request; with ``assignees``, the assignees' logins, which the claim commands
+    read."""
     entry: Dict[str, Any] = {
         FIELD_NUMBER: number,
         FIELD_TITLE: title,
@@ -636,6 +690,8 @@ def issue_entry(
         FIELD_LABELS: [{FIELD_NAME: name} for name in labels],
         FIELD_HTML_URL: f"{WEB_ORIGIN}/{OWNER}/{REPOSITORY}/issues/{number}",
     }
+    if assignees is not None:
+        entry[FIELD_ASSIGNEES] = [{FIELD_LOGIN: login} for login in assignees]
     if pull_request:
         entry[FIELD_PULL_REQUEST] = {FIELD_URL: f"{API_ORIGIN}/repos/{OWNER}/{REPOSITORY}/pulls/{number}"}
     return entry
@@ -1256,7 +1312,1274 @@ def _checklist_cases() -> Tuple[GoldenCase, ...]:
     )
 
 
-#: The golden cases of the issues subcommands of UB-1.1, every value the installed fork's own output.
+def error_reply(*, status: int, message: str) -> Reply:
+    """GitHub's ``basic-error`` answer with ``status``: ``message``, the documentation URL and the status as text."""
+    return Reply(
+        status=status,
+        body={FIELD_MESSAGE: message, FIELD_DOCUMENTATION_URL: DOCUMENTATION_URL, FIELD_STATUS: str(status)},
+    )
+
+
+def printed_line(*, value: Any) -> str:
+    """What ``print(json.dumps(value))`` writes: how the fork prints a one-line verdict."""
+    return json.dumps(value) + "\n"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The claim subcommands, each in its flat and its nested ``issue …`` spelling, which share one handler in the fork
+# ---------------------------------------------------------------------------------------------------------------------
+
+EXIT_OPEN_AND_UNCLAIMED = 3  # ``claim-check``: the issue is open and nobody has claimed it
+
+METHOD_DELETE = "DELETE"
+KEY_CLAIMED = "claimed"
+KEY_EXIT_CODE = "exit_code"
+KEY_VERIFIED = "verified"
+KEY_UNASSIGNED = "unassigned"
+
+ISSUE_GROUP = "issue"  # the nested spelling's first word: ``issue start 5`` is ``start-issue 5``
+OTHER_LOGIN = "hubot"
+LABEL_ENHANCEMENT = "enhancement"
+CLAIM_NUMBER = 5
+CLAIM_TITLE = "Wrapper rewrite"
+ISSUE_5_PATH = f"{ISSUES_PATH}/5"
+ISSUE_6_PATH = f"{ISSUES_PATH}/6"
+USER_READ = StaticRouteSpec(
+    method=METHOD_GET, url="/user", replies=(Reply(body={FIELD_LOGIN: USER_LOGIN, FIELD_ID: 583231}),)
+)
+LABEL_MISSING = error_reply(status=404, message="Label does not exist")
+
+
+def claim_entry(
+    *, state: str = STATE_OPEN, labels: Sequence[str] = (), assignees: Sequence[str] = ()
+) -> Dict[str, Any]:
+    """Issue 5 as the claim commands read it, with its labels and its assignees' logins."""
+    return issue_entry(number=CLAIM_NUMBER, title=CLAIM_TITLE, state=state, labels=labels, assignees=assignees)
+
+
+def label_list(*, names: Sequence[str]) -> List[Dict[str, Any]]:
+    """An issue's labels as the labels endpoints answer them, cut to their names."""
+    return [{FIELD_NAME: name} for name in names]
+
+
+def issue_reads(*, entries: Sequence[Mapping[str, Any]]) -> StaticRouteSpec:
+    """``GET`` of issue 5, answered with ``entries`` in turn and the last repeated: the read, then the re-read."""
+    return StaticRouteSpec(method=METHOD_GET, url=ISSUE_5_PATH, replies=tuple(Reply(body=entry) for entry in entries))
+
+
+def claim_check_verdict(
+    *, state: str, labels: Sequence[str], assignees: Sequence[str], claimed: bool, exit_code: int
+) -> str:
+    """The fork's ``claim-check`` verdict on issue 5."""
+    return printed_json(
+        value={
+            FIELD_NUMBER: CLAIM_NUMBER,
+            FIELD_STATE: state,
+            FIELD_LABELS: list(labels),
+            FIELD_ASSIGNEES: list(assignees),
+            KEY_CLAIMED: claimed,
+            KEY_EXIT_CODE: exit_code,
+        }
+    )
+
+
+def start_verdict(*, labels: Sequence[str], assignees: Sequence[str]) -> str:
+    """The fork's ``start-issue`` verdict on issue 5: claimed, and verified by the re-read showing ``labels`` and
+    ``assignees``."""
+    return printed_json(
+        value={
+            FIELD_NUMBER: CLAIM_NUMBER,
+            FIELD_STATE: STATE_OPEN,
+            FIELD_LABELS: list(labels),
+            FIELD_ASSIGNEES: list(assignees),
+            KEY_CLAIMED: True,
+            KEY_VERIFIED: True,
+        }
+    )
+
+
+def release_verdict(*, labels: Sequence[str], unassigned: Sequence[str]) -> str:
+    """The fork's ``release-issue`` verdict on issue 5: its labels after the release and the logins it unassigned."""
+    return printed_json(
+        value={
+            FIELD_NUMBER: CLAIM_NUMBER,
+            FIELD_LABELS: list(labels),
+            KEY_CLAIMED: False,
+            KEY_UNASSIGNED: list(unassigned),
+        }
+    )
+
+
+def assign_verdict(*, assignees: Sequence[str], unassigned: Optional[Sequence[str]] = None) -> str:
+    """The fork's ``assign`` verdict on issue 5; with ``unassigned``, the ``--unassign`` form."""
+    value: Dict[str, Any] = {FIELD_NUMBER: CLAIM_NUMBER, FIELD_ASSIGNEES: list(assignees)}
+    if unassigned is not None:
+        value[KEY_UNASSIGNED] = list(unassigned)
+    return printed_json(value=value)
+
+
+def _name_of(*, words: Tuple[str, ...]) -> str:
+    """The name a spelling's cases carry: ``claim-check``, or ``issue/claim-check`` for the nested one."""
+    return "/".join(words)
+
+
+def _claim_check_cases(*, words: Tuple[str, ...], credential: Project, repository: Project) -> Tuple[GoldenCase, ...]:
+    command = _name_of(words=words)
+    return (
+        GoldenCase(
+            name=f"{command}/exit-3/open-and-unclaimed",
+            argv=(*words, "5"),
+            stdout=claim_check_verdict(
+                state=STATE_OPEN,
+                labels=(LABEL_ENHANCEMENT,),
+                assignees=(),
+                claimed=False,
+                exit_code=EXIT_OPEN_AND_UNCLAIMED,
+            ),
+            exit_code=EXIT_OPEN_AND_UNCLAIMED,
+            routes=(issue_reads(entries=(claim_entry(labels=(LABEL_ENHANCEMENT,)),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/claimed-by-the-label",
+            argv=(*words, "5"),
+            stdout=claim_check_verdict(
+                state=STATE_OPEN,
+                labels=(LABEL_ENHANCEMENT, LABEL_IN_PROGRESS),
+                assignees=(),
+                claimed=True,
+                exit_code=EXIT_OK,
+            ),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(claim_entry(labels=(LABEL_ENHANCEMENT, LABEL_IN_PROGRESS)),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/claimed-by-an-assignee",
+            argv=(*words, "5"),
+            stdout=claim_check_verdict(
+                state=STATE_OPEN, labels=(), assignees=(OTHER_LOGIN,), claimed=True, exit_code=EXIT_OK
+            ),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(claim_entry(assignees=(OTHER_LOGIN,)),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/closed-and-unclaimed",
+            argv=(*words, "5"),
+            stdout=claim_check_verdict(state=STATE_CLOSED, labels=(), assignees=(), claimed=False, exit_code=EXIT_OK),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(claim_entry(state=STATE_CLOSED),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(*words, "6"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=ISSUE_6_PATH, replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(*words, "5"),
+            usage=(*words, "five"),
+            credential=credential,
+            repository=repository,
+        ),
+    )
+
+
+def _start_cases(*, words: Tuple[str, ...], credential: Project, repository: Project) -> Tuple[GoldenCase, ...]:
+    command = _name_of(words=words)
+    labels_path = f"{ISSUE_5_PATH}/labels"
+    assignees_path = f"{ISSUE_5_PATH}/assignees"
+    unclaimed = claim_entry(labels=(LABEL_ENHANCEMENT,))
+    claimed = claim_entry(labels=(LABEL_ENHANCEMENT, LABEL_IN_PROGRESS), assignees=(USER_LOGIN,))
+    yours = claim_entry(labels=(LABEL_IN_PROGRESS,), assignees=(USER_LOGIN,))
+    theirs = claim_entry(labels=(LABEL_IN_PROGRESS,), assignees=(OTHER_LOGIN,))
+    taken_over = claim_entry(labels=(LABEL_IN_PROGRESS,), assignees=(OTHER_LOGIN, USER_LOGIN))
+    add_label = StaticRouteSpec(
+        method=METHOD_POST,
+        url=labels_path,
+        replies=(Reply(body=label_list(names=(LABEL_ENHANCEMENT, LABEL_IN_PROGRESS))),),
+    )
+    add_assignee = StaticRouteSpec(
+        method=METHOD_POST, url=assignees_path, replies=(Reply(status=CREATED, body=claimed),)
+    )
+    label_added = NonGetRequest(method=METHOD_POST, path=labels_path, body={FIELD_LABELS: [LABEL_IN_PROGRESS]})
+    you_assigned = NonGetRequest(method=METHOD_POST, path=assignees_path, body={FIELD_ASSIGNEES: [USER_LOGIN]})
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/open-and-unclaimed",
+            argv=(*words, "5"),
+            stdout=start_verdict(labels=(LABEL_ENHANCEMENT, LABEL_IN_PROGRESS), assignees=(USER_LOGIN,)),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(unclaimed, claimed)), USER_READ, add_label, add_assignee),
+            writes=(label_added, you_assigned),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/already-yours-writes-nothing",
+            argv=(*words, "5"),
+            stdout=start_verdict(labels=(LABEL_IN_PROGRESS,), assignees=(USER_LOGIN,)),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(yours,)), USER_READ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/force-takes-over",
+            argv=(*words, "5", "--force"),
+            stdout=start_verdict(labels=(LABEL_IN_PROGRESS,), assignees=(OTHER_LOGIN, USER_LOGIN)),
+            exit_code=EXIT_OK,
+            routes=(
+                issue_reads(entries=(theirs, taken_over)),
+                USER_READ,
+                StaticRouteSpec(
+                    method=METHOD_POST, url=assignees_path, replies=(Reply(status=CREATED, body=taken_over),)
+                ),
+            ),
+            writes=(you_assigned,),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/assigned-to-another",
+            argv=(*words, "5"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(issue_reads(entries=(claim_entry(assignees=(OTHER_LOGIN,)),)), USER_READ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/label-without-an-assignee",
+            argv=(*words, "5"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(issue_reads(entries=(claim_entry(labels=(LABEL_IN_PROGRESS,)),)), USER_READ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/strict-refuses-your-own-claim",
+            argv=(*words, "5", "--strict"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(issue_reads(entries=(yours,)), USER_READ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-open",
+            argv=(*words, "5"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(issue_reads(entries=(claim_entry(state=STATE_CLOSED),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/claim-not-on-re-read",
+            argv=(*words, "5"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(issue_reads(entries=(unclaimed,)), USER_READ, add_label, add_assignee),
+            writes=(label_added, you_assigned),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(*words, "6"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=ISSUE_6_PATH, replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(*words, "5"),
+            usage=words,
+            credential=credential,
+            repository=repository,
+        ),
+    )
+
+
+def _release_cases(*, words: Tuple[str, ...], credential: Project, repository: Project) -> Tuple[GoldenCase, ...]:
+    command = _name_of(words=words)
+    assignees_path = f"{ISSUE_5_PATH}/assignees"
+    unassign_route = StaticRouteSpec(
+        method=METHOD_DELETE, url=assignees_path, replies=(Reply(body=claim_entry(labels=(LABEL_ENHANCEMENT,))),)
+    )
+    you_unassigned = NonGetRequest(method=METHOD_DELETE, path=assignees_path, body={FIELD_ASSIGNEES: [USER_LOGIN]})
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/label-and-your-assignment-dropped",
+            argv=(*words, "5"),
+            stdout=release_verdict(labels=(LABEL_ENHANCEMENT,), unassigned=(USER_LOGIN,)),
+            exit_code=EXIT_OK,
+            routes=(
+                issue_reads(
+                    entries=(claim_entry(labels=(LABEL_ENHANCEMENT, LABEL_IN_PROGRESS), assignees=(USER_LOGIN,)),)
+                ),
+                USER_READ,
+                StaticRouteSpec(
+                    method=METHOD_PATCH,
+                    url=ISSUE_5_PATH,
+                    replies=(Reply(body=claim_entry(labels=(LABEL_ENHANCEMENT,), assignees=(USER_LOGIN,))),),
+                ),
+                unassign_route,
+            ),
+            writes=(
+                NonGetRequest(method=METHOD_PATCH, path=ISSUE_5_PATH, body={FIELD_LABELS: [LABEL_ENHANCEMENT]}),
+                you_unassigned,
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/not-claimed-writes-nothing",
+            argv=(*words, "5"),
+            stdout=release_verdict(labels=(LABEL_ENHANCEMENT,), unassigned=()),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(claim_entry(labels=(LABEL_ENHANCEMENT,)),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/another-assignee-kept",
+            argv=(*words, "5"),
+            stdout=release_verdict(labels=(), unassigned=()),
+            exit_code=EXIT_OK,
+            routes=(
+                issue_reads(entries=(claim_entry(labels=(LABEL_IN_PROGRESS,), assignees=(OTHER_LOGIN,)),)),
+                USER_READ,
+                StaticRouteSpec(
+                    method=METHOD_PATCH,
+                    url=ISSUE_5_PATH,
+                    replies=(Reply(body=claim_entry(assignees=(OTHER_LOGIN,))),),
+                ),
+            ),
+            writes=(NonGetRequest(method=METHOD_PATCH, path=ISSUE_5_PATH, body={FIELD_LABELS: []}),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/your-assignment-without-the-label",
+            argv=(*words, "5"),
+            stdout=release_verdict(labels=(), unassigned=(USER_LOGIN,)),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(claim_entry(assignees=(USER_LOGIN,)),)), USER_READ, unassign_route),
+            writes=(you_unassigned,),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(*words, "6"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=ISSUE_6_PATH, replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(*words, "5"),
+            usage=(*words, "x"),
+            credential=credential,
+            repository=repository,
+        ),
+    )
+
+
+def _label_add_cases(*, words: Tuple[str, ...], credential: Project, repository: Project) -> Tuple[GoldenCase, ...]:
+    command = _name_of(words=words)
+    labels_of_5 = f"{ISSUE_5_PATH}/labels"
+    labels_of_6 = f"{ISSUE_6_PATH}/labels"
+    added = label_list(names=(LABEL_ENHANCEMENT, "bug", "ui"))
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/added-beside-the-others",
+            argv=(*words, "5", "--labels", "bug, ui,"),
+            stdout=printed_json(value=added),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=labels_of_5, replies=(Reply(body=added),)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=labels_of_5, body={FIELD_LABELS: ["bug", "ui"]}),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/no-label-name",
+            argv=(*words, "5", "--labels", " , "),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(*words, "6", "--labels", "bug"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=labels_of_6, replies=(NOT_FOUND,)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=labels_of_6, body={FIELD_LABELS: ["bug"]}),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(*words, "5", "--labels", "bug"),
+            usage=(*words, "5"),
+            credential=credential,
+            repository=repository,
+        ),
+    )
+
+
+def _label_remove_cases(*, words: Tuple[str, ...], credential: Project, repository: Project) -> Tuple[GoldenCase, ...]:
+    command = _name_of(words=words)
+    remaining = label_list(names=(LABEL_ENHANCEMENT,))
+    slashed = f"{ISSUE_5_PATH}/labels/area%2Fui"
+    spaced = f"{ISSUE_5_PATH}/labels/help%20wanted"
+    absent = f"{ISSUE_5_PATH}/labels/wontfix"
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/name-with-a-slash",
+            argv=(*words, "5", "--label", "area/ui"),
+            stdout=printed_json(value=remaining),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_DELETE, url=slashed, replies=(Reply(body=remaining),)),),
+            writes=(NonGetRequest(method=METHOD_DELETE, path=slashed),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/name-with-a-space",
+            argv=(*words, "5", "--label", "help wanted"),
+            stdout=printed_json(value=remaining),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_DELETE, url=spaced, replies=(Reply(body=remaining),)),),
+            writes=(NonGetRequest(method=METHOD_DELETE, path=spaced),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/label-not-on-the-issue",
+            argv=(*words, "5", "--label", "wontfix"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_DELETE, url=absent, replies=(LABEL_MISSING,)),),
+            writes=(NonGetRequest(method=METHOD_DELETE, path=absent),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(*words, "5", "--label", "wontfix"),
+            usage=(*words, "5"),
+            credential=credential,
+            repository=repository,
+        ),
+    )
+
+
+def _assign_cases(*, words: Tuple[str, ...], credential: Project, repository: Project) -> Tuple[GoldenCase, ...]:
+    command = _name_of(words=words)
+    assignees_of_5 = f"{ISSUE_5_PATH}/assignees"
+    assignees_of_6 = f"{ISSUE_6_PATH}/assignees"
+    both = (USER_LOGIN, OTHER_LOGIN)
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/me",
+            argv=(*words, "5", "--me"),
+            stdout=assign_verdict(assignees=(USER_LOGIN,)),
+            exit_code=EXIT_OK,
+            routes=(
+                USER_READ,
+                StaticRouteSpec(
+                    method=METHOD_POST,
+                    url=assignees_of_5,
+                    replies=(Reply(status=CREATED, body=claim_entry(assignees=(USER_LOGIN,))),),
+                ),
+            ),
+            writes=(NonGetRequest(method=METHOD_POST, path=assignees_of_5, body={FIELD_ASSIGNEES: [USER_LOGIN]}),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/user-beside-the-others",
+            argv=(*words, "5", "--user", OTHER_LOGIN),
+            stdout=assign_verdict(assignees=both),
+            exit_code=EXIT_OK,
+            routes=(
+                StaticRouteSpec(
+                    method=METHOD_POST,
+                    url=assignees_of_5,
+                    replies=(Reply(status=CREATED, body=claim_entry(assignees=both)),),
+                ),
+            ),
+            writes=(NonGetRequest(method=METHOD_POST, path=assignees_of_5, body={FIELD_ASSIGNEES: [OTHER_LOGIN]}),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/unassign",
+            argv=(*words, "5", "--unassign"),
+            stdout=assign_verdict(assignees=(), unassigned=both),
+            exit_code=EXIT_OK,
+            routes=(
+                issue_reads(entries=(claim_entry(assignees=both),)),
+                StaticRouteSpec(method=METHOD_DELETE, url=assignees_of_5, replies=(Reply(body=claim_entry()),)),
+            ),
+            writes=(NonGetRequest(method=METHOD_DELETE, path=assignees_of_5, body={FIELD_ASSIGNEES: list(both)}),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/unassign-nobody-writes-nothing",
+            argv=(*words, "5", "--unassign"),
+            stdout=assign_verdict(assignees=(), unassigned=()),
+            exit_code=EXIT_OK,
+            routes=(issue_reads(entries=(claim_entry(),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(*words, "6", "--user", OTHER_LOGIN),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=assignees_of_6, replies=(NOT_FOUND,)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=assignees_of_6, body={FIELD_ASSIGNEES: [OTHER_LOGIN]}),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(*words, "5", "--user", OTHER_LOGIN),
+            usage=(*words, "5", "--me", "--unassign"),
+            credential=credential,
+            repository=repository,
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The pull-request subcommands
+# ---------------------------------------------------------------------------------------------------------------------
+
+METHOD_PUT = "PUT"
+NO_CONTENT = 204
+METHOD_NOT_ALLOWED = 405
+
+FIELD_HEAD = "head"
+FIELD_BASE = "base"
+FIELD_REF = "ref"
+FIELD_SHA = "sha"
+FIELD_HEAD_SHA = "head_sha"
+FIELD_MERGEABLE = "mergeable"
+FIELD_MERGEABLE_STATE = "mergeable_state"
+FIELD_MERGED = "merged"
+FIELD_EVENT = "event"
+FIELD_MERGE_METHOD = "merge_method"
+FIELD_COMMIT_MESSAGE = "commit_message"
+FIELD_CHECK_RUNS = "check_runs"
+FIELD_CONCLUSION = "conclusion"
+FIELD_STATUSES = "statuses"
+FIELD_CONTEXT = "context"
+FIELD_DESCRIPTION = "description"
+FIELD_COMBINED_STATUS = "combined_status"
+
+REPOSITORY_PATH = f"/repos/{OWNER}/{REPOSITORY}"
+PULLS_PATH = f"{REPOSITORY_PATH}/pulls"
+PULL_77_PATH = f"{PULLS_PATH}/77"
+PULL_78_PATH = f"{PULLS_PATH}/78"
+BRANCH_MAIN = "main"
+FEATURE_BRANCH = "issue-17-wrapper"
+HEAD_SHA = "deadbeef" * 5  # a full commit sha: 40 hex characters
+PULL_TITLE = "Rewrite the wrapper"
+PULL_BODY = "Closes #17."
+PR_BODY_FILE = "pr.md"
+PR_BODY_TEXT = "## Summary\n\nRewrites the wrapper on `github_api/`.\n\n- [x] transport\n\nCloses #17.\n"
+STATE_PENDING = "pending"
+MERGEABLE_UNKNOWN = "unknown"
+
+
+def pull_entry(
+    *,
+    number: int,
+    title: str,
+    body: Optional[str] = None,
+    base: str = BRANCH_MAIN,
+    mergeable: Optional[bool] = None,
+    mergeable_state: str = MERGEABLE_UNKNOWN,
+) -> Dict[str, Any]:
+    """A pull request as the pulls endpoints return it, cut to the fields the commands read: its head is
+    ``FEATURE_BRANCH`` at ``HEAD_SHA``."""
+    return {
+        FIELD_NUMBER: number,
+        FIELD_TITLE: title,
+        FIELD_STATE: STATE_OPEN,
+        FIELD_BODY: body,
+        FIELD_HEAD: {FIELD_REF: FEATURE_BRANCH, FIELD_SHA: HEAD_SHA},
+        FIELD_BASE: {FIELD_REF: base},
+        FIELD_MERGEABLE: mergeable,
+        FIELD_MERGEABLE_STATE: mergeable_state,
+        FIELD_HTML_URL: f"{WEB_ORIGIN}/{OWNER}/{REPOSITORY}/pull/{number}",
+    }
+
+
+PULL_77 = pull_entry(number=77, title=PULL_TITLE, body=PULL_BODY, mergeable=True, mergeable_state="clean")
+PULL_EXISTS = Reply(
+    status=422,
+    body={
+        FIELD_MESSAGE: "Validation Failed",
+        FIELD_ERRORS: [
+            {
+                FIELD_RESOURCE: "PullRequest",
+                FIELD_CODE: "custom",
+                FIELD_MESSAGE: f"A pull request already exists for {OWNER}:{FEATURE_BRANCH}.",
+            }
+        ],
+        FIELD_DOCUMENTATION_URL: DOCUMENTATION_URL,
+        FIELD_STATUS: "422",
+    },
+)
+
+
+def _create_pr_cases() -> Tuple[GoldenCase, ...]:
+    command = "create-pr"
+    titled = pull_entry(number=77, title=PULL_TITLE, body=PULL_BODY)
+    from_file = pull_entry(number=78, title=FEATURE_BRANCH, body=PR_BODY_TEXT, base="develop")
+    bare = pull_entry(number=79, title=FEATURE_BRANCH)
+    bare_body = {FIELD_TITLE: FEATURE_BRANCH, FIELD_HEAD: FEATURE_BRANCH, FIELD_BASE: BRANCH_MAIN}
+    with_file = Project(files=((PR_BODY_FILE, PR_BODY_TEXT),))
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/head-title-body",
+            argv=(command, "--head", FEATURE_BRANCH, "--title", PULL_TITLE, "--body", PULL_BODY),
+            stdout=printed_json(value=titled),
+            exit_code=EXIT_OK,
+            routes=(
+                StaticRouteSpec(method=METHOD_POST, url=PULLS_PATH, replies=(Reply(status=CREATED, body=titled),)),
+            ),
+            writes=(
+                NonGetRequest(
+                    method=METHOD_POST,
+                    path=PULLS_PATH,
+                    body={
+                        FIELD_TITLE: PULL_TITLE,
+                        FIELD_HEAD: FEATURE_BRANCH,
+                        FIELD_BASE: BRANCH_MAIN,
+                        FIELD_BODY: PULL_BODY,
+                    },
+                ),
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/title-of-the-head-base-body-file",
+            argv=(command, "--head", FEATURE_BRANCH, "--base", "develop", "--body-file", PR_BODY_FILE),
+            stdout=printed_json(value=from_file),
+            exit_code=EXIT_OK,
+            project=with_file,
+            routes=(
+                StaticRouteSpec(method=METHOD_POST, url=PULLS_PATH, replies=(Reply(status=CREATED, body=from_file),)),
+            ),
+            writes=(
+                NonGetRequest(
+                    method=METHOD_POST,
+                    path=PULLS_PATH,
+                    body={
+                        FIELD_TITLE: FEATURE_BRANCH,
+                        FIELD_HEAD: FEATURE_BRANCH,
+                        FIELD_BASE: "develop",
+                        FIELD_BODY: PR_BODY_TEXT,
+                    },
+                ),
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/empty-body-left-out",
+            argv=(command, "--head", FEATURE_BRANCH, "--body", ""),
+            stdout=printed_json(value=bare),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=PULLS_PATH, replies=(Reply(status=CREATED, body=bare),)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=PULLS_PATH, body=bare_body),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/validation-failed",
+            argv=(command, "--head", FEATURE_BRANCH),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=PULLS_PATH, replies=(PULL_EXISTS,)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=PULLS_PATH, body=bare_body),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/body-and-body-file",
+            argv=(command, "--head", FEATURE_BRANCH, "--body", PULL_BODY, "--body-file", PR_BODY_FILE),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            project=with_file,
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, "--head", FEATURE_BRANCH),
+            usage=(command, "--title", "No head"),
+            credential=EMPTY_CREDENTIAL,
+            repository=UNPARSEABLE_ORIGIN,
+        ),
+    )
+
+
+def _get_pr_cases() -> Tuple[GoldenCase, ...]:
+    command = "get-pr"
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/pull-request",
+            argv=(command, "77"),
+            stdout=printed_json(value=PULL_77),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=PULL_77_PATH, replies=(Reply(body=PULL_77),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command, "78"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=PULL_78_PATH, replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, "77"),
+            usage=(command, "seventy-seven"),
+            credential=NO_CREDENTIAL,
+            repository=NO_ORIGIN,
+        ),
+    )
+
+
+def check_run_entry(*, check_id: int, name: str, status: str, conclusion: Optional[str]) -> Dict[str, Any]:
+    """A check run of ``HEAD_SHA`` as the check-runs endpoint lists it, cut to a few fields."""
+    return {
+        FIELD_ID: check_id,
+        FIELD_NAME: name,
+        FIELD_HEAD_SHA: HEAD_SHA,
+        FIELD_STATUS: status,
+        FIELD_CONCLUSION: conclusion,
+    }
+
+
+def combined_status(*, state: str, statuses: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
+    """The combined commit status of ``HEAD_SHA``: its ``state`` and its legacy ``statuses``."""
+    return {FIELD_STATE: state, FIELD_SHA: HEAD_SHA, FIELD_TOTAL_COUNT: len(statuses), FIELD_STATUSES: list(statuses)}
+
+
+def _get_pr_checks_cases() -> Tuple[GoldenCase, ...]:
+    command = "get-pr-checks"
+    check_runs_path = f"{REPOSITORY_PATH}/commits/{HEAD_SHA}/check-runs"
+    status_path = f"{REPOSITORY_PATH}/commits/{HEAD_SHA}/status"
+    blocked = pull_entry(number=77, title=PULL_TITLE, mergeable=True, mergeable_state="blocked")
+    fresh = pull_entry(number=77, title=PULL_TITLE)
+    check_runs = (
+        check_run_entry(check_id=501, name="verify (lint)", status="completed", conclusion="success"),
+        check_run_entry(check_id=502, name="verify (tests)", status="in_progress", conclusion=None),
+    )
+    legacy = {FIELD_CONTEXT: "ci/legacy", FIELD_STATE: STATE_PENDING, FIELD_DESCRIPTION: "Waiting for status"}
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/check-runs-and-statuses",
+            argv=(command, "77"),
+            stdout=printed_json(
+                value={
+                    FIELD_HEAD: HEAD_SHA,
+                    FIELD_MERGEABLE: True,
+                    FIELD_MERGEABLE_STATE: "blocked",
+                    FIELD_COMBINED_STATUS: STATE_PENDING,
+                    FIELD_CHECK_RUNS: [
+                        {FIELD_NAME: "verify (lint)", FIELD_STATUS: "completed", FIELD_CONCLUSION: "success"},
+                        {FIELD_NAME: "verify (tests)", FIELD_STATUS: "in_progress", FIELD_CONCLUSION: None},
+                    ],
+                    FIELD_STATUSES: [legacy],
+                }
+            ),
+            exit_code=EXIT_OK,
+            routes=(
+                StaticRouteSpec(method=METHOD_GET, url=PULL_77_PATH, replies=(Reply(body=blocked),)),
+                ListRouteSpec(url=check_runs_path, items=check_runs, item_key=FIELD_CHECK_RUNS),
+                StaticRouteSpec(
+                    method=METHOD_GET,
+                    url=status_path,
+                    replies=(Reply(body=combined_status(state=STATE_PENDING, statuses=(legacy,))),),
+                ),
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/no-checks-yet",
+            argv=(command, "77"),
+            stdout=printed_json(
+                value={
+                    FIELD_HEAD: HEAD_SHA,
+                    FIELD_MERGEABLE: None,
+                    FIELD_MERGEABLE_STATE: MERGEABLE_UNKNOWN,
+                    FIELD_COMBINED_STATUS: STATE_PENDING,
+                    FIELD_CHECK_RUNS: [],
+                    FIELD_STATUSES: [],
+                }
+            ),
+            exit_code=EXIT_OK,
+            routes=(
+                StaticRouteSpec(method=METHOD_GET, url=PULL_77_PATH, replies=(Reply(body=fresh),)),
+                ListRouteSpec(url=check_runs_path, items=(), item_key=FIELD_CHECK_RUNS),
+                StaticRouteSpec(
+                    method=METHOD_GET,
+                    url=status_path,
+                    replies=(Reply(body=combined_status(state=STATE_PENDING, statuses=())),),
+                ),
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/pull-request-not-found",
+            argv=(command, "78"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=PULL_78_PATH, replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, "77"),
+            usage=(command,),
+            credential=PLACEHOLDER_CREDENTIAL,
+            repository=NO_GIT_CONFIG,
+        ),
+    )
+
+
+def review_entry(*, body: str) -> Dict[str, Any]:
+    """The approving review of pull request 77 as the reviews endpoint answers it, cut to a few fields."""
+    return {
+        FIELD_ID: 80,
+        FIELD_USER: {FIELD_LOGIN: OTHER_LOGIN},
+        FIELD_BODY: body,
+        FIELD_STATE: "APPROVED",
+        FIELD_HTML_URL: f"{WEB_ORIGIN}/{OWNER}/{REPOSITORY}/pull/77#pullrequestreview-80",
+    }
+
+
+OWN_PULL_REQUEST = Reply(
+    status=422,
+    body={
+        FIELD_MESSAGE: "Unprocessable Entity",
+        FIELD_ERRORS: ["Review Can not approve your own pull request"],
+        FIELD_DOCUMENTATION_URL: DOCUMENTATION_URL,
+        FIELD_STATUS: "422",
+    },
+)
+
+
+def _approve_pr_cases() -> Tuple[GoldenCase, ...]:
+    command = "approve-pr"
+    reviews_path = f"{PULL_77_PATH}/reviews"
+    approved = review_entry(body="")
+    commented = review_entry(body="Looks right.")
+    approve = NonGetRequest(method=METHOD_POST, path=reviews_path, body={FIELD_EVENT: "APPROVE"})
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/approve",
+            argv=(command, "77"),
+            stdout=printed_json(value=approved),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=reviews_path, replies=(Reply(body=approved),)),),
+            writes=(approve,),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/approve-with-a-comment",
+            argv=(command, "77", "--body", "Looks right."),
+            stdout=printed_json(value=commented),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=reviews_path, replies=(Reply(body=commented),)),),
+            writes=(
+                NonGetRequest(
+                    method=METHOD_POST, path=reviews_path, body={FIELD_EVENT: "APPROVE", FIELD_BODY: "Looks right."}
+                ),
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/own-pull-request",
+            argv=(command, "77"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=reviews_path, replies=(OWN_PULL_REQUEST,)),),
+            writes=(approve,),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, "77"),
+            usage=(command,),
+            credential=TWO_TOKEN_CREDENTIAL,
+            repository=FOREIGN_ORIGIN,
+        ),
+    )
+
+
+def _merge_pr_cases() -> Tuple[GoldenCase, ...]:
+    command = "merge-pr"
+    merge_path = f"{PULL_77_PATH}/merge"
+    merged = {FIELD_SHA: HEAD_SHA, FIELD_MERGED: True, FIELD_MESSAGE: "Pull Request successfully merged"}
+    squash_message = "Rewrite the wrapper (#77)"
+    merge = NonGetRequest(method=METHOD_PUT, path=merge_path, body={FIELD_MERGE_METHOD: "merge"})
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/merge-by-default",
+            argv=(command, "77"),
+            stdout=printed_json(value=merged),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_PUT, url=merge_path, replies=(Reply(body=merged),)),),
+            writes=(merge,),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/squash-with-a-message",
+            argv=(command, "77", "--method", "squash", "--commit-message", squash_message),
+            stdout=printed_json(value=merged),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_PUT, url=merge_path, replies=(Reply(body=merged),)),),
+            writes=(
+                NonGetRequest(
+                    method=METHOD_PUT,
+                    path=merge_path,
+                    body={FIELD_MERGE_METHOD: "squash", FIELD_COMMIT_MESSAGE: squash_message},
+                ),
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-mergeable",
+            argv=(command, "77"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(
+                StaticRouteSpec(
+                    method=METHOD_PUT,
+                    url=merge_path,
+                    replies=(error_reply(status=METHOD_NOT_ALLOWED, message="Pull Request is not mergeable"),),
+                ),
+            ),
+            writes=(merge,),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, "77"),
+            usage=(command, "77", "--method", "fast-forward"),
+            credential=EMPTY_CREDENTIAL,
+            repository=NO_ORIGIN,
+        ),
+    )
+
+
+def _delete_remote_branch_cases() -> Tuple[GoldenCase, ...]:
+    command = "delete-remote-branch"
+    heads_path = f"{REPOSITORY_PATH}/git/refs/heads"
+    nested_branch = "feature/issue-17/part-1"
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/branch",
+            argv=(command, FEATURE_BRANCH),
+            stdout=f"Deleted remote branch: {FEATURE_BRANCH}\n",
+            exit_code=EXIT_OK,
+            routes=(
+                StaticRouteSpec(
+                    method=METHOD_DELETE, url=f"{heads_path}/{FEATURE_BRANCH}", replies=(Reply(status=NO_CONTENT),)
+                ),
+            ),
+            writes=(NonGetRequest(method=METHOD_DELETE, path=f"{heads_path}/{FEATURE_BRANCH}"),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/branch-with-slashes",
+            argv=(command, nested_branch),
+            stdout=f"Deleted remote branch: {nested_branch}\n",
+            exit_code=EXIT_OK,
+            routes=(
+                StaticRouteSpec(
+                    method=METHOD_DELETE, url=f"{heads_path}/{nested_branch}", replies=(Reply(status=NO_CONTENT),)
+                ),
+            ),
+            writes=(NonGetRequest(method=METHOD_DELETE, path=f"{heads_path}/{nested_branch}"),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/no-such-reference",
+            argv=(command, "gone"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(
+                StaticRouteSpec(
+                    method=METHOD_DELETE,
+                    url=f"{heads_path}/gone",
+                    replies=(error_reply(status=422, message="Reference does not exist"),),
+                ),
+            ),
+            writes=(NonGetRequest(method=METHOD_DELETE, path=f"{heads_path}/gone"),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, FEATURE_BRANCH),
+            usage=(command,),
+            credential=NO_CREDENTIAL,
+            repository=UNPARSEABLE_ORIGIN,
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The CI subcommands
+# ---------------------------------------------------------------------------------------------------------------------
+
+EXIT_WAIT_NOT_SUCCESS = 10  # ``wait-run``: the run completed with a conclusion other than ``success``
+EXIT_WAIT_TIMEOUT = 11  # ``wait-run``: the timeout passed before the run completed
+FOUND = 302
+
+FIELD_PATH = "path"
+FIELD_WORKFLOWS = "workflows"
+FIELD_WORKFLOW_RUNS = "workflow_runs"
+KEY_RUN_ID = "run_id"
+KEY_TIMEOUT_SECONDS = "timeout_seconds"
+RUN_IN_PROGRESS = "in_progress"
+RUN_COMPLETED = "completed"
+CONCLUSION_SUCCESS = "success"
+CONCLUSION_FAILURE = "failure"
+MEDIA_TYPE_ZIP = "application/zip"
+
+ACTIONS_PATH = f"{REPOSITORY_PATH}/actions"
+WORKFLOWS_PATH = f"{ACTIONS_PATH}/workflows"
+RUNS_PATH = f"{ACTIONS_PATH}/runs"
+RUN_ID = 4242
+RUN_PATH = f"{RUNS_PATH}/{RUN_ID}"
+MISSING_RUN_PATH = f"{RUNS_PATH}/4243"
+RUN_URL = f"{WEB_ORIGIN}/{OWNER}/{REPOSITORY}/actions/runs/{RUN_ID}"
+#: Where the logs endpoint's ``302`` sends the download: a pre-signed storage URL, on another host than the API.
+STORAGE_URL = "https://productionresultssa1.blob.core.windows.net/actions-results/4242/logs.zip?sv=2025-01-05&sp=r"
+LOG_ARCHIVE_TIME = (2026, 11, 10, 10, 0, 0)
+
+RunOutcome = Tuple[str, Optional[str]]  # a run's status and conclusion
+
+
+def workflow_entry(*, workflow_id: int, name: str, state: str, file_name: str) -> Dict[str, Any]:
+    """A workflow as the workflows endpoint lists it, cut to a few fields."""
+    return {FIELD_ID: workflow_id, FIELD_NAME: name, FIELD_PATH: f".github/workflows/{file_name}", FIELD_STATE: state}
+
+
+def run_entry(*, run_id: int, outcome: RunOutcome) -> Dict[str, Any]:
+    """A run of the ``CI`` workflow as the runs endpoints return it, cut to a few fields."""
+    status, conclusion = outcome
+    return {
+        FIELD_ID: run_id,
+        FIELD_NAME: "CI",
+        FIELD_HEAD_SHA: HEAD_SHA,
+        FIELD_STATUS: status,
+        FIELD_CONCLUSION: conclusion,
+        FIELD_HTML_URL: f"{WEB_ORIGIN}/{OWNER}/{REPOSITORY}/actions/runs/{run_id}",
+    }
+
+
+def listed_runs(*, entries: Sequence[Mapping[str, Any]], limit: int) -> str:
+    """The fork's ``list-runs`` lines for the first ``limit`` of ``entries``."""
+    return "".join(
+        f"{entry[FIELD_ID]:<12} {entry[FIELD_STATUS]:<12} {str(entry[FIELD_CONCLUSION]):<12} {entry[FIELD_NAME]}\n"
+        for entry in entries[:limit]
+    )
+
+
+def log_archive(*, entries: Sequence[Tuple[str, str]]) -> bytes:
+    """A run's log archive as the storage host serves it: a zip of each entry's text in UTF-8, in order, every entry
+    with one fixed timestamp so the bytes never vary."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(file=buffer, mode="w") as archive:
+        for name, text in entries:
+            entry = zipfile.ZipInfo(filename=name, date_time=LOG_ARCHIVE_TIME)
+            archive.writestr(zinfo_or_arcname=entry, data=text.encode(encoding="utf-8"))
+    return buffer.getvalue()
+
+
+def printed_logs(*, entries: Sequence[Tuple[str, str]]) -> str:
+    """The fork's ``get-logs`` output for ``entries``: each name in a ``====`` line, then its text and a newline."""
+    return "".join(f"==== {name} ====\n{text}\n" for name, text in entries)
+
+
+WORKFLOWS = (
+    workflow_entry(workflow_id=161335, name="CI", state="active", file_name="ci.yml"),
+    workflow_entry(workflow_id=161336, name="Release", state="disabled_manually", file_name="release.yml"),
+)
+RUN_OUTCOMES: Tuple[RunOutcome, ...] = (
+    (RUN_IN_PROGRESS, None),
+    (RUN_COMPLETED, CONCLUSION_SUCCESS),
+    (RUN_COMPLETED, CONCLUSION_FAILURE),
+    (RUN_COMPLETED, "cancelled"),
+)
+RUN_HISTORY_SIZE = 12  # more than ``list-runs``' default ``--limit`` of 10, which the fork sends as ``per_page``
+RUN_HISTORY = tuple(
+    run_entry(run_id=RUN_ID - offset, outcome=RUN_OUTCOMES[offset % len(RUN_OUTCOMES)])
+    for offset in range(RUN_HISTORY_SIZE)
+)
+COMPLETED_RUNS = tuple(entry for entry in RUN_HISTORY if entry[FIELD_STATUS] == RUN_COMPLETED)
+LINT_LOG = (
+    "0_verify (lint).txt",
+    "\ufeff2026-11-10T10:00:01.0000000Z ruff check\n2026-11-10T10:00:02.0000000Z ✓ All checks passed!",
+)
+SETUP_LOG = ("verify (tests)/1_Set up job.txt", "2026-11-10T10:00:03.0000000Z Current runner version: '2.330.0'")
+FAILED_STEP_LOG = ("verify (tests)/4_Run failed tests.txt", "2026-11-10T10:01:00.0000000Z 1 failed, 46 passed")
+LOG_ENTRIES = (LINT_LOG, SETUP_LOG, FAILED_STEP_LOG)
+#: The logs endpoint's answer, then the storage host's, which a request carrying the GitHub credential never reaches.
+LOGS_ON_STORAGE = (
+    StaticRouteSpec(method=METHOD_GET, url=f"{RUN_PATH}/logs", replies=(redirect(status=FOUND, location=STORAGE_URL),)),
+    UncredentialedRouteSpec(
+        method=METHOD_GET,
+        url=STORAGE_URL,
+        replies=(Reply(body=log_archive(entries=LOG_ENTRIES), headers={HEADER_CONTENT_TYPE: MEDIA_TYPE_ZIP}),),
+    ),
+)
+
+
+def _list_workflows_cases() -> Tuple[GoldenCase, ...]:
+    command = "list-workflows"
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/every-workflow",
+            argv=(command,),
+            stdout="161335       active     CI\n161336       disabled_manually Release\n",
+            exit_code=EXIT_OK,
+            routes=(ListRouteSpec(url=WORKFLOWS_PATH, items=WORKFLOWS, item_key=FIELD_WORKFLOWS),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command,),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(ListFailureRouteSpec(url=WORKFLOWS_PATH, failure=NOT_FOUND),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command,),
+            usage=(command, "--all"),
+            credential=PLACEHOLDER_CREDENTIAL,
+            repository=FOREIGN_ORIGIN,
+        ),
+    )
+
+
+def _list_runs_cases() -> Tuple[GoldenCase, ...]:
+    command = "list-runs"
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/default-limit-of-ten",
+            argv=(command,),
+            stdout=listed_runs(entries=RUN_HISTORY, limit=10),
+            exit_code=EXIT_OK,
+            routes=(ListRouteSpec(url=RUNS_PATH, items=RUN_HISTORY, item_key=FIELD_WORKFLOW_RUNS),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/workflow-status-limit",
+            argv=(command, "--workflow", "ci.yml", "--status", RUN_COMPLETED, "--limit", "2"),
+            stdout=listed_runs(entries=COMPLETED_RUNS, limit=2),
+            exit_code=EXIT_OK,
+            routes=(
+                ListRouteSpec(
+                    url=f"{WORKFLOWS_PATH}/ci.yml/runs",
+                    items=COMPLETED_RUNS,
+                    query={FIELD_STATUS: RUN_COMPLETED},
+                    item_key=FIELD_WORKFLOW_RUNS,
+                ),
+            ),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command, "--workflow", "missing.yml"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(ListFailureRouteSpec(url=f"{WORKFLOWS_PATH}/missing.yml/runs", failure=NOT_FOUND),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command,),
+            usage=(command, "--limit", "ten"),
+            credential=TWO_TOKEN_CREDENTIAL,
+            repository=NO_GIT_CONFIG,
+        ),
+    )
+
+
+def _get_run_cases() -> Tuple[GoldenCase, ...]:
+    command = "get-run"
+    succeeded = run_entry(run_id=RUN_ID, outcome=(RUN_COMPLETED, CONCLUSION_SUCCESS))
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/run",
+            argv=(command, str(RUN_ID)),
+            stdout=printed_json(value=succeeded),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=RUN_PATH, replies=(Reply(body=succeeded),)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command, "4243"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=MISSING_RUN_PATH, replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, str(RUN_ID)),
+            usage=(command, "latest"),
+            credential=EMPTY_CREDENTIAL,
+            repository=FOREIGN_ORIGIN,
+        ),
+    )
+
+
+def _wait_run_cases() -> Tuple[GoldenCase, ...]:
+    """The fork reads the run, returns once it is completed, checks its deadline and only then sleeps
+    ``--interval-seconds``: ``--timeout-seconds 0`` times out after one read with no sleep, and ``--interval-seconds
+    0`` makes the one poll's sleep take no time, so no case waits."""
+    command = "wait-run"
+    in_progress = Reply(body=run_entry(run_id=RUN_ID, outcome=(RUN_IN_PROGRESS, None)))
+    succeeded = Reply(body=run_entry(run_id=RUN_ID, outcome=(RUN_COMPLETED, CONCLUSION_SUCCESS)))
+    failed = Reply(body=run_entry(run_id=RUN_ID, outcome=(RUN_COMPLETED, CONCLUSION_FAILURE)))
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/completed-success",
+            argv=(command, str(RUN_ID)),
+            stdout=printed_line(
+                value={
+                    KEY_RUN_ID: RUN_ID,
+                    FIELD_STATUS: RUN_COMPLETED,
+                    FIELD_CONCLUSION: CONCLUSION_SUCCESS,
+                    FIELD_HTML_URL: RUN_URL,
+                }
+            ),
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=RUN_PATH, replies=(succeeded,)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-10/failure-after-one-poll",
+            argv=(command, str(RUN_ID), "--interval-seconds", "0"),
+            stdout=printed_line(
+                value={
+                    KEY_RUN_ID: RUN_ID,
+                    FIELD_STATUS: RUN_COMPLETED,
+                    FIELD_CONCLUSION: CONCLUSION_FAILURE,
+                    FIELD_HTML_URL: RUN_URL,
+                }
+            ),
+            exit_code=EXIT_WAIT_NOT_SUCCESS,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=RUN_PATH, replies=(in_progress, failed)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-11/timeout-of-zero-seconds",
+            argv=(command, str(RUN_ID), "--timeout-seconds", "0"),
+            stdout=printed_line(value={KEY_RUN_ID: RUN_ID, FIELD_STATUS: RUN_IN_PROGRESS, KEY_TIMEOUT_SECONDS: 0}),
+            exit_code=EXIT_WAIT_TIMEOUT,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=RUN_PATH, replies=(in_progress,)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command, "4243"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=MISSING_RUN_PATH, replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, str(RUN_ID)),
+            usage=(command, str(RUN_ID), "--timeout-seconds", "soon"),
+            credential=NO_CREDENTIAL,
+            repository=NO_ORIGIN,
+        ),
+    )
+
+
+def _get_logs_cases() -> Tuple[GoldenCase, ...]:
+    command = "get-logs"
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/archive-from-the-storage-host",
+            argv=(command, str(RUN_ID)),
+            stdout=printed_logs(entries=LOG_ENTRIES),
+            exit_code=EXIT_OK,
+            routes=LOGS_ON_STORAGE,
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/failed-only",
+            argv=(command, str(RUN_ID), "--failed-only"),
+            stdout=printed_logs(entries=(FAILED_STEP_LOG,)),
+            exit_code=EXIT_OK,
+            routes=LOGS_ON_STORAGE,
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command, "4243"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_GET, url=f"{MISSING_RUN_PATH}/logs", replies=(NOT_FOUND,)),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, str(RUN_ID)),
+            usage=(command,),
+            credential=PLACEHOLDER_CREDENTIAL,
+            repository=UNPARSEABLE_ORIGIN,
+        ),
+    )
+
+
+#: The golden cases of the issues, claim, pull-request and CI subcommands of UB-1.1, and of each nested ``issue …``
+#: spelling, every value the installed fork's own output.
 CASES: Tuple[GoldenCase, ...] = (
     *_list_issues_cases(),
     *_get_issue_cases(),
@@ -1266,6 +2589,31 @@ CASES: Tuple[GoldenCase, ...] = (
     *_update_issue_cases(),
     *_reopen_issue_cases(),
     *_checklist_cases(),
+    *_claim_check_cases(words=("claim-check",), credential=NO_CREDENTIAL, repository=NO_GIT_CONFIG),
+    *_claim_check_cases(
+        words=(ISSUE_GROUP, "claim-check"), credential=PLACEHOLDER_CREDENTIAL, repository=FOREIGN_ORIGIN
+    ),
+    *_start_cases(words=("start-issue",), credential=TWO_TOKEN_CREDENTIAL, repository=NO_ORIGIN),
+    *_start_cases(words=(ISSUE_GROUP, "start"), credential=EMPTY_CREDENTIAL, repository=UNPARSEABLE_ORIGIN),
+    *_release_cases(words=("release-issue",), credential=PLACEHOLDER_CREDENTIAL, repository=NO_GIT_CONFIG),
+    *_release_cases(words=(ISSUE_GROUP, "release"), credential=NO_CREDENTIAL, repository=FOREIGN_ORIGIN),
+    *_label_add_cases(words=("label-add",), credential=EMPTY_CREDENTIAL, repository=NO_ORIGIN),
+    *_label_add_cases(words=(ISSUE_GROUP, "label-add"), credential=TWO_TOKEN_CREDENTIAL, repository=UNPARSEABLE_ORIGIN),
+    *_label_remove_cases(words=("label-remove",), credential=NO_CREDENTIAL, repository=UNPARSEABLE_ORIGIN),
+    *_label_remove_cases(words=(ISSUE_GROUP, "label-remove"), credential=PLACEHOLDER_CREDENTIAL, repository=NO_ORIGIN),
+    *_assign_cases(words=("assign",), credential=TWO_TOKEN_CREDENTIAL, repository=FOREIGN_ORIGIN),
+    *_assign_cases(words=(ISSUE_GROUP, "assign"), credential=EMPTY_CREDENTIAL, repository=NO_GIT_CONFIG),
+    *_create_pr_cases(),
+    *_get_pr_cases(),
+    *_get_pr_checks_cases(),
+    *_approve_pr_cases(),
+    *_merge_pr_cases(),
+    *_delete_remote_branch_cases(),
+    *_list_workflows_cases(),
+    *_list_runs_cases(),
+    *_get_run_cases(),
+    *_wait_run_cases(),
+    *_get_logs_cases(),
 )
 
 
