@@ -10,7 +10,7 @@ under `src/payload/scripts/`. Each test does what design § Correctness Properti
 
 Run: `python scripts/run_tests.py src/payload/test/test_github_api_transport.py`
 
-- [ ] 1.1 TEST: the fake host and the transport tests. The fixtures module (loaded by path as
+- [x] 1.1 TEST: the fake host and the transport tests. The fixtures module (loaded by path as
   `test_wrapper_delivery.load` loads a wrapper, never collected) holds `FakeGitHub`: installed with `monkeypatch` over
   `urllib.request.HTTPSHandler.https_open` and `HTTPHandler.http_open`; answers with `urllib.response.addinfourl`
   objects with `msg` set; records each request's method, URL, body and the headers `do_open` sends
@@ -26,7 +26,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_api_transport.py`
   target) ends with `# pragma: allowlist secret`. — Files: src/payload/test/github_wrapper_fixtures.py,
   src/payload/test/test_github_api_transport.py — Validates: AC-2.1, AC-2.2, AC-2.3, AC-2.4, AC-3.1, AC-3.2, AC-3.3,
   AC-3.4, AC-4.1, AC-4.2, AC-4.3
-- [ ] 1.2 IMPL: `errors.py` — `GitHubAPIError(message, status_code=None, details=None)`, `GitHubRateLimitError`,
+- [x] 1.2 IMPL: `errors.py` — `GitHubAPIError(message, status_code=None, details=None)`, `GitHubRateLimitError`,
   `GitHubGraphQLResponseError` (X2); `transport.py` — D3's constants, `origin`, `CredentialStrippingRedirectHandler`,
   `build_opener`, `Transport` (`_send`, `request`, `pages`, `upload`, `download`, `graphql`, `graphql_nodes`) and D3's
   failures, every response value in a message or log line rendered with `json.dumps`; `__init__.py` empty. — Files:
