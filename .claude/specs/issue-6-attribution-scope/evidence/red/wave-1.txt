@@ -1,0 +1,120 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_no_ai_attribution_rule.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-6
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [21 items]
+
+FFFFFFFF..F......FFFF                                                    [100%]
+================================== FAILURES ===================================
+____ test_ac2_body_permits_a_path_or_product_named_as_the_subject[claude] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:223: in test_ac2_body_permits_a_path_or_product_named_as_the_subject
+    assert not problems, "\n".join(problems)
+E   AssertionError: claude body lacks the allowance sentence 'naming an existing file or directory path, command, setting or product as the subject of the work is not attribution'
+E   assert not ["claude body lacks the allowance sentence 'naming an existing file or directory path, command, setting or product as the subject of the work is not attribution'"]
+_____________ test_ac1_opening_paragraph_states_one_scope[claude] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:217: in test_ac1_opening_paragraph_states_one_scope
+    assert not problems, "\n".join(problems)
+E   AssertionError: claude opening paragraph lacks 'attribution of work to a tool'
+E     claude opening paragraph lacks 'names you author'
+E   assert not ["claude opening paragraph lacks 'attribution of work to a tool'", "claude opening paragraph lacks 'names you author'"]
+______________ test_ac1_opening_paragraph_states_one_scope[kiro] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:217: in test_ac1_opening_paragraph_states_one_scope
+    assert not problems, "\n".join(problems)
+E   AssertionError: kiro opening paragraph lacks 'attribution of work to a tool'
+E     kiro opening paragraph lacks 'names you author'
+E   assert not ["kiro opening paragraph lacks 'attribution of work to a tool'", "kiro opening paragraph lacks 'names you author'"]
+_____ test_ac2_body_permits_a_path_or_product_named_as_the_subject[kiro] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:223: in test_ac2_body_permits_a_path_or_product_named_as_the_subject
+    assert not problems, "\n".join(problems)
+E   AssertionError: kiro body lacks the allowance sentence 'naming an existing file or directory path, command, setting or product as the subject of the work is not attribution'
+E   assert not ["kiro body lacks the allowance sentence 'naming an existing file or directory path, command, setting or product as the subject of the work is not attribution'"]
+____________ test_ac3_self_check_states_the_opening_scope[claude] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:229: in test_ac3_self_check_states_the_opening_scope
+    assert not problems, "\n".join(problems)
+E   AssertionError: claude self-check paragraph lacks 'attribution of work to a tool'
+E     claude self-check paragraph lacks 'names you author'
+E   assert not ["claude self-check paragraph lacks 'attribution of work to a tool'", "claude self-check paragraph lacks 'names you author'"]
+______ test_ac3_no_sentence_bans_the_listed_words_in_every_message[kiro] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:235: in test_ac3_no_sentence_bans_the_listed_words_in_every_message
+    assert not problems, "\n".join(problems)
+E   AssertionError: kiro body still bans the listed words in every message: B1: 'into any name or message you create'
+E     kiro body still bans the listed words in every message: B2: 'never put "claude"/"ai"/"assistant"/"bot"/"llm"/"anthropic"/"copilot"/a model name into any name or message'
+E     kiro body still bans the listed words in every message: B3: 'every name describes'
+E   assert not ["kiro body still bans the listed words in every message: B1: 'into any name or message you create'", 'kiro body still...name into any name or message\'', "kiro body still bans the listed words in every message: B3: 'every name describes'"]
+_____________ test_ac3_self_check_states_the_opening_scope[kiro] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:229: in test_ac3_self_check_states_the_opening_scope
+    assert not problems, "\n".join(problems)
+E   AssertionError: kiro self-check paragraph lacks 'attribution of work to a tool'
+E     kiro self-check paragraph lacks 'names you author'
+E   assert not ["kiro self-check paragraph lacks 'attribution of work to a tool'", "kiro self-check paragraph lacks 'names you author'"]
+_____ test_ac3_no_sentence_bans_the_listed_words_in_every_message[claude] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:235: in test_ac3_no_sentence_bans_the_listed_words_in_every_message
+    assert not problems, "\n".join(problems)
+E   AssertionError: claude body still bans the listed words in every message: B1: 'into any name or message you create'
+E     claude body still bans the listed words in every message: B2: 'never put "claude" (or "ai", "assistant", "bot", "llm", "anthropic", "copilot", a model name) into any name or message'
+E     claude body still bans the listed words in every message: B3: 'every name you create describes'
+E   assert not ["claude body still bans the listed words in every message: B1: 'into any name or message you create'", 'claude body s... name or message\'', "claude body still bans the listed words in every message: B3: 'every name you create describes'"]
+____ test_ac4_kiro_body_carries_the_scope_the_allowance_and_the_agreement _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:247: in test_ac4_kiro_body_carries_the_scope_the_allowance_and_the_agreement
+    assert not problems, "\n".join(problems)
+E   AssertionError: kiro opening paragraph lacks 'attribution of work to a tool'
+E     kiro opening paragraph lacks 'names you author'
+E     kiro body lacks the allowance sentence 'naming an existing file or directory path, command, setting or product as the subject of the work is not attribution'
+E     kiro self-check paragraph lacks 'attribution of work to a tool'
+E     kiro self-check paragraph lacks 'names you author'
+E     kiro body still bans the listed words in every message: B1: 'into any name or message you create'
+E     kiro body still bans the listed words in every message: B2: 'never put "claude"/"ai"/"assistant"/"bot"/"llm"/"anthropic"/"copilot"/a model name into any name or message'
+E     kiro body still bans the listed words in every message: B3: 'every name describes'
+E   assert not ["kiro opening paragraph lacks 'attribution of work to a tool'", "kiro opening paragraph lacks 'names you author'", "k...you author'", "kiro body still bans the listed words in every message: B1: 'into any name or message you create'", ...]
+_ test_ub3_restatement_file_states_attribution_and_names_only[work-issue-command] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:280: in test_ub3_restatement_file_states_attribution_and_names_only
+    assert not found, f"{restatement.name} restates the blanket word ban: {found}"
+E   AssertionError: work-issue-command restates the blanket word ban: ["B4: 'claude/ai/bot into a branch, commit'"]
+E   assert not ["B4: 'claude/ai/bot into a branch, commit'"]
+_ test_ub3_restatement_file_states_attribution_and_names_only[auto-work-command] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:280: in test_ub3_restatement_file_states_attribution_and_names_only
+    assert not found, f"{restatement.name} restates the blanket word ban: {found}"
+E   AssertionError: auto-work-command restates the blanket word ban: ["B4: 'claude/ai/bot into any branch, worktree, commit'"]
+E   assert not ["B4: 'claude/ai/bot into any branch, worktree, commit'"]
+_ test_ub3_restatement_file_states_attribution_and_names_only[kiro-orchestrator] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:280: in test_ub3_restatement_file_states_attribution_and_names_only
+    assert not found, f"{restatement.name} restates the blanket word ban: {found}"
+E   AssertionError: kiro-orchestrator restates the blanket word ban: ["B5: 'any mention of claude/ai/assistant/bot'"]
+E   assert not ["B5: 'any mention of claude/ai/assistant/bot'"]
+_ test_ub3_restatement_file_states_attribution_and_names_only[claude-orchestrator] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:280: in test_ub3_restatement_file_states_attribution_and_names_only
+    assert not found, f"{restatement.name} restates the blanket word ban: {found}"
+E   AssertionError: claude-orchestrator restates the blanket word ban: ["B5: 'any mention of claude/ai/assistant/bot'"]
+E   assert not ["B5: 'any mention of claude/ai/assistant/bot'"]
+=========================== short test summary info ===========================
+FAILED test/test_no_ai_attribution_rule.py::test_ac2_body_permits_a_path_or_product_named_as_the_subject[claude]
+FAILED test/test_no_ai_attribution_rule.py::test_ac1_opening_paragraph_states_one_scope[claude]
+FAILED test/test_no_ai_attribution_rule.py::test_ac1_opening_paragraph_states_one_scope[kiro]
+FAILED test/test_no_ai_attribution_rule.py::test_ac2_body_permits_a_path_or_product_named_as_the_subject[kiro]
+FAILED test/test_no_ai_attribution_rule.py::test_ac3_self_check_states_the_opening_scope[claude]
+FAILED test/test_no_ai_attribution_rule.py::test_ac3_no_sentence_bans_the_listed_words_in_every_message[kiro]
+FAILED test/test_no_ai_attribution_rule.py::test_ac3_self_check_states_the_opening_scope[kiro]
+FAILED test/test_no_ai_attribution_rule.py::test_ac3_no_sentence_bans_the_listed_words_in_every_message[claude]
+FAILED test/test_no_ai_attribution_rule.py::test_ac4_kiro_body_carries_the_scope_the_allowance_and_the_agreement
+FAILED test/test_no_ai_attribution_rule.py::test_ub3_restatement_file_states_attribution_and_names_only[work-issue-command]
+FAILED test/test_no_ai_attribution_rule.py::test_ub3_restatement_file_states_attribution_and_names_only[auto-work-command]
+FAILED test/test_no_ai_attribution_rule.py::test_ub3_restatement_file_states_attribution_and_names_only[kiro-orchestrator]
+FAILED test/test_no_ai_attribution_rule.py::test_ub3_restatement_file_states_attribution_and_names_only[claude-orchestrator]
+======================== 13 failed, 8 passed in 4.27s =========================

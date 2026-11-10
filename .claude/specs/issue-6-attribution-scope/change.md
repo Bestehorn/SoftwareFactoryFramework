@@ -110,10 +110,10 @@ blank-line-delimited paragraph starting with K0; the self-check paragraph is the
 
 ## Tasks (one wave)
 
-- [ ] T1 TEST: the test as in Tests, captured red before I1 (the AC checks and the restatement-file UB-3 check fail
+- [x] T1 TEST: the test as in Tests, captured red before I1 (the AC checks and the restatement-file UB-3 check fail
   on today's text, the other UB checks pass) — Files: `test/test_no_ai_attribution_rule.py` — Validates: AC-1, AC-2,
   AC-3, AC-4, UB-1, UB-2, UB-3
-- [ ] I1 IMPL: the rule, the 8.28 body and the restatement files per Files and Key phrases; T1 green — Files:
+- [x] I1 IMPL: the rule, the 8.28 body and the restatement files per Files and Key phrases; T1 green — Files:
   `clients/claude/rules/no-ai-attribution.md`, `prompts/setup-kiro.txt`, `clients/claude/commands/work-issue.md`,
   `clients/claude/commands/auto-work.md`, `clients/claude/agents/issue-work-orchestrator.md`,
   `clients/kiro/agents/issue-work-orchestrator.md` — Validates: AC-1, AC-2, AC-3, AC-4, UB-1, UB-2, UB-3
