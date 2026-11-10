@@ -98,9 +98,9 @@ module (`pyproject.toml` `[tool.pytest.ini_options]` `testpaths` includes `test`
 
 ## Tasks (one wave)
 
-- [ ] T1 TEST: write the module described under Tests; capture it red before I1 — Files:
+- [x] T1 TEST: write the module described under Tests; capture it red before I1 — Files:
   `test/test_post_activity_prompts.py` — Validates: AC-1, AC-2, AC-3, AC-4, UB-1, UB-2
-- [ ] I1 IMPL: edit 8.6 step 2 per AC-1, AC-2 and the Files text; restate the 8.23 `## Integration` line; add the
+- [x] I1 IMPL: edit 8.6 step 2 per AC-1, AC-2 and the Files text; restate the 8.23 `## Integration` line; add the
   AC-3 and AC-4 sentences — Files:
   `prompts/setup-kiro.txt`, `prompts/setup-claude.txt` — Validates: AC-1, AC-2, AC-3, AC-4
 

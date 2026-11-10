@@ -1692,7 +1692,10 @@ end-to-end evidence, judged by the deploy's last job, which ticks the `(post-dep
 and closes the issue (a red one returns to the issue as `needs-rework`; the worker never
 waits for the deploy). The other two were changed so that the AFFECTED tests run locally and the FULL
 suite verdict comes from CI. A ported body that still says "run all tests: `pytest test/`"
-before marking work complete reinstates the per-commit suite this setup removed. Two of
+before marking work complete reinstates the per-commit suite this setup removed. The
+ported `post-activity.md` step 2 runs only the non-test groups,
+`python scripts/run_checks.py --group lint --group types --group security`; a plain
+`run_checks.py` adds the `tests` group, which is CI's. Two of
 the ports are KERNEL+COMPANION splits, and each must produce BOTH files:
 
 - `tests-must-not-fail.md` (Kiro 8.23) is TWO files: the always-on kernel
@@ -2209,7 +2212,9 @@ this prompt (leave any existing one alone).
    `ci-owns-the-test-suite.md` exists with no `paths:` frontmatter, and grep the
    ported `post-activity.md` / `tests-must-not-fail.md` for a surviving
    "run all tests: `pytest test/`" precondition — that phrasing reinstates the
-   per-commit suite this setup removed. Confirm the tests-must-not-fail split
+   per-commit suite this setup removed. Grep the ported `post-activity.md` for a
+   plain `python scripts/run_checks.py` (no `--group`) and flag it: that form runs
+   the `tests` group, which is CI's. Confirm the tests-must-not-fail split
    landed as TWO files: the kernel `tests-must-not-fail.md` always-on (no
    `paths:`) with the complete forbidden-claims/actions lists, and
    `tests-must-not-fail-procedures.md` present with

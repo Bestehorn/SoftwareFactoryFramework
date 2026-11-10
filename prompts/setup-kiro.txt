@@ -1710,14 +1710,16 @@ Before marking any activity complete:
    on a large project a local full run costs an hour and proves the same
    thing. (The one exception: while CI-OUTAGE MODE is declared, the
    `pre-push` hook runs the suite for you at push time.)
-2. **Run every project check, locally, in one pass:**
+2. **Run the other project checks, locally, in one pass:**
    ```bash
-   python scripts/run_checks.py
+   python scripts/run_checks.py --group lint --group types --group security
    ```
-   This is the SAME command CI runs, so the two cannot drift apart. It runs
-   lint, type, security and test groups, continues past a failure instead of
-   stopping at the first one, and ends with a consolidated
-   `=== FAILED CHECKS (n) ===` block. Apply Rule 3 (no output shortening).
+   These are the SAME commands CI runs, so the two cannot drift apart. They
+   run the lint, type and security groups; the `tests` group is CI's (a plain
+   `run_checks.py` adds it, the full suite). The script continues past a
+   failure instead of stopping at the first one and ends with a consolidated
+   `=== FAILED CHECKS (n) ===` block.
+   Read all of it (`no-output-shortening.md`).
    **Fix every failure it lists before continuing — all of them, in this
    pass.** Do not fix one and re-run to discover the next.
 3. **Update docs** in `docs/` for any changes. Keep `docs/forLLMConsumption.md`
@@ -2520,8 +2522,8 @@ during the current task.
 - `no-output-shortening.md`: read full pytest output, not the tail.
 - `coding-standards.md` + `design-principles.md`: govern HOW you fix.
 - `post-activity.md`: the post-activity checklist runs the affected tests
-  plus `run_checks.py`; this rule is what governs your behavior when
-  that gate is red.
+  plus the non-test `run_checks.py` groups; this rule is what governs
+  your behavior when that gate is red.
 - `ci-owns-the-test-suite.md`: WHERE the run happens (affected tests
   locally, full suite in CI) and the requirement to fix every failure a
   run reports in ONE pass. That rule never softens this one: a failing
