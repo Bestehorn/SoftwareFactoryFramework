@@ -97,9 +97,9 @@ asserts on the child's stdout and stderr, decoded with that encoding, and on its
 
 Wave 1:
 
-- [ ] T1 TEST: the test module of §Tests; red before I1 on AC-1 — Files: `src/payload/test/test_run_checks.py`
+- [x] T1 TEST: the test module of §Tests; red before I1 on AC-1 — Files: `src/payload/test/test_run_checks.py`
   — Validates: AC-1, AC-2, AC-3, AC-4, UB-1, UB-2, UB-3
-- [ ] I1 IMPL: §Change — Files: `src/payload/scripts/run_checks.py` — Validates: AC-1, AC-2, AC-3, UB-1,
+- [x] I1 IMPL: §Change — Files: `src/payload/scripts/run_checks.py` — Validates: AC-1, AC-2, AC-3, UB-1,
   UB-2, UB-3
 
 ## Residuals

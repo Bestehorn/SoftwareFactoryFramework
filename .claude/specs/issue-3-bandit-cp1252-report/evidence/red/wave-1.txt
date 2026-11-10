@@ -1,0 +1,71 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_run_checks.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-3
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [9 items]
+
+.F.......                                                                [100%]
+================================== FAILURES ===================================
+_________________ test_ac1_findings_listed_on_a_cp1252_stdout _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_run_checks.py:123: in test_ac1_findings_listed_on_a_cp1252_stdout
+    assert FINDING_ID in output, f"bandit's finding {FINDING_ID} is missing from the check's output:\n{output}"
+E   AssertionError: bandit's finding B101 is missing from the check's output:
+E     --- RUN  security/bandit: 'D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe' -m bandit -r src -x src/_version.py
+E     --- FAIL security/bandit (0.6s, exit 1)
+E     [main]	INFO	profile include tests: None
+E     [main]	INFO	profile exclude tests: None
+E     [main]	INFO	cli include tests: None
+E     [main]	INFO	cli exclude tests: None
+E     [main]	INFO	running on Python 3.14.2
+E     Traceback (most recent call last):
+E       File "D:\Code Workspace\CodingProjectSetupPrompt\venv\Lib\site-packages\bandit\core\manager.py", line 186, in output_results
+E         report_func(
+E         ~~~~~~~~~~~^
+E             self,
+E             ^^^^^
+E         ...<3 lines>...
+E             lines=lines,
+E             ^^^^^^^^^^^^
+E         )
+E         ^
+E       File "D:\Code Workspace\CodingProjectSetupPrompt\venv\Lib\site-packages\bandit\formatters\text.py", line 197, in report
+E         wrapped_file.write(result)
+E         ~~~~~~~~~~~~~~~~~~^^^^^^^^
+E       File "C:\Program Files\Python314\Lib\encodings\cp1252.py", line 19, in encode
+E         return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+E                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E     UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 447: character maps to <undefined>
+E     
+E     During handling of the above exception, another exception occurred:
+E     
+E     Traceback (most recent call last):
+E       File "<frozen runpy>", line 198, in _run_module_as_main
+E       File "<frozen runpy>", line 88, in _run_code
+E       File "D:\Code Workspace\CodingProjectSetupPrompt\venv\Lib\site-packages\bandit\__main__.py", line 17, in <module>
+E         main.main()
+E         ~~~~~~~~~^^
+E       File "D:\Code Workspace\CodingProjectSetupPrompt\venv\Lib\site-packages\bandit\cli\main.py", line 682, in main
+E         b_mgr.output_results(
+E         ~~~~~~~~~~~~~~~~~~~~^
+E             args.context_lines,
+E             ^^^^^^^^^^^^^^^^^^^
+E         ...<4 lines>...
+E             args.msg_template,
+E             ^^^^^^^^^^^^^^^^^^
+E         )
+E         ^
+E       File "D:\Code Workspace\CodingProjectSetupPrompt\venv\Lib\site-packages\bandit\core\manager.py", line 195, in output_results
+E         raise RuntimeError(
+E         ...<2 lines>...
+E         )
+E     RuntimeError: Unable to output report using 'txt' formatter: 'charmap' codec can't encode character '\u274c' in position 447: character maps to <undefined>
+E     
+E   assert 'B101' in "--- RUN  security/bandit: 'D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\\python.exe' -m bandit -r src ...g 'txt' formatter: 'charmap' codec can't encode character '\\u274c' in position 447: character maps to <undefined>\r\n"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_run_checks.py::test_ac1_findings_listed_on_a_cp1252_stdout
+========================= 1 failed, 8 passed in 8.02s =========================
