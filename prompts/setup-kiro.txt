@@ -777,7 +777,12 @@ git config --local core.hooksPath .githooks
 
 ## PART 3 — .gitignore
 
-Apply Rule 1. Read existing entries, add only those that are missing:
+Apply Rule 1. Read existing entries, add only those that are missing. Exception
+to Rule 1's keep-the-existing-value: an existing line that is the slash-free
+form of an entry below that starts with `/` is REPLACED by that entry
+(`reports/` → `/reports/`, `lib/` → `/lib/`), not kept beside it: the slash-free
+form also ignores a nested directory of that name, such as `docs/reports/` or
+`cdk/lib/`.
 
 ```
 # Python
@@ -790,16 +795,17 @@ build/
 dist/
 *.egg-info/
 *.egg
-develop-eggs/
-downloads/
-eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+# Root only: a nested directory of that name, such as cdk/lib/, is source.
+/develop-eggs/
+/downloads/
+/eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
 .installed.cfg
 
 # Virtual environment
@@ -820,7 +826,8 @@ htmlcov/
 
 # Check/test reports written by scripts/run_checks.py and scripts/run_tests.py
 # (per-group JSON + junit.xml). CI uploads them as artifacts; they are never committed.
-reports/
+# Leading slash: the root reports/ only, so docs/reports/ stays tracked.
+/reports/
 
 # Type checking
 .mypy_cache/

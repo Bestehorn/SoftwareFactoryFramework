@@ -1,0 +1,70 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_setup_prompts_gitignore.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-2
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [18 items]
+
+FFFFF...FF..F.....                                                       [100%]
+================================== FAILURES ===================================
+________ test_reports_line_is_anchored_with_its_comment[setup-claude] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:171: in test_reports_line_is_anchored_with_its_comment
+    assert ANCHORED_REPORTS in lines, f"{prompt}: the PART 3 block has no `{ANCHORED_REPORTS}` line"
+E   AssertionError: setup-claude: the PART 3 block has no `/reports/` line
+E   assert '/reports/' in ['# Claude Code (machine/personal, not shared)', '.claude/settings.local.json', '.claude/agent-state/', '', '# Check/t...ks.py and scripts/run_tests.py', '# (per-group JSON + junit.xml). CI uploads them as artifacts; never committed.', ...]
+_________________ test_root_only_packaging_dirs_are_anchored __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:186: in test_root_only_packaging_dirs_are_anchored
+    assert not missing, f"{SETUP_KIRO}: the PART 3 block lacks the anchored lines {missing}"
+E   AssertionError: setup-kiro: the PART 3 block lacks the anchored lines ['/lib/', '/lib64/', '/var/', '/downloads/', '/eggs/', '/develop-eggs/', '/parts/', '/sdist/', '/wheels/']
+E   assert not ['/lib/', '/lib64/', '/var/', '/downloads/', '/eggs/', '/develop-eggs/', ...]
+_________ test_reports_line_is_anchored_with_its_comment[setup-kiro] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:171: in test_reports_line_is_anchored_with_its_comment
+    assert ANCHORED_REPORTS in lines, f"{prompt}: the PART 3 block has no `{ANCHORED_REPORTS}` line"
+E   AssertionError: setup-kiro: the PART 3 block has no `/reports/` line
+E   assert '/reports/' in ['# Python', '__pycache__/', '*.py[cod]', '*$py.class', '*.so', '.Python', ...]
+________ test_section_says_to_replace_a_slash_free_entry[setup-claude] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:199: in test_section_says_to_replace_a_slash_free_entry
+    assert not missing, f"{prompt}: the PART 3 text outside the fenced block lacks {missing}"
+E   AssertionError: setup-claude: the PART 3 text outside the fenced block lacks ['REPLACED', '/reports/', '/lib/']
+E   assert not ['REPLACED', '/reports/', '/lib/']
+_________ test_section_says_to_replace_a_slash_free_entry[setup-kiro] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:199: in test_section_says_to_replace_a_slash_free_entry
+    assert not missing, f"{prompt}: the PART 3 text outside the fenced block lacks {missing}"
+E   AssertionError: setup-kiro: the PART 3 text outside the fenced block lacks ['REPLACED', '/reports/', '/lib/']
+E   assert not ['REPLACED', '/reports/', '/lib/']
+_ test_applied_block_ignores_only_the_root_dirs[setup-claude:docs/reports/x.md:not-ignored] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:213: in test_applied_block_ignores_only_the_root_dirs
+    assert actual is expected, (
+E   AssertionError: setup-claude: with the PART 3 block as `.gitignore`, git reports `docs/reports/x.md` ignored, expected not-ignored
+E   assert True is False
+_ test_applied_block_ignores_only_the_root_dirs[setup-kiro:docs/reports/x.md:not-ignored] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:213: in test_applied_block_ignores_only_the_root_dirs
+    assert actual is expected, (
+E   AssertionError: setup-kiro: with the PART 3 block as `.gitignore`, git reports `docs/reports/x.md` ignored, expected not-ignored
+E   assert True is False
+_ test_applied_block_ignores_only_the_root_dirs[setup-kiro:cdk/lib/stack.ts:not-ignored] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitignore.py:213: in test_applied_block_ignores_only_the_root_dirs
+    assert actual is expected, (
+E   AssertionError: setup-kiro: with the PART 3 block as `.gitignore`, git reports `cdk/lib/stack.ts` ignored, expected not-ignored
+E   assert True is False
+=========================== short test summary info ===========================
+FAILED test/test_setup_prompts_gitignore.py::test_reports_line_is_anchored_with_its_comment[setup-claude]
+FAILED test/test_setup_prompts_gitignore.py::test_root_only_packaging_dirs_are_anchored
+FAILED test/test_setup_prompts_gitignore.py::test_reports_line_is_anchored_with_its_comment[setup-kiro]
+FAILED test/test_setup_prompts_gitignore.py::test_section_says_to_replace_a_slash_free_entry[setup-claude]
+FAILED test/test_setup_prompts_gitignore.py::test_section_says_to_replace_a_slash_free_entry[setup-kiro]
+FAILED test/test_setup_prompts_gitignore.py::test_applied_block_ignores_only_the_root_dirs[setup-claude:docs/reports/x.md:not-ignored]
+FAILED test/test_setup_prompts_gitignore.py::test_applied_block_ignores_only_the_root_dirs[setup-kiro:docs/reports/x.md:not-ignored]
+FAILED test/test_setup_prompts_gitignore.py::test_applied_block_ignores_only_the_root_dirs[setup-kiro:cdk/lib/stack.ts:not-ignored]
+======================== 8 failed, 10 passed in 5.07s =========================

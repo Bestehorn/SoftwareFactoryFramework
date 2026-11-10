@@ -95,9 +95,9 @@ module (`pyproject.toml` `testpaths` includes `test`).
 
 ## Tasks (one wave)
 
-- [ ] T1 TEST: write the module described under Tests; capture it red before I1 — Files:
+- [x] T1 TEST: write the module described under Tests; capture it red before I1 — Files:
   `test/test_setup_prompts_gitignore.py` — Validates: AC-1, AC-2, AC-3, AC-4, AC-5, UB-1, UB-2, UB-3
-- [ ] I1 IMPL: edit both PART 3 sections per AC-1 to AC-4 and § Files;
+- [x] I1 IMPL: edit both PART 3 sections per AC-1 to AC-4 and § Files;
   add `\.claude/specs/` to `test/test_layout.py` `HISTORICAL` — Files: `prompts/setup-claude.txt`,
   `prompts/setup-kiro.txt`, `test/test_layout.py` — Validates: AC-1, AC-2, AC-3, AC-4, AC-5
 

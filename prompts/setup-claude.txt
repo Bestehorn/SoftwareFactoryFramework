@@ -591,9 +591,16 @@ safety net for a clone where `setup-hooks.sh` has not been run yet).
 
 ## PART 3 — .gitignore
 
-Apply Rule 1. Read existing entries, add only those missing. In addition to the
-standard Python/venv/IDE/testing/AWS/temp entries from the Kiro standard, ADD
-the Claude Code entries:
+Apply Rule 1. Read existing entries, add only those missing. Exception to Rule
+1's keep-the-existing-value: an existing line that is the slash-free form of an
+anchored entry — `reports/` below, or `lib/`, `lib64/`, `var/`, `downloads/`,
+`eggs/`, `develop-eggs/`, `parts/`, `sdist/` or `wheels/` from the Kiro standard
+— is REPLACED by the same entry with a leading slash (`reports/` → `/reports/`,
+`lib/` → `/lib/`), not kept beside it: the slash-free form also ignores a nested
+directory of that name, such as `docs/reports/` or `cdk/lib/`.
+
+In addition to the standard Python/venv/IDE/testing/AWS/temp entries from the
+Kiro standard, ADD the Claude Code entries:
 
 ```
 # Claude Code (machine/personal, not shared)
@@ -602,7 +609,8 @@ the Claude Code entries:
 
 # Check/test reports written by scripts/run_checks.py and scripts/run_tests.py
 # (per-group JSON + junit.xml). CI uploads them as artifacts; never committed.
-reports/
+# Leading slash: the root reports/ only, so docs/reports/ stays tracked.
+/reports/
 
 # Sensitive config
 config/aws_accounts.json
