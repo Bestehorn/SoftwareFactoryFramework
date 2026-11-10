@@ -42,6 +42,7 @@ class _AWSConfig:
     """
 
     _instance: Optional["_AWSConfig"] = None
+    _accounts: dict[str, AWSAccount]
 
     def __new__(cls) -> "_AWSConfig":
         if cls._instance is None:

@@ -104,10 +104,10 @@ Configuration and the new test:
 
 Wave 1
 
-- [ ] T1 TEST: `test/test_mypy_baseline.py` asserts that no `[[tool.mypy.overrides]]` table in `pyproject.toml`
+- [x] T1 TEST: `test/test_mypy_baseline.py` asserts that no `[[tool.mypy.overrides]]` table in `pyproject.toml`
   sets `ignore_errors`; red against today's `pyproject.toml`. — Files: `test/test_mypy_baseline.py` —
   Validates: AC-1
-- [ ] I1 IMPL: the fixes under "Files and fixes", shipped modules first, then the `pyproject.toml` deletion;
+- [x] I1 IMPL: the fixes under "Files and fixes", shipped modules first, then the `pyproject.toml` deletion;
   green: T1, the UB-1 suites, the AC-2 captures. — Files: `src/payload/src/aws_config.py`,
   `src/hooks/supervisor.py`, `src/hooks/gate_session_register.py`, `src/hooks/hooks.py`,
   `src/payload/scripts/merge_steward.py`, `src/payload/scripts/run_tests.py`,
