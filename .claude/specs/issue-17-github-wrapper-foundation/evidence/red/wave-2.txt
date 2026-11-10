@@ -1,0 +1,235 @@
+# tasks: 2.1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [17 items]
+
+FFFFFFFFFFFFFFFFF                                                        [100%]
+================================== FAILURES ===================================
+_____ test_call_refuses_an_undocumented_parameter[undocumented-body-name] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:374: in test_call_refuses_an_undocumented_parameter
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+____ test_call_refuses_an_undocumented_parameter[path-name-sent-as-query] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:374: in test_call_refuses_an_undocumented_parameter
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+____ test_call_refuses_an_undocumented_parameter[body-name-sent-as-query] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:374: in test_call_refuses_an_undocumented_parameter
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+____ test_call_refuses_an_undocumented_parameter[undocumented-query-name] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:374: in test_call_refuses_an_undocumented_parameter
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+____ test_call_refuses_an_undocumented_parameter[query-name-sent-as-body] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:374: in test_call_refuses_an_undocumented_parameter
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_expand_encodes_and_refuses_dot_segments[single-segment-encodes-slash-and-space] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_call_refuses_an_undocumented_parameter[undocumented-query-name-of-a-list] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:374: in test_call_refuses_an_undocumented_parameter
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_expand_encodes_and_refuses_dot_segments[single-segment-keeps-dots-inside-a-segment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-slash-and-encodes-space] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-a-dot-prefixed-segment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+______ test_expand_encodes_and_refuses_dot_segments[single-segment-dot] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+____ test_expand_encodes_and_refuses_dot_segments[single-segment-dot-dot] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_________ test_expand_encodes_and_refuses_dot_segments[owner-dot-dot] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_____ test_expand_encodes_and_refuses_dot_segments[multi-segment-dot-dot] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-dot-segment] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-segment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+_ test_expand_encodes_and_refuses_dot_segments[multi-segment-ending-in-dot-dot] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:478: in test_expand_encodes_and_refuses_dot_segments
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:97: in load_api
+    registry=fx.import_api_module(name="registry"),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/registry.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\registry.py does not exist
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-body-name]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[path-name-sent-as-query]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[body-name-sent-as-query]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-query-name]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[query-name-sent-as-body]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-encodes-slash-and-space]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-query-name-of-a-list]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-keeps-dots-inside-a-segment]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-slash-and-encodes-space]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-a-dot-prefixed-segment]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-dot]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-dot-dot]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[owner-dot-dot]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-dot-dot]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-dot-segment]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-segment]
+FAILED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-ending-in-dot-dot]
+============================= 17 failed in 5.37s ==============================

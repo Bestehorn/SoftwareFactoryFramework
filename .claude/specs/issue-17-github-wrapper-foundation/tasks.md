@@ -38,12 +38,12 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_api_transport.py`
 
 Run: `python scripts/run_tests.py src/payload/test/test_github_api_registry.py`
 
-- [ ] 2.1 TEST: R, against a synthetic family module and a `Transport` on the fake host:
+- [x] 2.1 TEST: R, against a synthetic family module and a `Transport` on the fake host:
   `test_call_refuses_an_undocumented_parameter` (a query or body name the record does not document raises
   `ValueError`, no request recorded) and `test_expand_encodes_and_refuses_dot_segments` (`/` and a space
   percent-encoded in a single-segment value, `/` kept in a multi-segment one, a `.` or `..` segment refused with
   `GitHubAPIError`). — Files: src/payload/test/test_github_api_registry.py — Validates: AC-1.1
-- [ ] 2.2 IMPL: `registry.py` per D4 — `Paging`, `RestOperation`, `GraphQLOperation`, `discover_families()` (sorted
+- [x] 2.2 IMPL: `registry.py` per D4 — `Paging`, `RestOperation`, `GraphQLOperation`, `discover_families()` (sorted
   `pkgutil.iter_modules` over `github_api.families`, imported by absolute name), `lookup` (`ValueError` for an unknown
   or twice-declared ID), `expand`, `call`, `pages`; `families/__init__.py` empty. — Files:
   src/payload/scripts/github_api/registry.py, src/payload/scripts/github_api/families/__init__.py — Validates: AC-1.1
