@@ -554,7 +554,9 @@ would close the issue at landing, and the steward refuses the PR.
 NO AI ATTRIBUTION (per `.claude/rules/no-ai-attribution.md`): the issue comment, the
 commit message, and later the PR/MR text describe the work only — they must NOT contain
 `Co-Authored-By: Claude`, `🤖 Generated with Claude Code`, "fixed by <agent>", or any
-mention of Claude/AI/assistant/bot. Whether a human or an agent did the work is
+other attribution of the work to a tool (naming a path, command, setting or product as the
+subject of the work is fine), and no branch or worktree name carries Claude/AI/assistant/bot.
+Whether a human or an agent did the work is
 irrelevant to the repo. Strip any such trailer the tool adds by default; write only the
 descriptive message.
 

@@ -2995,11 +2995,13 @@ inclusion: always
 ---
 # No AI Attribution; Descriptive Names Only (ALL agents)
 
-**Never attribute work to an AI, an assistant, or a tool, anywhere. Never put
-"claude"/"AI"/"assistant"/"bot"/"LLM"/"Anthropic"/"Copilot"/a model name into any
-name or message you create.** Whether a change was made by a human or an agent is
-irrelevant to the repository and must not appear in it. This applies with NO
-exceptions to:
+**Never attribute work to an AI, an assistant, or a tool, anywhere, and never put
+"claude"/"AI"/"assistant"/"bot"/"LLM"/"Anthropic"/"Copilot"/a model name into names
+you author.** Whether a change was made by a human or an agent is irrelevant to the
+repository and must not appear in it. The rule has one scope: attribution of work to
+a tool in commit messages, PR/MR titles and bodies, and issue text, and the listed
+words in names you author (branches, worktrees, tags, stashes, refs, labels). This
+applies with NO exceptions to:
 
 - **Commit messages** — no `Co-Authored-By: …`, no "🤖 Generated with …", no
   AI/tool trailer or footer. The message describes the change, nothing about who or
@@ -3014,15 +3016,21 @@ exceptions to:
 
 The `.kiro/` configuration directory itself is the tool's fixed config location and
 is not covered by this rule — those are infrastructure paths, not names you choose.
+In commit messages (subject line included), PR/MR titles and bodies, and issue text,
+naming an existing file or directory path, command, setting or product as the subject
+of the work is not attribution; the allowance never extends to a branch, worktree,
+tag, stash, ref or label name.
 
-**Naming standard (positive form):** every name describes what the thing does or the
-issue it addresses — branches `<type>-<issue-or-topic>-<slug>`; commit subjects
-imperative ≤72 chars; PR/MR titles the outcome.
+**Naming standard (positive form):** every name and message describes what the thing
+does or the issue it addresses — branches `<type>-<issue-or-topic>-<slug>`; commit
+subjects imperative ≤72 chars; PR/MR titles the outcome.
 
 **Self-check before any commit / PR / issue / branch:** scan the name and full text
 for `claude`, `AI`, `assistant`, `bot`, `LLM`, `Anthropic`, `Copilot`, `🤖`,
-`Co-Authored-By`, `Generated with`. If any appears as attribution or in a name,
-remove it and restate descriptively.
+`Co-Authored-By`, `Generated with`. If any is attribution of work to a tool or
+appears in one of the names you author, remove it and restate descriptively; a path,
+command, setting or product named as the subject of the work in a commit message,
+PR/MR text or issue text stays.
 ```
 
 ### 8.29 `keep-git-clean.md` (always) — fleet convention

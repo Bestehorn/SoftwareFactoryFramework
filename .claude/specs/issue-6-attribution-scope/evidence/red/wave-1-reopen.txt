@@ -1,0 +1,28 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_no_ai_attribution_rule.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-6
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [29 items]
+
+....................F..F.....                                            [100%]
+================================== FAILURES ===================================
+________ test_ub2_self_check_allowance_is_limited_to_messages[claude] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:344: in test_ub2_self_check_allowance_is_limited_to_messages
+    assert not problems, "\n".join(problems)
+E   AssertionError: claude self-check exempts a path or product beyond messages (lacks 'in a commit message, PR/MR text or issue text'): 'a hit inside a path, command, setting or product named as the subject of the work is not.'
+E   assert not ["claude self-check exempts a path or product beyond messages (lacks 'in a commit message, PR/MR text or issue text'): 'a hit inside a path, command, setting or product named as the subject of the work is not.'"]
+_________ test_ub2_self_check_allowance_is_limited_to_messages[kiro] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_no_ai_attribution_rule.py:344: in test_ub2_self_check_allowance_is_limited_to_messages
+    assert not problems, "\n".join(problems)
+E   AssertionError: kiro self-check exempts a path or product beyond messages (lacks 'in a commit message, PR/MR text or issue text'): 'a path, command, setting or product named as the subject of the work stays'
+E   assert not ["kiro self-check exempts a path or product beyond messages (lacks 'in a commit message, PR/MR text or issue text'): 'a path, command, setting or product named as the subject of the work stays'"]
+=========================== short test summary info ===========================
+FAILED test/test_no_ai_attribution_rule.py::test_ub2_self_check_allowance_is_limited_to_messages[claude]
+FAILED test/test_no_ai_attribution_rule.py::test_ub2_self_check_allowance_is_limited_to_messages[kiro]
+======================== 2 failed, 27 passed in 4.29s =========================
