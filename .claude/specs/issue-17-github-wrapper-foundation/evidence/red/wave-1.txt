@@ -1,0 +1,534 @@
+# tasks: 1.1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_transport.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [40 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                                 [100%]
+================================== FAILURES ===================================
+______ test_link_pages_are_followed_as_given[next-among-prev-first-last] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+___________ test_every_rest_request_sends_the_api_version[default] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:156: in test_every_rest_request_sends_the_api_version
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_______ test_link_pages_are_followed_as_given[comma-in-the-next-query] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_____ test_every_rest_request_sends_the_api_version[selected-2026-03-10] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:156: in test_every_rest_request_sends_the_api_version
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_________ test_link_pages_are_followed_as_given[next-on-another-host] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+________ test_link_pages_are_followed_as_given[one-page-without-link] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+____________ test_link_pages_are_followed_as_given[next-over-http] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_____________ test_link_pages_are_followed_as_given[page-numbers] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_________ test_link_pages_are_followed_as_given[next-on-another-port] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_________ test_link_pages_are_followed_as_given[opaque-after-cursor] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:334: in test_link_pages_are_followed_as_given
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_____ test_wrapped_pages_return_the_item_key_items[one-page-without-link] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:349: in test_wrapped_pages_return_the_item_key_items
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+______________ test_an_asset_is_uploaded_to_the_upload_url[name] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:377: in test_an_asset_is_uploaded_to_the_upload_url
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_________ test_wrapped_pages_return_the_item_key_items[page-numbers] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:349: in test_wrapped_pages_return_the_item_key_items
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_________ test_an_asset_is_uploaded_to_the_upload_url[name-and-label] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:377: in test_an_asset_is_uploaded_to_the_upload_url
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+______ test_wrapped_pages_return_the_item_key_items[opaque-after-cursor] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:349: in test_wrapped_pages_return_the_item_key_items
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_ test_a_cross_origin_redirect_drops_the_credential[another-host-from-request] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+__ test_wrapped_pages_return_the_item_key_items[next-among-prev-first-last] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:349: in test_wrapped_pages_return_the_item_key_items
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_ test_a_cross_origin_redirect_drops_the_credential[another-host-from-download] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+____ test_wrapped_pages_return_the_item_key_items[comma-in-the-next-query] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:349: in test_wrapped_pages_return_the_item_key_items
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+___ test_a_cross_origin_redirect_drops_the_credential[back-to-the-api-host] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_ test_a_cross_origin_redirect_drops_the_credential[api-host-with-its-default-port] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_____ test_a_cross_origin_redirect_drops_the_credential[same-origin-301] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_ test_a_cross_origin_redirect_drops_the_credential[api-host-with-an-empty-port] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+___ test_a_cross_origin_redirect_drops_the_credential[same-host-over-http] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+___ test_a_cross_origin_redirect_drops_the_credential[userinfo-is-refused] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_ test_a_cross_origin_redirect_drops_the_credential[api-host-on-another-port] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:485: in test_a_cross_origin_redirect_drops_the_credential
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+________ test_a_rate_limit_is_waited_out_and_retried[429-retry-after] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:550: in test_a_rate_limit_is_waited_out_and_retried
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+__ test_a_rate_limit_is_waited_out_and_retried[403-retry-after-before-reset] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:550: in test_a_rate_limit_is_waited_out_and_retried
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+__ test_a_rate_limit_is_waited_out_and_retried[403-remaining-0-until-reset] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:550: in test_a_rate_limit_is_waited_out_and_retried
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+____________ test_spent_retries_raise_naming_the_limit[the-bucket] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:590: in test_spent_retries_raise_naming_the_limit
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+______ test_spent_retries_raise_naming_the_limit[the-retry-after-limit] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:590: in test_spent_retries_raise_naming_the_limit
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+________ test_spent_retries_raise_naming_the_limit[the-primary-limit] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:590: in test_spent_retries_raise_naming_the_limit
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_______ test_an_error_status_raises_with_the_documented_body[404-basic] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:664: in test_an_error_status_raises_with_the_documented_body
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+____ test_an_error_status_raises_with_the_documented_body[422-validation] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:664: in test_an_error_status_raises_with_the_documented_body
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_____ test_an_error_status_raises_with_the_documented_body[500-not-json] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:664: in test_an_error_status_raises_with_the_documented_body
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_ test_an_error_status_raises_with_the_documented_body[403-without-rate-headers] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:664: in test_an_error_status_raises_with_the_documented_body
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+___________________ test_graphql_posts_query_and_variables ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:691: in test_graphql_posts_query_and_variables
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+___________________ test_graphql_follows_page_info_cursors ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:712: in test_graphql_follows_page_info_cursors
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+__________ test_graphql_errors_raise_even_with_200[errors-with-data] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:750: in test_graphql_errors_raise_even_with_200
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+_______ test_graphql_errors_raise_even_with_200[errors-with-data-null] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:750: in test_graphql_errors_raise_even_with_200
+    api = load_api()
+          ^^^^^^^^^^
+src\payload\test\test_github_api_transport.py:107: in load_api
+    return Api(transport=fx.import_api_module(name="transport"), errors=fx.import_api_module(name="errors"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\github_wrapper_fixtures.py:71: in import_api_module
+    assert path.is_file(), f"{PACKAGE}/{name}.py is not written: {path} does not exist"
+           ^^^^^^^^^^^^^^
+E   AssertionError: github_api/transport.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\transport.py does not exist
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[next-among-prev-first-last]
+FAILED src/payload/test/test_github_api_transport.py::test_every_rest_request_sends_the_api_version[default]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[comma-in-the-next-query]
+FAILED src/payload/test/test_github_api_transport.py::test_every_rest_request_sends_the_api_version[selected-2026-03-10]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[next-on-another-host]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[one-page-without-link]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[next-over-http]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[page-numbers]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[next-on-another-port]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_are_followed_as_given[opaque-after-cursor]
+FAILED src/payload/test/test_github_api_transport.py::test_wrapped_pages_return_the_item_key_items[one-page-without-link]
+FAILED src/payload/test/test_github_api_transport.py::test_an_asset_is_uploaded_to_the_upload_url[name]
+FAILED src/payload/test/test_github_api_transport.py::test_wrapped_pages_return_the_item_key_items[page-numbers]
+FAILED src/payload/test/test_github_api_transport.py::test_an_asset_is_uploaded_to_the_upload_url[name-and-label]
+FAILED src/payload/test/test_github_api_transport.py::test_wrapped_pages_return_the_item_key_items[opaque-after-cursor]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[another-host-from-request]
+FAILED src/payload/test/test_github_api_transport.py::test_wrapped_pages_return_the_item_key_items[next-among-prev-first-last]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[another-host-from-download]
+FAILED src/payload/test/test_github_api_transport.py::test_wrapped_pages_return_the_item_key_items[comma-in-the-next-query]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[back-to-the-api-host]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[api-host-with-its-default-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[same-origin-301]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[api-host-with-an-empty-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[same-host-over-http]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[userinfo-is-refused]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[api-host-on-another-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_rate_limit_is_waited_out_and_retried[429-retry-after]
+FAILED src/payload/test/test_github_api_transport.py::test_a_rate_limit_is_waited_out_and_retried[403-retry-after-before-reset]
+FAILED src/payload/test/test_github_api_transport.py::test_a_rate_limit_is_waited_out_and_retried[403-remaining-0-until-reset]
+FAILED src/payload/test/test_github_api_transport.py::test_spent_retries_raise_naming_the_limit[the-bucket]
+FAILED src/payload/test/test_github_api_transport.py::test_spent_retries_raise_naming_the_limit[the-retry-after-limit]
+FAILED src/payload/test/test_github_api_transport.py::test_spent_retries_raise_naming_the_limit[the-primary-limit]
+FAILED src/payload/test/test_github_api_transport.py::test_an_error_status_raises_with_the_documented_body[404-basic]
+FAILED src/payload/test/test_github_api_transport.py::test_an_error_status_raises_with_the_documented_body[422-validation]
+FAILED src/payload/test/test_github_api_transport.py::test_an_error_status_raises_with_the_documented_body[500-not-json]
+FAILED src/payload/test/test_github_api_transport.py::test_an_error_status_raises_with_the_documented_body[403-without-rate-headers]
+FAILED src/payload/test/test_github_api_transport.py::test_graphql_posts_query_and_variables
+FAILED src/payload/test/test_github_api_transport.py::test_graphql_follows_page_info_cursors
+FAILED src/payload/test/test_github_api_transport.py::test_graphql_errors_raise_even_with_200[errors-with-data]
+FAILED src/payload/test/test_github_api_transport.py::test_graphql_errors_raise_even_with_200[errors-with-data-null]
+============================= 40 failed in 4.36s ==============================

@@ -1,0 +1,45 @@
+"""The ``apps`` operations of the GitHub REST API: no record yet, every one pending (design D2)."""
+
+FAMILY = "apps"
+OPERATIONS = ()
+PENDING = frozenset(
+    {
+        "apps/add-repo-to-installation-for-authenticated-user",
+        "apps/check-token",
+        "apps/create-from-manifest",
+        "apps/create-installation-access-token",
+        "apps/delete-authorization",
+        "apps/delete-installation",
+        "apps/delete-token",
+        "apps/get-authenticated",
+        "apps/get-by-slug",
+        "apps/get-installation",
+        "apps/get-org-installation",
+        "apps/get-repo-installation",
+        "apps/get-subscription-plan-for-account",
+        "apps/get-subscription-plan-for-account-stubbed",
+        "apps/get-user-installation",
+        "apps/get-webhook-config-for-app",
+        "apps/get-webhook-delivery",
+        "apps/list-accounts-for-plan",
+        "apps/list-accounts-for-plan-stubbed",
+        "apps/list-installation-repos-for-authenticated-user",
+        "apps/list-installation-requests-for-authenticated-app",
+        "apps/list-installations",
+        "apps/list-installations-for-authenticated-user",
+        "apps/list-plans",
+        "apps/list-plans-stubbed",
+        "apps/list-repos-accessible-to-installation",
+        "apps/list-subscriptions-for-authenticated-user",
+        "apps/list-subscriptions-for-authenticated-user-stubbed",
+        "apps/list-webhook-deliveries",
+        "apps/redeliver-webhook-delivery",
+        "apps/remove-repo-from-installation-for-authenticated-user",
+        "apps/reset-token",
+        "apps/revoke-installation-access-token",
+        "apps/scope-token",
+        "apps/suspend-installation",
+        "apps/unsuspend-installation",
+        "apps/update-webhook-config-for-app",
+    }
+)

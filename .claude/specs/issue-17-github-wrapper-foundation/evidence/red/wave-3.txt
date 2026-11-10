@@ -1,0 +1,54 @@
+# tasks: 3.1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_coverage.py src/payload/test/test_github_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [23 items]
+
+..FFFF.................                                                  [100%]
+================================== FAILURES ===================================
+_________________ test_every_operation_is_covered_or_pending __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:442: in test_every_operation_is_covered_or_pending
+    covered, pending = _covered_and_pending(families=families, registry=registry)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_coverage.py:246: in _covered_and_pending
+    graphql = _import_package_module(name=GRAPHQL_ONLY)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_coverage.py:212: in _import_package_module
+    assert path.is_file(), f"{PACKAGE}/{name}{PYTHON_SUFFIX} is not written: {path} does not exist"
+E   AssertionError: github_api/graphql_only.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\graphql_only.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-17/src/payload/scripts/github_api/graphql_only.py').is_file
+_____________ test_one_module_per_family_holding_only_its_own_ids _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:489: in test_one_module_per_family_holding_only_its_own_ids
+    assert not missing and not extra, (
+E   AssertionError: github_api/families/ must hold one module per index family: no module for ['actions', 'activity', 'agent_automations', 'agent_merge', 'agent_tasks', 'agents', 'api_insights', 'apps', 'billing', 'campaigns', 'checks', 'classroom', 'code_quality', 'code_scanning', 'code_security', 'codes_of_conduct', 'codespaces', 'copilot', 'copilot_spaces', 'credentials', 'dependabot', 'dependency_graph', 'emojis', 'gists', 'git', 'gitignore', 'hosted_compute', 'interactions', 'issues', 'licenses', 'markdown', 'meta', 'migrations', 'oidc', 'orgs', 'packages', 'private_registries', 'projects', 'pull_request_stacks', 'pulls', 'rate_limit', 'reactions', 'repos', 'search', 'secret_scanning', 'security_advisories', 'teams', 'users']; no index family for []
+E   assert (not ['actions', 'activity', 'agent_automations', 'agent_merge', 'agent_tasks', 'agents', ...])
+____________________ test_discovery_follows_the_directory _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:460: in test_discovery_follows_the_directory
+    assert present, (
+E   AssertionError: github_api/families/ holds no family module, so discovery has nothing to follow; D2 gives every index family a module
+E   assert []
+_____________ test_the_wrapper_imports_only_the_standard_library ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:528: in test_the_wrapper_imports_only_the_standard_library
+    _import_package_module(name=GRAPHQL_ONLY)
+test\test_github_wrapper_coverage.py:212: in _import_package_module
+    assert path.is_file(), f"{PACKAGE}/{name}{PYTHON_SUFFIX} is not written: {path} does not exist"
+E   AssertionError: github_api/graphql_only.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_api\graphql_only.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-17/src/payload/scripts/github_api/graphql_only.py').is_file
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_coverage.py::test_every_operation_is_covered_or_pending
+FAILED test/test_github_wrapper_coverage.py::test_one_module_per_family_holding_only_its_own_ids
+FAILED test/test_github_wrapper_coverage.py::test_discovery_follows_the_directory
+FAILED test/test_github_wrapper_coverage.py::test_the_wrapper_imports_only_the_standard_library
+======================== 4 failed, 19 passed in 3.72s =========================

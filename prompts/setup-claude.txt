@@ -739,7 +739,9 @@ the template as reference; do not overwrite the existing implementation.
 
 Identical to the Kiro standard. Detect the host from `.git/config` remote
 origin. For GitHub, copy `src/payload/scripts/github_wrapper.py` to
-`scripts/github_wrapper.py` and stub `credentials/github-pat.txt(.template)`.
+`scripts/github_wrapper.py` and `src/payload/scripts/github_api/` to
+`scripts/github_api/` (the package the entry script imports; the two are
+copied together), and stub `credentials/github-pat.txt(.template)`.
 For GitLab, copy `src/payload/scripts/gitlab_wrapper.py` to
 `scripts/gitlab_wrapper.py` and stub `config/gitlab.json(.template)`. Verify
 with a read-only command once a real token is pasted
@@ -751,8 +753,11 @@ rule over ONLY if those constraints apply in your environment. Claude Code has
 solid `gh` support; if the constraints do not apply, you MAY instead allow
 `Bash(gh *)` and skip the wrappers — state which choice you made in the report.
 
-Required wrapper subcommands. The wrapper templates are skeletons; implement the
-subcommands the project's agents invoke. The minimum set:
+Required wrapper subcommands. The GitHub wrapper implements the subcommands the
+framework's agents and hooks invoke; of the set below, `get-jobs`, `rerun` and
+`cancel` arrive in a later framework release, and a further subcommand is added
+as a module of `scripts/github_api/commands/`. The GitLab wrapper template is a
+skeleton; implement the subcommands the project's agents invoke. The minimum set:
 
 - Issues/CI (used by issue-intake, issue-housekeeping, ci-workflow-agent):
   GitHub — `list-workflows`, `list-runs`, `get-run`, `get-jobs`, `get-logs`
@@ -780,7 +785,8 @@ subcommands the project's agents invoke. The minimum set:
   fail-closed: adds label + assigns + re-reads + verifies, non-zero on failure),
   `issue release`, and `issue claim-check` (read-only; exit 3 = open+unclaimed).
   GitHub — the same as `start-issue`/`release-issue`/`claim-check` + additive
-  label/assignee endpoints. See the expanded docstrings in the wrapper templates.
+  label/assignee endpoints. See `src/payload/scripts/github_api/` for GitHub and
+  the expanded docstrings in the GitLab wrapper template.
 - PR/merge lifecycle (REQUIRED by the issue-work-orchestrator, Part 13):
   GitHub — `create-pr`, `get-pr`, `get-pr-checks`, `approve-pr`, `merge-pr`
   (`--method merge|squash|rebase`), `delete-remote-branch`, and `list-issues`
@@ -788,7 +794,8 @@ subcommands the project's agents invoke. The minimum set:
   approve/merge`, `delete-branch`, and `issue list` with state/assignee/labels.
   `merge-pr` / `mr merge` serve `"merge": "direct"` projects (and the bootstrap PR of
   Part 7.1); under `"merge": "steward"` the `merge-steward` gate refuses them.
-  (See the expanded docstrings in `src/payload/scripts/github_wrapper.py` and
+  (See `src/payload/scripts/github_api/` — its operation records and the
+  docstring of its `commands/pulls.py` — and the expanded docstrings in
   `src/payload/scripts/gitlab_wrapper.py` for the exact REST endpoints and the
   "can't approve your own PR/MR" caveat the orchestrator handles by polling.)
 - Issue metadata + checklist (per `issue-tracking.md`): assign an issue, set
@@ -800,7 +807,8 @@ subcommands the project's agents invoke. The minimum set:
   result otherwise so agents degrade gracefully — but the **checklist toggle is
   required**, on both hosts, because ticking an item is how the task-item gate is
   satisfied and both hosts model it the same way (flip the `- [ ]` line in the
-  body and write the body back). (See the wrapper docstrings.)
+  body and write the body back). (See `src/payload/scripts/github_api/` for
+  GitHub and the wrapper docstrings for GitLab.)
 - Delivery (REQUIRED where `config/delivery.json` says `"merge": "steward"`, Part 7.1):
   `enqueue-pr <n>`, `dequeue-pr <n> --reason "..."`, `queue-status [--json]`, `wait-landed <n>
   --timeout-seconds 540` (the session's bounded wait for its PR to LAND: 0 landed, 10 returned with the
@@ -3634,7 +3642,8 @@ expected outcome, not a sign that something was missed.
   `scripts/run_checks.py` (every check, every failure, one pass — each CI job calls it,
   Part 7),
   `scripts/ci_outage_mode.py` (the shared CI-outage marker the pre-push hook reads),
-  `scripts/gitlab_wrapper.py`, `scripts/github_wrapper.py`,
+  `scripts/gitlab_wrapper.py`, `scripts/github_wrapper.py` and its package
+  `scripts/github_api/` (copied together, Part 5.3),
   `scripts/reap_agent_temp.py` (the OS-temp reaper, Part 5.4) and
   `test/test_reap_agent_temp.py` (its suite),
   `test/test_instruction_corpus_budget.py` (the memory-budget guard, Part 9),

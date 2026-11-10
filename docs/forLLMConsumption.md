@@ -27,6 +27,12 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
 - `clients/claude/`, `clients/kiro/` — per-client assets, laid out like a project's `.claude/` and `.kiro/`.
 - `src/hooks/` — the agent hook runtime (dispatcher `hooks.py`, `hooklib.py`, discovered `gate_*.py`) and its suite.
 - `src/payload/` — the project scripts and their tests, laid out like a project root (`scripts/`, `test/`, `src/`).
+- `src/payload/scripts/github_api/` — the package of the product GitHub wrapper, copied with its entry script
+  `github_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of
+  `docs/api-reference/github/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites:
+  `src/payload/test/test_github_api_*.py`, `src/payload/test/test_github_wrapper_compat.py`; in `test/`,
+  `test_github_wrapper_coverage.py` (every API-reference operation covered by a record or pending) and
+  `test_github_wrapper_fork_parity.py`. Not yet installed here: sessions run the fork (`config/toolchain.json`).
 - `templates/` — config skeletons, CI templates, git hooks, `docs/` shipped verbatim. No Python.
 - `docs/reports/`, `docs/design/agents/` — this repository's own records; `docs/README.md` maps the old layout.
 - `test/` — this repository's own tests: `test_layout.py` (layout guard), `test_toolchain_integrity.py`,

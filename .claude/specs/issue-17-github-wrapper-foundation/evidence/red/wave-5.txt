@@ -1,0 +1,1102 @@
+# tasks: 5.1 5.2 5.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py test/test_setup_prompts_github_wrapper.py test/test_layout.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_setup_prompts_gitignore.py test/test_agent_rule_references.py test/test_no_ai_attribution_rule.py test/test_post_activity_prompts.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [752 items]
+
+..F.F.....F.F......F....F..F..F...F.....F.F...F..F.F.......F...F.F...... [  9%]
+F..F..F......F..F..F....F.F.F.......FFFFFFFF..F.FF...FFFFFFFF...F...FFFF [ 19%]
+FFFFF...FFFF..F.FFFF...F..F.FFFFFF...FFFFFF..F....FF....FFF....FF....FFF [ 28%]
+F....FFF................................................................ [ 38%]
+........................................................................ [ 47%]
+......................................................F.F.F.F.F.F.F.F.FF [ 57%]
+.F.F.FF.FF.F......F.F.F.F.F.FF.......................................... [ 67%]
+........................................................................ [ 76%]
+........................................................................ [ 86%]
+........................................................................ [ 95%]
+................................                                         [100%]
+================================== FAILURES ===================================
+_ test_a_subcommand_matches_its_golden_case[issue/start/exit-1/strict-refuses-your-own-claim] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-1/strict-refuses-your-own-claim: exit code 2, the golden is 1; stdout ''
+___ test_a_subcommand_matches_its_golden_case[issue/start/exit-1/not-open] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-1/not-open: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/start/exit-1/claim-not-on-re-read] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-1/claim-not-on-re-read: exit code 2, the golden is 1; stdout ''
+___ test_a_subcommand_matches_its_golden_case[issue/start/exit-1/not-found] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[release-issue/exit-0/label-and-your-assignment-dropped] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: release-issue/exit-0/label-and-your-assignment-dropped: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[release-issue/exit-0/not-claimed-writes-nothing] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: release-issue/exit-0/not-claimed-writes-nothing: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[release-issue/exit-0/another-assignee-kept] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: release-issue/exit-0/another-assignee-kept: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[release-issue/exit-0/your-assignment-without-the-label] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: release-issue/exit-0/your-assignment-without-the-label: exit code 2, the golden is 0; stdout ''
+__ test_a_subcommand_matches_its_golden_case[release-issue/exit-1/not-found] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: release-issue/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/release/exit-0/label-and-your-assignment-dropped] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/release/exit-0/label-and-your-assignment-dropped: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/release/exit-0/not-claimed-writes-nothing] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/release/exit-0/not-claimed-writes-nothing: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/release/exit-0/another-assignee-kept] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/release/exit-0/another-assignee-kept: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/release/exit-0/your-assignment-without-the-label] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/release/exit-0/your-assignment-without-the-label: exit code 2, the golden is 0; stdout ''
+__ test_a_subcommand_matches_its_golden_case[issue/release/exit-1/not-found] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/release/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[label-add/exit-0/added-beside-the-others] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: label-add/exit-0/added-beside-the-others: exit code 2, the golden is 0; stdout ''
+__ test_a_subcommand_matches_its_golden_case[label-add/exit-1/no-label-name] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: label-add/exit-1/no-label-name: exit code 2, the golden is 1; stdout ''
+____ test_a_subcommand_matches_its_golden_case[label-add/exit-1/not-found] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: label-add/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/label-add/exit-0/added-beside-the-others] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/label-add/exit-0/added-beside-the-others: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/label-add/exit-1/no-label-name] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/label-add/exit-1/no-label-name: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/label-add/exit-1/not-found] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/label-add/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[label-remove/exit-0/name-with-a-slash] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: label-remove/exit-0/name-with-a-slash: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[label-remove/exit-0/name-with-a-space] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: label-remove/exit-0/name-with-a-space: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[label-remove/exit-1/label-not-on-the-issue] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: label-remove/exit-1/label-not-on-the-issue: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/label-remove/exit-0/name-with-a-slash] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/label-remove/exit-0/name-with-a-slash: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/label-remove/exit-0/name-with-a-space] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/label-remove/exit-0/name-with-a-space: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/label-remove/exit-1/label-not-on-the-issue] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/label-remove/exit-1/label-not-on-the-issue: exit code 2, the golden is 1; stdout ''
+_________ test_a_subcommand_matches_its_golden_case[assign/exit-0/me] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assign/exit-0/me: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[assign/exit-0/user-beside-the-others] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assign/exit-0/user-beside-the-others: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[claim-check/exit-3/open-and-unclaimed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: claim-check/exit-3/open-and-unclaimed: exit code 2, the golden is 3; stdout ''
+______ test_a_subcommand_matches_its_golden_case[assign/exit-0/unassign] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assign/exit-0/unassign: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[claim-check/exit-0/claimed-by-the-label] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: claim-check/exit-0/claimed-by-the-label: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[assign/exit-0/unassign-nobody-writes-nothing] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assign/exit-0/unassign-nobody-writes-nothing: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[claim-check/exit-0/claimed-by-an-assignee] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: claim-check/exit-0/claimed-by-an-assignee: exit code 2, the golden is 0; stdout ''
+_____ test_a_subcommand_matches_its_golden_case[assign/exit-1/not-found] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: assign/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[claim-check/exit-0/closed-and-unclaimed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: claim-check/exit-0/closed-and-unclaimed: exit code 2, the golden is 0; stdout ''
+___ test_a_subcommand_matches_its_golden_case[claim-check/exit-1/not-found] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: claim-check/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+______ test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/me] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/assign/exit-0/me: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/user-beside-the-others] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/assign/exit-0/user-beside-the-others: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-3/open-and-unclaimed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/claim-check/exit-3/open-and-unclaimed: exit code 2, the golden is 3; stdout ''
+___ test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/unassign] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/assign/exit-0/unassign: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-0/claimed-by-the-label] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/claim-check/exit-0/claimed-by-the-label: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-0/claimed-by-an-assignee] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/claim-check/exit-0/claimed-by-an-assignee: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/unassign-nobody-writes-nothing] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/assign/exit-0/unassign-nobody-writes-nothing: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-0/closed-and-unclaimed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/claim-check/exit-0/closed-and-unclaimed: exit code 2, the golden is 0; stdout ''
+__ test_a_subcommand_matches_its_golden_case[issue/assign/exit-1/not-found] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/assign/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-1/not-found] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/claim-check/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[create-pr/exit-0/head-title-body] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: create-pr/exit-0/head-title-body: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[start-issue/exit-0/open-and-unclaimed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-0/open-and-unclaimed: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[create-pr/exit-0/title-of-the-head-base-body-file] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: create-pr/exit-0/title-of-the-head-base-body-file: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[start-issue/exit-0/already-yours-writes-nothing] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-0/already-yours-writes-nothing: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[create-pr/exit-0/empty-body-left-out] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: create-pr/exit-0/empty-body-left-out: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[start-issue/exit-0/force-takes-over] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-0/force-takes-over: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[create-pr/exit-1/validation-failed] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: create-pr/exit-1/validation-failed: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[start-issue/exit-1/assigned-to-another] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-1/assigned-to-another: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[create-pr/exit-1/body-and-body-file] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: create-pr/exit-1/body-and-body-file: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[start-issue/exit-1/label-without-an-assignee] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-1/label-without-an-assignee: exit code 2, the golden is 1; stdout ''
+____ test_a_subcommand_matches_its_golden_case[get-pr/exit-0/pull-request] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-pr/exit-0/pull-request: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[start-issue/exit-1/strict-refuses-your-own-claim] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-1/strict-refuses-your-own-claim: exit code 2, the golden is 1; stdout ''
+_____ test_a_subcommand_matches_its_golden_case[get-pr/exit-1/not-found] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-pr/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+___ test_a_subcommand_matches_its_golden_case[start-issue/exit-1/not-open] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-1/not-open: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[get-pr-checks/exit-0/check-runs-and-statuses] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-pr-checks/exit-0/check-runs-and-statuses: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[start-issue/exit-1/claim-not-on-re-read] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-1/claim-not-on-re-read: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[get-pr-checks/exit-0/no-checks-yet] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-pr-checks/exit-0/no-checks-yet: exit code 2, the golden is 0; stdout ''
+___ test_a_subcommand_matches_its_golden_case[start-issue/exit-1/not-found] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: start-issue/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[get-pr-checks/exit-1/pull-request-not-found] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-pr-checks/exit-1/pull-request-not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/start/exit-0/open-and-unclaimed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-0/open-and-unclaimed: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/start/exit-0/already-yours-writes-nothing] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-0/already-yours-writes-nothing: exit code 2, the golden is 0; stdout ''
+____ test_a_subcommand_matches_its_golden_case[approve-pr/exit-0/approve] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: approve-pr/exit-0/approve: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/start/exit-0/force-takes-over] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-0/force-takes-over: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[approve-pr/exit-0/approve-with-a-comment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: approve-pr/exit-0/approve-with-a-comment: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/start/exit-1/assigned-to-another] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-1/assigned-to-another: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[approve-pr/exit-1/own-pull-request] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: approve-pr/exit-1/own-pull-request: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[issue/start/exit-1/label-without-an-assignee] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue/start/exit-1/label-without-an-assignee: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[merge-pr/exit-0/merge-by-default] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: merge-pr/exit-0/merge-by-default: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[delete-remote-branch/exit-0/branch] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: delete-remote-branch/exit-0/branch: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[merge-pr/exit-0/squash-with-a-message] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: merge-pr/exit-0/squash-with-a-message: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[delete-remote-branch/exit-0/branch-with-slashes] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: delete-remote-branch/exit-0/branch-with-slashes: exit code 2, the golden is 0; stdout ''
+__ test_a_subcommand_matches_its_golden_case[merge-pr/exit-1/not-mergeable] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: merge-pr/exit-1/not-mergeable: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[delete-remote-branch/exit-1/no-such-reference] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: delete-remote-branch/exit-1/no-such-reference: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[list-workflows/exit-0/every-workflow] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: list-workflows/exit-0/every-workflow: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[list-workflows/exit-1/not-found] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: list-workflows/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[list-runs/exit-0/default-limit-of-ten] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: list-runs/exit-0/default-limit-of-ten: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[list-runs/exit-0/workflow-status-limit] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: list-runs/exit-0/workflow-status-limit: exit code 2, the golden is 0; stdout ''
+____ test_a_subcommand_matches_its_golden_case[list-runs/exit-1/not-found] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: list-runs/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+________ test_a_subcommand_matches_its_golden_case[get-run/exit-0/run] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-run/exit-0/run: exit code 2, the golden is 0; stdout ''
+_____ test_a_subcommand_matches_its_golden_case[get-run/exit-1/not-found] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-run/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[wait-run/exit-0/completed-success] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: wait-run/exit-0/completed-success: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[wait-run/exit-10/failure-after-one-poll] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: wait-run/exit-10/failure-after-one-poll: exit code 2, the golden is 10; stdout ''
+_ test_a_subcommand_matches_its_golden_case[wait-run/exit-11/timeout-of-zero-seconds] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: wait-run/exit-11/timeout-of-zero-seconds: exit code 2, the golden is 11; stdout ''
+____ test_a_subcommand_matches_its_golden_case[wait-run/exit-1/not-found] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: wait-run/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_ test_a_subcommand_matches_its_golden_case[get-logs/exit-0/archive-from-the-storage-host] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-logs/exit-0/archive-from-the-storage-host: exit code 2, the golden is 0; stdout ''
+___ test_a_subcommand_matches_its_golden_case[get-logs/exit-0/failed-only] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-logs/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+____ test_a_subcommand_matches_its_golden_case[get-logs/exit-1/not-found] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:131: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\github_wrapper_fixtures.py:2675: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-logs/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+____________ test_the_parsers_match_option_by_option[start-issue] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'start-issue'
+E   assert 'start-issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+___________ test_the_parsers_match_option_by_option[release-issue] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'release-issue'
+E   assert 'release-issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+____________ test_the_parsers_match_option_by_option[claim-check] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'claim-check'
+E   assert 'claim-check' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_____________ test_the_parsers_match_option_by_option[label-add] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'label-add'
+E   assert 'label-add' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+____________ test_the_parsers_match_option_by_option[label-remove] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'label-remove'
+E   assert 'label-remove' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_______________ test_the_parsers_match_option_by_option[assign] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'assign'
+E   assert 'assign' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_____________ test_the_parsers_match_option_by_option[create-pr] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'create-pr'
+E   assert 'create-pr' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_______________ test_the_parsers_match_option_by_option[get-pr] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'get-pr'
+E   assert 'get-pr' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+___________ test_the_parsers_match_option_by_option[get-pr-checks] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'get-pr-checks'
+E   assert 'get-pr-checks' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_____________ test_the_parsers_match_option_by_option[approve-pr] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'approve-pr'
+E   assert 'approve-pr' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+______________ test_the_parsers_match_option_by_option[merge-pr] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'merge-pr'
+E   assert 'merge-pr' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+________ test_the_parsers_match_option_by_option[delete-remote-branch] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'delete-remote-branch'
+E   assert 'delete-remote-branch' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+___________ test_the_parsers_match_option_by_option[list-workflows] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'list-workflows'
+E   assert 'list-workflows' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_____________ test_the_parsers_match_option_by_option[list-runs] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'list-runs'
+E   assert 'list-runs' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+______________ test_the_parsers_match_option_by_option[get-run] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'get-run'
+E   assert 'get-run' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+______________ test_the_parsers_match_option_by_option[get-logs] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'get-logs'
+E   assert 'get-logs' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+______________ test_the_parsers_match_option_by_option[wait-run] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'wait-run'
+E   assert 'wait-run' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+____________ test_the_parsers_match_option_by_option[issue start] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'issue'
+E   assert 'issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+___________ test_the_parsers_match_option_by_option[issue release] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'issue'
+E   assert 'issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_________ test_the_parsers_match_option_by_option[issue claim-check] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'issue'
+E   assert 'issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+__________ test_the_parsers_match_option_by_option[issue label-add] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'issue'
+E   assert 'issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_________ test_the_parsers_match_option_by_option[issue label-remove] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'issue'
+E   assert 'issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+____________ test_the_parsers_match_option_by_option[issue assign] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:261: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:185: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'issue'
+E   assert 'issue' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+___________________ test_the_setup_prompts_copy_the_package ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_github_wrapper.py:100: in test_the_setup_prompts_copy_the_package
+    assert not gaps, "the setup prompts do not copy the wrapper's package:\n" + "\n".join(gaps)
+E   AssertionError: the setup prompts do not copy the wrapper's package:
+E     setup-claude.txt: the `### Part 5.3 — Git repository wrapper scripts` section does not name `src/payload/scripts/github_api/`
+E     setup-kiro.txt: the `### Part 6.2 — Stub credentials and wrappers` section does not name `src/payload/scripts/github_api/`
+E     setup-claude.txt: the `### Shipped Python (shared with the Kiro prompt, under src/payload/, laid out like the project)` section does not name `scripts/github_api/`
+E     setup-kiro.txt: the `### Shipped Python referenced by this prompt` section does not name `scripts/github_api/`
+E   assert not ['setup-claude.txt: the `### Part 5.3 — Git repository wrapper scripts` section does not name `src/payload/scripts/git...i/`', 'setup-kiro.txt: the `### Shipped Python referenced by this prompt` section does not name `scripts/github_api/`']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-1/strict-refuses-your-own-claim]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-1/not-open]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-1/claim-not-on-re-read]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[release-issue/exit-0/label-and-your-assignment-dropped]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[release-issue/exit-0/not-claimed-writes-nothing]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[release-issue/exit-0/another-assignee-kept]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[release-issue/exit-0/your-assignment-without-the-label]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[release-issue/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/release/exit-0/label-and-your-assignment-dropped]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/release/exit-0/not-claimed-writes-nothing]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/release/exit-0/another-assignee-kept]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/release/exit-0/your-assignment-without-the-label]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/release/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[label-add/exit-0/added-beside-the-others]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[label-add/exit-1/no-label-name]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[label-add/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/label-add/exit-0/added-beside-the-others]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/label-add/exit-1/no-label-name]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/label-add/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[label-remove/exit-0/name-with-a-slash]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[label-remove/exit-0/name-with-a-space]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[label-remove/exit-1/label-not-on-the-issue]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/label-remove/exit-0/name-with-a-slash]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/label-remove/exit-0/name-with-a-space]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/label-remove/exit-1/label-not-on-the-issue]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[assign/exit-0/me]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[assign/exit-0/user-beside-the-others]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[claim-check/exit-3/open-and-unclaimed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[assign/exit-0/unassign]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[claim-check/exit-0/claimed-by-the-label]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[assign/exit-0/unassign-nobody-writes-nothing]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[claim-check/exit-0/claimed-by-an-assignee]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[assign/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[claim-check/exit-0/closed-and-unclaimed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[claim-check/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/me]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/user-beside-the-others]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-3/open-and-unclaimed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/unassign]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-0/claimed-by-the-label]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-0/claimed-by-an-assignee]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/assign/exit-0/unassign-nobody-writes-nothing]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-0/closed-and-unclaimed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/assign/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/claim-check/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-pr/exit-0/head-title-body]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-0/open-and-unclaimed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-pr/exit-0/title-of-the-head-base-body-file]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-0/already-yours-writes-nothing]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-pr/exit-0/empty-body-left-out]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-0/force-takes-over]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-pr/exit-1/validation-failed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-1/assigned-to-another]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-pr/exit-1/body-and-body-file]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-1/label-without-an-assignee]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-pr/exit-0/pull-request]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-1/strict-refuses-your-own-claim]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-pr/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-1/not-open]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-pr-checks/exit-0/check-runs-and-statuses]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-1/claim-not-on-re-read]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-pr-checks/exit-0/no-checks-yet]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[start-issue/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-pr-checks/exit-1/pull-request-not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-0/open-and-unclaimed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-0/already-yours-writes-nothing]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[approve-pr/exit-0/approve]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-0/force-takes-over]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[approve-pr/exit-0/approve-with-a-comment]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-1/assigned-to-another]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[approve-pr/exit-1/own-pull-request]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[issue/start/exit-1/label-without-an-assignee]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[merge-pr/exit-0/merge-by-default]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[delete-remote-branch/exit-0/branch]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[merge-pr/exit-0/squash-with-a-message]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[delete-remote-branch/exit-0/branch-with-slashes]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[merge-pr/exit-1/not-mergeable]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[delete-remote-branch/exit-1/no-such-reference]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-workflows/exit-0/every-workflow]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-workflows/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-runs/exit-0/default-limit-of-ten]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-runs/exit-0/workflow-status-limit]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-runs/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-run/exit-0/run]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-run/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[wait-run/exit-0/completed-success]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[wait-run/exit-10/failure-after-one-poll]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[wait-run/exit-11/timeout-of-zero-seconds]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[wait-run/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-logs/exit-0/archive-from-the-storage-host]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-logs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-logs/exit-1/not-found]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[start-issue]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[release-issue]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[claim-check]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[label-add]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[label-remove]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[assign]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[create-pr]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-pr]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-pr-checks]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[approve-pr]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[merge-pr]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[delete-remote-branch]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[list-workflows]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[list-runs]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-run]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-logs]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[wait-run]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[issue start]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[issue release]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[issue claim-check]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[issue label-add]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[issue label-remove]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[issue assign]
+FAILED test/test_setup_prompts_github_wrapper.py::test_the_setup_prompts_copy_the_package
+================= 117 failed, 635 passed in 144.24s (0:02:24) =================
