@@ -141,9 +141,9 @@ belongs to the module whose name sorts first. A record is transcribed from its r
   cap — Files: `prompts/setup-claude.txt`, `prompts/setup-kiro.txt`, `docs/forLLMConsumption.md` — Validates: UB-1
 
 ## Final
-- [ ] F.1 E2E: Not applicable in this change — nothing deployed changes; the real-instance run stays on #11. The
+- [x] F.1 E2E: Not applicable in this change — nothing deployed changes; the real-instance run stays on #11. The
   fake-host suites above run in CI's `tests` group — Files: none
-- [ ] F.2 TEST (verifier evidence; no file edited): `git diff --name-only` against the merge base lists neither
+- [x] F.2 TEST (verifier evidence; no file edited): `git diff --name-only` against the merge base lists neither
   `src/payload/scripts/github_wrapper.py`, nor a GitHub wrapper test, nor `src/payload/test/test_wrapper_delivery.py`;
   every file the diff adds under `gitlab_api/` is a row of D2's "What a family's change edits" table — Files: none —
   Validates: UB-3, AC-1.3
