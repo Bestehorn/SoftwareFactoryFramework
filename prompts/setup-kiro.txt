@@ -1771,7 +1771,7 @@ fileMatchPattern: "cdk/**/*.py"
 <!-- MIGRATION: add project-specific CDK rules below -->
 ```
 
-### 8.9 `aws-config.md` (always)
+### 8.9 `aws-config.md` (always; installed only in an AWS project)
 ```markdown
 ---
 inclusion: always
@@ -2098,7 +2098,7 @@ constraints differ. `file-organization.md`: `tmp/` scripts are
 disposable.
 ```
 
-### 8.17 `cdk-deployment-only.md` (conditional, CDK)
+### 8.17 `cdk-deployment-only.md` (conditional, CDK; installed only where the project has a `cdk/` directory)
 ```markdown
 ---
 inclusion: fileMatch
@@ -2145,7 +2145,7 @@ When the user corrects you, or a run hits a failure worth remembering:
    you touch; never read it whole.
 ```
 
-### 8.19 `use-doc-mcp-servers.md` (always) — replaces 4 separate files
+### 8.19 `use-doc-mcp-servers.md` (always; installed only where documentation MCP servers are configured) — replaces 4 separate files
 ```markdown
 ---
 inclusion: always
@@ -3797,6 +3797,12 @@ sibling `<name>.md` into `.kiro/agents/`.
 | `clients/kiro/agents/spec-implementer.json` | `spec-implementer.json` | `spec-implementer.md` |
 | `clients/kiro/agents/code-merge-reviewer.json` | `code-merge-reviewer.json` | `code-merge-reviewer.md` |
 | `clients/kiro/agents/ci-workflow-agent.json` | `ci-workflow-agent.json` | `ci-workflow-agent.md` |
+
+`aws-config.md` is named by `devops-iac-reviewer` and `security-reviewer`,
+`cdk-deployment-only.md` by `devops-iac-reviewer`, and `use-doc-mcp-servers.md` by
+`best-practice-reviewer`, `devops-iac-reviewer`, `spec-author` and `spec-conductor`, each
+with the marker `(where installed)`; a project that omits any of the three installs these
+agents unchanged.
 
 **The standalone utility agents** (config has an INLINE prompt — copy the JSON only):
 
