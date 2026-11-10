@@ -35,7 +35,7 @@ imports its package and is not counted among that task's files.
   `gitlab_api/graphql_only.py` — Validates: AC-1.1, AC-1.2, AC-2.2, AC-2.3, AC-5.2
 
 ## Wave 2 — Transport
-- [ ] 2.1 TEST: T puts the scripts directory on `sys.path` as R does, installs `FakeGitLab` and the guard autouse,
+- [x] 2.1 TEST: T puts the scripts directory on `sys.path` as R does, installs `FakeGitLab` and the guard autouse,
   and builds `Transport` with a recording `sleep`, a fixed `clock` and its default opener:
   `test_one_credential_header_per_token_type`, `test_json_body_is_native`, `test_file_value_sends_multipart`,
   `test_offset_paging_follows_next_and_ignores_total_pages`, `test_keyset_paging_follows_link_unchanged`,
@@ -47,15 +47,15 @@ imports its package and is not counted among that task's files.
   `test_empty_payload_errors_and_query_errors_fields_return_data` — Files:
   `src/payload/test/test_gitlab_api_transport.py` — Validates: AC-2.1, AC-2.3, AC-2.4, AC-2.5, AC-2.6, AC-3.1,
   AC-3.2, AC-3.3, AC-3.4, AC-3.5, AC-4.1, AC-4.2, AC-4.3
-- [ ] 2.2 TEST: R `test_call_refuses_an_undeclared_value` — `registry.call` on a `Transport` over `FakeGitLab`, on a
+- [x] 2.2 TEST: R `test_call_refuses_an_undeclared_value` — `registry.call` on a `Transport` over `FakeGitLab`, on a
   `RestOperation` the test builds and serves through `monkeypatch.setattr(registry, "lookup", …)`, raises `ValueError`
   whose message names the undeclared value, and nothing is recorded — `Transport` imported inside the test — Files:
   `src/payload/test/test_gitlab_api_registry.py` — Validates: AC-1.1
-- [ ] 2.3 TEST: P `test_standard_library_only` — every import of the entry script and the package is `gitlab_api…`
+- [x] 2.3 TEST: P `test_standard_library_only` — every import of the entry script and the package is `gitlab_api…`
   or in `sys.stdlib_module_names`, neither contains `os.environ` or `getenv`, and the scanned set includes
   `gitlab_wrapper.py`, `gitlab_api/transport.py`, `gitlab_api/registry.py` — Files:
   `test/test_gitlab_api_properties.py` — Validates: UB-2
-- [ ] 2.4 IMPL: `transport.py` per D4 — the config-key constants, `CREDENTIAL_HEADERS`, the paging, retry and timeout
+- [x] 2.4 IMPL: `transport.py` per D4 — the config-key constants, `CREDENTIAL_HEADERS`, the paging, retry and timeout
   constants, `TokenType`, `origin`, `CredentialStrippingRedirectHandler`, `error_text`, `Transport` (`from_config`;
   `_send` with the origin check, the credential header and the `429` retry; `request` with query, form, JSON and
   multipart bodies; `pages` for OFFSET and KEYSET; `graphql`; `graphql_nodes`); `registry.call` and `registry.pages`

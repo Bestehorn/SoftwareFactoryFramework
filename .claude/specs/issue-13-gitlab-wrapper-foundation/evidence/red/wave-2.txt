@@ -1,0 +1,733 @@
+# tasks: 2.1 2.2 2.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [74 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.....F.......FFFF [ 97%]
+..                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_one_credential_header_per_token_type[private] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:258: in test_one_credential_header_per_token_type
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_next_url_on_another_origin_is_refused[another-host-KEYSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_next_url_on_another_origin_is_refused[another-scheme-OFFSET] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______________ test_one_credential_header_per_token_type[bearer] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:258: in test_one_credential_header_per_token_type
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_next_url_on_another_origin_is_refused[another-scheme-KEYSET] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______________ test_one_credential_header_per_token_type[job] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:258: in test_one_credential_header_per_token_type
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_next_url_on_another_origin_is_refused[another-port-OFFSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+__________________________ test_json_body_is_native ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:283: in test_json_body_is_native
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_next_url_on_another_origin_is_refused[another-port-KEYSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_next_url_on_another_origin_is_refused[userinfo-host-OFFSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_next_url_on_another_origin_is_refused[userinfo-host-KEYSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____ test_next_url_on_another_origin_is_refused[non-integer-port-OFFSET] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____ test_next_url_on_another_origin_is_refused[non-integer-port-KEYSET] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____ test_cross_origin_redirect_drops_credentials[suffixed-host-private] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______________________ test_file_value_sends_multipart _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:298: in test_file_value_sends_multipart
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____ test_cross_origin_redirect_drops_credentials[suffixed-host-bearer] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_ test_offset_paging_follows_next_and_ignores_total_pages[x-next-page-empty] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:356: in test_offset_paging_follows_next_and_ignores_total_pages
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_ test_offset_paging_follows_next_and_ignores_total_pages[x-next-page-absent] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:356: in test_offset_paging_follows_next_and_ignores_total_pages
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_cross_origin_redirect_drops_credentials[suffixed-host-job] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+__________________ test_keyset_paging_follows_link_unchanged __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:429: in test_keyset_paging_follows_link_unchanged
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____ test_cross_origin_redirect_drops_credentials[userinfo-host-private] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_next_url_on_another_origin_is_refused[another-host-OFFSET] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:469: in test_next_url_on_another_origin_is_refused
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+________ test_cross_origin_redirect_drops_credentials[http-scheme-job] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____ test_cross_origin_redirect_drops_credentials[userinfo-host-bearer] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_cross_origin_redirect_drops_credentials[other-port-private] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_cross_origin_redirect_drops_credentials[userinfo-host-job] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_cross_origin_redirect_drops_credentials[other-port-bearer] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_cross_origin_redirect_drops_credentials[http-scheme-private] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+________ test_cross_origin_redirect_drops_credentials[other-port-job] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_cross_origin_redirect_drops_credentials[http-scheme-bearer] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:511: in test_cross_origin_redirect_drops_credentials
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_same_origin_redirect_keeps_credential[moved-project-private] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_ test_same_origin_redirect_keeps_credential[upper-case-host-default-port-private] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______ test_same_origin_redirect_keeps_credential[moved-project-bearer] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_ test_same_origin_redirect_keeps_credential[upper-case-host-default-port-bearer] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+________ test_same_origin_redirect_keeps_credential[moved-project-job] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_ test_same_origin_redirect_keeps_credential[upper-case-host-default-port-job] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+____________ test_credential_stays_dropped_on_return_hop[private] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:554: in test_credential_stays_dropped_on_return_hop
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______ test_same_origin_redirect_keeps_credential[empty-port-private] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____________ test_credential_stays_dropped_on_return_hop[bearer] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:554: in test_credential_stays_dropped_on_return_hop
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+________ test_same_origin_redirect_keeps_credential[empty-port-bearer] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______________ test_credential_stays_dropped_on_return_hop[job] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:554: in test_credential_stays_dropped_on_return_hop
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_________ test_same_origin_redirect_keeps_credential[empty-port-job] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:537: in test_same_origin_redirect_keeps_credential
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_________________________ test_429_waits_retry_after __________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:576: in test_429_waits_retry_after
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+________________________ test_429_after_retries_raises ________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:618: in test_429_after_retries_raises
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_______________ test_429_without_headers_backs_off_increasingly _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:595: in test_429_without_headers_backs_off_increasingly
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_____________ test_error_shape_raises_gitlab_api_error[spam-hash] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:690: in test_error_shape_raises_gitlab_api_error
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+__________ test_error_shape_raises_gitlab_api_error[message-string] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:690: in test_error_shape_raises_gitlab_api_error
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+________ test_error_shape_raises_gitlab_api_error[message-field-hash] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:690: in test_error_shape_raises_gitlab_api_error
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+____________ test_error_shape_raises_gitlab_api_error[plain-text] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:690: in test_error_shape_raises_gitlab_api_error
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+___________ test_error_shape_raises_gitlab_api_error[error-string] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:690: in test_error_shape_raises_gitlab_api_error
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_________________ test_graphql_posts_to_api_graphql[private] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:733: in test_graphql_posts_to_api_graphql
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+__________________ test_graphql_posts_to_api_graphql[bearer] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:733: in test_graphql_posts_to_api_graphql
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+____________ test_error_shape_raises_gitlab_api_error[oauth-scope] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:690: in test_error_shape_raises_gitlab_api_error
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_ test_empty_payload_errors_and_query_errors_fields_return_data[query-object-with-an-errors-field] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:857: in test_empty_payload_errors_and_query_errors_fields_return_data
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+______________________ test_graphql_pages_by_end_cursor _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:753: in test_graphql_pages_by_end_cursor
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+____ test_graphql_errors_at_200_raise[top-level-errors-with-partial-data] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:818: in test_graphql_errors_at_200_raise
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+____________________ test_call_refuses_an_undeclared_value ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:233: in test_call_refuses_an_undeclared_value
+    transport_module = gitlab_module(name="transport")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:88: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+__________ test_graphql_errors_at_200_raise[mutation-payload-errors] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:818: in test_graphql_errors_at_200_raise
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_ test_empty_payload_errors_and_query_errors_fields_return_data[mutation-payload-with-empty-errors] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:857: in test_empty_payload_errors_and_query_errors_fields_return_data
+    transport = gitlab_module(name="transport")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:152: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/transport.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/transport.py').is_file
+_________________________ test_standard_library_only __________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:188: in test_standard_library_only
+    assert missing == [], f"missing from the scanned set {sorted(sources)}: {missing}"
+E   AssertionError: missing from the scanned set ['gitlab_api/__init__.py', 'gitlab_api/errors.py', 'gitlab_api/families/__init__.py', 'gitlab_api/graphql_only.py', 'gitlab_api/registry.py', 'gitlab_wrapper.py']: ['gitlab_api/transport.py']
+E   assert ['gitlab_api/transport.py'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mgitlab_api/transport.py[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_one_credential_header_per_token_type[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-host-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-scheme-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_one_credential_header_per_token_type[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-scheme-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_one_credential_header_per_token_type[job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-port-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_json_body_is_native
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-port-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[userinfo-host-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[userinfo-host-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[non-integer-port-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[non-integer-port-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[suffixed-host-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_file_value_sends_multipart
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[suffixed-host-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_offset_paging_follows_next_and_ignores_total_pages[x-next-page-empty]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_offset_paging_follows_next_and_ignores_total_pages[x-next-page-absent]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[suffixed-host-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_keyset_paging_follows_link_unchanged
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[userinfo-host-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-host-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[http-scheme-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[userinfo-host-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[other-port-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[userinfo-host-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[other-port-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[http-scheme-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[other-port-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_cross_origin_redirect_drops_credentials[http-scheme-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[moved-project-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[upper-case-host-default-port-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[moved-project-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[upper-case-host-default-port-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[moved-project-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[upper-case-host-default-port-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_credential_stays_dropped_on_return_hop[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[empty-port-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_credential_stays_dropped_on_return_hop[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[empty-port-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_credential_stays_dropped_on_return_hop[job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_same_origin_redirect_keeps_credential[empty-port-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_429_waits_retry_after
+FAILED src/payload/test/test_gitlab_api_transport.py::test_429_after_retries_raises
+FAILED src/payload/test/test_gitlab_api_transport.py::test_429_without_headers_backs_off_increasingly
+FAILED src/payload/test/test_gitlab_api_transport.py::test_error_shape_raises_gitlab_api_error[spam-hash]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_error_shape_raises_gitlab_api_error[message-string]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_error_shape_raises_gitlab_api_error[message-field-hash]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_error_shape_raises_gitlab_api_error[plain-text]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_error_shape_raises_gitlab_api_error[error-string]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_posts_to_api_graphql[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_posts_to_api_graphql[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_error_shape_raises_gitlab_api_error[oauth-scope]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_empty_payload_errors_and_query_errors_fields_return_data[query-object-with-an-errors-field]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_pages_by_end_cursor
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_errors_at_200_raise[top-level-errors-with-partial-data]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_call_refuses_an_undeclared_value
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_errors_at_200_raise[mutation-payload-errors]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_empty_payload_errors_and_query_errors_fields_return_data[mutation-payload-with-empty-errors]
+FAILED test/test_gitlab_api_properties.py::test_standard_library_only - Asser...
+======================= 60 failed, 14 passed in 12.05s ========================

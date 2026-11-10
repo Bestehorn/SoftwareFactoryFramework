@@ -3,7 +3,8 @@
 What is pinned (issue #13, ``design.md`` D5): a value substituted into a path parameter is ONE percent-encoded segment
 (``/`` as ``%2F``; an empty value, ``.`` and ``..`` refused — AC-2.2); an array of hashes in a query string or a form
 body is sent in the bracket form ``name[0][key]=value`` (AC-2.3); ``lookup`` refuses an unknown and a twice-declared
-operation id, each naming the id (AC-1.1).
+operation id, each naming the id, and ``call`` refuses a value its record does not declare, naming it, before anything
+is sent (AC-1.1).
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
@@ -45,6 +46,14 @@ VARIABLES_PAIRS = [
     ("variables[1][key]", "VAR2"),
     ("variables[1][value]", "world"),
 ]
+
+# The record `registry.call` reaches through a monkeypatched `lookup`, and a value it does not declare: a misspelling
+# of its declared `confidential`, which `call` must refuse rather than send or drop.
+CALL_OPERATION_ID = "synthetic#update-an-issue"
+UNDECLARED_NAME = "confidental"
+# The `Transport` of design.md D4 built for a test: a fixed clock, a recording sleep, the default opener.
+FIXED_CLOCK_SECONDS = 0.0
+TOKEN_TYPE_PRIVATE = "private"
 
 
 def load_fixtures() -> ModuleType:
@@ -217,3 +226,41 @@ def test_lookup_refuses_unknown_and_duplicate_ids(monkeypatch: pytest.MonkeyPatc
     duplicate_message = str(duplicate_refusal.value).replace(twice, "<id>")
     unknown_message = str(unknown_refusal.value).replace(unknown, "<id>")
     assert duplicate_message != unknown_message, "a twice-declared id is refused as declared twice, not as unknown"
+
+
+def test_call_refuses_an_undeclared_value(monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    operation = registry.RestOperation(
+        operation_id=CALL_OPERATION_ID,
+        method="PUT",
+        path="/projects/:id/issues/:issue_iid",
+        params=(
+            registry.Param(name="title", location=registry.Location.BODY),
+            registry.Param(name="confidential", location=registry.Location.BODY),
+        ),
+    )
+
+    def lookup(*, operation_id: str) -> Any:
+        assert operation_id == CALL_OPERATION_ID, f"call looked up {operation_id!r}, not the id it was given"
+        return operation
+
+    monkeypatch.setattr(registry, "lookup", lookup)
+    # The request `call` would send if it dropped the undeclared value is scripted, so sending it fails this test on its
+    # oracle below rather than on the fake's unscripted-request error.
+    fake_gitlab.script(method="PUT", url=f"{fixtures.REST_BASE}/projects/diaspora%2Fdiaspora/issues/7", body={"iid": 7})
+    sleeps: List[float] = []
+    transport = transport_module.Transport(
+        host=fixtures.HOST,
+        token="registry-test-token",
+        token_type=TOKEN_TYPE_PRIVATE,
+        sleep=sleeps.append,
+        clock=lambda: FIXED_CLOCK_SECONDS,
+    )
+    with pytest.raises(ValueError, match=re.escape(UNDECLARED_NAME)):
+        registry.call(
+            transport=transport,
+            operation_id=CALL_OPERATION_ID,
+            values={"id": "diaspora/diaspora", "issue_iid": 7, "title": "Renamed", UNDECLARED_NAME: True},
+        )
+    assert fake_gitlab.requests == [], "a value the record does not declare is refused before any request (AC-1.1)"

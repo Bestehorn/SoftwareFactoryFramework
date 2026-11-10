@@ -1,0 +1,865 @@
+"""Tests for ``gitlab_api/transport.py`` — credentials, bodies, paging, redirects, rate limits, errors and GraphQL.
+
+What is pinned (issue #13, ``design.md`` D4 and "Correctness Properties"):
+
+- the token goes in exactly one header, the configured type's (AC-2.1); a JSON body carries native arrays and objects
+  (AC-2.3); a file is sent as ``multipart/form-data`` with its field name, its escaped file name and its bytes, every
+  other value as a field (AC-2.4);
+- offset paging follows ``x-next-page`` or ``Link`` ``rel="next"`` and never ``x-total-pages`` (AC-2.5); keyset paging
+  follows ``Link`` ``rel="next"`` unchanged and nothing else (AC-2.6); a next URL on another origin is refused before
+  it is fetched;
+- a redirect to another origin (scheme, lower-cased host, port with the scheme's default) drops every credential
+  header, a same-origin redirect keeps it, and a credential dropped once stays dropped (AC-3.1);
+- ``429`` waits ``Retry-After``, else backs off increasingly, and raises ``GitLabRateLimitError`` when the retries are
+  spent (AC-3.2 to AC-3.4); every ``conventions.md`` "Body shapes" error becomes a ``GitLabAPIError`` carrying the
+  status, the raw body and the shape's text (AC-3.5);
+- GraphQL POSTs ``{"query", "variables"}`` to ``/api/graphql`` (AC-4.1), pages a connection by ``endCursor``
+  (AC-4.2), and raises on top-level ``errors`` or a mutation payload's ``errors`` even at HTTP ``200`` (AC-4.3).
+
+``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
+test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
+fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
+Every ``Transport`` is built with a recording ``sleep``, a fixed ``clock`` and its default opener, so the redirect tests
+exercise the opener the transport builds and no test really sleeps.
+
+Run: ``python scripts/run_tests.py src/payload/test/test_gitlab_api_transport.py`` (no network).
+"""
+
+from __future__ import annotations
+
+import email.message
+import importlib
+import importlib.util
+import json
+import logging
+import pathlib
+import re
+import sys
+from pathlib import Path
+from types import ModuleType
+from typing import Any, Dict, List, Mapping, Sequence, Tuple
+
+import pytest
+
+TEST_DIR = Path(__file__).resolve().parent
+SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
+PACKAGE_DIR = SCRIPTS_DIR / "gitlab_api"
+FIXTURES_FILE = TEST_DIR / "gitlab_wrapper_fixtures.py"
+FIXTURES_MODULE = "gitlab_wrapper_fixtures"
+
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+
+def load_fixtures() -> ModuleType:
+    """The fake host module, loaded by path once per process (it is neither a test module nor a package member)."""
+    loaded = sys.modules.get(FIXTURES_MODULE)
+    if loaded is not None:
+        return loaded
+    spec = importlib.util.spec_from_file_location(name=FIXTURES_MODULE, location=FIXTURES_FILE)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec=spec)
+    sys.modules[FIXTURES_MODULE] = module
+    spec.loader.exec_module(module=module)
+    return module
+
+
+fixtures = load_fixtures()
+
+HOST = fixtures.HOST
+REST_BASE = fixtures.REST_BASE
+GRAPHQL_URL = fixtures.GRAPHQL_URL
+
+TOKEN = "transport-token-for-the-test"  # pragma: allowlist secret
+FIXED_CLOCK_SECONDS = 1_000.0
+
+TOKEN_TYPE_PRIVATE = "private"
+TOKEN_TYPE_BEARER = "bearer"
+TOKEN_TYPE_JOB = "job"
+TOKEN_TYPES = (TOKEN_TYPE_PRIVATE, TOKEN_TYPE_BEARER, TOKEN_TYPE_JOB)
+
+# The credential each token type sends, by lower-cased header name (conventions.md "Credential types").
+HEADER_PRIVATE_TOKEN = "private-token"
+HEADER_JOB_TOKEN = "job-token"
+HEADER_AUTHORIZATION = "authorization"
+CREDENTIAL_HEADER_NAMES = frozenset({HEADER_PRIVATE_TOKEN, HEADER_JOB_TOKEN, HEADER_AUTHORIZATION})
+BEARER_CREDENTIAL = {HEADER_AUTHORIZATION: f"Bearer {TOKEN}"}
+EXPECTED_CREDENTIAL: Dict[str, Dict[str, str]] = {
+    TOKEN_TYPE_PRIVATE: {HEADER_PRIVATE_TOKEN: TOKEN},
+    TOKEN_TYPE_BEARER: BEARER_CREDENTIAL,
+    TOKEN_TYPE_JOB: {HEADER_JOB_TOKEN: TOKEN},
+}
+
+HEADER_CONTENT_TYPE = "Content-Type"
+HEADER_LOCATION = "Location"
+HEADER_LINK = "Link"
+HEADER_RETRY_AFTER = "Retry-After"
+HEADER_NEXT_PAGE = "x-next-page"
+HEADER_PAGE = "x-page"
+HEADER_TOTAL_PAGES = "x-total-pages"
+CONTENT_TYPE_JSON = "application/json"
+CONTENT_TYPE_TEXT = "text/plain"
+CONTENT_TYPE_MULTIPART = "multipart/form-data"
+CONTENT_TYPE_OCTET_STREAM = "application/octet-stream"
+
+FIELD_QUERY = "query"
+FIELD_VARIABLES = "variables"
+FIELD_AFTER = "after"
+FIELD_DATA = "data"
+FIELD_ERRORS = "errors"
+
+# conventions.md "Offset-based": `per_page` maximum.
+DOCUMENTED_MAX_PER_PAGE = 100
+PER_PAGE = str(DOCUMENTED_MAX_PER_PAGE)
+
+RATE_LIMITED_BODY = "Retry later"
+
+# --- shared doubles -----------------------------------------------------------------------------------------------
+
+
+class RecordingSleep:
+    """Stands in for ``time.sleep``: records each pause and returns at once; positional only, as ``time.sleep``."""
+
+    def __init__(self) -> None:
+        self.calls: List[float] = []
+
+    def __call__(self, seconds: float, /) -> None:
+        self.calls.append(seconds)
+
+
+def fixed_clock() -> float:
+    return FIXED_CLOCK_SECONDS
+
+
+@pytest.fixture(autouse=True)
+def socket_guard(monkeypatch: pytest.MonkeyPatch) -> None:
+    fixtures.install_socket_guard(monkeypatch=monkeypatch)
+
+
+@pytest.fixture(autouse=True)
+def fake_gitlab(monkeypatch: pytest.MonkeyPatch) -> Any:
+    return fixtures.FakeGitLab().install(monkeypatch=monkeypatch)
+
+
+@pytest.fixture
+def sleeper() -> RecordingSleep:
+    return RecordingSleep()
+
+
+def gitlab_module(*, name: str) -> ModuleType:
+    """Import ``gitlab_api.<name>`` inside a test, so a module not written yet fails it on an assertion."""
+    source = PACKAGE_DIR / f"{name}.py"
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+    return importlib.import_module(name=f"gitlab_api.{name}")
+
+
+def make_client(*, transport: ModuleType, sleeper: RecordingSleep, token_type: str = TOKEN_TYPE_PRIVATE) -> Any:
+    """A ``Transport`` on the fake host with the recording sleep, the fixed clock and the default opener (D4)."""
+    return transport.Transport(
+        host=HOST,
+        token=TOKEN,
+        token_type=transport.TokenType(token_type),
+        sleep=sleeper,
+        clock=fixed_clock,
+    )
+
+
+def credentials_sent(*, request: Any) -> Dict[str, str]:
+    """Every credential header the recorded request carried, by lower-cased name."""
+    return {name.lower(): value for name, value in request.headers.items() if name.lower() in CREDENTIAL_HEADER_NAMES}
+
+
+def media_type(*, value: Any) -> str:
+    """A ``Content-Type`` value without its parameters, lower-cased; empty when the header is absent."""
+    return str(value or "").split(";")[0].strip().lower()
+
+
+def recorded_urls(*, fake: Any) -> List[str]:
+    return [request.url for request in fake.requests]
+
+
+def link_header(*, links: Sequence[Tuple[str, str]]) -> str:
+    """A ``Link`` header value of ``(url, rel)`` pairs, in GitLab's spelling."""
+    return ", ".join(f'<{url}>; rel="{rel}"' for url, rel in links)
+
+
+# --- multipart parsing (RFC 2046 section 5.1.1) ---------------------------------------------------------------------
+
+CRLF = b"\r\n"
+DISPOSITION_PARAM = re.compile(r'(\w+)="([^"]*)"')
+HEADER_CONTENT_DISPOSITION = "content-disposition"
+
+
+class MultipartPart:
+    """One body part: its headers by lower-cased name, the disposition type and parameters, its raw content."""
+
+    def __init__(self, *, headers: Dict[str, str], content: bytes) -> None:
+        self.headers = headers
+        self.content = content
+        disposition = headers.get(HEADER_CONTENT_DISPOSITION, "")
+        self.disposition_type = disposition.split(";")[0].strip().lower()
+        self.disposition = dict(DISPOSITION_PARAM.findall(disposition))
+
+
+def multipart_boundary(*, content_type: Any) -> str:
+    """The boundary parameter of a ``multipart/form-data`` content type."""
+    message = email.message.Message()
+    message[HEADER_CONTENT_TYPE] = str(content_type)
+    assert message.get_content_type() == CONTENT_TYPE_MULTIPART, f"Content-Type {content_type!r} is not multipart"
+    boundary = message.get_param(param="boundary")
+    assert isinstance(boundary, str) and boundary, f"Content-Type {content_type!r} names no boundary"
+    return boundary
+
+
+def multipart_parts(*, body: bytes, boundary: str) -> List[MultipartPart]:
+    """The parts of a multipart body, split on ``CRLF--boundary`` exactly as RFC 2046 delimits them."""
+    delimiter = CRLF + b"--" + boundary.encode("ascii")
+    chunks = (CRLF + body).split(delimiter)
+    assert chunks[0] == b"", "a multipart body starts with its first boundary"
+    assert chunks[-1].startswith(b"--"), "a multipart body ends with the close delimiter"
+    parts = []
+    for chunk in chunks[1:-1]:
+        assert chunk.startswith(CRLF), "a boundary line ends with CRLF"
+        head, separator, content = chunk[len(CRLF) :].partition(CRLF + CRLF)
+        assert separator, "a part separates its headers from its content with an empty line"
+        headers: Dict[str, str] = {}
+        for line in head.decode("utf-8").split("\r\n"):
+            name, _, value = line.partition(":")
+            headers[name.strip().lower()] = value.strip()
+        parts.append(MultipartPart(headers=headers, content=content))
+    return parts
+
+
+# Windows cannot store `"` in a file name, so the uploaded bytes come from a file with a plain name and the path object
+# reports a name carrying the quotes — the name the transport writes into the part (D4 "Multipart").
+REPORTED_FILE_NAME = 'report"final".log'
+ESCAPED_FILE_NAME = "report%22final%22.log"
+FILE_BYTES = b"first line\r\nsecond line\r\n\x00\xff binary tail"
+
+if sys.platform == "win32":
+    ConcretePath = pathlib.WindowsPath
+else:
+    ConcretePath = pathlib.PosixPath
+
+
+class ReportedNamePath(ConcretePath):
+    """A real file whose ``name`` is ``REPORTED_FILE_NAME``."""
+
+    @property
+    def name(self) -> str:
+        return REPORTED_FILE_NAME
+
+
+# --- AC-2.1 credentials -------------------------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+def test_one_credential_header_per_token_type(fake_gitlab: Any, sleeper: RecordingSleep, token_type: str) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    fake_gitlab.script(method="GET", url=f"{REST_BASE}/projects/1", body={"id": 1})
+
+    response = client.request(method="GET", path="/projects/1")
+
+    assert response.value == {"id": 1}, "a JSON response is decoded"
+    assert recorded_urls(fake=fake_gitlab) == [f"{REST_BASE}/projects/1"]
+    sent = fake_gitlab.requests[0]
+    assert credentials_sent(request=sent) == EXPECTED_CREDENTIAL[token_type], (
+        f"token type {token_type!r} sends exactly its one credential header (AC-2.1)"
+    )
+    assert TOKEN not in sent.url, "the token never enters a URL"
+
+
+# --- AC-2.3 JSON body, AC-2.4 multipart ---------------------------------------------------------------------------
+
+JSON_BODY = {
+    "assignee_ids": [11, 12],
+    "variables": [{"key": "VAR1", "value": "hello"}, {"key": "VAR2", "value": "world"}],
+    "options": {"remove_source_branch": True, "squash": None},
+}
+
+
+def test_json_body_is_native(fake_gitlab: Any, sleeper: RecordingSleep) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    url = f"{REST_BASE}/projects/1/issues/2"
+    fake_gitlab.script(method="PUT", url=url, body={"iid": 2})
+
+    response = client.request(method="PUT", path="/projects/1/issues/2", json_body=JSON_BODY)
+
+    assert response.value == {"iid": 2}
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("PUT", url)]
+    sent = fake_gitlab.requests[0]
+    assert media_type(value=sent.header(name=HEADER_CONTENT_TYPE)) == CONTENT_TYPE_JSON
+    assert sent.json() == JSON_BODY, "a JSON body holds arrays and objects natively, not bracket pairs (AC-2.3)"
+
+
+def test_file_value_sends_multipart(fake_gitlab: Any, sleeper: RecordingSleep, tmp_path: Path) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    stored = tmp_path / "report.log"
+    stored.write_bytes(FILE_BYTES)
+    upload = ReportedNamePath(stored)
+    url = f"{REST_BASE}/projects/1/uploads"
+    fake_gitlab.script(method="POST", url=url, status=201, body={"url": "/uploads/0/report.log"})
+
+    client.request(
+        method="POST",
+        path="/projects/1/uploads",
+        form=(("description", "the build log"),),
+        files=(("file", upload),),
+    )
+
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("POST", url)]
+    sent = fake_gitlab.requests[0]
+    boundary = multipart_boundary(content_type=sent.header(name=HEADER_CONTENT_TYPE))
+    assert len(boundary) <= 70, "RFC 2046 section 5.1.1 limits a boundary to 70 characters"
+    assert sent.body is not None
+    parts = multipart_parts(body=sent.body, boundary=boundary)
+    by_name = {part.disposition.get("name"): part for part in parts}
+    assert sorted(by_name, key=str) == ["description", "file"], "one part per file and per other value (AC-2.4)"
+    assert all(part.disposition_type == "form-data" for part in parts)
+
+    field = by_name["description"]
+    assert field.disposition == {"name": "description"}, "a non-file value is a plain form field"
+    assert field.content == b"the build log"
+
+    file_part = by_name["file"]
+    assert file_part.disposition == {"name": "file", "filename": ESCAPED_FILE_NAME}, (
+        'the file part carries its field name and its file name, `"` written as %22 (the HTML multipart encoding)'
+    )
+    assert media_type(value=file_part.headers.get("content-type")) == CONTENT_TYPE_OCTET_STREAM
+    assert file_part.content == FILE_BYTES, "the file's bytes are sent unchanged"
+
+
+# --- AC-2.5 offset paging, AC-2.6 keyset paging --------------------------------------------------------------------
+
+ISSUES_PATH = "/projects/1/issues"
+ISSUES_URL = f"{REST_BASE}{ISSUES_PATH}"
+OFFSET_FIRST_URL = f"{ISSUES_URL}?per_page={PER_PAGE}"
+# x-next-page re-issues the first request with `page` added (D4 `pages`).
+OFFSET_SECOND_URL = f"{ISSUES_URL}?per_page={PER_PAGE}&page=2"
+# The Link next URL is followed as given; the comma inside it must not split the header.
+OFFSET_THIRD_URL = f"{ISSUES_URL}?labels=bug,ui&page=3&per_page={PER_PAGE}"
+OFFSET_FIRST_PAGE_LINK = f"{ISSUES_URL}?page=1&per_page={PER_PAGE}"
+OFFSET_SECOND_PAGE_LINK = f"{ISSUES_URL}?page=2&per_page={PER_PAGE}"
+
+
+@pytest.mark.parametrize(
+    "last_page_next",
+    [[(HEADER_NEXT_PAGE, "")], []],
+    ids=["x-next-page-empty", "x-next-page-absent"],
+)
+def test_offset_paging_follows_next_and_ignores_total_pages(
+    fake_gitlab: Any, sleeper: RecordingSleep, last_page_next: List[Tuple[str, str]]
+) -> None:
+    transport = gitlab_module(name="transport")
+    registry = gitlab_module(name="registry")
+    assert transport.MAX_PER_PAGE == DOCUMENTED_MAX_PER_PAGE, "conventions.md 'Offset-based': per_page maximum 100"
+    client = make_client(transport=transport, sleeper=sleeper)
+    fake_gitlab.script(
+        method="GET",
+        url=OFFSET_FIRST_URL,
+        headers=[
+            (HEADER_PAGE, "1"),
+            (HEADER_NEXT_PAGE, "2"),
+            (HEADER_TOTAL_PAGES, "1"),  # wrong on purpose: paging never reads it
+            (
+                HEADER_LINK,
+                link_header(links=[(OFFSET_FIRST_PAGE_LINK, "first"), (OFFSET_FIRST_PAGE_LINK, "last")]),
+            ),
+        ],
+        body=[{"id": 1}, {"id": 2}],
+    )
+    fake_gitlab.script(
+        method="GET",
+        url=OFFSET_SECOND_URL,
+        headers=[
+            (HEADER_PAGE, "2"),
+            (HEADER_NEXT_PAGE, "3"),
+            (HEADER_TOTAL_PAGES, "2"),
+            (
+                HEADER_LINK,
+                link_header(
+                    links=[
+                        (OFFSET_FIRST_PAGE_LINK, "prev"),
+                        (OFFSET_THIRD_URL, "next"),
+                        (OFFSET_FIRST_PAGE_LINK, "first"),
+                    ]
+                ),
+            ),
+        ],
+        body=[{"id": 3}],
+    )
+    fake_gitlab.script(
+        method="GET",
+        url=OFFSET_THIRD_URL,
+        headers=[
+            (HEADER_PAGE, "3"),
+            *last_page_next,
+            (HEADER_TOTAL_PAGES, "9"),  # wrong on purpose: a fourth request would fail on the fake
+            (
+                HEADER_LINK,
+                link_header(links=[(OFFSET_SECOND_PAGE_LINK, "prev"), (OFFSET_FIRST_PAGE_LINK, "first")]),
+            ),
+        ],
+        body=[{"id": 4}],
+    )
+
+    items = iter(client.pages(path=ISSUES_PATH, paging=registry.Paging.OFFSET))
+    first = next(items)
+    assert len(fake_gitlab.requests) == 1, "a page is fetched only when the previous one is exhausted"
+    collected = [first, *items]
+
+    assert collected == [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}], "the items of every page, in page order"
+    assert recorded_urls(fake=fake_gitlab) == [OFFSET_FIRST_URL, OFFSET_SECOND_URL, OFFSET_THIRD_URL], (
+        "page 1 -> 2 by x-next-page, 2 -> 3 by Link rel=next as given, stop when neither names a next page (AC-2.5)"
+    )
+
+
+PIPELINES_PATH = "/pipelines"
+KEYSET_QUERY = (("order_by", "created_at"), ("sort", "desc"), ("per_page", PER_PAGE))
+KEYSET_FIRST_URL = f"{REST_BASE}{PIPELINES_PATH}?order_by=created_at&sort=desc&per_page={PER_PAGE}"
+# Percent-escapes and a parameter order unlike the first request: any re-encoding or rebuilding changes the bytes.
+KEYSET_SECOND_URL = f"{REST_BASE}{PIPELINES_PATH}?cursor=page%3Dtwo%2Csorted&order_by=created_at&per_page={PER_PAGE}"
+KEYSET_THIRD_URL = f"{REST_BASE}{PIPELINES_PATH}?cursor=page%3Dthree%2Csorted&order_by=created_at&per_page={PER_PAGE}"
+
+
+def test_keyset_paging_follows_link_unchanged(fake_gitlab: Any, sleeper: RecordingSleep) -> None:
+    transport = gitlab_module(name="transport")
+    registry = gitlab_module(name="registry")
+    client = make_client(transport=transport, sleeper=sleeper)
+    fake_gitlab.script(
+        method="GET",
+        url=KEYSET_FIRST_URL,
+        headers=[(HEADER_LINK, link_header(links=[(KEYSET_SECOND_URL, "next")]))],
+        body=[{"id": 30}, {"id": 29}],
+    )
+    fake_gitlab.script(
+        method="GET",
+        url=KEYSET_SECOND_URL,
+        headers=[(HEADER_LINK, link_header(links=[(KEYSET_THIRD_URL, "next")]))],
+        body=[{"id": 28}],
+    )
+    # The last page: no Link header, an empty array; the stray x-next-page is not a keyset signal (D4 KEYSET).
+    fake_gitlab.script(method="GET", url=KEYSET_THIRD_URL, headers=[(HEADER_NEXT_PAGE, "4")], body=[])
+
+    collected = list(client.pages(path=PIPELINES_PATH, query=KEYSET_QUERY, paging=registry.Paging.KEYSET))
+
+    assert collected == [{"id": 30}, {"id": 29}, {"id": 28}], "the items of every page, in page order"
+    assert recorded_urls(fake=fake_gitlab) == [KEYSET_FIRST_URL, KEYSET_SECOND_URL, KEYSET_THIRD_URL], (
+        "each follow-up URL is the Link rel=next URL byte for byte, and paging stops when Link is absent (AC-2.6)"
+    )
+
+
+FOREIGN_NEXT_URLS = [
+    pytest.param(f"https://evil.example{ISSUES_PATH}?page=2", id="another-host"),
+    pytest.param(f"http://{HOST}/api/v4{ISSUES_PATH}?page=2", id="another-scheme"),
+    pytest.param(f"https://{HOST}:8443/api/v4{ISSUES_PATH}?page=2", id="another-port"),
+    pytest.param(f"https://{HOST}@evil.example/api/v4{ISSUES_PATH}?page=2", id="userinfo-host"),
+    pytest.param(f"https://{HOST}:abc/api/v4{ISSUES_PATH}?page=2", id="non-integer-port"),
+]
+
+
+@pytest.mark.parametrize("paging_name", ["OFFSET", "KEYSET"])
+@pytest.mark.parametrize("next_url", FOREIGN_NEXT_URLS)
+def test_next_url_on_another_origin_is_refused(
+    fake_gitlab: Any, sleeper: RecordingSleep, paging_name: str, next_url: str
+) -> None:
+    transport = gitlab_module(name="transport")
+    registry = gitlab_module(name="registry")
+    errors = gitlab_module(name="errors")
+    client = make_client(transport=transport, sleeper=sleeper)
+    first_url = f"{ISSUES_URL}?per_page={PER_PAGE}"
+    fake_gitlab.script(
+        method="GET",
+        url=first_url,
+        headers=[(HEADER_LINK, link_header(links=[(next_url, "next")]))],
+        body=[{"id": 1}],
+    )
+
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(next_url)):
+        list(
+            client.pages(
+                path=ISSUES_PATH,
+                query=(("per_page", PER_PAGE),),
+                paging=getattr(registry.Paging, paging_name),
+            )
+        )
+
+    assert recorded_urls(fake=fake_gitlab) == [first_url], "a next URL on another origin is never fetched"
+
+
+# --- AC-3.1 redirects ---------------------------------------------------------------------------------------------
+
+ARTIFACTS_PATH = "/projects/1/jobs/5/artifacts"
+ARTIFACTS_URL = f"{REST_BASE}{ARTIFACTS_PATH}"
+
+CROSS_ORIGIN_TARGETS = [
+    pytest.param(f"https://{HOST}.evil.example/", id="suffixed-host"),
+    pytest.param(f"https://{HOST}@evil.example/", id="userinfo-host"),
+    pytest.param(f"http://{HOST}/", id="http-scheme"),
+    pytest.param(f"https://{HOST}:8443/", id="other-port"),
+]
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+@pytest.mark.parametrize("target", CROSS_ORIGIN_TARGETS)
+def test_cross_origin_redirect_drops_credentials(
+    fake_gitlab: Any, sleeper: RecordingSleep, token_type: str, target: str
+) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    fake_gitlab.script(method="GET", url=ARTIFACTS_URL, status=302, headers=[(HEADER_LOCATION, target)])
+    fake_gitlab.script(method="GET", url=target, body="artifact")
+
+    client.request(method="GET", path=ARTIFACTS_PATH)
+
+    assert recorded_urls(fake=fake_gitlab) == [ARTIFACTS_URL, target], "the redirect is followed"
+    assert credentials_sent(request=fake_gitlab.requests[0]) == EXPECTED_CREDENTIAL[token_type]
+    assert credentials_sent(request=fake_gitlab.requests[1]) == {}, (
+        f"a redirect to {target} (another origin) carries no credential header (AC-3.1)"
+    )
+
+
+SAME_ORIGIN_TARGETS = [
+    pytest.param(f"{REST_BASE}/projects/2", id="moved-project"),
+    pytest.param(f"https://{HOST.upper()}:443/api/v4/projects/2", id="upper-case-host-default-port"),
+    pytest.param(f"https://{HOST}:/api/v4/projects/2", id="empty-port"),
+]
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+@pytest.mark.parametrize("target", SAME_ORIGIN_TARGETS)
+def test_same_origin_redirect_keeps_credential(
+    fake_gitlab: Any, sleeper: RecordingSleep, token_type: str, target: str
+) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    start = f"{REST_BASE}/projects/1"
+    fake_gitlab.script(method="GET", url=start, status=301, headers=[(HEADER_LOCATION, target)])
+    fake_gitlab.script(method="GET", url=target, body={"id": 2})
+
+    response = client.request(method="GET", path="/projects/1")
+
+    assert response.value == {"id": 2}
+    assert recorded_urls(fake=fake_gitlab) == [start, target], "the redirect is followed"
+    assert credentials_sent(request=fake_gitlab.requests[1]) == EXPECTED_CREDENTIAL[token_type], (
+        f"a redirect to {target} (the configured origin) keeps the configured credential"
+    )
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+def test_credential_stays_dropped_on_return_hop(fake_gitlab: Any, sleeper: RecordingSleep, token_type: str) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    foreign = "https://objects.example.net/bucket/artifact"
+    back = f"{ARTIFACTS_URL}/landed"
+    fake_gitlab.script(method="GET", url=ARTIFACTS_URL, status=302, headers=[(HEADER_LOCATION, foreign)])
+    fake_gitlab.script(method="GET", url=foreign, status=302, headers=[(HEADER_LOCATION, back)])
+    fake_gitlab.script(method="GET", url=back, body="artifact")
+
+    client.request(method="GET", path=ARTIFACTS_PATH)
+
+    assert recorded_urls(fake=fake_gitlab) == [ARTIFACTS_URL, foreign, back], "both redirects are followed"
+    assert [credentials_sent(request=request) for request in fake_gitlab.requests] == [
+        EXPECTED_CREDENTIAL[token_type],
+        {},
+        {},
+    ], "a credential dropped on the way to another origin stays dropped back on the configured host"
+
+
+# --- AC-3.2 to AC-3.4 rate limits ---------------------------------------------------------------------------------
+
+
+def test_429_waits_retry_after(fake_gitlab: Any, sleeper: RecordingSleep, caplog: pytest.LogCaptureFixture) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    caplog.set_level(level=logging.DEBUG)
+    url = f"{REST_BASE}/projects/1/issues/7"
+    fake_gitlab.script(method="GET", url=url, status=429, headers=[(HEADER_RETRY_AFTER, "3")], body=RATE_LIMITED_BODY)
+    fake_gitlab.script(method="GET", url=url, body={"iid": 7})
+
+    response = client.request(method="GET", path="/projects/1/issues/7")
+
+    assert response.value == {"iid": 7}, "the retried request's result is returned"
+    assert sleeper.calls == [3], "a 429 with Retry-After waits that many seconds, once (AC-3.2)"
+    assert recorded_urls(fake=fake_gitlab) == [url, url], "the same request is sent again"
+    assert credentials_sent(request=fake_gitlab.requests[1]) == EXPECTED_CREDENTIAL[TOKEN_TYPE_PRIVATE]
+    assert TOKEN not in caplog.text, "no log record carries the token"
+
+
+def test_429_without_headers_backs_off_increasingly(
+    fake_gitlab: Any, sleeper: RecordingSleep, caplog: pytest.LogCaptureFixture
+) -> None:
+    transport = gitlab_module(name="transport")
+    retries = transport.RATE_LIMIT_MAX_RETRIES
+    assert retries >= 2, "at least two consecutive 429s are retried, so a growing back-off is observable"
+    client = make_client(transport=transport, sleeper=sleeper)
+    caplog.set_level(level=logging.DEBUG)
+    url = f"{REST_BASE}/projects/1"
+    for _ in range(retries):
+        fake_gitlab.script(method="GET", url=url, status=429, body=RATE_LIMITED_BODY)
+    fake_gitlab.script(method="GET", url=url, body={"id": 1})
+
+    response = client.request(method="GET", path="/projects/1")
+
+    assert response.value == {"id": 1}, "the request succeeds once the 429s stop"
+    assert len(sleeper.calls) == retries, "one sleep per header-less 429"
+    assert all(seconds > 0 for seconds in sleeper.calls), f"every back-off waits: {sleeper.calls}"
+    assert all(later > earlier for earlier, later in zip(sleeper.calls, sleeper.calls[1:])), (
+        f"the back-off grows with each consecutive 429 (AC-3.3): {sleeper.calls}"
+    )
+    assert len(fake_gitlab.requests) == retries + 1
+    assert TOKEN not in caplog.text, "no log record carries the token"
+
+
+def test_429_after_retries_raises(fake_gitlab: Any, sleeper: RecordingSleep) -> None:
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    retries = transport.RATE_LIMIT_MAX_RETRIES
+    client = make_client(transport=transport, sleeper=sleeper)
+    url = f"{REST_BASE}/projects/1"
+    for _ in range(retries + 1):
+        fake_gitlab.script(
+            method="GET", url=url, status=429, headers=[(HEADER_RETRY_AFTER, "2")], body=RATE_LIMITED_BODY
+        )
+
+    with pytest.raises(errors.GitLabRateLimitError) as raised:
+        client.request(method="GET", path="/projects/1")
+
+    assert isinstance(raised.value, errors.GitLabAPIError), "the rate-limit error is a GitLabAPIError (exit 1)"
+    assert raised.value.status_code == 429, "AC-3.4: status_code 429"
+    assert sleeper.calls == [2] * retries, "RATE_LIMIT_MAX_RETRIES sleeps, then the error"
+    assert len(fake_gitlab.requests) == retries + 1, "the first attempt and RATE_LIMIT_MAX_RETRIES retries"
+
+
+# --- AC-3.5 error body shapes -------------------------------------------------------------------------------------
+
+SCOPE_DESCRIPTION = "The request requires higher privileges than provided by the access token."
+PLAIN_TEXT_ERROR = (
+    "RequestBody: upload failed: the upload size 400000000 is over maximum of 314572800 bytes: entity is too large"
+)
+SPAM_MESSAGE = "Your snippet has been recognized as spam and has been discarded."
+
+ERROR_SHAPES = [
+    pytest.param(
+        404, CONTENT_TYPE_JSON, '{"message": "404 Project Not Found"}', "404 Project Not Found", id="message-string"
+    ),
+    pytest.param(
+        400,
+        CONTENT_TYPE_JSON,
+        '{"message": {"bio": ["is too long (maximum is 255 characters)"]}}',
+        "bio: is too long (maximum is 255 characters)",
+        id="message-field-hash",
+    ),
+    pytest.param(
+        400,
+        CONTENT_TYPE_JSON,
+        '{"error": "glql_yaml is missing, glql_yaml is empty"}',
+        "glql_yaml is missing, glql_yaml is empty",
+        id="error-string",
+    ),
+    pytest.param(
+        403,
+        CONTENT_TYPE_JSON,
+        json.dumps(obj={"error": "insufficient_scope", "error_description": SCOPE_DESCRIPTION, "scope": "api"}),
+        f"insufficient_scope: {SCOPE_DESCRIPTION}",
+        id="oauth-scope",
+    ),
+    pytest.param(
+        400,
+        CONTENT_TYPE_JSON,
+        json.dumps(obj={"message": {"error": SPAM_MESSAGE}}),
+        f"error: {SPAM_MESSAGE}",
+        id="spam-hash",
+    ),
+    pytest.param(413, CONTENT_TYPE_TEXT, PLAIN_TEXT_ERROR, PLAIN_TEXT_ERROR, id="plain-text"),
+]
+
+
+@pytest.mark.parametrize(("status", "content_type", "raw_body", "expected_text"), ERROR_SHAPES)
+def test_error_shape_raises_gitlab_api_error(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    status: int,
+    content_type: str,
+    raw_body: str,
+    expected_text: str,
+) -> None:
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = make_client(transport=transport, sleeper=sleeper)
+    fake_gitlab.script(
+        method="GET",
+        url=f"{REST_BASE}/projects/1",
+        status=status,
+        headers=[(HEADER_CONTENT_TYPE, content_type)],
+        body=raw_body,
+    )
+
+    with pytest.raises(errors.GitLabAPIError) as raised:
+        client.request(method="GET", path="/projects/1")
+
+    error = raised.value
+    assert error.status_code == status, "status_code is the response status (AC-3.5)"
+    assert error.details == raw_body, "details is the raw response body"
+    assert expected_text in str(error), f"the message carries the body shape's text {expected_text!r}"
+    assert TOKEN not in str(error), "no exception message carries the token"
+    assert sleeper.calls == [], f"a {status} is not retried"
+
+
+# --- AC-4.1 to AC-4.3 GraphQL -------------------------------------------------------------------------------------
+
+PROJECT_QUERY = "query Project($fullPath: ID!) { project(fullPath: $fullPath) { id name } }"
+PROJECT_VARIABLES = {"fullPath": "group/project"}
+ISSUES_QUERY = (
+    "query Issues($fullPath: ID!, $after: String) { project(fullPath: $fullPath) { issues(first: 2, after: $after) "
+    "{ nodes { iid } pageInfo { hasNextPage endCursor } } } }"
+)
+CREATE_NOTE_MUTATION = (
+    "mutation CreateNote($input: CreateNoteInput!) { createNote(input: $input) { note { id } errors } }"
+)
+NOTE_VARIABLES = {"input": {"noteableId": "gid://gitlab/Issue/7", "body": "a note"}}
+CI_CONFIG_QUERY = (
+    "query CiConfig($projectPath: ID!, $content: String!) "
+    "{ ciConfig(projectPath: $projectPath, content: $content) { status errors } }"
+)
+CI_CONFIG_VARIABLES = {"projectPath": "group/project", "content": "stages: [test]"}
+
+
+@pytest.mark.parametrize("token_type", [TOKEN_TYPE_PRIVATE, TOKEN_TYPE_BEARER])
+def test_graphql_posts_to_api_graphql(fake_gitlab: Any, sleeper: RecordingSleep, token_type: str) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    data = {"project": {"id": "gid://gitlab/Project/1", "name": "project"}}
+    fake_gitlab.script(method="POST", url=GRAPHQL_URL, body={FIELD_DATA: data})
+
+    result = client.graphql(document=PROJECT_QUERY, variables=PROJECT_VARIABLES)
+
+    assert result == data, "graphql returns the response's data"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("POST", GRAPHQL_URL)], (
+        "one POST to /api/graphql on the configured host, not under /api/v4 (AC-4.1)"
+    )
+    sent = fake_gitlab.requests[0]
+    assert media_type(value=sent.header(name=HEADER_CONTENT_TYPE)) == CONTENT_TYPE_JSON
+    assert sent.json() == {FIELD_QUERY: PROJECT_QUERY, FIELD_VARIABLES: PROJECT_VARIABLES}
+    assert credentials_sent(request=sent) == BEARER_CREDENTIAL, (
+        "GraphQL always sends Authorization: Bearer, the only header graphql/conventions.md documents"
+    )
+
+
+def test_graphql_pages_by_end_cursor(fake_gitlab: Any, sleeper: RecordingSleep) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    first_page = {
+        "project": {
+            "issues": {
+                "nodes": [{"iid": "1"}, {"iid": "2"}],
+                "pageInfo": {"hasNextPage": True, "endCursor": "cursor-after-two"},
+            }
+        }
+    }
+    second_page = {
+        "project": {
+            "issues": {
+                "nodes": [{"iid": "3"}],
+                "pageInfo": {"hasNextPage": False, "endCursor": "cursor-after-three"},
+            }
+        }
+    }
+    fake_gitlab.script(method="POST", url=GRAPHQL_URL, body={FIELD_DATA: first_page})
+    fake_gitlab.script(method="POST", url=GRAPHQL_URL, body={FIELD_DATA: second_page})
+
+    nodes = client.graphql_nodes(document=ISSUES_QUERY, variables=PROJECT_VARIABLES, connection=("project", "issues"))
+
+    assert list(nodes) == [{"iid": "1"}, {"iid": "2"}, {"iid": "3"}], "the nodes of every page, in order (AC-4.2)"
+    sent = [request.json() for request in fake_gitlab.requests]
+    assert [body[FIELD_QUERY] for body in sent] == [ISSUES_QUERY, ISSUES_QUERY]
+    assert [body[FIELD_VARIABLES] for body in sent] == [
+        {**PROJECT_VARIABLES, FIELD_AFTER: None},
+        {**PROJECT_VARIABLES, FIELD_AFTER: "cursor-after-two"},
+    ], "the first page is asked with after: null, the next with after = the previous pageInfo.endCursor"
+
+
+GRAPHQL_ERROR_CASES = [
+    pytest.param(
+        PROJECT_QUERY,
+        PROJECT_VARIABLES,
+        {
+            FIELD_DATA: {"project": {"id": "gid://gitlab/Project/1", "name": None}},
+            FIELD_ERRORS: [
+                {"message": "Insufficient permissions to read the project name", "path": ["project", "name"]},
+                {"message": "A second failure of the same request"},
+            ],
+        },
+        ("Insufficient permissions to read the project name", "A second failure of the same request"),
+        id="top-level-errors-with-partial-data",
+    ),
+    pytest.param(
+        CREATE_NOTE_MUTATION,
+        NOTE_VARIABLES,
+        {FIELD_DATA: {"createNote": {"note": None, FIELD_ERRORS: ["Note can't be blank"]}}},
+        ("Note can't be blank",),
+        id="mutation-payload-errors",
+    ),
+]
+
+
+@pytest.mark.parametrize(("document", "variables", "response_body", "messages"), GRAPHQL_ERROR_CASES)
+def test_graphql_errors_at_200_raise(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    document: str,
+    variables: Mapping[str, Any],
+    response_body: Mapping[str, Any],
+    messages: Tuple[str, ...],
+) -> None:
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = make_client(transport=transport, sleeper=sleeper)
+    fake_gitlab.script(method="POST", url=GRAPHQL_URL, status=200, body=response_body)
+
+    with pytest.raises(errors.GitLabGraphQLResponseError) as raised:
+        client.graphql(document=document, variables=variables)
+
+    error = raised.value
+    assert isinstance(error, errors.GitLabAPIError), "a GraphQL response error is a GitLabAPIError (exit 1)"
+    assert error.status_code == 200, "the error carries the HTTP status, 200 here"
+    for message in messages:
+        assert message in str(error), f"the error carries the message {message!r} (AC-4.3)"
+
+
+GRAPHQL_DATA_CASES = [
+    pytest.param(
+        CREATE_NOTE_MUTATION,
+        NOTE_VARIABLES,
+        {"createNote": {"note": {"id": "gid://gitlab/Note/9"}, FIELD_ERRORS: []}},
+        id="mutation-payload-with-empty-errors",
+    ),
+    pytest.param(
+        CI_CONFIG_QUERY,
+        CI_CONFIG_VARIABLES,
+        {"ciConfig": {"status": "INVALID", FIELD_ERRORS: ["jobs config should contain at least one visible job"]}},
+        id="query-object-with-an-errors-field",
+    ),
+]
+
+
+@pytest.mark.parametrize(("document", "variables", "data"), GRAPHQL_DATA_CASES)
+def test_empty_payload_errors_and_query_errors_fields_return_data(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    document: str,
+    variables: Mapping[str, Any],
+    data: Mapping[str, Any],
+) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    fake_gitlab.script(method="POST", url=GRAPHQL_URL, body={FIELD_DATA: data})
+
+    result = client.graphql(document=document, variables=variables)
+
+    assert result == data, (
+        "an empty mutation `errors` list, and an `errors` field of a query's object, are data, not a failure"
+    )

@@ -11,11 +11,17 @@ The properties live in this repository's own `test/`, where Hypothesis is a dev 
 stays pytest-only. `src/payload/scripts` is put on `sys.path`, and `gitlab_api` is imported inside each test, so the
 module collects whether or not the package exists yet.
 
+The UB-2 import scan lives here too (design.md "Correctness Properties", cross-wrapper decision X1): it reads the entry
+script and every module of the package as text, so it imports nothing it scans, and it compares their imports with
+`sys.stdlib_module_names` (Python 3.10+, https://docs.python.org/3.10/library/sys.html#sys.stdlib_module_names), which
+this framework-only suite may use and the shipped Python 3.9 suites may not.
+
 Run: ``python scripts/run_tests.py test/test_gitlab_api_properties.py``
 """
 
 from __future__ import annotations
 
+import ast
 import importlib
 import sys
 from collections.abc import Sequence
@@ -54,6 +60,14 @@ PATH_TEMPLATE = PATH_PREFIX + ":" + PATH_PARAMETER + PATH_SUFFIX
 PLACEHOLDER_FREE_PATH = "/issues"
 QUERY_PARAMETER = "k"
 ARRAY_PAIR_NAME = QUERY_PARAMETER + "[]"
+
+# The UB-2 scan: the entry script and every module under the package, named by their paths below `SCRIPTS`.
+PACKAGE_NAME = "gitlab_api"
+ENTRY_SCRIPT = "gitlab_wrapper.py"
+PACKAGE_DIRECTORY = SCRIPTS / PACKAGE_NAME
+MODULE_PATTERN = "*.py"
+REQUIRED_SCANNED = (ENTRY_SCRIPT, PACKAGE_NAME + "/transport.py", PACKAGE_NAME + "/registry.py")
+ENVIRONMENT_READS = ("os.environ", "getenv")
 
 
 def load_registry() -> ModuleType:
@@ -122,3 +136,53 @@ def test_array_and_hash_pairs(items: list[str], mapping: dict[str, str]) -> None
     assert sorted(parse_qsl(qs=hash_query, keep_blank_values=True)) == sorted(
         (hash_pair_name(key=key), entry) for key, entry in mapping.items()
     ), hash_query
+
+
+def scanned_sources() -> dict[str, str]:
+    """The text of the entry script and of every module under the package, keyed by its POSIX path below `SCRIPTS`."""
+    paths = [SCRIPTS / ENTRY_SCRIPT, *sorted(PACKAGE_DIRECTORY.rglob(pattern=MODULE_PATTERN))]
+    return {path.relative_to(SCRIPTS).as_posix(): path.read_text(encoding="utf-8") for path in paths if path.is_file()}
+
+
+def imported_names(*, source: str) -> list[str]:
+    """The module every `import` and `from … import` of `source` names, top-level and nested; a relative import keeps
+    its leading dots, so it is neither `gitlab_api…` nor a standard-library name."""
+    names: list[str] = []
+    for node in ast.walk(ast.parse(source=source)):
+        if isinstance(node, ast.Import):
+            names.extend(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            names.append("." * node.level + (node.module or ""))
+    return names
+
+
+def is_allowed_import(*, name: str, standard_library: frozenset[str]) -> bool:
+    """`gitlab_api` or one of its modules, or a module of a standard-library top-level package."""
+    top_level = name.split(sep=".")[0]
+    return top_level == PACKAGE_NAME or top_level in standard_library
+
+
+def test_standard_library_only() -> None:
+    """UB-2: the entry script and the package import only `gitlab_api…` and the standard library, and neither contains
+    `os.environ` or `getenv`; the scanned set includes the entry script, the transport and the registry."""
+    assert hasattr(sys, "stdlib_module_names"), f"sys.stdlib_module_names needs Python 3.10+; this is {sys.version}"
+    standard_library = frozenset(sys.stdlib_module_names)
+    sources = scanned_sources()
+
+    foreign = [
+        relative + ": " + name
+        for relative, source in sources.items()
+        for name in imported_names(source=source)
+        if not is_allowed_import(name=name, standard_library=standard_library)
+    ]
+    environment_reads = [
+        relative + ": " + marker
+        for relative, source in sources.items()
+        for marker in ENVIRONMENT_READS
+        if marker in source
+    ]
+    missing = [relative for relative in REQUIRED_SCANNED if relative not in sources]
+
+    assert foreign == [], f"imports outside gitlab_api and the standard library: {foreign}"
+    assert environment_reads == [], f"environment reads: {environment_reads}"
+    assert missing == [], f"missing from the scanned set {sorted(sources)}: {missing}"

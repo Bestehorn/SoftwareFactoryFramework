@@ -12,6 +12,9 @@ scanning the package, so no file lists them.
 - ``expand`` writes the path values into a record's path, each as ONE percent-encoded segment (AC-2.2).
 - ``encode`` turns the other values into the query pairs, form pairs, JSON body and files of a request, arrays and
   hashes in GitLab's bracket form (AC-2.3; ``conventions.md`` "Arrays, hashes and arrays of hashes").
+- ``call`` sends one call of a record through a ``gitlab_api.transport.Transport`` and returns its value; ``pages``
+  returns the items of every page of a REST list record. Both look the record up and encode its values before anything
+  is sent, so a value the record does not declare is refused with nothing sent (AC-1.1).
 
 Standard library only; Python 3.9.
 """
@@ -25,11 +28,15 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, Dict, Iterator, List, Mapping, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterator, List, Mapping, Optional, Tuple, Union
 from urllib.parse import quote
 
 import gitlab_api.families
 from gitlab_api.errors import GitLabAPIError
+
+if TYPE_CHECKING:
+    # For the annotations only: gitlab_api.transport imports this module, so a run-time import would be a cycle.
+    from gitlab_api.transport import Transport
 
 # A path parameter: `:` and an identifier, at a segment start (`/projects/:id`) or inside one (`binary-:architecture`).
 PLACEHOLDER = re.compile(r":(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
@@ -40,6 +47,8 @@ ARRAY_SUFFIX = "[]"
 BOOLEAN_TRUE = "true"
 BOOLEAN_FALSE = "false"
 GRAPHQL_ONLY_SOURCE = "graphql_only"
+# The method of every page request `pages` sends (`Transport.pages`).
+LIST_METHOD = "GET"
 
 Pair = Tuple[str, str]
 
@@ -295,3 +304,53 @@ def encode(*, operation: RestOperation, values: Mapping[str, Any]) -> EncodedReq
         return EncodedRequest(query=query, form=tuple(_all_pairs(given=sent, location=Location.BODY)), files=files)
     body = {param.name: value for param, value in sent if param.location is Location.BODY}
     return EncodedRequest(query=query, json_body=body or None)
+
+
+# --- Calls ------------------------------------------------------------------------------------------------------
+
+
+def call(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Any:
+    """One call of the record declared with ``operation_id``, its result decoded (design.md D5).
+
+    A ``RestOperation`` is encoded and expanded first — a value it does not declare raises ``encode``'s
+    ``ValueError`` before any request — and then sent with ``transport.request``; its ``value`` is returned. A
+    ``GraphQLOperation`` sends its document with ``values`` as the variables, through ``transport.graphql_nodes``
+    when it names a connection and ``transport.graphql`` otherwise. The record is found with this module's ``lookup``.
+    """
+    operation = lookup(operation_id=operation_id)
+    given: Mapping[str, Any] = values or {}
+    if isinstance(operation, GraphQLOperation):
+        if operation.connection:
+            return transport.graphql_nodes(
+                document=operation.document, variables=given, connection=operation.connection
+            )
+        return transport.graphql(document=operation.document, variables=given)
+    encoded = encode(operation=operation, values=given)
+    path = expand(operation=operation, values=given)
+    response = transport.request(
+        method=operation.method,
+        path=path,
+        query=encoded.query,
+        form=encoded.form,
+        json_body=encoded.json_body,
+        files=encoded.files,
+    )
+    return response.value
+
+
+def pages(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Iterator[Any]:
+    """The items of every page of the REST list record declared with ``operation_id``: the generator
+    ``transport.pages`` returns for the record's path, query and ``paging`` (design.md D5).
+
+    The record is looked up and its values encoded and expanded before the generator is returned, so a refused value
+    raises here. A GraphQL record, a record whose method is not ``GET``, and body values raise ``ValueError``: a page
+    is fetched with a ``GET`` that carries a query only."""
+    operation = lookup(operation_id=operation_id)
+    if not isinstance(operation, RestOperation):
+        raise ValueError(f"{operation_id!r} is a GraphQL record; pages reads REST list records")
+    given: Mapping[str, Any] = values or {}
+    encoded = encode(operation=operation, values=given)
+    if operation.method != LIST_METHOD or encoded.form or encoded.files or encoded.json_body is not None:
+        raise ValueError(f"{operation_id!r}: pages sends {LIST_METHOD} requests, which carry a query and no body")
+    path = expand(operation=operation, values=given)
+    return transport.pages(path=path, query=encoded.query, paging=operation.paging)
