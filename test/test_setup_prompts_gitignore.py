@@ -49,7 +49,14 @@ ANCHORED_PACKAGING_DIRS = (
     "/wheels/",
 )
 SLASH_FREE_GENERATED_DIRS = ("build/", "dist/", "venv/", ".venv/", "tmp/")
-REPLACE_WORD = "REPLACED"
+# AC-4: the replace sentence names these entries in the arrow notation `` `<from>` → `<to>` ``; the arrows pin the
+# direction (slash-free to anchored) and the phrases the polarity (replaced, not kept beside it).
+REPLACED_ENTRIES = (ANCHORED_REPORTS, ANCHORED_LIB)
+REPLACE_ARROW = "→"
+REPLACE_PHRASE = "is REPLACED by"
+NOT_KEPT_PHRASE = "not kept beside it"
+NEVER_REPLACED_PHRASE = "never REPLACED"
+WITHOUT_SLASH_PHRASE = "without a leading slash"
 ADD_ONLY_MISSING = "Read existing entries, add only those"
 # Built from its parts, so test/test_layout.py does not read this module as naming a missing framework path.
 DOCS_REPORTS_DIR = Path("docs", "reports").as_posix() + "/"
@@ -118,6 +125,11 @@ class GitignoreSection:
         """The section with every run of whitespace, line breaks included, collapsed to one space."""
         return " ".join(self.text.split())
 
+    @property
+    def flat_prose(self) -> str:
+        """The section outside its fenced block with every run of whitespace, line breaks included, collapsed."""
+        return " ".join(self.prose.split())
+
 
 class ScratchRepository:
     """A `git init` repository under pytest's tmp_path whose `.gitignore` is the given text.
@@ -163,6 +175,11 @@ def _verdict(ignored: bool) -> str:
     return "ignored" if ignored else "not-ignored"
 
 
+def _replacement(source: str, target: str) -> str:
+    """One replacement in the prompts' arrow notation: `` `source` → `target` ``."""
+    return f"`{source}` {REPLACE_ARROW} `{target}`"
+
+
 @pytest.mark.parametrize("prompt", SETUP_PROMPTS)
 def test_reports_line_is_anchored_with_its_comment(prompt: str) -> None:
     """AC-1 (setup-claude), AC-2 (setup-kiro): the block lists `/reports/`, no `reports/`, and says why."""
@@ -193,10 +210,23 @@ def test_root_only_packaging_dirs_are_anchored() -> None:
 
 @pytest.mark.parametrize("prompt", SETUP_PROMPTS)
 def test_section_says_to_replace_a_slash_free_entry(prompt: str) -> None:
-    """AC-4: the prose outside the block tells an existing project to replace a slash-free line by the anchored one."""
-    section = GitignoreSection.load(prompt=prompt)
-    missing = [phrase for phrase in (REPLACE_WORD, ANCHORED_REPORTS, ANCHORED_LIB) if phrase not in section.prose]
+    """AC-4: the prose outside the block tells an existing project to replace a slash-free line by the anchored one.
+
+    Direction and polarity are both pinned: the slash-free entry is replaced by the anchored one (never the reverse),
+    and it is not kept beside it.
+    """
+    prose = GitignoreSection.load(prompt=prompt).flat_prose
+    anchoring = [_replacement(source=_slash_free(entry=entry), target=entry) for entry in REPLACED_ENTRIES]
+    unanchoring = [_replacement(source=entry, target=_slash_free(entry=entry)) for entry in REPLACED_ENTRIES]
+    required = [*anchoring, REPLACE_PHRASE, NOT_KEPT_PHRASE]
+    missing = [phrase for phrase in required if phrase not in prose]
     assert not missing, f"{prompt}: the PART 3 text outside the fenced block lacks {missing}"
+    forbidden = [*unanchoring, NEVER_REPLACED_PHRASE, WITHOUT_SLASH_PHRASE]
+    present = [phrase for phrase in forbidden if phrase in prose]
+    assert not present, (
+        f"{prompt}: the PART 3 text outside the fenced block says {present}, which turns the replacement around "
+        "or keeps the slash-free line"
+    )
 
 
 @pytest.mark.parametrize(

@@ -76,7 +76,8 @@ parts (`Path("docs", "reports", "x.md").as_posix()`), so `test/test_layout.py`
 - AC-3 — `test_root_only_packaging_dirs_are_anchored`: every AC-3 anchored line is present, none of its slash-free
   forms is a line of the block (whole-line comparison), and a `#` line names `cdk/lib/`. Example.
 - AC-4 — `test_section_says_to_replace_a_slash_free_entry[setup-claude]`, `[setup-kiro]`: the section text outside
-  the fenced block contains "REPLACED", `/reports/` and `/lib/`. Example.
+  the fenced block holds "is REPLACED by", "not kept beside it" and the arrows `reports/` → `/reports/`,
+  `lib/` → `/lib/`, and neither reversed arrow nor "never REPLACED". Example.
 - AC-5 — `test_applied_block_ignores_only_the_root_dirs`, parametrized by prompt, probe and expected verdict:
   `reports/junit.xml` and `reports/checks-lint.json` ignored, `docs/reports/x.md` not ignored, for both blocks;
   `lib/x.py` ignored and `cdk/lib/stack.ts` not ignored for the setup-kiro block. Integration (runs `git`).
