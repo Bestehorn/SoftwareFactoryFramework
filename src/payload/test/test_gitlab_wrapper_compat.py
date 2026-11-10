@@ -9,6 +9,14 @@ exits 2 on a usage error; and a fresh interpreter loads the file by path with
 ``importlib.util.spec_from_file_location``, which the import bootstrap keeps possible once the entry script imports
 ``gitlab_api`` (D3).
 
+The ``issue`` subcommands (D6; UB-1, UB-2): ``test_a_subcommand_form`` holds one case per argv form and flag — each
+pins the exact requests the fake host records (method, URL with its query, JSON body), the JSON on standard output and
+the exit code; ``claim-check`` exits 0 when claimed or not open and 3 when open and unclaimed; ``issue start`` exits 1
+with no PUT for a closed issue or one assigned to another user, and 1 when the re-read does not confirm the claim;
+``issue reopen`` of an open issue sends no PUT; a config holding only the template's keys sends ``PRIVATE-TOKEN`` and
+claims with ``in-progress``; a token in the process environment is never sent; and the script without
+``config/gitlab.json`` exits 1 naming the file.
+
 The in-process tests write ``config/gitlab.json`` into ``tmp_path``, the working directory by ``monkeypatch.chdir``,
 load the entry script by path as ``test_wrapper_delivery.load`` does and call ``main(argv=...)``; the exit code is the
 return value or the ``SystemExit`` code. The fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``,
@@ -27,7 +35,7 @@ import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, List, Mapping, Optional, Sequence
+from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence, Tuple
 
 import pytest
 
@@ -296,3 +304,680 @@ def test_script_loads_by_path(tmp_path: Path) -> None:
     assert completed.returncode == 0, (
         f"a fresh interpreter loads {WRAPPER_FILE} by path; exit {completed.returncode}, stderr:\n{completed.stderr}"
     )
+
+
+# --- The subcommands (design.md D6; UB-1, UB-2) ---------------------------------------------------------------------
+
+# This repository's config template (templates/config/gitlab.json.template; UB-2).
+TEMPLATE_FILE = Path(__file__).resolve().parents[3] / "templates" / "config" / "gitlab.json.template"
+
+REST_BASE = fixtures.REST_BASE
+PROJECT_ID = TEMPLATE_CONFIG[FIELD_PROJECT_ID]
+# The page size the transport adds to an offset-paged list: conventions.md "Offset-based" maximum (design.md D4).
+PER_PAGE = "per_page=100"
+HEADER_NEXT_PAGE = "x-next-page"
+HEADER_CONTENT_TYPE = "Content-Type"
+CONTENT_TYPE_JSON = "application/json"
+# The three credential headers (design.md D4 "Credentials"); a request carries exactly one of them.
+HEADER_PRIVATE_TOKEN = "PRIVATE-TOKEN"
+HEADER_AUTHORIZATION = "Authorization"
+HEADER_JOB_TOKEN = "JOB-TOKEN"
+
+METHOD_GET = "GET"
+METHOD_POST = "POST"
+METHOD_PUT = "PUT"
+EXIT_OK = 0
+EXIT_API_ERROR = 1
+EXIT_CLAIM_UNCLAIMED = 3
+
+# Request and response keys: rest/plan.md "Issues API" and "Notes API", rest/software-supply-chain-security.md "Users
+# API", and `issue claim-check`'s own output (design.md D6).
+FIELD_ID = "id"
+FIELD_IID = "iid"
+FIELD_TITLE = "title"
+FIELD_DESCRIPTION = "description"
+FIELD_STATE = "state"
+FIELD_LABELS = "labels"
+FIELD_ASSIGNEE = "assignee"
+FIELD_ASSIGNEES = "assignees"
+FIELD_USERNAME = "username"
+FIELD_UPDATED_AT = "updated_at"
+FIELD_BODY = "body"
+FIELD_NOTEABLE_IID = "noteable_iid"
+FIELD_MESSAGE = "message"
+FIELD_ADD_LABELS = "add_labels"
+FIELD_REMOVE_LABELS = "remove_labels"
+FIELD_ASSIGNEE_IDS = "assignee_ids"
+FIELD_STATE_EVENT = "state_event"
+FIELD_CLAIMED = "claimed"
+
+STATE_OPENED = "opened"
+STATE_CLOSED = "closed"
+EVENT_CLOSE = "close"
+EVENT_REOPEN = "reopen"
+# `assignee_ids: [0]` unassigns everyone (rest/plan.md "Update an issue").
+UNASSIGN_ID = 0
+
+IN_PROGRESS = "in-progress"  # TEMPLATE_CONFIG's in_progress_label and the default (design.md D7)
+CONFIGURED_LABEL = "claimed-by-a-worker"
+OTHER_LABEL = "needs-triage"
+IID = 7
+SECOND_IID = 8
+ISSUE_TITLE = "Fix the parser"
+ISSUE_DESCRIPTION = "Steps to reproduce: run the parser on an empty file."
+NOTE_ID = 501
+NOTE_BODY = "Claimed; working on it."
+UPDATED_BEFORE = "2026-11-10T08:00:00.000Z"
+UPDATED_AFTER = "2026-11-10T08:05:00.000Z"
+UNKNOWN_USERNAME = "nobody-by-this-name"
+
+# The token's owner (`GET /user`), another user, and the user `--user` names (`GET /users?username=...`).
+ME: Dict[str, Any] = {FIELD_ID: 42, FIELD_USERNAME: "maintainer"}
+OTHER_USER: Dict[str, Any] = {FIELD_ID: 99, FIELD_USERNAME: "someone-else"}
+NAMED_USER: Dict[str, Any] = {FIELD_ID: 77, FIELD_USERNAME: "alice"}
+
+# Variables GitLab clients read a token from (glab, python-gitlab, GitLab CI/CD); the wrapper reads none of them.
+ENVIRONMENT_TOKENS: Dict[str, str] = {
+    "GITLAB_TOKEN": "glpat-environment-gitlab-token",  # pragma: allowlist secret
+    "GITLAB_PRIVATE_TOKEN": "glpat-environment-private-token",  # pragma: allowlist secret
+    "GITLAB_ACCESS_TOKEN": "glpat-environment-access-token",  # pragma: allowlist secret
+    "PRIVATE_TOKEN": "glpat-environment-bare-private-token",  # pragma: allowlist secret
+    "CI_JOB_TOKEN": "glcbt-environment-job-token",  # pragma: allowlist secret
+}
+
+# Template values for the template's `PASTE_` placeholders (UB-2).
+TEMPLATE_FILLED: Dict[str, Any] = {FIELD_PROJECT_ID: 4242, FIELD_TOKEN: TOKEN}
+
+
+class Exchange(NamedTuple):
+    """One request a subcommand must send, and the fake host's answer to it."""
+
+    method: str
+    url: str
+    sent: Any = None  # the JSON body the request carries; None: no body
+    status: int = 200
+    headers: Tuple[Tuple[str, str], ...] = ()
+    answer: Any = None  # the response body, sent as JSON
+
+
+class FormCase(NamedTuple):
+    """One argv form: the requests it sends with their answers, the JSON on standard output, the exit code."""
+
+    argv: Tuple[str, ...]
+    exchanges: Tuple[Exchange, ...]
+    printed: Any  # the JSON value printed on standard output; None: nothing is printed
+    exit_code: int = EXIT_OK
+    config_changes: Tuple[Tuple[str, Any], ...] = ()  # applied to TEMPLATE_CONFIG for this case
+
+
+def issues_url(*, base: str = REST_BASE, project: Any = PROJECT_ID) -> str:
+    return f"{base}/projects/{project}/issues"
+
+
+def issue_url(*, base: str = REST_BASE, project: Any = PROJECT_ID, iid: int = IID) -> str:
+    return f"{issues_url(base=base, project=project)}/{iid}"
+
+
+def user_url(*, base: str = REST_BASE) -> str:
+    return f"{base}/user"
+
+
+def users_url(*, username: str) -> str:
+    return f"{REST_BASE}/users?username={username}"
+
+
+def with_query(*, url: str, pairs: Sequence[str]) -> str:
+    """``url`` with the already-encoded ``pairs`` as its query, in the order given."""
+    return f"{url}?{'&'.join(pairs)}"
+
+
+def issue_record(
+    *,
+    iid: int = IID,
+    state: str = STATE_OPENED,
+    labels: Sequence[str] = (),
+    assignees: Sequence[Mapping[str, Any]] = (),
+    updated_at: str = UPDATED_BEFORE,
+) -> Dict[str, Any]:
+    """An issue as ``GET /projects/:id/issues/:issue_iid`` returns it, with the fields the subcommands read."""
+    people = [dict(person) for person in assignees]
+    return {
+        FIELD_ID: 9000 + iid,
+        FIELD_IID: iid,
+        FIELD_TITLE: ISSUE_TITLE,
+        FIELD_STATE: state,
+        FIELD_LABELS: list(labels),
+        FIELD_ASSIGNEES: people,
+        FIELD_ASSIGNEE: people[0] if people else None,
+        FIELD_UPDATED_AT: updated_at,
+    }
+
+
+def form(
+    *,
+    case_id: str,
+    argv: Sequence[str],
+    exchanges: Sequence[Exchange],
+    printed: Any,
+    exit_code: int = EXIT_OK,
+    config_changes: Optional[Mapping[str, Any]] = None,
+) -> Any:
+    case = FormCase(
+        argv=tuple(argv),
+        exchanges=tuple(exchanges),
+        printed=printed,
+        exit_code=exit_code,
+        config_changes=tuple((config_changes or {}).items()),
+    )
+    return pytest.param(case, id=case_id)
+
+
+def start_exchanges(
+    *, base: str = REST_BASE, project: Any = PROJECT_ID, label: str = IN_PROGRESS
+) -> Tuple[Tuple[Exchange, ...], Dict[str, Any]]:
+    """``issue start 7`` that takes: read the issue, resolve the token's user, ONE claim PUT, re-read (design.md D6);
+    and the re-read issue, which is what the subcommand prints."""
+    url = issue_url(base=base, project=project)
+    before = issue_record(labels=(OTHER_LABEL,))
+    claimed = issue_record(labels=(OTHER_LABEL, label), assignees=(ME,))
+    verified = issue_record(labels=(OTHER_LABEL, label), assignees=(ME,), updated_at=UPDATED_AFTER)
+    exchanges = (
+        Exchange(method=METHOD_GET, url=url, answer=before),
+        Exchange(method=METHOD_GET, url=user_url(base=base), answer=ME),
+        Exchange(
+            method=METHOD_PUT,
+            url=url,
+            sent={FIELD_ADD_LABELS: label, FIELD_ASSIGNEE_IDS: [ME[FIELD_ID]]},
+            answer=claimed,
+        ),
+        Exchange(method=METHOD_GET, url=url, answer=verified),
+    )
+    return exchanges, verified
+
+
+def issue_list_cases() -> List[Any]:
+    """``issue list`` and each of its flags alone: every page (offset paging, design.md D4 ``pages``)."""
+    first = issue_record(iid=IID)
+    second = issue_record(iid=SECOND_IID, labels=(OTHER_LABEL,))
+    cases = [
+        form(
+            case_id="issue-list",
+            argv=("issue", "list"),
+            exchanges=(
+                Exchange(
+                    method=METHOD_GET,
+                    url=with_query(url=issues_url(), pairs=(PER_PAGE,)),
+                    headers=((HEADER_NEXT_PAGE, "2"),),
+                    answer=[first],
+                ),
+                Exchange(
+                    method=METHOD_GET,
+                    url=with_query(url=issues_url(), pairs=(PER_PAGE, "page=2")),
+                    headers=((HEADER_NEXT_PAGE, ""),),
+                    answer=[second],
+                ),
+            ),
+            printed=[first, second],
+        )
+    ]
+    # One flag at a time, so the query's order is the flag's pair and then the transport's page size.
+    flags = [
+        ("issue-list-state", ("--state", STATE_OPENED), "state=opened"),
+        ("issue-list-assignee-any", ("--assignee", "*"), "assignee_id=Any"),
+        ("issue-list-assignee-none", ("--assignee", "none"), "assignee_id=None"),
+        ("issue-list-assignee-username", ("--assignee", NAMED_USER[FIELD_USERNAME]), "assignee_username[]=alice"),
+        ("issue-list-labels", ("--labels", IN_PROGRESS), "labels=in-progress"),
+    ]
+    for case_id, flag, pair in flags:
+        cases.append(
+            form(
+                case_id=case_id,
+                argv=("issue", "list", *flag),
+                exchanges=(
+                    Exchange(
+                        method=METHOD_GET, url=with_query(url=issues_url(), pairs=(pair, PER_PAGE)), answer=[first]
+                    ),
+                ),
+                printed=[first],
+            )
+        )
+    return cases
+
+
+def issue_create_cases() -> List[Any]:
+    """``issue show``, ``issue create`` with each optional flag, ``issue comment``."""
+    shown = issue_record(labels=(OTHER_LABEL,), assignees=(OTHER_USER,))
+    created = issue_record()
+    note = {FIELD_ID: NOTE_ID, FIELD_BODY: NOTE_BODY, FIELD_NOTEABLE_IID: IID}
+    creates = [
+        ("issue-create", (), {}),
+        ("issue-create-description", ("--description", ISSUE_DESCRIPTION), {FIELD_DESCRIPTION: ISSUE_DESCRIPTION}),
+        ("issue-create-labels", ("--labels", OTHER_LABEL), {FIELD_LABELS: OTHER_LABEL}),
+    ]
+    cases = [
+        form(
+            case_id="issue-show",
+            argv=("issue", "show", str(IID)),
+            exchanges=(Exchange(method=METHOD_GET, url=issue_url(), answer=shown),),
+            printed=shown,
+        )
+    ]
+    for case_id, flag, extra in creates:
+        cases.append(
+            form(
+                case_id=case_id,
+                argv=("issue", "create", "--title", ISSUE_TITLE, *flag),
+                exchanges=(
+                    Exchange(
+                        method=METHOD_POST, url=issues_url(), sent={FIELD_TITLE: ISSUE_TITLE, **extra}, answer=created
+                    ),
+                ),
+                printed=created,
+            )
+        )
+    cases.append(
+        form(
+            case_id="issue-comment",
+            argv=("issue", "comment", str(IID), "--body", NOTE_BODY),
+            exchanges=(
+                Exchange(method=METHOD_POST, url=f"{issue_url()}/notes", sent={FIELD_BODY: NOTE_BODY}, answer=note),
+            ),
+            printed=note,
+        )
+    )
+    return cases
+
+
+def issue_claim_cases() -> List[Any]:
+    """``issue start`` (the default and a configured label), ``issue release``, ``label-add``, ``label-remove``."""
+    exchanges, verified = start_exchanges()
+    configured_exchanges, configured_verified = start_exchanges(label=CONFIGURED_LABEL)
+    released = issue_record(labels=(OTHER_LABEL,))
+    labelled = issue_record(labels=(OTHER_LABEL, IN_PROGRESS))
+    return [
+        form(case_id="issue-start", argv=("issue", "start", str(IID)), exchanges=exchanges, printed=verified),
+        form(
+            case_id="issue-start-configured-label",
+            argv=("issue", "start", str(IID)),
+            exchanges=configured_exchanges,
+            printed=configured_verified,
+            config_changes={FIELD_IN_PROGRESS_LABEL: CONFIGURED_LABEL},
+        ),
+        form(
+            case_id="issue-release",
+            argv=("issue", "release", str(IID)),
+            exchanges=(
+                Exchange(
+                    method=METHOD_PUT,
+                    url=issue_url(),
+                    sent={FIELD_REMOVE_LABELS: IN_PROGRESS, FIELD_ASSIGNEE_IDS: [UNASSIGN_ID]},
+                    answer=released,
+                ),
+            ),
+            printed=released,
+        ),
+        form(
+            case_id="issue-label-add",
+            argv=("issue", "label-add", str(IID), "--labels", IN_PROGRESS),
+            exchanges=(
+                Exchange(method=METHOD_PUT, url=issue_url(), sent={FIELD_ADD_LABELS: IN_PROGRESS}, answer=labelled),
+            ),
+            printed=labelled,
+        ),
+        form(
+            case_id="issue-label-remove",
+            argv=("issue", "label-remove", str(IID), "--labels", IN_PROGRESS),
+            exchanges=(
+                Exchange(method=METHOD_PUT, url=issue_url(), sent={FIELD_REMOVE_LABELS: IN_PROGRESS}, answer=released),
+            ),
+            printed=released,
+        ),
+    ]
+
+
+def issue_assign_cases() -> List[Any]:
+    """``issue assign`` with ``--me``, ``--user U`` (and a username no user has), ``--unassign``."""
+    mine = issue_record(assignees=(ME,))
+    theirs = issue_record(assignees=(NAMED_USER,))
+    nobody = issue_record()
+    return [
+        form(
+            case_id="issue-assign-me",
+            argv=("issue", "assign", str(IID), "--me"),
+            exchanges=(
+                Exchange(method=METHOD_GET, url=user_url(), answer=ME),
+                Exchange(method=METHOD_PUT, url=issue_url(), sent={FIELD_ASSIGNEE_IDS: [ME[FIELD_ID]]}, answer=mine),
+            ),
+            printed=mine,
+        ),
+        form(
+            case_id="issue-assign-user",
+            argv=("issue", "assign", str(IID), "--user", NAMED_USER[FIELD_USERNAME]),
+            exchanges=(
+                Exchange(method=METHOD_GET, url=users_url(username=NAMED_USER[FIELD_USERNAME]), answer=[NAMED_USER]),
+                Exchange(
+                    method=METHOD_PUT, url=issue_url(), sent={FIELD_ASSIGNEE_IDS: [NAMED_USER[FIELD_ID]]}, answer=theirs
+                ),
+            ),
+            printed=theirs,
+        ),
+        form(
+            case_id="issue-assign-user-unknown",
+            argv=("issue", "assign", str(IID), "--user", UNKNOWN_USERNAME),
+            exchanges=(Exchange(method=METHOD_GET, url=users_url(username=UNKNOWN_USERNAME), answer=[]),),
+            printed=None,
+            exit_code=EXIT_API_ERROR,
+        ),
+        form(
+            case_id="issue-assign-unassign",
+            argv=("issue", "assign", str(IID), "--unassign"),
+            exchanges=(
+                Exchange(method=METHOD_PUT, url=issue_url(), sent={FIELD_ASSIGNEE_IDS: [UNASSIGN_ID]}, answer=nobody),
+            ),
+            printed=nobody,
+        ),
+    ]
+
+
+def issue_state_cases() -> List[Any]:
+    """``issue close``; ``issue reopen`` of a closed issue (an open one: ``test_issue_reopen_of_open_issue``)."""
+    closed = issue_record(state=STATE_CLOSED)
+    reopened = issue_record(updated_at=UPDATED_AFTER)
+    return [
+        form(
+            case_id="issue-close",
+            argv=("issue", "close", str(IID)),
+            exchanges=(
+                Exchange(method=METHOD_PUT, url=issue_url(), sent={FIELD_STATE_EVENT: EVENT_CLOSE}, answer=closed),
+            ),
+            printed=closed,
+        ),
+        form(
+            case_id="issue-reopen",
+            argv=("issue", "reopen", str(IID)),
+            exchanges=(
+                Exchange(method=METHOD_GET, url=issue_url(), answer=closed),
+                Exchange(method=METHOD_PUT, url=issue_url(), sent={FIELD_STATE_EVENT: EVENT_REOPEN}, answer=reopened),
+            ),
+            printed=reopened,
+        ),
+    ]
+
+
+def subcommand_cases() -> List[Any]:
+    """One case per argv form and flag of design.md D6."""
+    return [
+        *issue_list_cases(),
+        *issue_create_cases(),
+        *issue_claim_cases(),
+        *issue_assign_cases(),
+        *issue_state_cases(),
+    ]
+
+
+def claim_check_cases() -> List[Any]:
+    """``issue claim-check``: 0 claimed by the label or an assignee, 0 not open, 3 open and unclaimed, 1 an API error,
+    2 a usage error (design.md "Correctness Properties", UB-1)."""
+    states = [
+        ("label", issue_record(labels=(OTHER_LABEL, IN_PROGRESS)), True, EXIT_OK),
+        ("assignee", issue_record(labels=(OTHER_LABEL,), assignees=(OTHER_USER,)), True, EXIT_OK),
+        ("closed", issue_record(state=STATE_CLOSED), False, EXIT_OK),
+        ("open-unclaimed", issue_record(labels=(OTHER_LABEL,)), False, EXIT_CLAIM_UNCLAIMED),
+    ]
+    cases = [
+        form(
+            case_id=case_id,
+            argv=("issue", "claim-check", str(IID)),
+            exchanges=(Exchange(method=METHOD_GET, url=issue_url(), answer=issue),),
+            printed={FIELD_IID: IID, FIELD_STATE: issue[FIELD_STATE], FIELD_CLAIMED: claimed},
+            exit_code=exit_code,
+        )
+        for case_id, issue, claimed, exit_code in states
+    ]
+    cases.append(
+        form(
+            case_id="not-found",
+            argv=("issue", "claim-check", str(IID)),
+            exchanges=(
+                Exchange(method=METHOD_GET, url=issue_url(), status=404, answer={FIELD_MESSAGE: "404 Issue Not Found"}),
+            ),
+            printed=None,
+            exit_code=EXIT_API_ERROR,
+        )
+    )
+    cases.append(
+        form(case_id="no-iid", argv=("issue", "claim-check"), exchanges=(), printed=None, exit_code=EXIT_USAGE)
+    )
+    return cases
+
+
+def sent_body(*, request: Any) -> Any:
+    """A recorded request's body: decoded JSON under ``Content-Type: application/json``, else its text."""
+    if request.body is None:
+        return None
+    content_type = str(request.header(name=HEADER_CONTENT_TYPE) or "").split(";")[0].strip()
+    text = request.body.decode(TEXT_ENCODING, errors="replace")
+    return json.loads(text) if content_type == CONTENT_TYPE_JSON else text
+
+
+def recorded(*, fake: Any) -> List[Tuple[str, str, Any]]:
+    """``(method, URL, body)`` of every request the fake host recorded, in order."""
+    return [(request.method, request.url, sent_body(request=request)) for request in fake.requests]
+
+
+def expected_requests(*, exchanges: Sequence[Exchange]) -> List[Tuple[str, str, Any]]:
+    return [(exchange.method, exchange.url, exchange.sent) for exchange in exchanges]
+
+
+def printed_value(*, out: str) -> Any:
+    """Standard output as the JSON value it holds; ``None`` when nothing was printed, the text when it is not JSON."""
+    if not out.strip():
+        return None
+    try:
+        return json.loads(out)
+    except ValueError:
+        return out
+
+
+def script_exchanges(*, fake: Any, exchanges: Sequence[Exchange]) -> None:
+    for exchange in exchanges:
+        fake.script(
+            method=exchange.method,
+            url=exchange.url,
+            status=exchange.status,
+            headers=exchange.headers,
+            body=exchange.answer,
+        )
+
+
+def check_form(
+    *, case: FormCase, config: Mapping[str, Any], project: Path, fake: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Run ``case`` through ``main`` with ``config`` as config/gitlab.json; assert its exit code, its exact requests and
+    its standard output, in that order."""
+    write_json(path=project / CONFIG_DIR / CONFIG_FILE_NAME, content=config)
+    script_exchanges(fake=fake, exchanges=case.exchanges)
+    code = main_exit_code(wrapper=load_wrapper(), argv=case.argv)
+    captured = capsys.readouterr()
+    assert code == case.exit_code, (
+        f"main({list(case.argv)}) exits {case.exit_code}, got {code}; stderr:\n{captured.err}"
+    )
+    assert recorded(fake=fake) == expected_requests(exchanges=case.exchanges), (
+        "the recorded requests: method, URL with its query, JSON body (design.md D6)"
+    )
+    assert printed_value(out=captured.out) == case.printed, f"standard output:\n{captured.out}"
+
+
+@pytest.mark.parametrize("case", subcommand_cases())
+def test_a_subcommand_form(case: FormCase, project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]) -> None:
+    check_form(
+        case=case,
+        config=config_with(changes=dict(case.config_changes)),
+        project=project,
+        fake=fake_gitlab,
+        capsys=capsys,
+    )
+
+
+@pytest.mark.parametrize("case", claim_check_cases())
+def test_claim_check_exit_codes(
+    case: FormCase, project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+
+
+class StartRefusal(NamedTuple):
+    """An ``issue start`` that must exit 1: the first read, the re-read after the claim (``None``: no claim may be
+    sent) and the text the logged refusal names (the observed labels, design.md D6)."""
+
+    before: Dict[str, Any]
+    reread: Optional[Dict[str, Any]]
+    observed: Tuple[str, ...]
+
+
+@pytest.mark.parametrize(
+    "refusal",
+    [
+        pytest.param(
+            StartRefusal(before=issue_record(state=STATE_CLOSED), reread=None, observed=()),
+            id="closed",
+        ),
+        pytest.param(
+            StartRefusal(before=issue_record(assignees=(OTHER_USER,)), reread=None, observed=()),
+            id="assigned-to-another-user",
+        ),
+        pytest.param(
+            StartRefusal(
+                before=issue_record(labels=(OTHER_LABEL,)),
+                reread=issue_record(labels=(OTHER_LABEL,), assignees=(ME,)),
+                observed=(OTHER_LABEL,),
+            ),
+            id="re-read-lacks-the-label",
+        ),
+        pytest.param(
+            StartRefusal(
+                before=issue_record(labels=(OTHER_LABEL,)),
+                reread=issue_record(labels=(OTHER_LABEL, IN_PROGRESS)),
+                observed=(OTHER_LABEL,),
+            ),
+            id="re-read-lacks-the-assignee",
+        ),
+    ],
+)
+def test_issue_start_refusals(
+    refusal: StartRefusal,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    write_json(path=project / CONFIG_DIR / CONFIG_FILE_NAME, content=TEMPLATE_CONFIG)
+    fake_gitlab.script(method=METHOD_GET, url=issue_url(), body=refusal.before)
+    # Served whenever the handler resolves the token's user; not every refusal needs it.
+    fake_gitlab.script(method=METHOD_GET, url=user_url(), body=ME)
+    claim = {FIELD_ADD_LABELS: IN_PROGRESS, FIELD_ASSIGNEE_IDS: [ME[FIELD_ID]]}
+    if refusal.reread is not None:
+        fake_gitlab.script(method=METHOD_PUT, url=issue_url(), body=refusal.reread)
+        fake_gitlab.script(method=METHOD_GET, url=issue_url(), body=refusal.reread)
+    code = main_exit_code(wrapper=load_wrapper(), argv=["issue", "start", str(IID)])
+    captured = capsys.readouterr()
+    assert code == EXIT_API_ERROR, f"a refused or unconfirmed claim exits 1, got {code}; stderr:\n{captured.err}"
+    puts = [
+        (request.url, sent_body(request=request)) for request in fake_gitlab.requests if request.method == METHOD_PUT
+    ]
+    expected_puts = [] if refusal.reread is None else [(issue_url(), claim)]
+    assert puts == expected_puts, "a closed or foreign-assigned issue gets no PUT; otherwise exactly ONE claim PUT"
+    assert captured.out == "", "a refusal is a diagnostic on standard error, never a result on standard output"
+    for text in refusal.observed:
+        assert text in caplog.text, f"the logged refusal names the observed labels ({text!r}):\n{caplog.text}"
+
+
+def test_issue_reopen_of_open_issue(project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]) -> None:
+    opened = issue_record(labels=(OTHER_LABEL,))
+    case = FormCase(
+        argv=("issue", "reopen", str(IID)),
+        exchanges=(Exchange(method=METHOD_GET, url=issue_url(), answer=opened),),
+        printed=opened,
+    )
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+
+
+def template_config(*, removed: Sequence[str]) -> Dict[str, Any]:
+    """templates/config/gitlab.json.template with its `PASTE_` placeholders filled and the ``removed`` keys left out."""
+    template = json.loads(TEMPLATE_FILE.read_text(encoding=TEXT_ENCODING))
+    assert FIELD_TOKEN_TYPE not in template, "the template leaves token_type out, so `private` is the default (UB-2)"
+    filled = {
+        key: TEMPLATE_FILLED[key] if str(value).startswith(PLACEHOLDER_MARKER) else value
+        for key, value in template.items()
+        if key not in removed
+    }
+    assert not any(str(value).startswith(PLACEHOLDER_MARKER) for value in filled.values()), filled
+    return filled
+
+
+@pytest.mark.parametrize(
+    "removed",
+    [pytest.param((), id="template-keys"), pytest.param((FIELD_IN_PROGRESS_LABEL,), id="in_progress_label-omitted")],
+)
+def test_template_config_sends_private_token(
+    removed: Tuple[str, ...], project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    config = template_config(removed=removed)
+    base = f"https://{config[FIELD_HOSTNAME]}/api/v4"
+    exchanges, verified = start_exchanges(base=base, project=TEMPLATE_FILLED[FIELD_PROJECT_ID], label=IN_PROGRESS)
+    case = FormCase(argv=("issue", "start", str(IID)), exchanges=exchanges, printed=verified)
+    check_form(case=case, config=config, project=project, fake=fake_gitlab, capsys=capsys)
+    for request in fake_gitlab.requests:
+        sent_headers = (
+            request.header(name=HEADER_PRIVATE_TOKEN),
+            request.header(name=HEADER_AUTHORIZATION),
+            request.header(name=HEADER_JOB_TOKEN),
+        )
+        assert sent_headers == (TOKEN, None, None), (
+            f"{request.method} {request.url} carries the token as PRIVATE-TOKEN and no other credential header"
+        )
+
+
+@pytest.mark.parametrize(
+    ("config", "exit_code"),
+    [
+        pytest.param(TEMPLATE_CONFIG, EXIT_OK, id="config-token"),
+        pytest.param(config_with(removed=(FIELD_TOKEN,)), EXIT_API_ERROR, id="no-config-token"),
+    ],
+)
+def test_environment_token_ignored(
+    config: Dict[str, Any],
+    exit_code: int,
+    project: Path,
+    fake_gitlab: Any,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    for name, value in ENVIRONMENT_TOKENS.items():
+        monkeypatch.setenv(name=name, value=value)
+    shown = issue_record()
+    exchanges = (Exchange(method=METHOD_GET, url=issue_url(), answer=shown),) if exit_code == EXIT_OK else ()
+    case = FormCase(
+        argv=("issue", "show", str(IID)),
+        exchanges=exchanges,
+        printed=shown if exit_code == EXIT_OK else None,
+        exit_code=exit_code,
+    )
+    check_form(case=case, config=config, project=project, fake=fake_gitlab, capsys=capsys)
+    for request in fake_gitlab.requests:
+        assert request.header(name=HEADER_PRIVATE_TOKEN) == TOKEN, "the token comes from config/gitlab.json only"
+        sent_text = " ".join(
+            [request.url, *request.headers.values(), (request.body or b"").decode(TEXT_ENCODING, errors="replace")]
+        )
+        for name, value in ENVIRONMENT_TOKENS.items():
+            assert value not in sent_text, f"the value of {name} reached {request.method} {request.url}"
+
+
+def test_script_without_config_exits_1(tmp_path: Path) -> None:
+    completed = run_child(args=[sys.executable, str(WRAPPER_FILE), "issue", "show", str(IID)], cwd=tmp_path)
+    config_file = str(Path(CONFIG_DIR) / CONFIG_FILE_NAME)
+    assert completed.returncode == EXIT_API_ERROR, (
+        f"a missing {config_file} exits {EXIT_API_ERROR}, got {completed.returncode}; stderr:\n{completed.stderr}"
+    )
+    assert config_file in completed.stderr, f"the refusal names {config_file}:\n{completed.stderr}"
+    assert TRACEBACK not in completed.stderr, f"a missing config is a refusal, not a crash:\n{completed.stderr}"

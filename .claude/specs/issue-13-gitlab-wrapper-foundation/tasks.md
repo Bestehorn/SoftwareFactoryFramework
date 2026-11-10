@@ -107,14 +107,14 @@ belongs to the module whose name sorts first. A record is transcribed from its r
   `templates/config/gitlab.json.template` — Validates: UB-1, UB-2
 
 ## Wave 4 — The issue commands
-- [ ] 4.1 TEST: C, `test_a_subcommand_form` cases for every `issue` form and flag of D6 — `list` with `--state`,
+- [x] 4.1 TEST: C, `test_a_subcommand_form` cases for every `issue` form and flag of D6 — `list` with `--state`,
   `--assignee` `*`, `none` and a username, and `--labels`; `show`; `create` with `--description` and `--labels`;
   `comment`; `start`; `release`; `label-add`; `label-remove`; `assign` with `--me`, `--user U`, `--unassign`; `close`;
   `reopen` — each asserting the recorded requests, standard output and exit code; `test_claim_check_exit_codes`,
   `test_issue_start_refusals`, `test_issue_reopen_of_open_issue`, `test_template_config_sends_private_token`,
   `test_environment_token_ignored`, and the subprocess `test_script_without_config_exits_1` — Files:
   `src/payload/test/test_gitlab_wrapper_compat.py` — Validates: UB-1, UB-2
-- [ ] 4.2 IMPL: `commands/_common.py` — the JSON printing, the shared argument helpers and the `FIELD_*` keys more
+- [x] 4.2 IMPL: `commands/_common.py` — the JSON printing, the shared argument helpers and the `FIELD_*` keys more
   than one command module reads; `commands/issue.py` — `register(subparsers)` and the `issue` handlers of D6 —
   Files: `gitlab_api/commands/_common.py`, `gitlab_api/commands/issue.py` — Validates: UB-1, UB-2
 
