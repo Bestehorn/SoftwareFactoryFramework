@@ -15,9 +15,13 @@ cap is 32,767 characters; one detect-secrets invocation over every tracked file 
 runs as several invocations, each repeating the fixed leading arguments before a consecutive, non-empty batch of the
 files, every file in exactly one batch and in order, each command line within the bound; the check fails with the
 first non-zero exit code of its batches and still runs every batch; it prints one ``--- RUN`` and one ``--- PASS`` or
-``--- FAIL`` line; and every check whose command fits runs exactly once with its argv unchanged. These tests run no
-process: ``subprocess.call`` is a recorder, ``importable`` and ``tracked_files`` are faked, and a ``subprocess.run``
-fails the test. A command line is measured as ``subprocess.list2cmdline`` joins it, which is what Windows receives.
+``--- FAIL`` line; and every check whose command fits runs exactly once with its argv unchanged. When ``runnable``
+falls back to the ``detect-secrets-hook`` console script, every batch starts with that script and ``--baseline
+.secrets.baseline``, with no interpreter and no ``-m``. A command that cannot start (``subprocess.call`` raising
+``OSError``) fails its check with exit 127, one ``--- ERROR`` line and a ``--- FAIL ... exit 127`` line, whether the
+check runs as one command or in batches. These tests run no process: ``subprocess.call`` is a recorder, ``importable``,
+``tracked_files`` and, for the fallback, ``shutil.which`` are faked, and a ``subprocess.run`` fails the test. A command
+line is measured as ``subprocess.list2cmdline`` joins it, which is what Windows receives.
 
 The child-process tests run ``run_check`` for ``security/bandit`` in a fresh interpreter whose stdio encoding is
 set with ``PYTHONIOENCODING`` for that one subprocess, inside a scratch project under ``tmp_path`` that has no
@@ -476,4 +480,129 @@ def test_a_short_file_list_check_runs_once_unchanged(
     check = f"{SECURITY_GROUP}/{DETECT_SECRETS}"
     assert status_line_counts(output=output, check=check) == (1, 1, 0), (
         f"expected one RUN and one PASS line for {check}, no FAIL line:\n{output}"
+    )
+
+
+#: The module `python -m` runs for the secret scan, and the console script `runnable` falls back to when that module
+#: is not importable (run_checks.CONSOLE_SCRIPTS).
+HOOK_MODULE = "detect_secrets.pre_commit_hook"
+HOOK_SCRIPT_NAME = "detect-secrets-hook"
+MODULE_FLAG = "-m"
+#: What follows the console script in every invocation, before its batch of files: no interpreter, no `-m <module>`.
+HOOK_SCRIPT_FIXED_ARGS = ("--baseline", ".secrets.baseline")
+
+
+def test_batches_keep_the_console_script_head(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """With the hook module not importable, `runnable` replaces the interpreter and `-m detect_secrets.pre_commit_hook`
+    by the `detect-secrets-hook` console script, and the batches follow: every invocation starts with the script and
+    `--baseline .secrets.baseline`, carries no interpreter and no `-m`, then a non-empty batch of the files; the
+    batches, joined, are the tracked files, each once, in order; every command line is within the bound."""
+    files = long_file_list()
+    recorder = CallRecorder()
+    isolate(monkeypatch=monkeypatch, project=tmp_path, files=files, recorder=recorder)
+    hook_script = str(tmp_path / "bin" / HOOK_SCRIPT_NAME)
+    asked: list[str] = []
+
+    def fake_which(cmd: str, mode: int = os.F_OK | os.X_OK, path: str | None = None) -> str | None:
+        asked.append(cmd)
+        return hook_script if cmd == HOOK_SCRIPT_NAME else None
+
+    monkeypatch.setattr(target=run_checks, name="importable", value=lambda module: module != HOOK_MODULE)
+    monkeypatch.setattr(target=run_checks.shutil, name="which", value=fake_which)
+    result = run_checks.run_check(group=SECURITY_GROUP, name=DETECT_SECRETS, spec=detect_secrets_spec())
+    output = capsys.readouterr().out
+    assert asked == [HOOK_SCRIPT_NAME], f"runnable looked up {asked}, not the `{HOOK_SCRIPT_NAME}` console script"
+    assert len(recorder.calls) > 1, f"{len(files)} files ran as {len(recorder.calls)} invocation(s), not in batches"
+    head = (hook_script, *HOOK_SCRIPT_FIXED_ARGS)
+    heads = [call[: len(head)] for call in recorder.calls]
+    assert all(call_head == head for call_head in heads), f"not every invocation starts with {head}: {set(heads)}"
+    leaked = [call[: len(head) + 2] for call in recorder.calls if {run_checks.PY, MODULE_FLAG, HOOK_MODULE} & set(call)]
+    assert not leaked, f"invocations still carry the interpreter, `{MODULE_FLAG}` or {HOOK_MODULE}: {leaked}"
+    batch_sizes = [len(call) - len(head) for call in recorder.calls]
+    assert all(size > 0 for size in batch_sizes), f"an invocation carries no file; files per invocation {batch_sizes}"
+    joined = [path for call in recorder.calls for path in call[len(head) :]]
+    assert joined == files, (
+        f"after the console-script head the batches hold {len(joined)} paths for {len(files)} tracked files: not "
+        f"every file once, in order; invocations begin {[call[: len(head) + 2] for call in recorder.calls]}"
+    )
+    bound = module_bound()
+    lengths = [command_line_length(argv=call) for call in recorder.calls]
+    assert max(lengths) <= bound, f"invocations of {lengths} characters, over run_checks.{BOUND_NAME} = {bound}"
+    assert result.returncode == 0, f"every batch exited 0, yet the check returned {result.returncode}"
+    check = f"{SECURITY_GROUP}/{DETECT_SECRETS}"
+    assert status_line_counts(output=output, check=check) == (1, 1, 0), (
+        f"expected one RUN and one PASS line for {check}, no FAIL line:\n{output}"
+    )
+
+
+#: The exit code run_check gives a command that cannot start, and the message of the OSError the fake raises for it.
+UNSTARTABLE_EXIT = 127
+UNSTARTABLE_MESSAGE = "[WinError 2] The system cannot find the file specified"
+#: The line `invoke` prints for a command that cannot start, and how run_check's `--- FAIL` line ends for exit 127.
+ERROR_LINE = "--- ERROR {check}: {message}"
+EXIT_SUFFIX = ", exit {code})"
+
+
+@dataclass
+class UnstartableCallRecorder(CallRecorder):
+    """A CallRecorder whose invocations at the `unstartable` indices cannot start: each is recorded, then raises
+    OSError, as subprocess.call does when the executable is missing or cannot be executed."""
+
+    unstartable: tuple[int, ...] = ()
+
+    def __call__(self, args: Sequence[str], **kwargs: object) -> int:
+        code = super().__call__(args=args, **kwargs)
+        if len(self.calls) - 1 in self.unstartable:
+            raise OSError(UNSTARTABLE_MESSAGE)
+        return code
+
+
+@pytest.mark.parametrize(
+    ("batched", "unstartable"),
+    [
+        pytest.param(False, (0,), id="a-fitting-check"),
+        pytest.param(True, (1,), id="one-batch-of-a-batched-check"),
+    ],
+)
+def test_a_command_that_cannot_start_fails_with_127(
+    batched: bool,
+    unstartable: tuple[int, ...],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A command that cannot start fails its check with exit 127: `invoke` prints one `--- ERROR` line for it, and
+    run_check one `--- FAIL ... exit 127` line, for a check whose command fits and for one batch of a batched check,
+    whose other batches still run."""
+    files = long_file_list() if batched else list(SHORT_FILE_LIST)
+    recorder = UnstartableCallRecorder(unstartable=unstartable)
+    isolate(monkeypatch=monkeypatch, project=tmp_path, files=files, recorder=recorder)
+    result = run_checks.run_check(group=SECURITY_GROUP, name=DETECT_SECRETS, spec=detect_secrets_spec())
+    output = capsys.readouterr().out
+    assert (len(recorder.calls) > 1) == batched, (
+        f"{len(files)} files ran as {len(recorder.calls)} invocation(s); this case expects batched={batched}"
+    )
+    assert result.returncode == UNSTARTABLE_EXIT, (
+        f"invocation(s) {unstartable} of {len(recorder.calls)} could not start, yet the check returned "
+        f"{result.returncode}, not {UNSTARTABLE_EXIT}:\n{output}"
+    )
+    check = f"{SECURITY_GROUP}/{DETECT_SECRETS}"
+    lines = output.splitlines()
+    error_line = ERROR_LINE.format(check=check, message=UNSTARTABLE_MESSAGE)
+    assert lines.count(error_line) == len(unstartable), (
+        f"expected {len(unstartable)} {error_line!r} line(s) for the command(s) that could not start:\n{output}"
+    )
+    fail_lines = [line for line in lines if line.startswith(FAIL_PREFIX.format(check=check))]
+    exit_suffix = EXIT_SUFFIX.format(code=UNSTARTABLE_EXIT)
+    assert len(fail_lines) == 1 and fail_lines[0].endswith(exit_suffix), (
+        f"expected one --- FAIL line for {check} ending {exit_suffix!r}:\n{output}"
+    )
+    assert status_line_counts(output=output, check=check) == (1, 0, 1), (
+        f"expected one RUN and one FAIL line for {check}, no PASS line:\n{output}"
+    )
+    joined = joined_batches(recorder=recorder)
+    assert joined == files, (
+        f"the invocations carried {len(joined)} of {len(files)} tracked files: every command must be attempted"
     )

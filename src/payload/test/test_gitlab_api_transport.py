@@ -2,9 +2,10 @@
 
 What is pinned (issue #13, ``design.md`` D4 and "Correctness Properties"):
 
-- the token goes in exactly one header, the configured type's (AC-2.1); a JSON body carries native arrays and objects
-  (AC-2.3); a file is sent as ``multipart/form-data`` with its field name, its escaped file name and its bytes, every
-  other value as a field (AC-2.4);
+- the token goes in exactly one header, the configured type's (AC-2.1); a JSON body carries native arrays and objects,
+  and form pairs (plain, ``k[]``, ``k[key]``, ``k[0][key]``) are sent as an ``application/x-www-form-urlencoded`` body
+  with the brackets literal and ``+`` as ``%2B`` (AC-2.3); a file is sent as ``multipart/form-data`` with its field
+  name, its escaped file name and its bytes, every other value as a field (AC-2.4);
 - offset paging follows ``x-next-page`` or ``Link`` ``rel="next"`` and never ``x-total-pages`` (AC-2.5); keyset paging
   follows ``Link`` ``rel="next"`` unchanged and nothing else (AC-2.6); a next URL on another origin is refused before
   it is fetched;
@@ -35,6 +36,7 @@ import logging
 import pathlib
 import re
 import sys
+import urllib.parse
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Dict, List, Mapping, Sequence, Tuple
@@ -270,7 +272,7 @@ def test_one_credential_header_per_token_type(fake_gitlab: Any, sleeper: Recordi
     assert TOKEN not in sent.url, "the token never enters a URL"
 
 
-# --- AC-2.3 JSON body, AC-2.4 multipart ---------------------------------------------------------------------------
+# --- AC-2.3 JSON and form bodies, AC-2.4 multipart --------------------------------------------------------------------
 
 JSON_BODY = {
     "assignee_ids": [11, 12],
@@ -292,6 +294,95 @@ def test_json_body_is_native(fake_gitlab: Any, sleeper: RecordingSleep) -> None:
     sent = fake_gitlab.requests[0]
     assert media_type(value=sent.header(name=HEADER_CONTENT_TYPE)) == CONTENT_TYPE_JSON
     assert sent.json() == JSON_BODY, "a JSON body holds arrays and objects natively, not bracket pairs (AC-2.3)"
+
+
+CONTENT_TYPE_FORM = "application/x-www-form-urlencoded"
+
+# Form pairs in the shapes `registry.encode` gives them (D5): SCALAR `name=v`, ARRAY `name[]=v`, HASH `name[k]=v`,
+# ARRAY_OF_HASHES `name[0][k]=v`. The raw body is D4's join, `urlencode(pairs, safe="[]", quote_via=quote)`:
+# brackets literal, `+` as %2B, a space as %20 (conventions.md "Arrays, hashes and arrays of hashes", "`+` in dates").
+FORM_CASES = [
+    pytest.param(
+        "POST",
+        "/projects/1/issues",
+        (
+            ("title", "Release 1.0 notes"),
+            ("created_at", "2026-11-11T10:00:00+01:00"),
+            ("description", ""),
+            ("confidential", "true"),
+        ),
+        "title=Release%201.0%20notes&created_at=2026-11-11T10%3A00%3A00%2B01%3A00&description=&confidential=true",
+        id="plain-pairs",
+    ),
+    pytest.param(
+        "PUT",
+        "/projects/1/issues/2",
+        (("labels[]", "bug"), ("labels[]", "ui+ux"), ("assignee_ids[]", "11")),
+        "labels[]=bug&labels[]=ui%2Bux&assignee_ids[]=11",
+        id="array-pairs",
+    ),
+    pytest.param(
+        "POST",
+        "/projects/1/trigger/pipeline",
+        (("ref", "main"), ("variables[DEPLOY_ENV]", "staging"), ("variables[RELEASE]", "v1+build")),
+        "ref=main&variables[DEPLOY_ENV]=staging&variables[RELEASE]=v1%2Bbuild",
+        id="hash-pairs",
+    ),
+    pytest.param(
+        "POST",
+        "/projects/1/pipeline",
+        (
+            ("ref", "main"),
+            ("variables[0][key]", "VAR1"),
+            ("variables[0][value]", "hello world"),
+            ("variables[1][key]", "VAR2"),
+            ("variables[1][value]", "a&b=c+d"),
+        ),
+        "ref=main&variables[0][key]=VAR1&variables[0][value]=hello%20world&variables[1][key]=VAR2"
+        "&variables[1][value]=a%26b%3Dc%2Bd",
+        id="array-of-hashes",
+    ),
+]
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+@pytest.mark.parametrize(("method", "path", "pairs", "raw_body"), FORM_CASES)
+def test_form_pairs_send_a_form_body(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    token_type: str,
+    method: str,
+    path: str,
+    pairs: Tuple[Tuple[str, str], ...],
+    raw_body: str,
+) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    url = f"{REST_BASE}{path}"
+    fake_gitlab.script(method=method, url=url, body={"id": 1})
+
+    response = client.request(method=method, path=path, form=pairs)
+
+    assert response.value == {"id": 1}
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [(method, url)], (
+        "one request; the form pairs travel in the body, not in the URL"
+    )
+    sent = fake_gitlab.requests[0]
+    assert sent.header(name=HEADER_CONTENT_TYPE) == CONTENT_TYPE_FORM, (
+        "form pairs are sent as an application/x-www-form-urlencoded body (AC-2.3)"
+    )
+    assert sent.body is not None, f"{method} {url} carried no body"
+    text = sent.body.decode("ascii")
+    assert urllib.parse.parse_qsl(qs=text, keep_blank_values=True) == list(pairs), (
+        "the form body decodes to exactly the pairs, in order, `+` kept (sent as %2B)"
+    )
+    assert text == raw_body, (
+        "the pairs are joined as D4 names (urlencode, safe='[]', quote_via=quote): brackets literal, `+` as %2B"
+    )
+    assert credentials_sent(request=sent) == EXPECTED_CREDENTIAL[token_type], (
+        f"token type {token_type!r} sends exactly its one credential header with a form body (AC-2.1)"
+    )
+    assert TOKEN not in sent.url and TOKEN not in text, "the token enters neither the URL nor the body"
 
 
 def test_file_value_sends_multipart(fake_gitlab: Any, sleeper: RecordingSleep, tmp_path: Path) -> None:

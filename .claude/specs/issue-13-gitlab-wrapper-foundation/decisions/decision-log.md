@@ -53,3 +53,12 @@
 **Evidence:** evidence/red/run-checks-batching.txt, evidence/green/run-checks-batching.txt; product run_checks lint/types/security 5 passed, detect-secrets as 2 commands.
 **Supersedes:** none
 **Artifacts touched:** src/payload/scripts/run_checks.py, src/payload/test/test_run_checks.py
+
+## DL-007 — 2026-11-10T23:36:19Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's REFUTED AC-2.3 (form branch never run) and its observations O1 (environment guard misses `from os import environ`) and O2 (console-script batching, exit 127 untested) as test gaps; add the tests (T form body; P an AST environment check allowing only the discovery calls' `importlib.import_module(f"{package.__name__}.{name}")` shape; RC two cases); then one push and a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md AC-2.3 (mutant 2q survived), O1 (x1, 2p), O2 (z1, w1).
+**Alternatives considered:** route O1/O2 to the ledger (rejected: small, clear, test-only).
+**Evidence:** evidence/green/rework-1.txt; each new test fails under its mutant (agent reports).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_transport.py, test/test_gitlab_api_properties.py, src/payload/test/test_run_checks.py
