@@ -1,0 +1,16 @@
+# tasks: T1 I1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_mypy_baseline.py src/hooks/tests/test_session_verdict.py src/hooks/tests/test_no_sleep.py src/hooks/tests/test_no_idle_wait.py src/hooks/tests/test_dispatcher.py src/hooks/tests/test_delivery_gates.py src/hooks/tests/test_gate_overblock.py src/hooks/tests/test_reinject.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-7
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [341 items]
+
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+........................................................................ [ 84%]
+.....................................................                    [100%]
+============================ 341 passed in 28.82s =============================

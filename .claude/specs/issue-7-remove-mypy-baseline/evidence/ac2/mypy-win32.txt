@@ -1,0 +1,8 @@
+# tasks: I1 (AC-2, AC-3)
+$ python -m mypy src --ignore-missing-imports --platform win32   (at 402f79d)
+src\payload\test\test_reap_agent_temp.py:280: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+src\payload\test\test_reap_agent_temp.py:320: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+src\payload\test\test_reap_agent_temp.py:350: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+src\payload\test\test_reap_agent_temp.py:384: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Success: no issues found in 56 source files
+exit=0

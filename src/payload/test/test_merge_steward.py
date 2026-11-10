@@ -21,7 +21,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import pytest
 
@@ -72,8 +72,8 @@ class FakeHost:
 
     def __init__(self, origin: Path) -> None:
         self.origin = origin
-        self.prs: Dict[int, Dict[str, object]] = {}
-        self.issues: Dict[int, ms.Issue] = {}
+        self.prs: Dict[int, Dict[str, Any]] = {}
+        self.issues: Dict[int, Any] = {}
         self.assignees: Dict[int, List[str]] = {}
         self.pr_comments: Dict[int, List[str]] = {}
         self.train_ci: Dict[str, str] = {}
@@ -117,24 +117,24 @@ class FakeHost:
         self.assignees[number] = ["worker"]
 
     def labels_of(self, number: int) -> List[str]:
-        return list(self.prs[number]["pr"].labels)  # type: ignore[union-attr]
+        return list(self.prs[number]["pr"].labels)
 
     # HostAPI
-    def queued_prs(self, label: str) -> List[ms.PullRequest]:
+    def queued_prs(self, label: str) -> List[Any]:
         return [
-            copy.deepcopy(entry["pr"])  # type: ignore[arg-type]
+            copy.deepcopy(entry["pr"])
             for number, entry in sorted(self.prs.items())
-            if self.pr_state(number) == "open" and label in entry["pr"].labels  # type: ignore[union-attr]
+            if self.pr_state(number) == "open" and label in entry["pr"].labels
         ]
 
-    def pr(self, number: int) -> ms.PullRequest:
-        return copy.deepcopy(self.prs[number]["pr"])  # type: ignore[return-value]
+    def pr(self, number: int) -> Any:
+        return copy.deepcopy(self.prs[number]["pr"])
 
     def pr_state(self, number: int) -> str:
         if number not in self.prs:
             raise ms.HostError(f"PR {number}: 404", 404)
         entry = self.prs[number]
-        head = entry["pr"].head_sha  # type: ignore[union-attr]
+        head = entry["pr"].head_sha
         merged = subprocess.run(
             ["git", *IDENTITY, "merge-base", "--is-ancestor", head, "main"],
             cwd=str(self.origin),
@@ -147,15 +147,15 @@ class FakeHost:
         return "closed" if entry["closed"] else "open"
 
     def merge_commit(self, number: int) -> Optional[str]:
-        return self.prs[number]["merge"]  # type: ignore[return-value]
+        return self.prs[number]["merge"]
 
     def pr_files(self, number: int) -> List[str]:
-        return list(self.prs[number]["files"])  # type: ignore[arg-type]
+        return list(self.prs[number]["files"])
 
-    def head_ci(self, pr: ms.PullRequest) -> str:
+    def head_ci(self, pr: Any) -> str:
         return str(self.prs[pr.number]["ci"])
 
-    def pr_approved(self, pr: ms.PullRequest) -> bool:
+    def pr_approved(self, pr: Any) -> bool:
         return bool(self.prs[pr.number]["approved"])
 
     def pr_head_refspec(self, number: int) -> str:
@@ -164,13 +164,13 @@ class FakeHost:
     def pr_add_labels(self, number: int, labels: Sequence[str]) -> None:
         pr = self.prs[number]["pr"]
         for label in labels:
-            if label not in pr.labels:  # type: ignore[union-attr]
-                pr.labels.append(label)  # type: ignore[union-attr]
+            if label not in pr.labels:
+                pr.labels.append(label)
 
     def pr_remove_label(self, number: int, label: str) -> None:
         pr = self.prs[number]["pr"]
-        if label in pr.labels:  # type: ignore[union-attr]
-            pr.labels.remove(label)  # type: ignore[union-attr]
+        if label in pr.labels:
+            pr.labels.remove(label)
 
     def pr_comment(self, number: int, text: str) -> None:
         self.pr_comments[number].append(text)
@@ -181,7 +181,7 @@ class FakeHost:
     def pr_close(self, number: int) -> None:
         self.prs[number]["closed"] = True
 
-    def issue(self, number: int) -> ms.Issue:
+    def issue(self, number: int) -> Any:
         if number not in self.issues:
             raise ms.HostError(f"issue {number}: 404", 404)
         return copy.deepcopy(self.issues[number])
@@ -283,10 +283,10 @@ class World:
         self.origin = tmp / "origin.git"
         self.dev = tmp / "dev"
         self.ci = tmp / "ci"
-        config = {"merge": "steward", "verification": verification, "trunk": "main", "host": "github"}
-        config["steward"] = {"retry_culprit_once": False, **(steward_settings or {})}
+        delivery: Dict[str, Any] = {"merge": "steward", "verification": verification, "trunk": "main", "host": "github"}
+        delivery["steward"] = {"retry_culprit_once": False, **(steward_settings or {})}
         path = tmp / "delivery.json"
-        path.write_text(json.dumps(config), encoding="utf-8")
+        path.write_text(json.dumps(delivery), encoding="utf-8")
         self.settings = ms.load_settings(path)
         self.host = FakeHost(self.origin)
         self.git = ms.Git(self.ci, "merge-steward", "steward@example.invalid")
@@ -318,7 +318,7 @@ class World:
         git(self.dev, "commit", "-m", f"follow-up on {number}")
         git(self.dev, "push", "origin", f"pr-{number}")
         head = git(self.dev, "rev-parse", "HEAD")
-        self.host.prs[number]["pr"].head_sha = head  # type: ignore[union-attr]
+        self.host.prs[number]["pr"].head_sha = head
         return head
 
     def push_main(self, path: str, text: str) -> str:
@@ -341,12 +341,12 @@ class World:
         for index, branch in self.trains().items():
             self.host.train_ci[branch] = states[index - 1]
 
-    def tick(self, dry_run: bool = False) -> ms.Report:
+    def tick(self, dry_run: bool = False) -> Any:
         report = ms.Report(dry_run=dry_run)
         ms.Steward(self.settings, self.git, self.host, report, "https://ci/steward-run").tick()
         return report
 
-    def verdict(self, sha: str, conclusion: str) -> ms.Report:
+    def verdict(self, sha: str, conclusion: str) -> Any:
         report = ms.Report()
         ms.Steward(self.settings, self.git, self.host, report).verdict(sha, conclusion, "https://ci/deploy", "dev")
         return report
@@ -570,7 +570,7 @@ def test_a_refs_list_reaches_every_issue(world: World) -> None:
 
 def test_the_train_commit_carries_no_pr_title(world: World) -> None:
     world.pr(1, "a.txt", "a changed\n")
-    world.host.prs[1]["pr"].title = "Fix #101: the crash"  # type: ignore[union-attr]
+    world.host.prs[1]["pr"].title = "Fix #101: the crash"
     world.tick()
     message = git(world.origin, "log", "-1", "--format=%B", world.trains()[1])
     assert "Fix #101" not in message and "Steward-PR: #1" in message
@@ -725,7 +725,7 @@ def test_the_deploy_guard_admits_only_a_trunk_commit(world: World, tmp_path: Pat
     assert steward.deploy_guard(str(event)) == ms.EXIT_REFUSED, "a commit off the trunk is never deployed"
 
 
-def steward_of(world: World) -> "ms.Steward":
+def steward_of(world: World) -> Any:
     return ms.Steward(world.settings, world.git, world.host, ms.Report())
 
 
@@ -1098,7 +1098,7 @@ def test_a_cookie_file_is_sent_with_every_request(monkeypatch, tmp_path: Path) -
 
 def test_a_failed_deploy_job_allowed_to_fail_is_not_a_failure() -> None:
     api = ms.GitLabAPI.__new__(ms.GitLabAPI)
-    jobs = [
+    jobs: List[Dict[str, Any]] = [
         {"name": "deploy", "status": "success"},
         {"name": "e2e", "status": "failed", "allow_failure": True, "failure_reason": "script_failure"},
     ]

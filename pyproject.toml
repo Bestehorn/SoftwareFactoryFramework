@@ -42,25 +42,6 @@ python_version = "3.10"
 ignore_missing_imports = true
 exclude = ["src/_version.py", "venv", ".venv"]
 
-# BASELINE recorded at the self-install of v2026.11.09: these modules carried mypy findings when mypy was first
-# run over src/ (45 findings in 10 files, 19 of them in shipped code). They are known, not accepted: the
-# baseline is removed module by module as each is fixed. Never add a module to this list — fix the new
-# finding instead.
-[[tool.mypy.overrides]]
-module = [
-    "hooks",
-    "gate_session_register",
-    "supervisor",
-    "aws_config",
-    "merge_steward",
-    "run_tests",
-    "test_merge_steward",
-    "test_session_verdict",
-    "test_no_sleep",
-    "test_no_idle_wait",
-]
-ignore_errors = true
-
 [tool.pytest.ini_options]
 # The product suites (the hook runtime's own, the shipped payload tests) and this repository's own tests (the
 # layout guard, the toolchain integrity check, the installed corpus-budget guard).

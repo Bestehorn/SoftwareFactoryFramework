@@ -1760,6 +1760,7 @@ class Steward:
         red = lines.get((environment, "red-since"))
         red_before = red[0] if red and self.git.has_commit(red[0]) else None
         if red_before:
+            assert red is not None  # red_before is set only when red is truthy
             self.report.say(f"deploy {environment} has been red since {red_before[:12]} ({red[1]})")
         candidates = set(self.host.issues_with_label(self.s.label("awaiting_label")))
         candidates |= set(self.host.issues_with_label(self.s.label("verification_failed_label")))
@@ -2152,7 +2153,7 @@ class Steward:
     def status(self, as_json: bool) -> int:
         trunk = self.fetch()
         queued = sorted(self.host.queued_prs(self.s.label("queue_label")), key=lambda p: (p.enqueued_at, p.number))
-        rows = []
+        rows: List[Dict[str, Any]] = []
         for pr in queued:
             landed, closed = self._dependencies(pr)
             verdict, why = self.eligibility(pr, landed, [], closed)

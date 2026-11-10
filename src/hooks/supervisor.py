@@ -83,7 +83,8 @@ def model_replied_since(transcript: Optional[Path], since: dt.datetime) -> bool:
             continue
         if not isinstance(record, dict) or record.get("type") != "assistant" or record.get("isSidechain"):
             continue
-        message = record.get("message") if isinstance(record.get("message"), dict) else {}
+        raw_message = record.get("message")
+        message = raw_message if isinstance(raw_message, dict) else {}
         if message.get("model") == "<synthetic>":
             continue
         stamp = _parse(str(record.get("timestamp") or ""))
@@ -124,7 +125,7 @@ def judge(request: Dict[str, Any], now: dt.datetime) -> Dict[str, Any]:
 
 
 def load_requests(project: Path) -> List[Dict[str, Any]]:
-    found = []
+    found: List[Dict[str, Any]] = []
     folder = requests_dir(project)
     if not folder.is_dir():
         return found

@@ -1,0 +1,35 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_mypy_baseline.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-7
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [5 items]
+
+...F.                                                                    [100%]
+================================== FAILURES ===================================
+___ test_ac1_pyproject_has_no_mypy_overrides_table_that_sets_ignore_errors ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_mypy_baseline.py:53: in test_ac1_pyproject_has_no_mypy_overrides_table_that_sets_ignore_errors
+    assert not found, (
+E   AssertionError: pyproject.toml exempts modules from mypy with a [[tool.mypy.overrides]] table that sets ignore_errors (fix the findings instead):
+E     module = [
+E         "hooks",
+E         "gate_session_register",
+E         "supervisor",
+E         "aws_config",
+E         "merge_steward",
+E         "run_tests",
+E         "test_merge_steward",
+E         "test_session_verdict",
+E         "test_no_sleep",
+E         "test_no_idle_wait",
+E     ]
+E     ignore_errors = true
+E     
+E   assert not ['module = [\n    "hooks",\n    "gate_session_register",\n    "supervisor",\n    "aws_config",\n    "merge_steward",\n...rge_steward",\n    "test_session_verdict",\n    "test_no_sleep",\n    "test_no_idle_wait",\n]\nignore_errors = true\n']
+=========================== short test summary info ===========================
+FAILED test/test_mypy_baseline.py::test_ac1_pyproject_has_no_mypy_overrides_table_that_sets_ignore_errors
+========================= 1 failed, 4 passed in 3.73s =========================

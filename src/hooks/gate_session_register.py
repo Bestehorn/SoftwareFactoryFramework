@@ -163,7 +163,8 @@ def _upsert_registry(registry, sid: str, run_id: str, state_dir: str, cwd: str, 
             return None
         if not isinstance(data, dict):
             return None
-        entry = data.get(sid) if isinstance(data.get(sid), dict) else {}
+        raw_entry = data.get(sid)
+        entry = raw_entry if isinstance(raw_entry, dict) else {}
         entry.update(
             {
                 "session_id": sid,
