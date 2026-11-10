@@ -2,7 +2,7 @@
 description: Autonomously work the open-issue backlog end to end — select the highest-priority not-in-progress issue, fix it via the spec/TDD cycle with proof, open a PR, drive its CI green, queue it with the merge steward until it lands (or merge it, per config/delivery.json), hand only the post-deploy check to the verdict watcher, clean up, repeat, and end with the one-glance SESSION verdict. Resumable.
 argument-hint: "[optional: a specific issue number to start with, or blank to work the whole backlog]"
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, CronCreate, CronDelete, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, CronCreate, CronDelete, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
 ---
 
 Run the autonomous issue-work lifecycle for this project, following the agent
@@ -60,7 +60,9 @@ verdict watcher) or, for direct merge with session verification, self-approve+me
 RESOLVE → refresh, until no not-in-progress open issue remains; then every PR in `QUEUED_PRS` must LAND
 (`wait-landed`, returns fixed) and be handed off before DONE (`.claude/docs/delivery.md` §3). A queued or
 handed-off issue keeps its claim, so SELECT skips it. The run ends with the SESSION verdict — the agent
-definition's "The SESSION verdict" section — and nothing after it.
+definition's "The SESSION verdict" section — and nothing after it. In the Claude desktop app the session
+title names the issues in flight, `Issues-Work 12, 15`, renamed with `mcp__ccd_session_mgmt__set_session_title`
+each time that set changes (the agent definition's "Session title" section).
 
 Honor all the mandates in the agent definition: wrapper-only remote ops, evidence-not-
 assertion (the implementer never certifies its own work; the adversarial-verifier

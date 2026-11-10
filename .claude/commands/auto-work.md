@@ -2,7 +2,7 @@
 description: Work the open-issue backlog fully autonomously and without stopping — fetch the latest code, claim each issue in-progress the moment it is picked, work it in its own git worktree via the spec/TDD engine (researching via MCP doc servers and the research agent where needed), and continue issue after issue through context compaction until the backlog is empty.
 argument-hint: "[nothing — works the whole backlog; optionally an issue number to start with]"
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, CronCreate, CronDelete, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, CronCreate, CronDelete, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
 ---
 
 Work this project's open-issue backlog AUTONOMOUSLY, end to end, following
@@ -76,6 +76,13 @@ verification) and, for direct merge, the merge authority; arm the run watchdog
 Set `MODE: AUTO`, `Status: IN_PROGRESS`, `AWAITING_USER: none`, and
 `WORKABLE_ISSUES_REMAIN: yes` in this run's `resume_state.md`, and keep that last field `yes`
 for as long as any open, not-in-progress, unlocked issue exists.
+
+**The session title names the issues in flight** (Claude desktop app; the agent definition's "Session title"
+section is the full rule): `Auto-Work 12, 15, 19` while this run holds those issues — an issue joins when its
+claim succeeds and leaves when it is closed, handed off or released; a queued one stays — `Auto-Work` between
+two issues, `Auto-Work — done` at DONE. Rename with `mcp__ccd_session_mgmt__set_session_title`
+(`session_id: "self"`) only when the set changes, append it as `SESSION_ISSUES:` each time so compaction keeps
+it, and carry on past a declined rename: nobody is watching to approve one.
 
 **What actually enforces non-negotiable #2.** The `issue-loop-gate` gate blocks turn-end while
 this run has CLAIMED tracked work and has not affirmatively released — and `MODE: AUTO`
