@@ -7,7 +7,7 @@ pytest-only (D3, UB-2). An empty `__init__.py` package marker carries no behavio
 imports its package and is not counted among that task's files.
 
 ## Wave 1 — Exceptions, records, registry
-- [ ] 1.1 TEST: `FakeGitLab` — installed with `monkeypatch` over `urllib.request.HTTPSHandler.https_open` and
+- [x] 1.1 TEST: `FakeGitLab` — installed with `monkeypatch` over `urllib.request.HTTPSHandler.https_open` and
   `HTTPHandler.http_open`; scripted `(status, headers, body)` responses per method and URL, in order, as
   `addinfourl` objects with `msg` and an `http.client.HTTPMessage`; every request recorded (method, URL, headers,
   body); an unscripted request recorded, then `AssertionError` — and a `socket.socket.connect` guard, the module
@@ -18,16 +18,16 @@ imports its package and is not counted among that task's files.
   the twice-declared id) — Files:
   `src/payload/test/gitlab_wrapper_fixtures.py`, `src/payload/test/test_gitlab_api_registry.py` — Validates: AC-1.1,
   AC-2.2, AC-2.3
-- [ ] 1.2 TEST: P puts `src/payload/scripts` on `sys.path` and holds the Hypothesis properties
+- [x] 1.2 TEST: P puts `src/payload/scripts` on `sys.path` and holds the Hypothesis properties
   `test_path_value_is_one_segment` and `test_array_and_hash_pairs` (over `registry.encode`'s pairs joined with
   `urllib.parse.urlencode(pairs, safe="[]", quote_via=urllib.parse.quote)`, the join D4 names) — Files:
   `test/test_gitlab_api_properties.py` — Validates: AC-2.2, AC-2.3
-- [ ] 1.3 TEST: V's `index_rows`, `coverage_gaps` and a `socket.socket.connect` guard for every test of the module;
+- [x] 1.3 TEST: V's `index_rows`, `coverage_gaps` and a `socket.socket.connect` guard for every test of the module;
   `test_a_family_module_is_discovered_alone` (a synthetic families package in `tmp_path` under a package name unique
   to the test, prepended with `monkeypatch.syspath_prepend`, one `discover_families` call per package after its files
   are written) and `test_checker_names_each_unlisted_row` — Files: `test/test_gitlab_wrapper_coverage.py` —
   Validates: AC-1.2, AC-5.1, AC-5.2
-- [ ] 1.4 IMPL: `errors.py` — `GitLabAPIError(message, status_code=0, details=None)` with the subclasses
+- [x] 1.4 IMPL: `errors.py` — `GitLabAPIError(message, status_code=0, details=None)` with the subclasses
   `GitLabRateLimitError`, `GitLabGraphQLResponseError`, `GitLabClaimError`; `registry.py` per D5 — `Param`,
   `Location`, `Kind`, `BodyFormat`, `Paging`, `RestOperation`, `GraphQLOperation`, `discover_families`, `lookup`,
   `expand`, `encode`; `graphql_only.py` with an empty `OPERATIONS`; markers `gitlab_api/__init__.py`,
