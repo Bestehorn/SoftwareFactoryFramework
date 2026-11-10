@@ -84,7 +84,7 @@ Run: `python scripts/run_tests.py test/test_github_wrapper_coverage.py src/paylo
 
 Run: `python scripts/run_tests.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py`
 
-- [ ] 4.1 TEST: `CASES` in the fixtures module — argv, host state, exact stdout, exit code and the expected non-GET
+- [x] 4.1 TEST: `CASES` in the fixtures module — argv, host state, exact stdout, exit code and the expected non-GET
   requests (method, path, decoded query, JSON body), every golden value the fork's own output — for each issues
   subcommand of UB-1.1: exit 0; exit 1 from a `GitHubAPIError`; exit 2 for a usage error, a credential refusal and a
   repository refusal; `list-issues --label <name>`; and rows marked C-only: `list-issues --token-stdin` and
@@ -101,13 +101,13 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_wrapper_compat.py
   non-GET requests. `test_wrapper_delivery.py` runs unchanged in this wave's captures. — Files:
   src/payload/test/github_wrapper_fixtures.py, src/payload/test/test_github_wrapper_compat.py,
   test/test_github_wrapper_fork_parity.py — Validates: UB-1.1, UB-1.2, UB-1.3, UB-2.1, UB-3.1, UB-3.2
-- [ ] 4.2 IMPL: the entry script per D6 — the `sys.path` insertion, the skeleton's kept names, the fork's bodies of
+- [x] 4.2 IMPL: the entry script per D6 — the `sys.path` insertion, the skeleton's kept names, the fork's bodies of
   `_load_token` and `_detect_repo` (its message without the URL's userinfo), `GitHubAPIError` re-exported, the
   skeleton's `_api_request`, `wait_run`, `API_ROOT`, field constants and instructions block removed, `main(argv=None)`
   steps 1–6, `_build_parser()` with the delivery subcommands and every discovered command module (`_`-prefixed
   skipped), and `__main__`'s logging; `commands/__init__.py` empty. — Files: src/payload/scripts/github_wrapper.py,
   src/payload/scripts/github_api/commands/__init__.py — Validates: UB-1.1, UB-1.2, UB-1.3, UB-2.1, UB-3.1, UB-3.2
-- [ ] 4.3 IMPL: `commands/_common.py` (body resolution, JSON printing, the fork's `FIELD_*` names) and
+- [x] 4.3 IMPL: `commands/_common.py` (body resolution, JSON printing, the fork's `FIELD_*` names) and
   `commands/issues.py` — `register(subparsers)` with the fork's arguments of `list-issues`, `get-issue`,
   `get-issue-comments`, `comment-issue`, `create-issue`, `update-issue`, `reopen-issue`, `checklist` (no
   `--token-stdin`), and handlers `(*, transport, owner, repo, args)` that re-create the fork handlers' requests and

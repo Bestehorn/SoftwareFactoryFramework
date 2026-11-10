@@ -1,0 +1,923 @@
+# tasks: 4.1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [148 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..F..F [ 48%]
+...........FF........................................................... [ 97%]
+....                                                                     [100%]
+================================== FAILURES ===================================
+_ test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-1/not-found] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE113E2A0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[list-issues/exit-0/open-issues-without-pull-requests] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EDDA1F0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-2/usage-error] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE113F1C0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[list-issues/exit-0/limit-reached-on-the-second-page] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EDDB110>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-2/credential-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE110C3B0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[list-issues/exit-0/label-abbreviation-and-any-assignee] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EDFC3B0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-2/repository-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE110D170>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+___ test_a_subcommand_matches_its_golden_case[list-issues/exit-1/not-found] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EDFD220>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+____ test_a_subcommand_matches_its_golden_case[comment-issue/exit-0/body] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE110E1F0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[list-issues/exit-2/usage-error] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EDFE1F0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[comment-issue/exit-0/body-file] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE110F270>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[list-issues/exit-2/credential-refused] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EDFF270>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[comment-issue/exit-1/not-found] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1134300>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[list-issues/exit-2/repository-refused] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE30300>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+___ test_a_subcommand_matches_its_golden_case[comment-issue/exit-1/no-body] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1135430>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[list-issues/exit-2/token-stdin-not-carried] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE31380>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[comment-issue/exit-1/body-and-body-file] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1136350>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[get-issue/exit-0/https-origin] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE32400>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[comment-issue/exit-2/usage-error] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1137480>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+___ test_a_subcommand_matches_its_golden_case[get-issue/exit-0/ssh-origin] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE33480>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+____ test_a_subcommand_matches_its_golden_case[get-issue/exit-1/not-found] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE285C0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[comment-issue/exit-2/credential-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE117C510>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[comment-issue/exit-2/repository-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE117D4E0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+___ test_a_subcommand_matches_its_golden_case[get-issue/exit-2/usage-error] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE29590>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[create-issue/exit-0/title-body-labels] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE117E560>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue/exit-2/credential-refused] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE2A560>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[create-issue/exit-0/body-file] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE117F530>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue/exit-2/repository-refused] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE2B530>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue/exit-2/origin-userinfo-token-not-logged] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE505C0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[create-issue/exit-0/empty-body-left-out] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11BC5C0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue/exit-2/origin-userinfo-password-not-logged] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE51640>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[create-issue/exit-1/validation-failed] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11BD6F0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-0/every-page] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE526C0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[create-issue/exit-2/usage-error] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11BE6C0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-0/no-comments] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04EE538A0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[create-issue/exit-2/credential-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11BF7F0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[create-issue/exit-2/repository-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11F0CA0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[reopen-issue/exit-2/repository-refused] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2C8CA0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[create-issue/exit-2/token-stdin-not-carried] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11F1E80>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+______ test_a_subcommand_matches_its_golden_case[checklist/exit-0/count] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2C9F30>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+____ test_a_subcommand_matches_its_golden_case[update-issue/exit-0/close] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11F2F00>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[checklist/exit-0/count-of-no-body] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2CAF00>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[update-issue/exit-0/title-body-file-labels] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11F3E20>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[checklist/exit-0/tick-verified] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2CBED0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[update-issue/exit-1/nothing-to-update] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1230F60>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[checklist/exit-0/untick-keeps-crlf] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2D4F60>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[update-issue/exit-1/not-found] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1231F30>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[checklist/exit-1/tick-matches-no-unticked-item] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2D5E80>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[update-issue/exit-2/usage-error] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1232F00>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[checklist/exit-1/write-not-on-re-read] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2D6FB0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+___ test_a_subcommand_matches_its_golden_case[checklist/exit-2/usage-error] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2F8040>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[update-issue/exit-2/credential-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1233E20>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[update-issue/exit-2/repository-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1248EB0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[checklist/exit-2/credential-refused] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2F9010>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[reopen-issue/exit-0/already-open-not-written] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1232C40>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[checklist/exit-2/repository-refused] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2D6AE0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[reopen-issue/exit-0/reopened-and-verified] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1231B10>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+__________ test_a_delivery_verb_delegates_to_the_steward[enqueue-pr] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:194: in test_a_delivery_verb_delegates_to_the_steward
+    assert run_main(wrapper=wrapper, argv=argv) == STEWARD_REFUSED, "the steward's exit code passes through"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2D5900>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[reopen-issue/exit-1/still-closed-on-re-read] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1233320>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+__________ test_a_delivery_verb_delegates_to_the_steward[dequeue-pr] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:194: in test_a_delivery_verb_delegates_to_the_steward
+    assert run_main(wrapper=wrapper, argv=argv) == STEWARD_REFUSED, "the steward's exit code passes through"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2D71C0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+__ test_a_subcommand_matches_its_golden_case[reopen-issue/exit-1/not-found] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE1230E00>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_________ test_a_delivery_verb_delegates_to_the_steward[queue-status] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:194: in test_a_delivery_verb_delegates_to_the_steward
+    assert run_main(wrapper=wrapper, argv=argv) == STEWARD_REFUSED, "the steward's exit code passes through"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2D4D50>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[reopen-issue/exit-2/usage-error] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11F35E0>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+______ test_a_delivery_verb_delegates_to_the_steward[queue-status-json] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:194: in test_a_delivery_verb_delegates_to_the_steward
+    assert run_main(wrapper=wrapper, argv=argv) == STEWARD_REFUSED, "the steward's exit code passes through"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2CB740>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_ test_a_subcommand_matches_its_golden_case[reopen-issue/exit-2/credential-refused] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:129: in test_a_subcommand_matches_its_golden_case
+    exit_code = run_main(wrapper=load_wrapper(monkeypatch=monkeypatch), argv=case.argv)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x0000028EDC7509E0>(<function main at 0x0000028EE11F3110>)
+E    +      where <function signature at 0x0000028EDC7509E0> = inspect.signature
+_________ test_a_delivery_verb_delegates_to_the_steward[wait-landed] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:194: in test_a_delivery_verb_delegates_to_the_steward
+    assert run_main(wrapper=wrapper, argv=argv) == STEWARD_REFUSED, "the steward's exit code passes through"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2CB110>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+________ test_a_delivery_verb_delegates_to_the_steward[check-handoff] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:194: in test_a_delivery_verb_delegates_to_the_steward
+    assert run_main(wrapper=wrapper, argv=argv) == STEWARD_REFUSED, "the steward's exit code passes through"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2CA6C0>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+_________ test_a_delivery_verb_delegates_to_the_steward[check-landed] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:194: in test_a_delivery_verb_delegates_to_the_steward
+    assert run_main(wrapper=wrapper, argv=argv) == STEWARD_REFUSED, "the steward's exit code passes through"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2C9900>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+________________________ test_the_script_runs_by_path _________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_wrapper_compat.py:225: in test_the_script_runs_by_path
+    assert str(fx.CREDENTIALS_FILE) in completed.stderr, (
+E   AssertionError: standard error does not name credentials\github-pat.txt: 'usage: github_wrapper.py [-h] subcommand\ngithub_wrapper.py: error: unrecognized arguments: 1\n'
+E   assert 'credentials\\github-pat.txt' in 'usage: github_wrapper.py [-h] subcommand\ngithub_wrapper.py: error: unrecognized arguments: 1\n'
+E    +  where 'credentials\\github-pat.txt' = str(WindowsPath('credentials/github-pat.txt'))
+E    +    where WindowsPath('credentials/github-pat.txt') = fx.CREDENTIALS_FILE
+E    +  and   'usage: github_wrapper.py [-h] subcommand\ngithub_wrapper.py: error: unrecognized arguments: 1\n' = CompletedProcess(args=['D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\\python.exe', 'D:\\Code Workspace\...2, stdout='', stderr='usage: github_wrapper.py [-h] subcommand\ngithub_wrapper.py: error: unrecognized arguments: 1\n').stderr
+________________ test_the_credential_comes_only_from_the_file _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:242: in test_the_credential_comes_only_from_the_file
+    assert run_main(wrapper=wrapper, argv=GET_ISSUE_1) == fx.EXIT_REFUSED
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\test\test_github_wrapper_compat.py:96: in run_main
+    assert "argv" in inspect.signature(main).parameters, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-17\src\payload\scripts\github_wrapper.py: main takes no argv; design D6 gives the entry script main(argv=None) -> int
+E   assert 'argv' in mappingproxy(OrderedDict())
+E    +  where mappingproxy(OrderedDict()) = <Signature () -> 'None'>.parameters
+E    +    where <Signature () -> 'None'> = <function signature at 0x000001A04A7F09E0>(<function main at 0x000001A04F2C8510>)
+E    +      where <function signature at 0x000001A04A7F09E0> = inspect.signature
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-0/open-issues-without-pull-requests]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-0/limit-reached-on-the-second-page]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-0/label-abbreviation-and-any-assignee]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-0/body]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-0/body-file]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-1/no-body]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[list-issues/exit-2/token-stdin-not-carried]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-1/body-and-body-file]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-0/https-origin]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-0/ssh-origin]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[comment-issue/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-0/title-body-labels]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-0/body-file]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-2/origin-userinfo-token-not-logged]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-0/empty-body-left-out]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue/exit-2/origin-userinfo-password-not-logged]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-1/validation-failed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-0/every-page]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-issue-comments/exit-0/no-comments]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[reopen-issue/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[create-issue/exit-2/token-stdin-not-carried]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-0/count]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[update-issue/exit-0/close]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-0/count-of-no-body]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[update-issue/exit-0/title-body-file-labels]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-0/tick-verified]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[update-issue/exit-1/nothing-to-update]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-0/untick-keeps-crlf]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[update-issue/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-1/tick-matches-no-unticked-item]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[update-issue/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-1/write-not-on-re-read]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[update-issue/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[update-issue/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[reopen-issue/exit-0/already-open-not-written]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[checklist/exit-2/repository-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[reopen-issue/exit-0/reopened-and-verified]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_delivery_verb_delegates_to_the_steward[enqueue-pr]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[reopen-issue/exit-1/still-closed-on-re-read]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_delivery_verb_delegates_to_the_steward[dequeue-pr]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[reopen-issue/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_delivery_verb_delegates_to_the_steward[queue-status]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[reopen-issue/exit-2/usage-error]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_delivery_verb_delegates_to_the_steward[queue-status-json]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[reopen-issue/exit-2/credential-refused]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_delivery_verb_delegates_to_the_steward[wait-landed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_delivery_verb_delegates_to_the_steward[check-handoff]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_delivery_verb_delegates_to_the_steward[check-landed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_script_runs_by_path
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_credential_comes_only_from_the_file
+======================= 70 failed, 78 passed in 25.04s ========================
