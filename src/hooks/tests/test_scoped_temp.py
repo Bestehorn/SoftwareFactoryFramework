@@ -186,6 +186,23 @@ def test_broken_write_machinery_exits_0_and_speaks(arena: Path, monkeypatch: pyt
     assert (arena / "tmp" / "os-temp").is_dir(), "broken python: tmp/os-temp still created"
 
 
+def test_a_failed_replace_leaves_no_temp_file_behind(arena: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """(extra) Measured on Windows: os.replace raised while another process held settings.local.json open, and
+    the hook left `.claude/.settings.local.<random>.tmp` behind — an untracked file in the project. A failed
+    atomic write removes its own temp file, writes nothing, and still exits 0 with the notice."""
+
+    def refuse(*_args: object, **_kwargs: object) -> None:
+        raise PermissionError(13, "the destination is held open by another process")
+
+    monkeypatch.setattr(gate_scoped_temp.os, "replace", refuse)
+    decision = run_hook(arena)
+    assert decision.exit_code == 0, "failed replace: exit 0"
+    assert "could not be written" in decision.stdout, f"failed replace: the notice; got {decision.stdout!r}"
+    assert not settings_of(arena).exists(), "failed replace: nothing written"
+    leftovers = sorted(p.name for p in (arena / ".claude").glob(".settings.local.*.tmp"))
+    assert leftovers == [], f"failed replace: no temp file left behind; found {leftovers}"
+
+
 # ---------------------------------------------------------------------------------------------------------
 # (extra) project-dir resolution: CLAUDE_PROJECT_DIR, then the payload cwd, then the process cwd.
 # ---------------------------------------------------------------------------------------------------------
