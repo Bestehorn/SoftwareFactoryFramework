@@ -27,7 +27,8 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
 - `src/payload/` — the project scripts and their tests, laid out like a project root (`scripts/`, `test/`, `src/`).
 - `templates/` — config skeletons, CI templates, git hooks, `docs/` shipped verbatim. No Python.
 - `docs/reports/`, `docs/design/agents/` — this repository's own records; `docs/README.md` maps the old layout.
-- `test/` — this repository's own tests: `test_layout.py` (layout guard), `test_toolchain_integrity.py`.
+- `test/` — this repository's own tests: `test_layout.py` (layout guard), `test_toolchain_integrity.py`,
+  `test_session_title.py` (the issue-work commands may rename their desktop session: tool allowlisted, rule present).
 - `scripts/api_reference/` — this repository's own generator of `docs/api-reference/` (the forge API reference).
 - `archive/` — git-ignored, local only.
 

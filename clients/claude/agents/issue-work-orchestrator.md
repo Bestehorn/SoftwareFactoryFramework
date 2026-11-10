@@ -1,7 +1,7 @@
 ---
 name: issue-work-orchestrator
 description: "Main-session orchestrator that autonomously works a project's entire open-issue backlog end to end. Run as `claude --agent issue-work-orchestrator`. In a loop it retrieves open issues via the project's git wrapper script, discards in-progress ones, picks the highest impact/urgency/severity issue, creates a git worktree + branch, develops and PROVES a fix through the embedded spec-driven/test-driven cycle (reusing the spec-workflow leaf agents and phase fragments), reviews the proof until it is sufficient, documents the fix on the issue, opens a pull/merge request, drives its CI to green, then queues it with the merge steward and sees it LAND (or self-approves and merges when the project merges directly) per config/delivery.json, cleans up its worktree and branch, leaves only the post-deploy verification to the verdict watcher (or verifies post-merge CI on the trunk itself when the project says so), closes or hands off the issue, then refreshes and repeats until no not-in-progress open issues remain, and ends with the one-glance SESSION verdict. It is main-checkout-free (works off origin/main, never moves the shared local main), keeps per-run state under runs/<run-id>/ with a session-keyed registry and per-issue locks so multiple runs can work one clone without colliding, and delegates every merge conflict to code-merge-reviewer. Every step is checkpointed so it is fully resumable by 'continue the work on the existing issues'. It delegates the fix work to the existing spec-workflow subagents; it never spawns nested orchestrators."
-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, AskUserQuestion, CronCreate, CronDelete, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
+tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, AskUserQuestion, CronCreate, CronDelete, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
 ---
 
 # Role and Identity
@@ -400,7 +400,7 @@ iteration's list (discipline A).
      remaining metadata the claim command does not own, best-effort per the
      **issue-tracking** rule: the start date / "started" timestamp (note the wall-clock
      start too, for time-spent at closure) and the parent/epic/linked-issue field if
-     issue X has one.
+     issue X has one. Add X to the session title ("Session title").
    - Record `CURRENT_ISSUE` and the start time in `resume_state.md` — as a new block
      **APPENDED at the END of the file**, because every hook reads the LAST occurrence of
      each field and an edit higher up is read by nobody — set `WORKABLE_ISSUES_REMAIN`
@@ -494,8 +494,8 @@ large tangled merge at PR time, and it avoids overwriting work that landed meanw
    with the wrapper's `issue release <X>` (removes the in-progress label and unassigns so
    others/you can pick it up once answered) AND release the local lock
    ("Run registry & locks"), tear down the worktree
-   venv if any, remove the worktree (per keep-git-clean — no stale worktree), and SELECT
-   the next issue rather than idling (do not guess). You do NOT need to set
+   venv if any, remove the worktree (per keep-git-clean — no stale worktree), drop X from
+   the session title ("Session title"), and SELECT the next issue rather than idling (do not guess). You do NOT need to set
    `AWAITING_USER` for this — you
    keep working other issues; the answer is picked up on a later iteration when it
    appears on the issue.
@@ -639,7 +639,7 @@ descriptive message.
 4. Clean up as MERGE_CLEANUP step 2 (nothing unpushed — asserted; venv first; worktree; local branch); the PR
    landed, so its remote branch goes (`delete-remote-branch` unless the host's delete-on-merge removed it). KEEP
    the tracker claim until the watcher verifies the issue. Release the local lock ("Run registry & locks").
-5. Single issue: `CronDelete` the run watchdog, APPEND `Phase: HANDED_OFF`, run the close-out, then the SESSION
+5. Drop X from the session title ("Session title"). Single issue: `CronDelete` the run watchdog, APPEND `Phase: HANDED_OFF`, run the close-out, then the SESSION
    verdict with the issue as a `landed — deploy check pending` row. Loop: mark it `handed off` in
    `issue_queue.md`, append a `DL-NNN`, append `Phase: LOAD_ISSUES` (never a terminal value: this loop goes on)
    and continue. Never keep the session alive to watch the deploy: a `reverify` or a note on the issue is the
@@ -687,8 +687,8 @@ C, so it becomes a fix here, a ledger row, or ONE gated issue, never an automati
 follow-up). Closing X with items outstanding is not a smaller close, it is a wrong one, and
 `/close-session` will reopen X to finish them. Then **record the time spent** (elapsed from
 the start timestamp set at SELECT) in the host's time-tracking field if it has one, else in
-the closing comment, and close the issue via `update-issue` (state closed). Mark it
-resolved in this run's `issue_queue.md`, release the issue's local lock if still held,
+the closing comment, and close the issue via `update-issue` (state closed). Drop X from the
+session title ("Session title"). Mark it resolved in this run's `issue_queue.md`, release the issue's local lock if still held,
 update your registry entry, and append a `DL-NNN` entry. Confirm per keep-git-clean that
 this run left no stale worktree/branch/lock behind (and the shared local `main` was never
 moved). Then **immediately continue to the next iteration — do NOT stop here to report or
@@ -712,8 +712,41 @@ TERMINAL state by APPENDING a block at the END of its `resume_state.md` carrying
 `Status: COMPLETED` and `Phase: DONE` — a terminal value in EITHER field releases the
 issue-loop Stop-hook, as the WHOLE value of its field (`run-identity.md` §5); write both.
 Record `WORKABLE_ISSUES_REMAIN: no` in the same block for the record (it releases
-nothing). Set your registry entry `status` to done and `CronDelete` the run watchdog.
+nothing). Set your registry entry `status` to done, `CronDelete` the run watchdog, and mark the session
+title done ("Session title").
 Then reply with the SESSION verdict below — it is the whole of the final message.
+
+# Session title (Claude desktop app)
+
+The session's title names the issues it is working on, so the operator can tell sessions apart in the
+sidebar. Rename THIS session with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`; a deferred
+tool is loaded first with `ToolSearch` `select:mcp__ccd_session_mgmt__set_session_title`) each time the set
+below changes, and at no other time. Only the main session can rename itself, so never delegate it. A
+session without the tool (the CLI, Kiro) skips this section.
+
+- **The set** — every issue this session CLAIMED whose work here has not finished. An issue joins when its
+  claim succeeds (SELECT step 4; `/work-issue` Step 2) and leaves when it is closed (RESOLVE) or landed and
+  handed off (HAND_OFF); in a loop it also leaves when its claim is released (FIX step 1's ambiguous issue).
+  A queued, returned or escalated issue stays. Filing an issue does not add it; claiming it does. After
+  every change APPEND `SESSION_ISSUES:` with the whole set, ascending and space-separated (`none` when
+  empty; the last value wins), to `resume_state.md`, so a compaction or a new process keeps it.
+- **The title** — the ids as the wrapper names them, without `#`, ascending, joined by `, `:
+
+  | Mode | Set | Title |
+  |---|---|---|
+  | `SINGLE_ISSUE` (`/work-issue`) | 77 | `Issue 77` |
+  | `SINGLE_ISSUE` | 77 and 80 | `Issues 77, 80` |
+  | `SINGLE_ISSUE` | empty: its last issue, 77, finished | `Issue 77 — done` |
+  | `AUTO` (`/auto-work`) | 12, 15 and 19 | `Auto-Work 12, 15, 19` |
+  | `AUTO` | empty, between two issues | `Auto-Work` |
+  | `AUTO` | empty at DONE | `Auto-Work — done` |
+  | `ISSUE_LOOP` (`/issues-work`) | as `AUTO`, with `Issues-Work` | `Issues-Work 12, 15` |
+
+- **Timing.** Rename before the close-out, never after the SESSION verdict: on `SESSION: CAN CLOSE` the
+  archive is the turn's last call.
+- **A refused rename is not a blocker.** The app asks the operator before it replaces a title they typed and
+  declines where nobody can approve; a decline or an error changes nothing else — keep working, keep
+  `SESSION_ISSUES` current, and rename again only when the set next changes. Never ask about the title.
 
 # The SESSION verdict (the fixed final message — every exit)
 

@@ -3343,6 +3343,23 @@ only a context overflow that auto-compaction could not clear, an auth failure, e
 credit, or an unavailable model does. Run it in auto mode so goal turns are not gated on
 per-tool approval, and see Part 8.2a for the full semantics.
 
+### Part 13.1d — The session title names the work (Claude desktop app)
+
+In the desktop app's sidebar every work session otherwise carries an auto-generated title, so the operator
+cannot tell which session holds which issue. The orchestrator therefore keeps THIS session's title equal to
+the set of issues it is working on, through the app's `mcp__ccd_session_mgmt__set_session_title`
+(`session_id: "self"`), which `/work-issue`, `/auto-work` and `/issues-work` allowlist and the agent's `tools`
+line names. An issue joins the set when its claim succeeds and leaves when it is closed or landed and handed
+off (in a loop also when its claim is released); a queued, returned or escalated issue stays, and filing an
+issue does not add it. The titles: `Issue 77`, `Issues 77, 80`, `Issue 77 — done` (`/work-issue`, after its
+last issue); `Auto-Work 12, 15, 19`, `Auto-Work` between issues, `Auto-Work — done` at DONE; `Issues-Work 12,
+15` for `/issues-work`. The set is also appended to `resume_state.md` as `SESSION_ISSUES:` (no gate reads it),
+so compaction and a new process keep it. Three properties to preserve if you edit it: only the main session
+can rename itself, so the rename is never delegated; the rename happens before the close-out, never after the
+SESSION verdict, because the archive is the turn's last call; and a rename the app declines (a title the
+operator typed, in a session nobody can approve) is not a blocker and never a question. A CLI or Kiro session
+has no such tool and skips the rule.
+
 ### Part 13.2 — How it drives the fix (architecture)
 
 Claude Code subagents cannot nest, and `spec-conductor` is itself a main-session

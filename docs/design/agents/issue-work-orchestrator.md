@@ -102,6 +102,15 @@ arithmetic from a fresh re-read of the issue; `0 filed` is the expected count. T
 same way (`ISSUE INTAKE FINISHED — FILED #420` over an eight-row field/value table), so a
 filing delegated from a run is as quick to read as the run itself.
 
+### The session title names the work (Claude desktop app)
+
+While it runs, a session's title lists the issues it is working on — `Issue 77`, `Issues 77, 80`,
+`Auto-Work 12, 15, 19`, `Issues-Work 12, 15` — so the sidebar shows which session holds which issue. An issue
+joins when its claim succeeds and leaves when it is closed or handed off; a finished run reads `Issue 77 — done`
+or `Auto-Work — done`. The rename uses the app's `set_session_title` tool on the session itself, is never
+delegated (a subagent cannot rename its session), and is skipped where the tool does not exist (the CLI, Kiro).
+The agent definition's "Session title" section is the rule.
+
 ## How it relates to the other issue agents
 
 | Agent | Scope | Remote? | Output |

@@ -2,7 +2,7 @@
 description: Work ONE specific issue end to end — claim it in-progress on the tracker FIRST, sync from remote, develop the fix in its own git worktree via the spec/TDD engine (spec artifacts committed before implementation), open a PR and drive its CI green, then queue it with the merge steward and wait until it LANDS (or merge it and verify it, per config/delivery.json), hand only the post-deploy check to the verdict watcher, close out the session, end with the one-glance SESSION verdict, and stop. Single issue only; never continues into the backlog.
 argument-hint: "[issue number or ID, e.g. 77 or PROJ-123]"
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, AskUserQuestion, CronCreate, CronDelete, mcp__ccd_session_mgmt__archive_session, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, AskUserQuestion, CronCreate, CronDelete, mcp__ccd_session_mgmt__archive_session, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
 ---
 
 Take issue **$ARGUMENTS** (call it issue X) from open to **merged and verified** — or, where the merge
@@ -45,6 +45,13 @@ Claude/AI/bot into a branch, commit, PR, or issue and never add a `Co-Authored-B
      (`CronCreate`, session-only, recurring, the `[run-watchdog]` prompt — `continuous-work.md`). It fires only
      while the session is idle, so a turn an API error kills is resumed without a person; it costs nothing
      while you work.
+   - **The session title names the issues this session is working on** (Claude desktop app; the agent
+     definition's "Session title" section is the full rule). An issue joins when its claim succeeds (Step 2)
+     and leaves when it is closed or handed off (Step 8): `Issue X`; `Issues X, Y` while this session also
+     works Y — an issue it filed and was told to take on here, or a second `/work-issue` in this session;
+     `Issue X — done` once its last issue left. Rename with `mcp__ccd_session_mgmt__set_session_title`
+     (`session_id: "self"`) only when the set changes, APPEND the set as `SESSION_ISSUES: X Y` each time, and
+     treat a declined rename as nothing to act on — never a question.
    - **`WORKABLE_ISSUES_REMAIN: no` gates NOTHING** (`run-identity.md` §5): it only chooses
      the WORDING of an `issue-loop-gate` refusal. What lets this command finish after ONE
      issue is reaching a terminal `Phase` on X and not selecting another, not this field.
@@ -107,7 +114,8 @@ Claude/AI/bot into a branch, commit, PR, or issue and never add a `Co-Authored-B
      named this one. If X is in progress under someone else, say who holds it and ask
      whether to take it over; take over only on an explicit go-ahead.
    - On success: note the wall-clock start time for time-spent at closure, set the
-     parent/epic link if X has one, append a `DL-NNN` entry, and checkpoint. This verified
+     parent/epic link if X has one, add X to the session title (Step 0), append a `DL-NNN` entry, and
+     checkpoint. This verified
      claim is what stops other workers from duplicating the work.
 
 **Step 3: Worktree off freshly-fetched `origin/<main>`**
@@ -300,6 +308,8 @@ Claude/AI/bot into a branch, commit, PR, or issue and never add a `Co-Authored-B
      and `Phase: DONE`. **The terminal or hand-off value is what releases the Stop gate** — it must be the
      WHOLE value of the field (`Phase: DONE`, never `Phase: DONE (was IMPLEMENT)`); `HANDED_OFF` releases only
      after `check-handoff` passes.
+   - **Drop X from the session title** the moment it is closed or handed off (Step 0) — `Issue X — done`
+     when no other issue of this session is open — before the close-out, never after the SESSION verdict.
    - **Close out — every mode, at once, without asking.** Run the `/close-session` checks
      (`.claude/commands/close-session.md`) as this command's last step: tree clean; nothing unpushed
      (`git -C <worktree> status --porcelain` empty AND `git -C <worktree> log origin/<branch>..HEAD` empty —
