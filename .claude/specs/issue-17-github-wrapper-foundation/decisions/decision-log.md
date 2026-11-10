@@ -35,3 +35,21 @@
 **Evidence:** tasks.md coverage table; lane files.
 **Supersedes:** none
 **Artifacts touched:** tasks.md
+
+## DL-005 — 2026-11-10T21:47:36Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's REFUTED R1 R2 R3 as test gaps and reopen the TEST side only: R1 pins the Part 5.3 / Part 6.2 copy instruction itself, R2 adds golden rows for list-issues --limit <= 0 and a non-UTF-8 credential file, R3 adds the non-integer rate-limit header case; then one push and a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md R1 (copy-step mutant survives), R2/R3 (lines never run).
+**Alternatives considered:** record R2/R3 as residuals (rejected: small, clear, test-only).
+**Evidence:** evidence/verify/refutation-report.md; CI run 42903402594 success on 95fc3b8.
+**Supersedes:** none
+**Artifacts touched:** test/test_setup_prompts_github_wrapper.py, src/payload/test/github_wrapper_fixtures.py, src/payload/test/test_github_api_transport.py
+
+## DL-006 — 2026-11-10T21:47:36Z — issue-work-orchestrator — phase:PR
+
+**Decision:** Defer the work item 'Real-forge test on the #10 fixture' to #10 and close #17 on merge with the deferral recorded on the issue.
+**Driver:** #10 owns the sff-test-* fixture and waits on the operator's create/delete token; requirements Residuals name the real-forge E2E as #10's.
+**Alternatives considered:** keep #17 open until #10 lands (an issue held open by another issue's blocker).
+**Evidence:** issue #17 comment of the implementation note; tasks.md F.1.
+**Supersedes:** none
+**Artifacts touched:** issue #17 comment

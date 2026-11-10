@@ -513,6 +513,9 @@ GIT_CONFIG_FILE = Path(".git") / "config"
 FIXTURE_TOKEN = "ghp_TFixtureCredential"  # pragma: allowlist secret
 PLACEHOLDER_TOKEN = "PASTE_YOUR_GITHUB_PAT_HERE"
 TWO_TOKENS = "ghp_TFirstToken\nghp_TSecondToken\n"  # pragma: allowlist secret
+#: The fixture token between smart quotes in a file saved as Windows-1252, as a paste from a word processor leaves it:
+#: ``0x93`` and ``0x94`` start no UTF-8 sequence, so the file is not UTF-8 and the fork's ``_one_token`` refuses it.
+CP1252_QUOTED_TOKEN = f"“{FIXTURE_TOKEN}”\n".encode(encoding="cp1252")
 
 ORIGIN_HTTPS = f"{WEB_ORIGIN}/{OWNER}/{REPOSITORY}.git"
 ORIGIN_SSH = f"git@github.com:{OWNER}/{REPOSITORY}.git"
@@ -545,23 +548,25 @@ def git_config(*, origin: Optional[str]) -> str:
 @dataclass(frozen=True)
 class Project:
     """The temporary project a case runs in: the text of ``credentials/github-pat.txt`` and of ``.git/config``
-    (``None``: the file is absent) and further files, each a path relative to the project root and its text."""
+    (``None``: the file is absent) and further files, each a path relative to the project root and its text. A
+    ``bytes`` credential is the file's bytes as given, so a case can hold a file that is not UTF-8."""
 
-    credential: Optional[str] = f"{FIXTURE_TOKEN}\n"
+    credential: Optional[Union[str, bytes]] = f"{FIXTURE_TOKEN}\n"
     config: Optional[str] = git_config(origin=ORIGIN_HTTPS)
     files: Tuple[Tuple[str, str], ...] = ()
 
     def build(self, *, root: Path) -> None:
-        """Write the project's files under ``root`` as UTF-8 bytes, so no newline is translated."""
-        written = [(Path(name), text) for name, text in self.files]
+        """Write the project's files under ``root``: text as UTF-8 bytes, so no newline is translated, and ``bytes``
+        as given."""
+        written: List[Tuple[Path, Union[str, bytes]]] = [(Path(name), text) for name, text in self.files]
         if self.credential is not None:
             written.append((CREDENTIALS_FILE, self.credential))
         if self.config is not None:
             written.append((GIT_CONFIG_FILE, self.config))
-        for name, text in written:
+        for name, content in written:
             target = root / name
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(text.encode(encoding="utf-8"))
+            target.write_bytes(data=content if isinstance(content, bytes) else content.encode(encoding="utf-8"))
 
 
 class RouteSpec(ABC):
@@ -738,6 +743,7 @@ NO_CREDENTIAL = Project(credential=None)
 PLACEHOLDER_CREDENTIAL = Project(credential=f"{PLACEHOLDER_TOKEN}\n")
 TWO_TOKEN_CREDENTIAL = Project(credential=TWO_TOKENS)
 EMPTY_CREDENTIAL = Project(credential="")
+NOT_UTF_8_CREDENTIAL = Project(credential=CP1252_QUOTED_TOKEN)
 NO_GIT_CONFIG = Project(config=None)
 NO_ORIGIN = Project(config=git_config(origin=None))
 FOREIGN_ORIGIN = Project(config=git_config(origin=ORIGIN_FOREIGN))
@@ -799,7 +805,9 @@ BACKLOG_ENTRIES = tuple(
 
 
 def _list_issues_cases() -> Tuple[GoldenCase, ...]:
+    """The ``--limit`` of 0 and below print nothing although the host holds issues: the fork reads no page."""
     command = "list-issues"
+    open_issues = ListRouteSpec(url=ISSUES_PATH, items=LISTED_ENTRIES, query={QUERY_STATE: STATE_OPEN})
     return (
         GoldenCase(
             name=f"{command}/exit-0/open-issues-without-pull-requests",
@@ -809,7 +817,7 @@ def _list_issues_cases() -> Tuple[GoldenCase, ...]:
                 "#31     open     Document the wrapper\n"
             ),
             exit_code=EXIT_OK,
-            routes=(ListRouteSpec(url=ISSUES_PATH, items=LISTED_ENTRIES, query={QUERY_STATE: STATE_OPEN}),),
+            routes=(open_issues,),
         ),
         GoldenCase(
             name=f"{command}/exit-0/limit-reached-on-the-second-page",
@@ -817,6 +825,20 @@ def _list_issues_cases() -> Tuple[GoldenCase, ...]:
             stdout=listed_issues(entries=BACKLOG_ENTRIES, limit=BACKLOG_LIMIT),
             exit_code=EXIT_OK,
             routes=(ListRouteSpec(url=ISSUES_PATH, items=BACKLOG_ENTRIES, query={QUERY_STATE: STATE_ALL}),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/limit-of-zero-prints-nothing",
+            argv=(command, "--limit", "0"),
+            stdout="",
+            exit_code=EXIT_OK,
+            routes=(open_issues,),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/negative-limit-prints-nothing",
+            argv=(command, "--limit", "-1"),
+            stdout="",
+            exit_code=EXIT_OK,
+            routes=(open_issues,),
         ),
         GoldenCase(
             name=f"{command}/exit-0/label-abbreviation-and-any-assignee",
@@ -890,6 +912,14 @@ def _get_issue_cases() -> Tuple[GoldenCase, ...]:
             usage=(command, "five"),
             credential=PLACEHOLDER_CREDENTIAL,
             repository=FOREIGN_ORIGIN,
+        ),
+        GoldenCase(
+            name=f"{command}/exit-2/credential-not-utf-8",
+            argv=(command, "5"),
+            stdout="",
+            exit_code=EXIT_REFUSED,
+            project=NOT_UTF_8_CREDENTIAL,
+            routes=(found,),  # a wrapper that took the token would print the issue and exit 0
         ),
         GoldenCase(
             name=f"{command}/exit-2/origin-userinfo-token-not-logged",

@@ -674,6 +674,37 @@ def test_an_error_status_raises_with_the_documented_body(case: ErrorCase, fake: 
     assert len(fake.requests) == 1, "no retry"
 
 
+# A 403/429 whose rate header is not an integer is no limit AC-3.2 waits out: D3 "Failures" routes it to AC-3.4's plain
+# GitHubAPIError. Each case would be a limit if its non-integer value were read as 0.
+NON_INTEGER_RATE_HEADERS = [
+    pytest.param({HEADER_RETRY_AFTER: "Wed, 21 Oct 2026 07:28:00 GMT"}, id="retry-after-http-date"),
+    pytest.param({HEADER_REMAINING: "none", HEADER_RESET: _reset_in(seconds=60)}, id="remaining-not-a-number"),
+    pytest.param({HEADER_REMAINING: "0", HEADER_RESET: "1800000060.5"}, id="reset-not-an-integer"),
+]
+
+
+@pytest.mark.parametrize("headers", NON_INTEGER_RATE_HEADERS)
+@pytest.mark.parametrize("status", [403, 429], ids=["403", "429"])
+def test_a_non_integer_rate_limit_header_raises_without_retry(
+    status: int, headers: Dict[str, str], fake: Any, sleep: RecordingSleep
+) -> None:
+    api = load_api()
+    transport = make_transport(api=api, sleep=sleep)
+    reply = fx.Reply(status=status, body=RATE_LIMITED, headers=headers)
+    fake.route(method=METHOD_GET, url=LIMITED_PATH, replies=[reply])
+
+    with pytest.raises(api.errors.GitHubAPIError) as raised:
+        transport.request(method=METHOD_GET, path=LIMITED_PATH)
+    assert type(raised.value) is api.errors.GitHubAPIError, "the plain GitHubAPIError, not GitHubRateLimitError"
+    assert raised.value.status_code == status
+    assert raised.value.details == RATE_LIMITED, "the parsed error body"
+    message = str(raised.value)
+    assert message.startswith(f"GitHub API {METHOD_GET} "), "D3: GitHub API <method> <url> failed: HTTP <code>"
+    assert message.endswith(f" failed: HTTP {status}"), "D3: GitHub API <method> <url> failed: HTTP <code>"
+    assert len(fake.requests) == 1, "no retry"
+    assert sleep.calls == [], "no wait"
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # AC-4.1, AC-4.2, AC-4.3 — GraphQL
 # ---------------------------------------------------------------------------------------------------------------------
