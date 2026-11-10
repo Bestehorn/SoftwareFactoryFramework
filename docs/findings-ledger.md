@@ -10,3 +10,4 @@ deleted from git; what changes is what a session loads.
 |---|---|---|---|---|---|
 | 2026-11-10 | issue-intake state | parallel intake runs write the same top-level state files; one resume_state.md was overwritten | 8 parallel intakes 2026-11-10 | no lost work; no measured damage | open |
 | 2026-11-10 | setup prompts | 4 prose spots name AWS/MCP rules unconditionally | issue-8 spec evidence/verify/refutation-report.md | outside #8's agent-body ask; no observed failure | open |
+| 2026-11-10 | test_mypy_baseline | an inline overrides table under [tool.mypy] passes the AC-1 scan | issue-7 spec evidence/verify/refutation-report.md O2 | spelling outside #7's AC-1; no such table exists | open |
