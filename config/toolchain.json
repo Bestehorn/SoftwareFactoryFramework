@@ -1,7 +1,7 @@
 {
   "comment": "The toolchain of this repository: files installed 1:1 from the framework release named by release_tag, whose commit .claude/FRAMEWORK_COMMIT pins. The CI integrity check (test/test_toolchain_integrity.py) requires each to equal its source there; the toolchain-paths gate refuses hand edits of them outside a framework-update-* branch. A promotion (prompts/update.txt) rewrites this file and the pin.",
-  "release_tag": "v2026.11.09",
-  "installed": "2026-11-09",
+  "release_tag": "v2026.11.10",
+  "installed": "2026-11-10",
   "files": {
     ".claude/agents/adversarial-verifier.md": "clients/claude/agents/adversarial-verifier.md",
     ".claude/agents/best-practice-reviewer.md": "clients/claude/agents/best-practice-reviewer.md",
