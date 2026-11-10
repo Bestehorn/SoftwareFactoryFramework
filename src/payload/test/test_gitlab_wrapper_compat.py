@@ -17,6 +17,15 @@ with no PUT for a closed issue or one assigned to another user, and 1 when the r
 claims with ``in-progress``; a token in the process environment is never sent; and the script without
 ``config/gitlab.json`` exits 1 naming the file.
 
+The ``pipeline``, ``label``, ``mr`` and ``delete-branch`` subcommands (D6; UB-1) are forms of ``test_a_subcommand_form``
+as well: ``pipeline status`` asks for the newest pipelines first, ``per_page`` the count (default 1), and prints the
+first N; ``pipeline log`` prints text — per failed job of the latest pipeline a header line naming the job's id and
+name, then its trace, or one line of text when no job failed or no pipeline exists; ``label list`` and ``mr checks``
+read every page; ``delete-branch`` sends the branch as one encoded path segment. ``test_pipeline_wait_exit_codes`` pins
+the skeleton's verdicts — 0 success, 10 for each status it ends on without success, 11 at the deadline — through
+``main``, and from ``gitlab_api.commands.pipeline.pipeline_wait`` on a ``Transport`` whose clock moves only by the
+pauses its ``sleep`` records, so no real time passes.
+
 The in-process tests write ``config/gitlab.json`` into ``tmp_path``, the working directory by ``monkeypatch.chdir``,
 load the entry script by path as ``test_wrapper_delivery.load`` does and call ``main(argv=...)``; the exit code is the
 return value or the ``SystemExit`` code. The fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``,
@@ -27,12 +36,16 @@ Run: ``python scripts/run_tests.py src/payload/test/test_gitlab_wrapper_compat.p
 
 from __future__ import annotations
 
+import importlib
 import importlib.util
 import inspect
 import json
 import re
 import subprocess
 import sys
+import time
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence, Tuple
@@ -326,9 +339,13 @@ HEADER_JOB_TOKEN = "JOB-TOKEN"
 METHOD_GET = "GET"
 METHOD_POST = "POST"
 METHOD_PUT = "PUT"
+METHOD_DELETE = "DELETE"
 EXIT_OK = 0
 EXIT_API_ERROR = 1
 EXIT_CLAIM_UNCLAIMED = 3
+# `pipeline wait`'s verdicts, the skeleton's EXIT_WAIT_NOT_SUCCESS and EXIT_WAIT_TIMEOUT (design.md D6).
+EXIT_WAIT_NOT_SUCCESS = 10
+EXIT_WAIT_TIMEOUT = 11
 
 # Request and response keys: rest/plan.md "Issues API" and "Notes API", rest/software-supply-chain-security.md "Users
 # API", and `issue claim-check`'s own output (design.md D6).
@@ -704,6 +721,428 @@ def issue_state_cases() -> List[Any]:
     ]
 
 
+# --- The pipeline, label, mr and delete-branch subcommands (design.md D6; UB-1) ----------------------------------
+
+# Request and response keys: rest/verify.md "Pipelines API" and "Jobs API", rest/plan.md "Project labels API",
+# rest/ai-coding.md "Merge requests API" and "Merge request approvals API"; the keys of `pipeline wait`'s summary line
+# (the skeleton's) and of `delete-branch`'s output (design.md D6).
+FIELD_STATUS = "status"
+FIELD_REF = "ref"
+FIELD_WEB_URL = "web_url"
+FIELD_NAME = "name"
+FIELD_STAGE = "stage"
+FIELD_COLOR = "color"
+FIELD_SOURCE_BRANCH = "source_branch"
+FIELD_TARGET_BRANCH = "target_branch"
+FIELD_REMOVE_SOURCE_BRANCH = "remove_source_branch"
+FIELD_SHOULD_REMOVE_SOURCE_BRANCH = "should_remove_source_branch"
+FIELD_MERGE_STATUS = "merge_status"
+FIELD_APPROVED = "approved"
+FIELD_APPROVED_BY = "approved_by"
+FIELD_USER = "user"
+FIELD_BRANCH = "branch"
+FIELD_DELETED = "deleted"
+FIELD_TIMEOUT_SECONDS = "timeout_seconds"
+
+STATUS_SUCCESS = "success"
+STATUS_FAILED = "failed"
+STATUS_RUNNING = "running"
+# The statuses `pipeline wait` ends on without success: the skeleton's PIPELINE_TERMINAL_STATUSES less `success`.
+NOT_SUCCESS_STATUSES = (STATUS_FAILED, "canceled", "skipped", "manual")
+# The status `pipeline wait`'s summary line names when no poll was answered (the skeleton's).
+STATUS_UNKNOWN = "unknown"
+STATE_MERGED = "merged"
+MERGE_STATUS_MERGEABLE = "can_be_merged"
+
+# `pipeline status` and `pipeline log` ask for the newest pipelines first (design.md D6); `pipeline log` asks for one
+# pipeline's failed jobs, `scope` sent as an array (rest/verify.md "List all jobs by pipeline"); a list read to its end
+# asks for page 2 by page 1's `x-next-page` (design.md D4 `pages`).
+NEWEST_FIRST = ("order_by=id", "sort=desc")
+FAILED_JOBS = "scope[]=failed"
+SECOND_PAGE = "page=2"
+CONTENT_TYPE_TEXT = "text/plain; charset=utf-8"
+
+PIPELINE_ID = 1201
+OLDER_PIPELINE_ID = 1200
+OLDEST_PIPELINE_ID = 1199
+JOB_ID = 3001
+SECOND_JOB_ID = 3002
+JOB_NAME = "unit-tests"
+SECOND_JOB_NAME = "lint"
+JOB_TRACE = (
+    "Running with gitlab-runner 17.5.0\n"
+    "$ python scripts/run_tests.py\n"
+    "FAILED test/test_parser.py::test_empty_file - AssertionError\n"
+)
+# A blank line inside a trace is part of it.
+SECOND_JOB_TRACE = "$ ruff check .\n\nE501 Line too long (121 > 120)\n"
+LABEL_ID = 601
+LABEL_COLOR = "#d9534f"
+NEW_LABEL = "blocked"
+LABEL_DESCRIPTION = "Waiting on another issue."
+MR_IID = 21
+MR_TITLE = "Fix the parser on an empty file"
+SOURCE_BRANCH = "feature/issue-13-parser"
+# SOURCE_BRANCH as ONE path segment, `/` written %2F (conventions.md "URL-encoding path parameters", design.md D5).
+BRANCH_SEGMENT = "feature%2Fissue-13-parser"
+TARGET_BRANCH = "main"
+# conventions.md "Responses": `201` with the new resource for creates, `204` for deletes without a body. A refused
+# approval is an error status, here 401 with GitLab's `message` body shape (conventions.md "Body shapes").
+CREATED = 201
+NO_CONTENT = 204
+UNAUTHORIZED = 401
+REFUSED_APPROVAL = {FIELD_MESSAGE: "401 Unauthorized"}
+
+# `pipeline wait` through `main` waits the contract's bounded foreground wait. `pipeline_wait` on the fake clock gets a
+# deadline three poll intervals after the start: its polls at 0, 15 and 30 seconds are answered, and its third pause
+# brings the clock to the deadline, where the skeleton stops polling (it polls while the clock is BEFORE the deadline).
+WAIT_TIMEOUT_SECONDS = 540
+DIRECT_TIMEOUT_SECONDS = 45
+POLL_INTERVAL_SECONDS = 15
+POLLS_BEFORE_DEADLINE = DIRECT_TIMEOUT_SECONDS // POLL_INTERVAL_SECONDS
+CLOCK_START_SECONDS = 1000.0
+TOKEN_TYPE_PRIVATE = "private"  # a token_type value, not a secret
+PIPELINE_COMMANDS_FILE = SCRIPTS_DIR / "gitlab_api" / "commands" / "pipeline.py"
+PIPELINE_COMMANDS_MODULE = "gitlab_api.commands.pipeline"
+TRANSPORT_MODULE = "gitlab_api.transport"
+
+
+def project_url(*, path: str) -> str:
+    """``path`` under the configured project's ``/projects/:id``."""
+    return f"{REST_BASE}/projects/{PROJECT_ID}{path}"
+
+
+def newest_pipelines_url(*, count: int) -> str:
+    """``GET /projects/:id/pipelines`` for the ``count`` newest pipelines (design.md D6 ``pipeline status``)."""
+    return with_query(url=project_url(path="/pipelines"), pairs=(*NEWEST_FIRST, f"per_page={count}"))
+
+
+def pipeline_url() -> str:
+    return project_url(path=f"/pipelines/{PIPELINE_ID}")
+
+
+def merge_request_url(*, suffix: str = "") -> str:
+    return project_url(path=f"/merge_requests/{MR_IID}{suffix}")
+
+
+def web_url(*, kind: str, item_id: int) -> str:
+    """The web page of one of the project's pipelines, jobs or merge requests."""
+    return f"https://{fixtures.HOST}/group/project/-/{kind}/{item_id}"
+
+
+def pipeline_record(*, pipeline_id: int = PIPELINE_ID, status: str = STATUS_FAILED) -> Dict[str, Any]:
+    """A pipeline as the Pipelines API lists and returns it, with the fields the subcommands read."""
+    return {
+        FIELD_ID: pipeline_id,
+        FIELD_STATUS: status,
+        FIELD_REF: TARGET_BRANCH,
+        FIELD_WEB_URL: web_url(kind="pipelines", item_id=pipeline_id),
+    }
+
+
+def job_record(*, job_id: int, name: str) -> Dict[str, Any]:
+    """A failed job as ``GET /projects/:id/pipelines/:pipeline_id/jobs`` lists it."""
+    return {
+        FIELD_ID: job_id,
+        FIELD_NAME: name,
+        FIELD_STAGE: "test",
+        FIELD_STATUS: STATUS_FAILED,
+        FIELD_WEB_URL: web_url(kind="jobs", item_id=job_id),
+    }
+
+
+def label_record(*, label_id: int, name: str, description: Optional[str] = None) -> Dict[str, Any]:
+    """A project label as the Project labels API lists and returns it."""
+    return {FIELD_ID: label_id, FIELD_NAME: name, FIELD_COLOR: LABEL_COLOR, FIELD_DESCRIPTION: description}
+
+
+def merge_request_record(*, state: str = STATE_OPENED) -> Dict[str, Any]:
+    """A merge request as the Merge requests API returns it, with the fields its callers read."""
+    return {
+        FIELD_ID: 7000 + MR_IID,
+        FIELD_IID: MR_IID,
+        FIELD_TITLE: MR_TITLE,
+        FIELD_STATE: state,
+        FIELD_SOURCE_BRANCH: SOURCE_BRANCH,
+        FIELD_TARGET_BRANCH: TARGET_BRANCH,
+        FIELD_MERGE_STATUS: MERGE_STATUS_MERGEABLE,
+        FIELD_WEB_URL: web_url(kind="merge_requests", item_id=MR_IID),
+    }
+
+
+def two_pages(*, url: str, first: List[Any], second: List[Any]) -> Tuple[Exchange, Exchange]:
+    """A list read to its end by offset paging: the transport's page size, then ``page=2`` named by page 1's
+    ``x-next-page``, which page 2 sends empty (design.md D4 ``pages``)."""
+    return (
+        Exchange(
+            method=METHOD_GET,
+            url=with_query(url=url, pairs=(PER_PAGE,)),
+            headers=((HEADER_NEXT_PAGE, "2"),),
+            answer=first,
+        ),
+        Exchange(
+            method=METHOD_GET,
+            url=with_query(url=url, pairs=(PER_PAGE, SECOND_PAGE)),
+            headers=((HEADER_NEXT_PAGE, ""),),
+            answer=second,
+        ),
+    )
+
+
+def text_line_at(*, lines: Sequence[str], start: int) -> int:
+    """The index of the first line from ``start`` on that is not blank; ``len(lines)`` when there is none."""
+    return next((index for index in range(start, len(lines)) if lines[index].strip()), len(lines))
+
+
+class TextOutput(ABC):
+    """Standard output that is text, not JSON: ``check`` asserts what design.md D6 states of it."""
+
+    @abstractmethod
+    def check(self, *, out: str) -> None:
+        """Assert that ``out``, the whole of standard output, is this output."""
+
+
+@dataclass(frozen=True)
+class JobTracesOutput(TextOutput):
+    """``pipeline log`` with failed jobs (design.md D6): per job, in the order the jobs were listed, one header line
+    naming the job's ``id`` and ``name``, then the job's trace line for line; blank lines may separate the blocks, and
+    nothing else is printed."""
+
+    jobs: Tuple[Tuple[int, str, str], ...]  # (id, name, trace) of each failed job
+
+    def check(self, *, out: str) -> None:
+        lines = out.splitlines()
+        cursor = 0
+        for job_id, name, trace in self.jobs:
+            cursor = text_line_at(lines=lines, start=cursor)
+            assert cursor < len(lines), f"no header line for job {job_id} ({name}); standard output:\n{out}"
+            header = lines[cursor]
+            assert str(job_id) in header and name in header, (
+                f"job {job_id}'s header line names its id and its name {name!r}: {header!r}; standard output:\n{out}"
+            )
+            expected = trace.splitlines()
+            shown = lines[cursor + 1 : cursor + 1 + len(expected)]
+            assert shown == expected, f"job {job_id}'s trace follows its header line verbatim; standard output:\n{out}"
+            cursor += 1 + len(expected)
+        assert text_line_at(lines=lines, start=cursor) == len(lines), f"nothing follows the last trace:\n{out}"
+
+
+@dataclass(frozen=True)
+class OneLineOutput(TextOutput):
+    """``pipeline log`` when no job failed or no pipeline exists (design.md D6): one line of text, not JSON."""
+
+    def check(self, *, out: str) -> None:
+        lines = [line for line in out.splitlines() if line.strip()]
+        assert len(lines) == 1, f"one line on standard output, got {len(lines)}:\n{out}"
+        assert isinstance(printed_value(out=out), str), f"a line of text, not a JSON value:\n{out}"
+
+
+def pipeline_status_cases() -> List[Any]:
+    """``pipeline status``: the newest pipeline; with ``--count 2`` the first two items of the page."""
+    newest = pipeline_record(pipeline_id=PIPELINE_ID)
+    older = pipeline_record(pipeline_id=OLDER_PIPELINE_ID, status=STATUS_SUCCESS)
+    oldest = pipeline_record(pipeline_id=OLDEST_PIPELINE_ID, status=STATUS_SUCCESS)
+    return [
+        form(
+            case_id="pipeline-status",
+            argv=("pipeline", "status"),
+            exchanges=(Exchange(method=METHOD_GET, url=newest_pipelines_url(count=1), answer=[newest]),),
+            printed=[newest],
+        ),
+        form(
+            case_id="pipeline-status-count",
+            argv=("pipeline", "status", "--count", "2"),
+            # A page holding more than asked for: only the first N items are printed (design.md D6).
+            exchanges=(Exchange(method=METHOD_GET, url=newest_pipelines_url(count=2), answer=[newest, older, oldest]),),
+            printed=[newest, older],
+        ),
+    ]
+
+
+def pipeline_log_cases() -> List[Any]:
+    """``pipeline log``: the latest pipeline, as ``pipeline status`` reads it; its failed jobs; each one's trace. One
+    line when no job failed (the pipeline still runs) and when no pipeline exists, which reads no jobs."""
+    latest = newest_pipelines_url(count=1)
+    failed_jobs = with_query(url=f"{pipeline_url()}/jobs", pairs=(FAILED_JOBS,))
+    traces = ((JOB_ID, JOB_NAME, JOB_TRACE), (SECOND_JOB_ID, SECOND_JOB_NAME, SECOND_JOB_TRACE))
+    trace_exchanges = tuple(
+        Exchange(
+            method=METHOD_GET,
+            url=project_url(path=f"/jobs/{job_id}/trace"),
+            headers=((HEADER_CONTENT_TYPE, CONTENT_TYPE_TEXT),),
+            answer=trace,
+        )
+        for job_id, _, trace in traces
+    )
+    jobs = [job_record(job_id=job_id, name=name) for job_id, name, _ in traces]
+    return [
+        form(
+            case_id="pipeline-log",
+            argv=("pipeline", "log"),
+            exchanges=(
+                Exchange(method=METHOD_GET, url=latest, answer=[pipeline_record(status=STATUS_FAILED)]),
+                Exchange(method=METHOD_GET, url=failed_jobs, answer=jobs),
+                *trace_exchanges,
+            ),
+            printed=JobTracesOutput(jobs=traces),
+        ),
+        form(
+            case_id="pipeline-log-none-failed",
+            argv=("pipeline", "log"),
+            exchanges=(
+                Exchange(method=METHOD_GET, url=latest, answer=[pipeline_record(status=STATUS_RUNNING)]),
+                Exchange(method=METHOD_GET, url=failed_jobs, answer=[]),
+            ),
+            printed=OneLineOutput(),
+        ),
+        form(
+            case_id="pipeline-log-no-pipeline",
+            argv=("pipeline", "log"),
+            exchanges=(Exchange(method=METHOD_GET, url=latest, answer=[]),),
+            printed=OneLineOutput(),
+        ),
+    ]
+
+
+def label_cases() -> List[Any]:
+    """``label list`` (every page) and ``label create`` without and with ``--description``."""
+    labels_url = project_url(path="/labels")
+    listed = [label_record(label_id=LABEL_ID, name=IN_PROGRESS)]
+    more = [label_record(label_id=LABEL_ID + 1, name=OTHER_LABEL)]
+    cases = [
+        form(
+            case_id="label-list",
+            argv=("label", "list"),
+            exchanges=two_pages(url=labels_url, first=listed, second=more),
+            printed=[*listed, *more],
+        )
+    ]
+    creates = [
+        ("label-create", (), {}),
+        ("label-create-description", ("--description", LABEL_DESCRIPTION), {FIELD_DESCRIPTION: LABEL_DESCRIPTION}),
+    ]
+    for case_id, flag, extra in creates:
+        created = label_record(label_id=LABEL_ID + 2, name=NEW_LABEL, description=extra.get(FIELD_DESCRIPTION))
+        cases.append(
+            form(
+                case_id=case_id,
+                argv=("label", "create", "--name", NEW_LABEL, "--color", LABEL_COLOR, *flag),
+                exchanges=(
+                    Exchange(
+                        method=METHOD_POST,
+                        url=labels_url,
+                        sent={FIELD_NAME: NEW_LABEL, FIELD_COLOR: LABEL_COLOR, **extra},
+                        status=CREATED,
+                        answer=created,
+                    ),
+                ),
+                printed=created,
+            )
+        )
+    return cases
+
+
+def mr_cases() -> List[Any]:
+    """``mr create``, ``mr get``, ``mr checks`` (every page), ``mr approve`` and a refused one, ``mr merge``."""
+    opened = merge_request_record()
+    merged = merge_request_record(state=STATE_MERGED)
+    approval = {
+        FIELD_ID: opened[FIELD_ID],
+        FIELD_IID: MR_IID,
+        FIELD_APPROVED: True,
+        FIELD_APPROVED_BY: [{FIELD_USER: ME}],
+    }
+    checked = [pipeline_record(pipeline_id=PIPELINE_ID)]
+    rechecked = [pipeline_record(pipeline_id=OLDER_PIPELINE_ID, status=STATUS_SUCCESS)]
+    created = {
+        FIELD_SOURCE_BRANCH: SOURCE_BRANCH,
+        FIELD_TARGET_BRANCH: TARGET_BRANCH,
+        FIELD_TITLE: MR_TITLE,
+        FIELD_REMOVE_SOURCE_BRANCH: True,
+    }
+    return [
+        form(
+            case_id="mr-create",
+            argv=("mr", "create", "--source", SOURCE_BRANCH, "--target", TARGET_BRANCH, "--title", MR_TITLE),
+            exchanges=(
+                Exchange(
+                    method=METHOD_POST,
+                    url=project_url(path="/merge_requests"),
+                    sent=created,
+                    status=CREATED,
+                    answer=opened,
+                ),
+            ),
+            printed=opened,
+        ),
+        form(
+            case_id="mr-get",
+            argv=("mr", "get", str(MR_IID)),
+            exchanges=(Exchange(method=METHOD_GET, url=merge_request_url(), answer=opened),),
+            printed=opened,
+        ),
+        form(
+            case_id="mr-checks",
+            argv=("mr", "checks", str(MR_IID)),
+            exchanges=two_pages(url=merge_request_url(suffix="/pipelines"), first=checked, second=rechecked),
+            printed=[*checked, *rechecked],
+        ),
+        form(
+            case_id="mr-approve",
+            argv=("mr", "approve", str(MR_IID)),
+            exchanges=(Exchange(method=METHOD_POST, url=merge_request_url(suffix="/approve"), answer=approval),),
+            printed=approval,
+        ),
+        # A refused approval (the own-MR caveat of commands/mr.py) is a GitLabAPIError: exit 1, nothing printed.
+        form(
+            case_id="mr-approve-refused",
+            argv=("mr", "approve", str(MR_IID)),
+            exchanges=(
+                Exchange(
+                    method=METHOD_POST,
+                    url=merge_request_url(suffix="/approve"),
+                    status=UNAUTHORIZED,
+                    answer=REFUSED_APPROVAL,
+                ),
+            ),
+            printed=None,
+            exit_code=EXIT_API_ERROR,
+        ),
+        form(
+            case_id="mr-merge",
+            argv=("mr", "merge", str(MR_IID)),
+            exchanges=(
+                Exchange(
+                    method=METHOD_PUT,
+                    url=merge_request_url(suffix="/merge"),
+                    sent={FIELD_SHOULD_REMOVE_SOURCE_BRANCH: True},
+                    answer=merged,
+                ),
+            ),
+            printed=merged,
+        ),
+    ]
+
+
+def branch_cases() -> List[Any]:
+    """``delete-branch <branch>``: the branch as ONE encoded segment; a delete answers ``204`` without a body
+    (conventions.md "Responses")."""
+    return [
+        form(
+            case_id="delete-branch",
+            argv=("delete-branch", SOURCE_BRANCH),
+            exchanges=(
+                Exchange(
+                    method=METHOD_DELETE,
+                    url=project_url(path=f"/repository/branches/{BRANCH_SEGMENT}"),
+                    status=NO_CONTENT,
+                ),
+            ),
+            printed={FIELD_BRANCH: SOURCE_BRANCH, FIELD_DELETED: True},
+        )
+    ]
+
+
 def subcommand_cases() -> List[Any]:
     """One case per argv form and flag of design.md D6."""
     return [
@@ -712,6 +1151,11 @@ def subcommand_cases() -> List[Any]:
         *issue_claim_cases(),
         *issue_assign_cases(),
         *issue_state_cases(),
+        *pipeline_status_cases(),
+        *pipeline_log_cases(),
+        *label_cases(),
+        *mr_cases(),
+        *branch_cases(),
     ]
 
 
@@ -794,7 +1238,7 @@ def check_form(
     *, case: FormCase, config: Mapping[str, Any], project: Path, fake: Any, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """Run ``case`` through ``main`` with ``config`` as config/gitlab.json; assert its exit code, its exact requests and
-    its standard output, in that order."""
+    its standard output, in that order. A ``TextOutput`` checks the text; any other ``printed`` is the JSON value."""
     write_json(path=project / CONFIG_DIR / CONFIG_FILE_NAME, content=config)
     script_exchanges(fake=fake, exchanges=case.exchanges)
     code = main_exit_code(wrapper=load_wrapper(), argv=case.argv)
@@ -805,7 +1249,10 @@ def check_form(
     assert recorded(fake=fake) == expected_requests(exchanges=case.exchanges), (
         "the recorded requests: method, URL with its query, JSON body (design.md D6)"
     )
-    assert printed_value(out=captured.out) == case.printed, f"standard output:\n{captured.out}"
+    if isinstance(case.printed, TextOutput):
+        case.printed.check(out=captured.out)
+    else:
+        assert printed_value(out=captured.out) == case.printed, f"standard output:\n{captured.out}"
 
 
 @pytest.mark.parametrize("case", subcommand_cases())
@@ -824,6 +1271,121 @@ def test_claim_check_exit_codes(
     case: FormCase, project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
 ) -> None:
     check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+
+
+class FakeClock:
+    """The ``clock`` and ``sleep`` of a ``Transport``: the clock moves only by the pauses ``sleep`` records, so a wait
+    ends at this clock's deadline and no real time passes. ``sleep`` takes ``seconds`` positionally, as
+    ``time.sleep`` does."""
+
+    def __init__(self, *, start: float) -> None:
+        self.now = start
+        self.sleeps: List[float] = []
+
+    def clock(self) -> float:
+        return self.now
+
+    def sleep(self, seconds: float, /) -> None:
+        self.sleeps.append(seconds)
+        self.now += seconds
+
+
+def refuse_real_sleep(seconds: float) -> None:
+    raise AssertionError(f"time.sleep({seconds!r}): pipeline wait pauses through transport.sleep (design.md D6)")
+
+
+class WaitCase(NamedTuple):
+    """One verdict of ``pipeline wait``: ``via_main`` runs it through ``main``; ``pipeline_wait`` on the fake clock has
+    its polls answered with ``polled``, pauses ``sleeps``, prints ``printed`` and returns ``exit_code``."""
+
+    via_main: FormCase
+    polled: Tuple[str, ...]
+    sleeps: Tuple[float, ...]
+    printed: Dict[str, Any]
+    exit_code: int
+
+
+def pipeline_wait_cases() -> List[Any]:
+    """The skeleton's verdicts and summary line: 0 on ``success``, 10 on each status that ends without success, 11 at
+    the deadline. Through ``main`` with ``--timeout-seconds 0`` no poll is sent and the summary names ``unknown``."""
+    cases: List[Any] = []
+    endings = [(STATUS_SUCCESS, EXIT_OK), *((status, EXIT_WAIT_NOT_SUCCESS) for status in NOT_SUCCESS_STATUSES)]
+    for status, exit_code in endings:
+        ended = pipeline_record(status=status)
+        summary = {FIELD_ID: PIPELINE_ID, FIELD_STATUS: status, FIELD_WEB_URL: ended[FIELD_WEB_URL]}
+        via_main = FormCase(
+            argv=("pipeline", "wait", str(PIPELINE_ID), "--timeout-seconds", str(WAIT_TIMEOUT_SECONDS)),
+            exchanges=(Exchange(method=METHOD_GET, url=pipeline_url(), answer=ended),),
+            printed=summary,
+            exit_code=exit_code,
+        )
+        case = WaitCase(
+            via_main=via_main,
+            polled=(STATUS_RUNNING, status),
+            sleeps=(POLL_INTERVAL_SECONDS,),
+            printed=summary,
+            exit_code=exit_code,
+        )
+        cases.append(pytest.param(case, id=f"{status}-exits-{exit_code}"))
+    timed_out = WaitCase(
+        via_main=FormCase(
+            argv=("pipeline", "wait", str(PIPELINE_ID), "--timeout-seconds", "0"),
+            exchanges=(),
+            printed={FIELD_ID: PIPELINE_ID, FIELD_STATUS: STATUS_UNKNOWN, FIELD_TIMEOUT_SECONDS: 0},
+            exit_code=EXIT_WAIT_TIMEOUT,
+        ),
+        polled=(STATUS_RUNNING,) * POLLS_BEFORE_DEADLINE,
+        sleeps=(POLL_INTERVAL_SECONDS,) * POLLS_BEFORE_DEADLINE,
+        printed={FIELD_ID: PIPELINE_ID, FIELD_STATUS: STATUS_RUNNING, FIELD_TIMEOUT_SECONDS: DIRECT_TIMEOUT_SECONDS},
+        exit_code=EXIT_WAIT_TIMEOUT,
+    )
+    cases.append(pytest.param(timed_out, id=f"timeout-exits-{EXIT_WAIT_TIMEOUT}"))
+    return cases
+
+
+def pipeline_commands() -> ModuleType:
+    """``gitlab_api.commands.pipeline``, imported inside the test, so a module not written yet fails on an assertion."""
+    assert PIPELINE_COMMANDS_FILE.is_file(), f"{PIPELINE_COMMANDS_FILE} is missing (design.md D6)"
+    return importlib.import_module(name=PIPELINE_COMMANDS_MODULE)
+
+
+@pytest.mark.parametrize("case", pipeline_wait_cases())
+def test_pipeline_wait_exit_codes(
+    case: WaitCase,
+    project: Path,
+    fake_gitlab: Any,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setattr(time, "sleep", refuse_real_sleep)
+    check_form(case=case.via_main, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+    # The same verdict from pipeline_wait itself, polling through a Transport whose clock moves only when it sleeps.
+    pipeline_wait = pipeline_commands().pipeline_wait
+    fake_time = FakeClock(start=CLOCK_START_SECONDS)
+    transport = importlib.import_module(name=TRANSPORT_MODULE).Transport(
+        host=fixtures.HOST,
+        token=TOKEN,
+        token_type=TOKEN_TYPE_PRIVATE,
+        sleep=fake_time.sleep,
+        clock=fake_time.clock,
+    )
+    for status in case.polled:
+        fake_gitlab.script(method=METHOD_GET, url=pipeline_url(), body=pipeline_record(status=status))
+    sent_before = len(fake_gitlab.requests)
+    code = pipeline_wait(
+        transport=transport,
+        project=str(PROJECT_ID),
+        pipeline_id=PIPELINE_ID,
+        timeout_seconds=DIRECT_TIMEOUT_SECONDS,
+        interval_seconds=POLL_INTERVAL_SECONDS,
+    )
+    captured = capsys.readouterr()
+    assert code == case.exit_code, f"pipeline_wait returns {case.exit_code}, got {code}; stderr:\n{captured.err}"
+    assert recorded(fake=fake_gitlab)[sent_before:] == [(METHOD_GET, pipeline_url(), None)] * len(case.polled), (
+        "one GET of the pipeline per poll, polled while the transport's clock is before the deadline"
+    )
+    assert fake_time.sleeps == list(case.sleeps), "a poll that does not end the wait is followed by one transport.sleep"
+    assert printed_value(out=captured.out) == case.printed, f"the skeleton's summary line:\n{captured.out}"
 
 
 class StartRefusal(NamedTuple):

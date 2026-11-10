@@ -35,3 +35,12 @@
 **Evidence:** lane files tasks-iteration-01/02.
 **Supersedes:** none
 **Artifacts touched:** tasks.md, design.md
+
+## DL-005 — 2026-11-10T21:18:13Z — issue-work-orchestrator — phase:IMPLEMENT
+
+**Decision:** Split wave 5 in two: commit 5.1, 5.3 and 5.4 now; make 5.5's setup-prompt and map edits after #17's PR lands and this branch is rebased on it, with 5.2's test committed alongside 5.5.
+**Driver:** #17 (PR #26) edits the same Part 5.3, Part 6.2, shipped-Python and map lines; D2/5.5 restate only the GitLab half 'as the tree holds it when this change lands', so 5.5 written before #17 lands would be rewritten by the rebase.
+**Alternatives considered:** write 5.5 now and resolve the conflict at rebase (two edits of the same sentences).
+**Evidence:** tasks.md task 5.5; design.md D2 install path; evidence/green/wave-5a.txt (# tasks: 5.1 5.3 5.4).
+**Supersedes:** none
+**Artifacts touched:** tasks.md, evidence/green/wave-5a.txt

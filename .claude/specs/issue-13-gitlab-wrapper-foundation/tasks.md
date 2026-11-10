@@ -119,7 +119,7 @@ belongs to the module whose name sorts first. A record is transcribed from its r
   Files: `gitlab_api/commands/_common.py`, `gitlab_api/commands/issue.py` — Validates: UB-1, UB-2
 
 ## Wave 5 — The other commands and the install path
-- [ ] 5.1 TEST: C, `test_a_subcommand_form` cases for `pipeline status` with and without `--count N`,
+- [x] 5.1 TEST: C, `test_a_subcommand_form` cases for `pipeline status` with and without `--count N`,
   `pipeline log`, `label list`, `label create`, `mr create`, `mr get`, `mr checks`, `mr approve`, `mr merge` and
   `delete-branch`; `test_pipeline_wait_exit_codes` — 0, 10, and 11 with `--timeout-seconds 0`, and `pipeline_wait`
   directly on a `Transport` holding a fake clock and sleep, imported inside the test — Files:
@@ -128,10 +128,10 @@ belongs to the module whose name sorts first. A record is transcribed from its r
   `###` heading, as `test/test_setup_prompts_gitignore.py` cuts PART 3; both GitLab copy steps name
   `src/payload/scripts/gitlab_api/` with the entry script, and both "Shipped Python" lists name `scripts/gitlab_api/`
   — Files: `test/test_setup_prompts_gitlab_wrapper.py` — Validates: UB-1
-- [ ] 5.3 IMPL: `commands/pipeline.py` — `pipeline status`, `pipeline log` and `pipeline wait` of D6, `pipeline_wait`
+- [x] 5.3 IMPL: `commands/pipeline.py` — `pipeline status`, `pipeline log` and `pipeline wait` of D6, `pipeline_wait`
   on `transport.sleep` and `transport.clock` with the skeleton's exit constants and output — Files:
   `gitlab_api/commands/pipeline.py` — Validates: UB-1
-- [ ] 5.4 IMPL: the `label`, `mr` and `delete-branch` handlers of D6; `commands/mr.py`'s docstring carries the own-MR
+- [x] 5.4 IMPL: the `label`, `mr` and `delete-branch` handlers of D6; `commands/mr.py`'s docstring carries the own-MR
   approval caveat — Files: `gitlab_api/commands/label.py`, `gitlab_api/commands/mr.py`,
   `gitlab_api/commands/branch.py` — Validates: UB-1
 - [ ] 5.5 IMPL: D2's install path — `prompts/setup-claude.txt` Part 5.3 and `prompts/setup-kiro.txt` Part 6.2 copy
