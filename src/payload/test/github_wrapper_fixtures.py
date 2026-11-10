@@ -436,6 +436,7 @@ class FakeGitHub:
         if route is None:
             self.unrouted.append(recorded)
             pytest.fail(reason=f"the fake GitHub host has no route for {recorded.method} {recorded.url}", pytrace=False)
+        assert route is not None  # pytest.fail raises; this narrows the type where pytest's stubs are not installed
         return route.reply_to(request=recorded).response(url=recorded.url)
 
     def urls(self) -> List[str]:
