@@ -126,6 +126,11 @@
     "src/payload/src/aws_config.py": "not an AWS project",
     "src/hooks/kiro_hooks.py": "Claude toolchain only (self-hosting decision S1 note: Kiro later)",
     "templates/ci/*": "no steward and no deploy; .github/workflows/ci.yml is the project's own",
-    "templates/config/*": "no AWS, no GitLab, no delivery.json (merge direct, verification session)"
+    "templates/config/*": "no AWS, no GitLab, no delivery.json (merge direct, verification session)",
+    "clients/claude/README.md": "a description of the product tree, not an installed file",
+    "templates/README.md": "a description of the product tree, not an installed file",
+    "templates/docs/README.md": "a description of the product tree, not an installed file",
+    "src/hooks/ruff.toml": "the root ruff.toml extends it in place; it is not installed into .claude/hooks/",
+    "templates/pre-commit-config.yaml.template": "this repository keeps its own .pre-commit-config.yaml"
   }
 }

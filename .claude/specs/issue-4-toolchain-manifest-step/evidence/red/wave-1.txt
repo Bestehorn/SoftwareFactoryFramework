@@ -1,0 +1,319 @@
+# tasks: 1.1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_toolchain_manifest.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-4
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [34 items]
+
+EFEFEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE                                       [100%]
+=================================== ERRORS ====================================
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[clients/claude/commands/auto-work.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[clients/claude/docs/run-identity.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[clients/claude/rules/proportionality.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_the_derivation_sets_the_release_tag_and_the_installed_date _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[clients/claude/rules/<sub>/<f>.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[clients/claude/agents/spec-author.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[clients/common/docs/delivery.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[src/payload/scripts/run_tests.py] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[src/payload/test/test_instruction_corpus_budget.py] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[clients/common/phases/spec-phase-design.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[templates/githooks/pre-commit] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[src/hooks/hooklib.py] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[templates/docs/codebuild-ci-backup-mechanism.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[templates/setup-hooks.sh.template] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_a_release_source_lands_at_its_install_path[src/hooks/tests/conftest.py] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_files_are_sorted_by_install_path_and_named_sources_are_left_out _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_an_unmapped_source_without_a_not_installed_entry_raises_naming_it[clients/claude/README.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_an_unmapped_source_without_a_not_installed_entry_raises_naming_it[templates/README.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_an_unmapped_source_without_a_not_installed_entry_raises_naming_it[templates/pre-commit-config.yaml.template] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_____ ERROR at setup of test_added_and_removed_files_entries_are_reported _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_two_sources_of_one_install_path_raise_naming_both[clients/claude/docs/<same>.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+______ ERROR at setup of test_the_tool_imports_only_the_standard_library ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_two_sources_of_one_install_path_raise_naming_both[src/payload/docs/<same>.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_top_level_keys_keep_their_order_and_other_keys_are_verbatim _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+__ ERROR at setup of test_regenerating_the_committed_manifest_reproduces_it ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_the_written_form_is_utf8_with_two_space_indent_and_one_newline _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_________ ERROR at setup of test_the_installed_date_defaults_to_today _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_check_on_the_committed_manifest_exits_zero_and_writes_nothing _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_check_with_a_later_date_exits_one_and_writes_nothing _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_an_unmapped_release_source_exits_two_naming_it_and_writes_nothing _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_an_unknown_release_tag_exits_two_and_writes_nothing __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+_ ERROR at setup of test_entries_whose_path_left_the_release_are_dropped_and_reported _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:108: in tool
+    assert SCRIPT.is_file(), f"the manifest tool {SCRIPT.relative_to(ROOT).as_posix()} is not committed"
+E   AssertionError: the manifest tool scripts/toolchain_manifest.py is not committed
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-4/scripts/toolchain_manifest.py').is_file
+================================== FAILURES ===================================
+____________ test_update_step_7_names_the_toolchain_manifest_step _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:197: in test_update_step_7_names_the_toolchain_manifest_step
+    assert "toolchain manifest" in step.lower(), f"step 7 does not name the toolchain manifest: {step}"
+E   AssertionError: step 7 does not name the toolchain manifest: Write the marker: `.claude/FRAMEWORK_COMMIT` (and `.kiro/FRAMEWORK_COMMIT` on a Kiro or dual project) holds one line, `<pinned framework sha> <YYYY-MM-DD>`.
+E   assert 'toolchain manifest' in 'write the marker: `.claude/framework_commit` (and `.kiro/framework_commit` on a kiro or dual project) holds one line, `<pinned framework sha> <yyyy-mm-dd>`.'
+E    +  where 'write the marker: `.claude/framework_commit` (and `.kiro/framework_commit` on a kiro or dual project) holds one line, `<pinned framework sha> <yyyy-mm-dd>`.' = <built-in method lower of str object at 0x000001E3FF3AF360>()
+E    +    where <built-in method lower of str object at 0x000001E3FF3AF360> = 'Write the marker: `.claude/FRAMEWORK_COMMIT` (and `.kiro/FRAMEWORK_COMMIT` on a Kiro or dual project) holds one line, `<pinned framework sha> <YYYY-MM-DD>`.'.lower
+__________ test_the_map_names_the_manifest_command_of_the_promotion ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_toolchain_manifest.py:203: in test_the_map_names_the_manifest_command_of_the_promotion
+    assert "scripts/toolchain_manifest.py --release" in halves, (
+E   AssertionError: `## Two halves (read this first)` does not name `python scripts/toolchain_manifest.py --release <tag>`
+E   assert 'scripts/toolchain_manifest.py --release' in '## Two halves (read this first) | Half | Where | Changed by | |---|---|---| | **Product** — what this repository deve...reaches the toolchain at the next promotion. Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.'
+=========================== short test summary info ===========================
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[clients/claude/commands/auto-work.md]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[clients/claude/docs/run-identity.md]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[clients/claude/rules/proportionality.md]
+ERROR test/test_toolchain_manifest.py::test_the_derivation_sets_the_release_tag_and_the_installed_date
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[clients/claude/rules/<sub>/<f>.md]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[clients/claude/agents/spec-author.md]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[clients/common/docs/delivery.md]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[src/payload/scripts/run_tests.py]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[src/payload/test/test_instruction_corpus_budget.py]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[clients/common/phases/spec-phase-design.md]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[templates/githooks/pre-commit]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[src/hooks/hooklib.py]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[templates/docs/codebuild-ci-backup-mechanism.md]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[templates/setup-hooks.sh.template]
+ERROR test/test_toolchain_manifest.py::test_a_release_source_lands_at_its_install_path[src/hooks/tests/conftest.py]
+ERROR test/test_toolchain_manifest.py::test_files_are_sorted_by_install_path_and_named_sources_are_left_out
+ERROR test/test_toolchain_manifest.py::test_an_unmapped_source_without_a_not_installed_entry_raises_naming_it[clients/claude/README.md]
+ERROR test/test_toolchain_manifest.py::test_an_unmapped_source_without_a_not_installed_entry_raises_naming_it[templates/README.md]
+ERROR test/test_toolchain_manifest.py::test_an_unmapped_source_without_a_not_installed_entry_raises_naming_it[templates/pre-commit-config.yaml.template]
+ERROR test/test_toolchain_manifest.py::test_added_and_removed_files_entries_are_reported
+ERROR test/test_toolchain_manifest.py::test_two_sources_of_one_install_path_raise_naming_both[clients/claude/docs/<same>.md]
+ERROR test/test_toolchain_manifest.py::test_the_tool_imports_only_the_standard_library
+ERROR test/test_toolchain_manifest.py::test_two_sources_of_one_install_path_raise_naming_both[src/payload/docs/<same>.md]
+ERROR test/test_toolchain_manifest.py::test_top_level_keys_keep_their_order_and_other_keys_are_verbatim
+ERROR test/test_toolchain_manifest.py::test_regenerating_the_committed_manifest_reproduces_it
+ERROR test/test_toolchain_manifest.py::test_the_written_form_is_utf8_with_two_space_indent_and_one_newline
+ERROR test/test_toolchain_manifest.py::test_the_installed_date_defaults_to_today
+ERROR test/test_toolchain_manifest.py::test_check_on_the_committed_manifest_exits_zero_and_writes_nothing
+ERROR test/test_toolchain_manifest.py::test_check_with_a_later_date_exits_one_and_writes_nothing
+ERROR test/test_toolchain_manifest.py::test_an_unmapped_release_source_exits_two_naming_it_and_writes_nothing
+ERROR test/test_toolchain_manifest.py::test_an_unknown_release_tag_exits_two_and_writes_nothing
+ERROR test/test_toolchain_manifest.py::test_entries_whose_path_left_the_release_are_dropped_and_reported
+FAILED test/test_toolchain_manifest.py::test_update_step_7_names_the_toolchain_manifest_step
+FAILED test/test_toolchain_manifest.py::test_the_map_names_the_manifest_command_of_the_promotion
+======================== 2 failed, 32 errors in 7.02s =========================

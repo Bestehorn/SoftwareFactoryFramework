@@ -73,7 +73,9 @@ reason, not delegated to a person.
 6. Run the memory compile (next section) so the update leaves the project under its
    budgets, not merely equipped with the tools to get there.
 7. Write the marker: `.claude/FRAMEWORK_COMMIT` (and `.kiro/FRAMEWORK_COMMIT` on a Kiro or
-   dual project) holds one line, `<pinned framework sha> <YYYY-MM-DD>`.
+   dual project) holds one line, `<pinned framework sha> <YYYY-MM-DD>`. A project that keeps
+   a toolchain manifest regenerates it in the same commit as the marker, with the command
+   its `docs/forLLMConsumption.md` names.
 8. Verify per the setup prompt's checklist (every check run by you, in this worktree), push,
    open a PR against the default branch, fix every CI failure until CI is green, then merge
    the PR yourself. Where `config/delivery.json` already says `"merge": "steward"`, ENQUEUE it

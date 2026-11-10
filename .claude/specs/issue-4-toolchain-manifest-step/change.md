@@ -109,11 +109,11 @@ E2E: not applicable — repository tooling, no runtime behaviour. CI's `tests` g
 
 ## Wave 1 — the manifest tool
 
-- [ ] 1.1 TEST: the tests above. A fixture asserts the repository's `scripts/toolchain_manifest.py` is a file,
+- [x] 1.1 TEST: the tests above. A fixture asserts the repository's `scripts/toolchain_manifest.py` is a file,
   then loads it with `importlib.util.spec_from_file_location`: the red is that assertion, not an import error at
   module load; the AC-1 text checks are red on the missing sentences. — Files:
   test/test_toolchain_manifest.py — Validates: AC-1–AC-5, UB-1, UB-2
-- [ ] 1.2 IMPL: the tool, the five `not_installed` entries, the step 7 sentence, the map pointer. — Files:
+- [x] 1.2 IMPL: the tool, the five `not_installed` entries, the step 7 sentence, the map pointer. — Files:
   scripts/toolchain_manifest.py, config/toolchain.json, prompts/update.txt, docs/forLLMConsumption.md —
   Validates: AC-1–AC-5, UB-1, UB-2
 

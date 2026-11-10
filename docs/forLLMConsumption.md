@@ -15,8 +15,10 @@ rules, agents, slash commands, agent hooks and docs. This repository develops th
 | **Toolchain** — what sessions here run on | the installed copy: `CLAUDE.md`, `.claude/`, `.githooks/`, `scripts/` (installed files), `test/test_instruction_corpus_budget.py`, `.github/workflows/` | promotion only: a release tag, then `prompts/update.txt` against this repository |
 
 `config/toolchain.json` lists every installed file with its product source; `.claude/FRAMEWORK_COMMIT` names the
-release it came from. A hand edit of a toolchain file is refused by the `toolchain-paths` gate and fails
-`test/test_toolchain_integrity.py`. Edit the product file; the change reaches the toolchain at the next promotion.
+release it came from. The promotion's manifest step, in the marker's commit, regenerates the manifest from the tag:
+`python scripts/toolchain_manifest.py --release <tag>` (`--check` writes nothing and exits 1 when it differs). A
+hand edit of a toolchain file is refused by the `toolchain-paths` gate and fails `test/test_toolchain_integrity.py`.
+Edit the product file; the change reaches the toolchain at the next promotion.
 Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
 
 ## Layout
