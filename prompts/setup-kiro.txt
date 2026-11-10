@@ -1065,14 +1065,20 @@ a real (non-placeholder) token.
     to fill in.
   - `scripts/gitlab_wrapper.py`: copy from
     `src/payload/scripts/gitlab_wrapper.py`.
+  - `scripts/gitlab_api/`: copy from `src/payload/scripts/gitlab_api/`
+    (the package the entry script imports; the two are copied together).
 
 The GitHub wrapper implements the subcommands the framework's agents
 and hooks invoke; of the minimum below, `get-jobs`, `rerun` and
 `cancel` arrive in a later framework release, and a further subcommand
 is added as a module of `scripts/github_api/commands/` (see the
-docstring of `scripts/github_wrapper.py`). The GitLab template wrapper
-script is a skeleton. The agent should extend it with the subcommands
-needed for the current project (see the docstring in the template).
+docstring of `scripts/github_wrapper.py`). The GitLab wrapper
+implements the GitLab subcommands this part requires except the issue
+metadata (dates, time spent, parent link) and the checklist toggle,
+which arrive in a later framework release, and a further subcommand —
+one of those, if a project needs it sooner — is added as a module of
+`scripts/gitlab_api/commands/` defining `register(subparsers)` (see the
+docstring of `scripts/gitlab_wrapper.py`).
 Required minimum subcommands:
 
 GitHub: `list-workflows`, `list-runs`, `get-run`, `get-jobs`,
@@ -5058,7 +5064,8 @@ project/
 │   ├── ci_outage_mode.py        # declare/clear the CI-outage marker
 │   ├── github_wrapper.py        # if GitHub
 │   ├── github_api/              # if GitHub
-│   └── gitlab_wrapper.py        # if GitLab
+│   ├── gitlab_wrapper.py        # if GitLab
+│   └── gitlab_api/              # if GitLab
 ├── src/
 │   └── aws_config.py            # if AWS
 ├── test/
@@ -5144,6 +5151,7 @@ All under `templates/` in the prompt repository:
 All under `src/payload/` in the prompt repository, laid out like the project:
 - `src/aws_config.py`
 - `scripts/gitlab_wrapper.py`
+- `scripts/gitlab_api/` (the package `scripts/gitlab_wrapper.py` imports; copied with it, PART 6.2)
 - `scripts/github_wrapper.py`
 - `scripts/github_api/` (the package `scripts/github_wrapper.py` imports; copied with it, PART 6.2)
 - `scripts/run_tests.py` (bounded workers, no fail-fast; holds a host-wide suite slot, PART 2.2)

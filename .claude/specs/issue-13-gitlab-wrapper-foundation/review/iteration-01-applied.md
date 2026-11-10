@@ -1,0 +1,20 @@
+# Iteration 01 — what the author applied (for the iteration-02 delta review)
+
+design.md rewritten in full (45,743 bytes) because X2 moves the structure onto #17's forms; requirements.md 14,084 bytes (SR-D1, SR-D2, plus the conductor's restatement of the "Design inputs" copy-step bullet). No criterion added. Worktree rebased onto origin/main 1c69c2a.
+
+- BP-A1 / ST-B1 / SR-B4 / TA-B1 → X1: import scan and Hypothesis properties in `test/test_gitlab_api_properties.py` with `sys.stdlib_module_names`; shipped suites pytest-only, 3.9; SR-B4's find_spec form and an allow-list NOT adopted.
+- BP-B1: payload `errors` raise only for a `mutation` document; `ciConfig` and `errors: []` return data.
+- TA-B2: `parse_qsl(query, keep_blank_values=True)` over non-surrogate text. TA-B3: one case per argv form and optional flag; both `issue start` refusals with no PUT; a delivery verb through `main` returning 4 unparsed.
+- SR-B1 → X2: discovered `commands/` package with `register`; `registry.lookup`/`call`/`pages` by id (`<stem>#<anchor>`); `GraphQLOperation` and an empty `graphql_only.py`; `errors.py` with `GitLab`-prefixed subclasses (`GitLabClaimError`); patched `https_open`/`http_open` with injected `sleep`/`clock`; #17's test names; #17's redirect mechanism (`add_header` + `remove_header` on a cross-origin hop). Remaining differences are rows with a forge reason.
+- SR-B2: `main` reconfigures stdout/stderr to UTF-8, `errors="replace"`. SR-B3: `registry.py` row names raw-bytes bodies and GraphQL multipart only (the GraphQL record type now exists); landed-first rule kept.
+- DO-B1 → X3: "Install path" paragraph edits setup-claude Part 5.3, setup-kiro Part 6.2 and both shipped-Python lists, pinned by `test/test_setup_prompts_gitlab_wrapper.py` (mapped to UB-1).
+- DO-B2 → X4: residual names the three `not_installed` patterns; the ledger row is the conductor's.
+- SR-C1 restated (the first-sorting family owns a shared key); SR-C2 → X5; SR-C3 merged with DO-C2 into one residual; SR-C4 merged into X4; SR-C5 applied; SR-D1, SR-D2 in requirements.md; SR-D3 #17 naming.
+- SEC-C1 with X5: origin from `Request(url).type` and `.host`, lower-cased, port 443 when absent; four hostile 302 targets per token type. SEC-C2: once dropped stays dropped, return hop tested. SEC-C3: `_send` refuses any URL on another origin (AC-2.6 test). SEC-C4: token with whitespace/control chars raises naming the key only. SEC-C5: empty, `.`, `..` raise. SEC-C6: `secrets.token_hex()` boundary, names escaped `%22`/`%0D`/`%0A`.
+- TA-C1..C7: both stop forms of `x-next-page`; redirect tests per token type with `http://` kept off the network by the patched `http_open`; the fake fails on an unscripted request, AC-3.3 scripts at least two 429s, responses carry `msg` and an `HTTPMessage`; one expected substring per error shape; `errors: []` boundary; multipart file bytes and name checked; no-config subprocess test checks stderr names `config/gitlab.json` and no `Traceback`.
+- ST-C1 closed by X1; ST-C2 config-key constants in `transport.py`; ST-C3 `GitLabClaimError`, fake named `FakeGitLab`; ST-C4 template `_comment` documents `token_type`; ST-C5 why `merge_steward`'s GitLab client is not reused; ST-C6 residual (bearer/job token does not reach the steward); ST-D1 bootstrap cites the `hooks.py`/`supervisor.py` precedent.
+- BP-C1 `OSError` and `http.client.HTTPException` after `HTTPError` → status 0; BP-C2 via X2's seam; BP-C3 308 only on 3.11+, tests use 301/302; BP-C4 with TA-B2; BP-C5 → X5; BP-C6 closed by X1.
+- DO-C1 `http_open` patched, autouse socket guard in both shipped suites, subprocess tests with `cwd=tmp_path`; DO-C2 one WARNING per retry, bound as residual; DO-C3 the scan lives in `test/test_gitlab_api_properties.py`.
+- New: two AC-1.1 registry example tests (`call` refuses an undeclared value; `lookup` refuses unknown and twice-declared ids). `pipeline_wait` lives in `commands/pipeline.py` with the same exit constants and output.
+
+Known pending (from #17's iteration-02 lanes, shared X5): the default port is the scheme's default (443 https, 80 http), not always 443.

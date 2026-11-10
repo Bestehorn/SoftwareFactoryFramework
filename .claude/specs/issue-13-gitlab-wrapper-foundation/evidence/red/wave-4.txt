@@ -1,0 +1,482 @@
+# tasks: 4.1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_wrapper_delivery.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [77 items]
+
+......................FFFFFFF.FFFFFFFFF.FFF.FFFFFFFFF.FFFFF....F.....F.. [ 93%]
+..F.F                                                                    [100%]
+================================== FAILURES ===================================
+__________________ test_a_subcommand_form[issue-list-state] ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'list', '--state', 'opened']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'list', '--state', 'opened'), exchanges=(Exchange(method='GET', url='https://gitlab.example.co...ls': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}], exit_code=0, config_changes=()).exit_code
+_______________ test_a_subcommand_form[issue-list-assignee-any] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'list', '--assignee', '*']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'list', '--assignee', '*'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/...ls': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}], exit_code=0, config_changes=()).exit_code
+______________ test_a_subcommand_form[issue-list-assignee-none] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'list', '--assignee', 'none']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'list', '--assignee', 'none'), exchanges=(Exchange(method='GET', url='https://gitlab.example.c...ls': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}], exit_code=0, config_changes=()).exit_code
+____________ test_a_subcommand_form[issue-list-assignee-username] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'list', '--assignee', 'alice']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'list', '--assignee', 'alice'), exchanges=(Exchange(method='GET', url='https://gitlab.example....ls': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}], exit_code=0, config_changes=()).exit_code
+__________________ test_a_subcommand_form[issue-list-labels] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'list', '--labels', 'in-progress']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'list', '--labels', 'in-progress'), exchanges=(Exchange(method='GET', url='https://gitlab.exam...ls': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}], exit_code=0, config_changes=()).exit_code
+_____________________ test_a_subcommand_form[issue-show] ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'show', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'show', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/project...ee': {'id': 99, 'username': 'someone-else'}, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+____________________ test_a_subcommand_form[issue-create] _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'create', '--title', 'Fix the parser']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'create', '--title', 'Fix the parser'), exchanges=(Exchange(method='POST', url='https://gitlab...els': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+_________________ test_a_subcommand_form[issue-label-remove] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'label-remove', '7', '--labels', 'in-progress']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'label-remove', '7', '--labels', 'in-progress'), exchanges=(Exchange(method='PUT', url='https:...triage'], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+___________________ test_a_subcommand_form[issue-assign-me] ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'assign', '7', '--me']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'assign', '7', '--me'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/...gnee': {'id': 42, 'username': 'maintainer'}, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+__________________ test_a_subcommand_form[issue-assign-user] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'assign', '7', '--user', 'alice']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'assign', '7', '--user', 'alice'), exchanges=(Exchange(method='GET', url='https://gitlab.examp...'assignee': {'id': 77, 'username': 'alice'}, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+______________ test_a_subcommand_form[issue-assign-user-unknown] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'assign', '7', '--user', 'nobody-by-this-name']) exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+E    +  where 1 = FormCase(argv=('issue', 'assign', '7', '--user', 'nobody-by-this-name'), exchanges=(Exchange(method='GET', url='https:...me=nobody-by-this-name', sent=None, status=200, headers=(), answer=[]),), printed=None, exit_code=1, config_changes=()).exit_code
+________________ test_a_subcommand_form[issue-assign-unassign] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'assign', '7', '--unassign']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'assign', '7', '--unassign'), exchanges=(Exchange(method='PUT', url='https://gitlab.example.co...els': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+_____________________ test_a_subcommand_form[issue-close] _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'close', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'close', '7'), exchanges=(Exchange(method='PUT', url='https://gitlab.example.com/api/v4/projec...els': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+____________________ test_a_subcommand_form[issue-reopen] _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'reopen', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'reopen', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/proje...els': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:05:00.000Z'}, exit_code=0, config_changes=()).exit_code
+_____________________ test_claim_check_exit_codes[label] ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:826: in test_claim_check_exit_codes
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'claim-check', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'claim-check', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/...'2026-11-10T08:00:00.000Z'}),), printed={'iid': 7, 'state': 'opened', 'claimed': True}, exit_code=0, config_changes=()).exit_code
+____________________ test_claim_check_exit_codes[assignee] ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:826: in test_claim_check_exit_codes
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'claim-check', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'claim-check', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/...'2026-11-10T08:00:00.000Z'}),), printed={'iid': 7, 'state': 'opened', 'claimed': True}, exit_code=0, config_changes=()).exit_code
+_____________________ test_claim_check_exit_codes[closed] _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:826: in test_claim_check_exit_codes
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'claim-check', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'claim-check', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/...2026-11-10T08:00:00.000Z'}),), printed={'iid': 7, 'state': 'closed', 'claimed': False}, exit_code=0, config_changes=()).exit_code
+_________________ test_claim_check_exit_codes[open-unclaimed] _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:826: in test_claim_check_exit_codes
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'claim-check', '7']) exits 3, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 3
+E    +  where 3 = FormCase(argv=('issue', 'claim-check', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/...2026-11-10T08:00:00.000Z'}),), printed={'iid': 7, 'state': 'opened', 'claimed': False}, exit_code=3, config_changes=()).exit_code
+___________________ test_claim_check_exit_codes[not-found] ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:826: in test_claim_check_exit_codes
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'claim-check', '7']) exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+E    +  where 1 = FormCase(argv=('issue', 'claim-check', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/...ne, status=404, headers=(), answer={'message': '404 Issue Not Found'}),), printed=None, exit_code=1, config_changes=()).exit_code
+______________________ test_issue_start_refusals[closed] ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:884: in test_issue_start_refusals
+    assert code == EXIT_API_ERROR, f"a refused or unconfirmed claim exits 1, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a refused or unconfirmed claim exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+_____________ test_issue_start_refusals[assigned-to-another-user] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:884: in test_issue_start_refusals
+    assert code == EXIT_API_ERROR, f"a refused or unconfirmed claim exits 1, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a refused or unconfirmed claim exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+_____________ test_issue_start_refusals[re-read-lacks-the-label] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:884: in test_issue_start_refusals
+    assert code == EXIT_API_ERROR, f"a refused or unconfirmed claim exits 1, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a refused or unconfirmed claim exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+____________ test_issue_start_refusals[re-read-lacks-the-assignee] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:884: in test_issue_start_refusals
+    assert code == EXIT_API_ERROR, f"a refused or unconfirmed claim exits 1, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a refused or unconfirmed claim exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+_______________________ test_issue_reopen_of_open_issue _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:902: in test_issue_reopen_of_open_issue
+    check_form(case=case, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'reopen', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'reopen', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/proje...triage'], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+___________ test_template_config_sends_private_token[template-keys] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:929: in test_template_config_sends_private_token
+    check_form(case=case, config=config, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'start', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'start', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.com/api/v4/projects/4242/...gnee': {'id': 42, 'username': 'maintainer'}, 'updated_at': '2026-11-10T08:05:00.000Z'}, exit_code=0, config_changes=()).exit_code
+_____ test_template_config_sends_private_token[in_progress_label-omitted] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:929: in test_template_config_sends_private_token
+    check_form(case=case, config=config, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'start', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'start', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.com/api/v4/projects/4242/...gnee': {'id': 42, 'username': 'maintainer'}, 'updated_at': '2026-11-10T08:05:00.000Z'}, exit_code=0, config_changes=()).exit_code
+________________ test_environment_token_ignored[config-token] _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:966: in test_environment_token_ignored
+    check_form(case=case, config=config, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'show', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'show', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/project...els': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+_______________ test_environment_token_ignored[no-config-token] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:966: in test_environment_token_ignored
+    check_form(case=case, config=config, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'show', '7']) exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+E    +  where 1 = FormCase(argv=('issue', 'show', '7'), exchanges=(), printed=None, exit_code=1, config_changes=()).exit_code
+_____________________ test_a_subcommand_form[issue-list] ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'list']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'list'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projects/1/i...riage'], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}], exit_code=0, config_changes=()).exit_code
+______________ test_a_subcommand_form[issue-create-description] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'create', '--title', 'Fix the parser', '--description', 'Steps to reproduce: run the parser on an empty file.']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'create', '--title', 'Fix the parser', '--description', 'Steps to reproduce: run the parser on...els': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+_________________ test_a_subcommand_form[issue-create-labels] _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'create', '--title', 'Fix the parser', '--labels', 'needs-triage']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'create', '--title', 'Fix the parser', '--labels', 'needs-triage'), exchanges=(Exchange(method...els': [], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+_____________________ test_script_without_config_exits_1 ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_wrapper_compat.py:979: in test_script_without_config_exits_1
+    assert completed.returncode == EXIT_API_ERROR, (
+E   AssertionError: a missing config\gitlab.json exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 1
+E    +  where 2 = CompletedProcess(args=['D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\\python.exe', 'D:\\Code Workspace\...apper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )\n").returncode
+____________________ test_a_subcommand_form[issue-comment] ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'comment', '7', '--body', 'Claimed; working on it.']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'comment', '7', '--body', 'Claimed; working on it.'), exchanges=(Exchange(method='POST', url='...iid': 7}),), printed={'id': 501, 'body': 'Claimed; working on it.', 'noteable_iid': 7}, exit_code=0, config_changes=()).exit_code
+_____________________ test_a_subcommand_form[issue-start] _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'start', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'start', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projec...gnee': {'id': 42, 'username': 'maintainer'}, 'updated_at': '2026-11-10T08:05:00.000Z'}, exit_code=0, config_changes=()).exit_code
+____________ test_a_subcommand_form[issue-start-configured-label] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'start', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'start', '7'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projec...'updated_at': '2026-11-10T08:05:00.000Z'}, exit_code=0, config_changes=(('in_progress_label', 'claimed-by-a-worker'),)).exit_code
+____________________ test_a_subcommand_form[issue-release] ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'release', '7']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'release', '7'), exchanges=(Exchange(method='PUT', url='https://gitlab.example.com/api/v4/proj...triage'], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+___________________ test_a_subcommand_form[issue-label-add] ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:813: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:802: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['issue', 'label-add', '7', '--labels', 'in-progress']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'issue' (choose from )
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('issue', 'label-add', '7', '--labels', 'in-progress'), exchanges=(Exchange(method='PUT', url='https://g...ogress'], 'assignees': [], 'assignee': None, 'updated_at': '2026-11-10T08:00:00.000Z'}, exit_code=0, config_changes=()).exit_code
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-list-state]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-list-assignee-any]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-list-assignee-none]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-list-assignee-username]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-list-labels]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-show]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-create]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-label-remove]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-assign-me]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-assign-user]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-assign-user-unknown]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-assign-unassign]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-close]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-reopen]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_claim_check_exit_codes[label]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_claim_check_exit_codes[assignee]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_claim_check_exit_codes[closed]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_claim_check_exit_codes[open-unclaimed]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_claim_check_exit_codes[not-found]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_issue_start_refusals[closed]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_issue_start_refusals[assigned-to-another-user]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_issue_start_refusals[re-read-lacks-the-label]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_issue_start_refusals[re-read-lacks-the-assignee]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_issue_reopen_of_open_issue
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_template_config_sends_private_token[template-keys]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_template_config_sends_private_token[in_progress_label-omitted]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_environment_token_ignored[config-token]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_environment_token_ignored[no-config-token]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-list]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-create-description]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-create-labels]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_script_without_config_exits_1
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-comment]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-start]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-start-configured-label]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-release]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[issue-label-add]
+======================== 37 failed, 40 passed in 5.66s ========================

@@ -1,0 +1,291 @@
+# tasks: 1.1 1.2 1.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [16 items]
+
+FFFFFFFFFFFFFFFF                                                         [100%]
+================================== FAILURES ===================================
+___________________ test_project_path_is_encoded[full-path] ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:135: in test_project_path_is_encoded
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+__________________ test_project_path_is_encoded[numeric-id] ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:135: in test_project_path_is_encoded
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+____________________ test_project_path_is_encoded[branch] _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:135: in test_project_path_is_encoded
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+_________________ test_project_path_is_encoded[subgroup-path] _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:135: in test_project_path_is_encoded
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+___________________ test_project_path_is_encoded[file-path] ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:135: in test_project_path_is_encoded
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+_______________ test_empty_and_dot_segments_are_refused[empty] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:144: in test_empty_and_dot_segments_are_refused
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+________________ test_empty_and_dot_segments_are_refused[dot] _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:144: in test_empty_and_dot_segments_are_refused
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+______________________ test_project_path_is_encoded[tag] ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:135: in test_project_path_is_encoded
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+__________________ test_array_of_hashes_pairs[query-string] ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:161: in test_array_of_hashes_pairs
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+______________ test_empty_and_dot_segments_are_refused[dot-dot] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:144: in test_empty_and_dot_segments_are_refused
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+________________ test_lookup_refuses_unknown_and_duplicate_ids ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:182: in test_lookup_refuses_unknown_and_duplicate_ids
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+____________________ test_array_of_hashes_pairs[form-body] ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:161: in test_array_of_hashes_pairs
+    registry = gitlab_module(name="registry")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_registry.py:79: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-13/src/payload/scripts/gitlab_api/registry.py').is_file
+__________________________ test_array_and_hash_pairs __________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:111: in test_array_and_hash_pairs
+    @given(items=st.lists(elements=TEXTS), mapping=st.dictionaries(keys=HASH_KEYS, values=TEXTS))
+                   ^^^
+test\test_gitlab_api_properties.py:114: in test_array_and_hash_pairs
+    registry = load_registry()
+               ^^^^^^^^^^^^^^^
+test\test_gitlab_api_properties.py:61: in load_registry
+    return importlib.import_module(name=REGISTRY_MODULE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1314: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1335: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'gitlab_api'
+E   Failing test case: test_array_and_hash_pairs(
+E       items=[],
+E       mapping={'A': ''},
+E   )
+_______________________ test_path_value_is_one_segment ________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:91: in test_path_value_is_one_segment
+    @given(value=PATH_VALUES)
+                   ^^^
+..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:96: in test_path_value_is_one_segment
+    registry = load_registry()
+               ^^^^^^^^^^^^^^^
+test\test_gitlab_api_properties.py:61: in load_registry
+    return importlib.import_module(name=REGISTRY_MODULE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1314: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1335: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'gitlab_api'
+E   Failing explicit example: test_path_value_is_one_segment(
+E       value='group/project',
+E   )
+____________________ test_checker_names_each_unlisted_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:159: in registry_module
+    return importlib.import_module(name=REGISTRY)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1314: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1335: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'gitlab_api'
+
+The above exception was the direct cause of the following exception:
+test\test_gitlab_wrapper_coverage.py:352: in test_checker_names_each_unlisted_row
+    registry = registry_module()
+               ^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_coverage.py:163: in registry_module
+    raise AssertionError(f"{REGISTRY} is not importable from {SCRIPTS}: {missing}") from missing
+E   AssertionError: gitlab_api.registry is not importable from D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts: No module named 'gitlab_api'
+__________________ test_a_family_module_is_discovered_alone ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:159: in registry_module
+    return importlib.import_module(name=REGISTRY)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1314: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:491: in _call_with_frames_removed
+    ???
+<frozen importlib._bootstrap>:1398: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1371: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1335: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'gitlab_api'
+
+The above exception was the direct cause of the following exception:
+test\test_gitlab_wrapper_coverage.py:322: in test_a_family_module_is_discovered_alone
+    registry = registry_module()
+               ^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_coverage.py:163: in registry_module
+    raise AssertionError(f"{REGISTRY} is not importable from {SCRIPTS}: {missing}") from missing
+E   AssertionError: gitlab_api.registry is not importable from D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\scripts: No module named 'gitlab_api'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_project_path_is_encoded[full-path]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_project_path_is_encoded[numeric-id]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_project_path_is_encoded[branch]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_project_path_is_encoded[subgroup-path]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_project_path_is_encoded[file-path]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_empty_and_dot_segments_are_refused[empty]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_empty_and_dot_segments_are_refused[dot]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_project_path_is_encoded[tag]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_array_of_hashes_pairs[query-string]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_empty_and_dot_segments_are_refused[dot-dot]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_lookup_refuses_unknown_and_duplicate_ids
+FAILED src/payload/test/test_gitlab_api_registry.py::test_array_of_hashes_pairs[form-body]
+FAILED test/test_gitlab_api_properties.py::test_array_and_hash_pairs - Module...
+FAILED test/test_gitlab_api_properties.py::test_path_value_is_one_segment - M...
+FAILED test/test_gitlab_wrapper_coverage.py::test_checker_names_each_unlisted_row
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_family_module_is_discovered_alone
+============================= 16 failed in 4.21s ==============================

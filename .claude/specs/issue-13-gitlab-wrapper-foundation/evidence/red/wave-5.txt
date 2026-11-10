@@ -1,0 +1,299 @@
+# tasks: 5.1 5.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_setup_prompts_gitlab_wrapper.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [99 items]
+
+...............................................FFFFFFFFFFFFFFF......FFFF [ 72%]
+.F.F....................F..                                              [100%]
+================================== FAILURES ===================================
+___________________ test_a_subcommand_form[pipeline-status] ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'status']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('pipeline', 'status'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/project...ref': 'main', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1201'}], exit_code=0, config_changes=()).exit_code
+______________ test_a_subcommand_form[pipeline-log-no-pipeline] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'log']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('pipeline', 'log'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projects/1...&per_page=1', sent=None, status=200, headers=(), answer=[]),), printed=OneLineOutput(), exit_code=0, config_changes=()).exit_code
+________________ test_a_subcommand_form[pipeline-status-count] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'status', '--count', '2']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('pipeline', 'status', '--count', '2'), exchanges=(Exchange(method='GET', url='https://gitlab.example.co...ref': 'main', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1200'}], exit_code=0, config_changes=()).exit_code
+_____________________ test_a_subcommand_form[label-list] ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['label', 'list']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'label' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('label', 'list'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projects/1/l...: None}, {'id': 602, 'name': 'needs-triage', 'color': '#d9534f', 'description': None}], exit_code=0, config_changes=()).exit_code
+____________________ test_a_subcommand_form[pipeline-log] _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'log']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('pipeline', 'log'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projects/1...rtionError\n'), (3002, 'lint', '$ ruff check .\n\nE501 Line too long (121 > 120)\n'))), exit_code=0, config_changes=()).exit_code
+____________________ test_a_subcommand_form[label-create] _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['label', 'create', '--name', 'blocked', '--color', '#d9534f']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'label' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('label', 'create', '--name', 'blocked', '--color', '#d9534f'), exchanges=(Exchange(method='POST', url='...e}),), printed={'id': 603, 'name': 'blocked', 'color': '#d9534f', 'description': None}, exit_code=0, config_changes=()).exit_code
+______________ test_a_subcommand_form[pipeline-log-none-failed] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'log']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('pipeline', 'log'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projects/1...ope[]=failed', sent=None, status=200, headers=(), answer=[])), printed=OneLineOutput(), exit_code=0, config_changes=()).exit_code
+______________ test_a_subcommand_form[label-create-description] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['label', 'create', '--name', 'blocked', '--color', '#d9534f', '--description', 'Waiting on another issue.']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'label' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('label', 'create', '--name', 'blocked', '--color', '#d9534f', '--description', 'Waiting on another issu...03, 'name': 'blocked', 'color': '#d9534f', 'description': 'Waiting on another issue.'}, exit_code=0, config_changes=()).exit_code
+_____________________ test_a_subcommand_form[mr-approve] ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['mr', 'approve', '21']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'mr' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('mr', 'approve', '21'), exchanges=(Exchange(method='POST', url='https://gitlab.example.com/api/v4/proje...21, 'approved': True, 'approved_by': [{'user': {'id': 42, 'username': 'maintainer'}}]}, exit_code=0, config_changes=()).exit_code
+______________________ test_a_subcommand_form[mr-create] ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['mr', 'create', '--source', 'feature/issue-13-parser', '--target', 'main', '--title', 'Fix the parser on an empty file']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'mr' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('mr', 'create', '--source', 'feature/issue-13-parser', '--target', 'main', '--title', 'Fix the parser o...be_merged', 'web_url': 'https://gitlab.example.com/group/project/-/merge_requests/21'}, exit_code=0, config_changes=()).exit_code
+_________________ test_a_subcommand_form[mr-approve-refused] __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['mr', 'approve', '21']) exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'mr' (choose from issue)
+E     
+E   assert 2 == 1
+E    +  where 1 = FormCase(argv=('mr', 'approve', '21'), exchanges=(Exchange(method='POST', url='https://gitlab.example.com/api/v4/proje...=None, status=401, headers=(), answer={'message': '401 Unauthorized'}),), printed=None, exit_code=1, config_changes=()).exit_code
+_______________________ test_a_subcommand_form[mr-get] ________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['mr', 'get', '21']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'mr' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('mr', 'get', '21'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/projects/1...be_merged', 'web_url': 'https://gitlab.example.com/group/project/-/merge_requests/21'}, exit_code=0, config_changes=()).exit_code
+______________________ test_a_subcommand_form[mr-merge] _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['mr', 'merge', '21']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'mr' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('mr', 'merge', '21'), exchanges=(Exchange(method='PUT', url='https://gitlab.example.com/api/v4/projects...be_merged', 'web_url': 'https://gitlab.example.com/group/project/-/merge_requests/21'}, exit_code=0, config_changes=()).exit_code
+______________________ test_a_subcommand_form[mr-checks] ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['mr', 'checks', '21']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'mr' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('mr', 'checks', '21'), exchanges=(Exchange(method='GET', url='https://gitlab.example.com/api/v4/project...ref': 'main', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1200'}], exit_code=0, config_changes=()).exit_code
+____________________ test_a_subcommand_form[delete-branch] ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1260: in test_a_subcommand_form
+    check_form(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['delete-branch', 'feature/issue-13-parser']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'delete-branch' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('delete-branch', 'feature/issue-13-parser'), exchanges=(Exchange(method='DELETE', url='https://gitlab.e...ers=(), answer=None),), printed={'branch': 'feature/issue-13-parser', 'deleted': True}, exit_code=0, config_changes=()).exit_code
+_______________ test_pipeline_wait_exit_codes[failed-exits-10] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1361: in test_pipeline_wait_exit_codes
+    check_form(case=case.via_main, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'wait', '1201', '--timeout-seconds', '540']) exits 10, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 10
+E    +  where 10 = FormCase(argv=('pipeline', 'wait', '1201', '--timeout-seconds', '540'), exchanges=(Exchange(method='GET', url='https:/...s': 'failed', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1201'}, exit_code=10, config_changes=()).exit_code
+_______________ test_pipeline_wait_exit_codes[success-exits-0] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1361: in test_pipeline_wait_exit_codes
+    check_form(case=case.via_main, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'wait', '1201', '--timeout-seconds', '540']) exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 0
+E    +  where 0 = FormCase(argv=('pipeline', 'wait', '1201', '--timeout-seconds', '540'), exchanges=(Exchange(method='GET', url='https:/...s': 'success', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1201'}, exit_code=0, config_changes=()).exit_code
+______________ test_pipeline_wait_exit_codes[canceled-exits-10] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1361: in test_pipeline_wait_exit_codes
+    check_form(case=case.via_main, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'wait', '1201', '--timeout-seconds', '540']) exits 10, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 10
+E    +  where 10 = FormCase(argv=('pipeline', 'wait', '1201', '--timeout-seconds', '540'), exchanges=(Exchange(method='GET', url='https:/...: 'canceled', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1201'}, exit_code=10, config_changes=()).exit_code
+_______________ test_pipeline_wait_exit_codes[skipped-exits-10] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1361: in test_pipeline_wait_exit_codes
+    check_form(case=case.via_main, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'wait', '1201', '--timeout-seconds', '540']) exits 10, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 10
+E    +  where 10 = FormCase(argv=('pipeline', 'wait', '1201', '--timeout-seconds', '540'), exchanges=(Exchange(method='GET', url='https:/...': 'skipped', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1201'}, exit_code=10, config_changes=()).exit_code
+_______________ test_pipeline_wait_exit_codes[manual-exits-10] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1361: in test_pipeline_wait_exit_codes
+    check_form(case=case.via_main, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'wait', '1201', '--timeout-seconds', '540']) exits 10, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 10
+E    +  where 10 = FormCase(argv=('pipeline', 'wait', '1201', '--timeout-seconds', '540'), exchanges=(Exchange(method='GET', url='https:/...s': 'manual', 'web_url': 'https://gitlab.example.com/group/project/-/pipelines/1201'}, exit_code=10, config_changes=()).exit_code
+_______________ test_pipeline_wait_exit_codes[timeout-exits-11] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1361: in test_pipeline_wait_exit_codes
+    check_form(case=case.via_main, config=TEMPLATE_CONFIG, project=project, fake=fake_gitlab, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_gitlab_wrapper_compat.py:1246: in check_form
+    assert code == case.exit_code, (
+E   AssertionError: main(['pipeline', 'wait', '1201', '--timeout-seconds', '0']) exits 11, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'pipeline' (choose from issue)
+E     
+E   assert 2 == 11
+E    +  where 11 = FormCase(argv=('pipeline', 'wait', '1201', '--timeout-seconds', '0'), exchanges=(), printed={'id': 1201, 'status': 'unknown', 'timeout_seconds': 0}, exit_code=11, config_changes=()).exit_code
+______________ test_both_prompts_copy_the_package_with_the_entry ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_setup_prompts_gitlab_wrapper.py:91: in test_both_prompts_copy_the_package_with_the_entry
+    assert not missing, (
+E   AssertionError: the setup prompts do not install the GitLab wrapper's package with its entry script:
+E     setup-claude.txt, section `### Part 5.3 — Git repository wrapper scripts`: does not name `src/payload/scripts/gitlab_api/`
+E     setup-kiro.txt, section `### Part 6.2 — Stub credentials and wrappers`: does not name `src/payload/scripts/gitlab_api/`
+E     setup-claude.txt, section `### Shipped Python (shared with the Kiro prompt, under src/payload/, laid out like the project)`: does not name `scripts/gitlab_api/`
+E     setup-kiro.txt, section `### Shipped Python referenced by this prompt`: does not name `scripts/gitlab_api/`
+E   assert not ['setup-claude.txt, section `### Part 5.3 — Git repository wrapper scripts`: does not name `src/payload/scripts/gitlab..._api/`', 'setup-kiro.txt, section `### Shipped Python referenced by this prompt`: does not name `scripts/gitlab_api/`']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[pipeline-status]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[pipeline-log-no-pipeline]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[pipeline-status-count]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[label-list]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[pipeline-log]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[label-create]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[pipeline-log-none-failed]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[label-create-description]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[mr-approve]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[mr-create]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[mr-approve-refused]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[mr-get]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[mr-merge]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[mr-checks]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_a_subcommand_form[delete-branch]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_pipeline_wait_exit_codes[failed-exits-10]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_pipeline_wait_exit_codes[success-exits-0]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_pipeline_wait_exit_codes[canceled-exits-10]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_pipeline_wait_exit_codes[skipped-exits-10]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_pipeline_wait_exit_codes[manual-exits-10]
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_pipeline_wait_exit_codes[timeout-exits-11]
+FAILED test/test_setup_prompts_gitlab_wrapper.py::test_both_prompts_copy_the_package_with_the_entry
+======================== 22 failed, 77 passed in 8.49s ========================
