@@ -2,8 +2,9 @@
 
 The prompts, client READMEs and shipped docs name framework files by path. A path that no longer exists is not
 caught anywhere else: it surfaces as an agent in some consumer project failing to find a file. These tests fail
-on it here instead. Historical records (docs/reports/, .kiro/specs/, the agent design notes) describe the layout
-as it was when they were written and are deliberately not checked; docs/README.md maps old paths to new.
+on it here instead. Historical records (docs/reports/, .kiro/specs/, .claude/specs/, the agent design notes)
+describe the layout as it was when they were written and are deliberately not checked; docs/README.md maps old
+paths to new.
 
 Run: ``python scripts/run_tests.py test/test_layout.py`` (needs git on PATH).
 """
@@ -18,7 +19,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-HISTORICAL = re.compile(r"^(docs/reports/|\.kiro/specs/|docs/design/agents/.*\.txt$)")
+HISTORICAL = re.compile(r"^(docs/reports/|\.kiro/specs/|\.claude/specs/|docs/design/agents/.*\.txt$)")
 
 # Directories that exist only in the framework, so a path under one of them is a framework reference. Paths
 # such as scripts/, src/aws_config.py or docs/lessons-learned.md are the TARGET project's and are not checked.
