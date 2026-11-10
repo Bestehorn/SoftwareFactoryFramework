@@ -1,87 +1,78 @@
 # Refutation report: issue #3, bandit's report on a cp1252 console
 
-Verifier run 2026-11-10. Worktree `.claude/worktrees/issue-3`, branch `issue-3-bandit-cp1252-report`, HEAD
-`4caddb5`, change under test `git diff f285222..HEAD -- src/`. Project venv: Python 3.14.2, bandit 1.9.4. Every
-test command below is `venv/Scripts/python.exe scripts/run_tests.py src/payload/test/test_run_checks.py` (9 items
-collected in every run).
+## First verification (HEAD 4caddb5)
 
-## Step 1: whole-suite verdict
+Change `git diff f285222..HEAD -- src/`; venv Python 3.14.2, bandit 1.9.4; every run
+`venv/Scripts/python.exe scripts/run_tests.py src/payload/test/test_run_checks.py` (9 items). No CI run existed for
+`4caddb5` (`git branch -r --contains HEAD` empty); no local full suite.
 
-No CI run exists for `4caddb5`: `git branch -r --contains HEAD` lists no remote branch (the branch is pushed after
-this verdict). The dispatch forbids a local full-suite run, so no `full-suite.txt` was written. The CI run on the
-pushed SHA is still the pending whole-suite verdict.
+| Claim | Mutation | Result | Verdict |
+|---|---|---|---|
+| baseline | none | 9 passed | green |
+| AC-4, I1 (M0) | `run_checks.py` = `f285222` version | 1 failed: `test_ac1` (`B101` missing, `UnicodeEncodeError`, `Unable to output report using 'txt' formatter`) | FAILED-TO-REFUTE |
+| AC-1, UB-3 relay (M1) | `relay_text(...)` -> `pass` | 2 failed: `test_ac1`, `test_ub3` | FAILED-TO-REFUTE |
+| AC-1 backslashreplace (M2) | `errors="strict"` | 2 failed: `test_ac1`, `test_ac2` | FAILED-TO-REFUTE |
+| AC-1 `-f txt -o` (M3) | the four arguments removed | 1 failed: `test_ac1` | FAILED-TO-REFUTE |
+| AC-1, AC-3 report dir (M4) | `mkdir` -> `pass` | 4 failed: `test_ac1`, `test_ac3[cp1252]`, `test_ac3[utf-8]`, `test_ub3` | FAILED-TO-REFUTE |
+| AC-1 stream encoding (M7) | `encoding = "utf-8"` | 2 failed: `test_ac1`, `test_ac2` | FAILED-TO-REFUTE |
+| CHG-STALE (M5) | `report.unlink()` -> `pass` | 9 passed | REFUTED |
+| CHG-LIST (M6) | `LIST_MAX_ARGS = 12` | 9 passed | REFUTED |
+| newline guard (M8) | `shown = text` | 9 passed; equivalent mutant (bandit's txt formatter ends every report with a newline) | not a claim |
+| UB-1, UB-2 | in-process tests | green under every mutant; assert `-m bandit`, the fallback argv, the `-c pyproject.toml` pair | FAILED-TO-REFUTE |
 
-## Results
+Vacuity: no skip, xfail, importorskip or deselection; every test asserts. Red: `evidence/red/wave-1.txt` fails
+`test_ac1` on an `AssertionError` (`B101` missing), not a load error; M0 reproduced it. Coverage: every new line ran
+except `report.unlink()` and `LIST_MAX_ARGS`. Verdict then: `REFUTED CHG-STALE CHG-LIST`; tree restored, `cmp`
+identical.
+
+## Re-verification
+
+Dispatched at HEAD `52354a3` (delta `git diff 4caddb5..HEAD`). Mid-run, at 17:34:18, another process rebased the
+branch onto `origin/main` `f13cf20` (reflog `rebase (start): checkout origin/main`); HEAD is now `a33b392`.
+`git diff --quiet 52354a3 a33b392 -- src test .claude/specs scripts pyproject.toml` exits 0: the rebase brought only
+toolchain files and the `release_tag`/`installed` fields of `config/toolchain.json` (its `files` map is unchanged).
+Every mutant ran on the `52354a3` content before the rebase: each restore `cmp`-matched the pre-rebase LF backup,
+and a rebase starts only on a clean tree.
+
+Method: `cp -p` backup to `tmp/`, one Edit, `scripts/run_tests.py`, `cp -p` restore, `cmp` (identical every time),
+`git status --porcelain` (empty). No `git stash`.
 
 | Claim | Command or mutation | Result | Verdict |
 |---|---|---|---|
-| baseline | unmodified tree | 9 passed, exit 0 | green |
-| AC-4, I1 as a whole (M0) | `run_checks.py` overwritten with `git show f285222:src/payload/scripts/run_checks.py` | 1 failed, 8 passed: `test_ac1` at line 123, `B101` missing, bandit's `UnicodeEncodeError` then `RuntimeError: Unable to output report using 'txt' formatter` | FAILED-TO-REFUTE |
-| AC-1, UB-3: the relay (M1) | `relay_text(...)` call replaced by `pass` | 2 failed: `test_ac1`, `test_ub3` (`B101` missing, `Text output written to file: reports/bandit.txt`) | FAILED-TO-REFUTE |
-| AC-1: `errors="backslashreplace"` (M2) | `errors="strict"` | 2 failed: `test_ac1`, `test_ac2` (`UnicodeEncodeError` raised in `relay_text`) | FAILED-TO-REFUTE |
-| AC-1: `-f txt -o` (M3) | the four arguments removed | 1 failed: `test_ac1` (formatter crash again) | FAILED-TO-REFUTE |
-| AC-1, AC-3: report dir created (M4) | `report.parent.mkdir(...)` replaced by `pass` | 4 failed: `test_ac1`, `test_ac3[cp1252]`, `test_ac3[utf-8]`, `test_ub3` (bandit exit 2, `can't open 'reports/bandit.txt'`) | FAILED-TO-REFUTE |
-| AC-1: the stream's own encoding (M7) | `encoding = "utf-8"` | 2 failed: `test_ac1`, `test_ac2` | FAILED-TO-REFUTE |
-| CHG-STALE: `run_check` deletes an existing report before the command (§Change, run_check bullet) | `report.unlink()` replaced by `pass` (M5) | **9 passed, exit 0: the mutant survives** | **REFUTED** |
-| CHG-LIST: `LIST_MAX_ARGS` rises to 16 so `--list` prints the bandit command whole (§Change, last bullet) | `LIST_MAX_ARGS = 12` (M6) | **9 passed, exit 0: the mutant survives** | **REFUTED** |
-| relay newline guard (M8, a note, not a claim) | `shown = text` | 9 passed. Equivalent mutant: bandit `formatters/text.py` `report` builds `"\n".join(bits) + "\n"`, so a bandit report always ends with a newline. The line is executed; only its `else` arm is unreachable | not refuted |
-| UB-1 | `test_ub1_bandit_runs_as_a_module_of_this_interpreter`, `test_ub1_console_script_fallback_keeps_the_arguments` | green in the baseline and in M0 to M8 | FAILED-TO-REFUTE |
-| UB-2 | `test_ub2_config_passed_when_pyproject_is_a_file`, `test_ub2_config_omitted_without_pyproject` | green throughout; they assert the `("-c", "pyproject.toml")` pair present, then `-c` and `pyproject.toml` absent | FAILED-TO-REFUTE |
-| UB-3 | `test_ub3_findings_listed_and_failing_on_a_utf8_stdout` | green in the baseline; killed by M1 and M4 | FAILED-TO-REFUTE |
+| baseline `52354a3` | `run_tests.py src/payload/test/test_run_checks.py test/test_layout.py` | 67 passed, exit 0 | green |
+| CHG-STALE (M5) | `report.unlink()` -> `pass` | 1 failed, 10 passed: `test_chg_stale_report_deleted_before_the_check_runs` line 215, `STALE-REPORT-SENTINEL` relayed before `--- PASS security/bandit (0.1s, exit 0)` | FAILED-TO-REFUTE |
+| CHG-LIST (M6) | `LIST_MAX_ARGS = 12` | 1 failed, 10 passed: `test_chg_list_shows_the_bandit_command_whole` line 238, line ends `-f txt ... (+2 more)` | FAILED-TO-REFUTE |
+| CHG-LIST boundary (M6b) | `LIST_MAX_ARGS = 13` (the argv has 14) | 1 failed, 10 passed: same test, line ends `-f txt -o ... (+1 more)` | FAILED-TO-REFUTE |
+| shadow is load-bearing (T1) | the test's `bandit.py` write removed | 1 failed: line 215 `not stale.exists()`; output is the installed bandit's report (`No issues identified.`, `Text output written to file: reports/bandit.txt`, 0.6s) | FAILED-TO-REFUTE |
+| layout exemption (L1) | `HISTORICAL` reverted to the `4caddb5` pattern | 1 failed, 55 passed: `test_every_framework_path_named_in_a_live_file_exists`, 3 tokens, all `src/payload/test/test_run_checks.py::test_...` ids in this spec's `evidence/red/wave-1.txt` and `evidence/verify/mutants-after-reopen.txt` | FAILED-TO-REFUTE |
+| green at `a33b392` | same command as the baseline | 67 passed, exit 0 | green |
 
-Captures: every mutant run was captured to `tmp/` and is quoted above. The captures were deleted because the
-dispatch allowed this report as the only artefact (agent-state-convention §1c makes the orchestrator the writer of
-evidence captures).
+Stale-report test soundness. `importable("bandit")` runs `PY -c "...find_spec('bandit')..."` from the scratch
+project; `-c` puts the cwd first on `sys.path`, so the probe finds the shadow (or the installed bandit) and returns
+True either way, and `runnable` keeps `PY -m bandit ...`. `-m` also puts the cwd first, so the child runs the
+scratch `bandit.py`: M5's run took 0.1s with no bandit log lines; T1's took 0.6s with bandit's `[main] INFO` lines.
+No vacuous pass: the installed bandit writes a report (T1), so `not stale.exists()` holds only when the shadow ran
+and `run_check` deleted the stale file; a `--- SKIP` path prints no `PASS_LINE`; a delete-after-relay mutant
+relays the sentinel.
 
-## Step 2: kill the mutant (wave 1)
+Layout exemption. The new pattern exempts 15 tracked files the old one did not. Five are
+`.claude/specs/_workflow/phases/*.md`, listed in `config/toolchain.json` `files` and already skipped by
+`f in installed`. The other ten are this spec's own records (change, decision log, prompts, qa_log, review,
+evidence). No live file leaves the guard. L1 also shows the guard was red at `4caddb5`, which already tracked
+`evidence/red/wave-1.txt`; the first verification ran only `test_run_checks.py`.
 
-M0 and six of the eight targeted mutants fail the paired tests. M5 and M6 pass all 9 tests. Under this procedure, a
-test suite that passes without the behaviour leaves that behaviour REFUTED.
+Step 1: `git branch -r --contains HEAD` is empty for `a33b392`, so no CI run exists. The whole-suite verdict is the
+CI run on the SHA pushed after this verdict; no local full suite was run.
 
-## Step 3: vacuity scan
+Steps 3 to 5 on the delta. Vacuity: neither new test has skip, xfail or deselection; both assert. Red: there is no
+`evidence/red` capture for tests added after the implementation; M5, M6 and M6b falsify them with an
+`AssertionError`, not a load error, and reproduce `evidence/verify/mutants-after-reopen.txt` (1 failed, 10 passed
+each). Coverage: the delta changes no product line; the `test_layout.py` change is exercised by L1;
+`report.unlink()` and `LIST_MAX_ARGS` are now covered.
 
-`test_run_checks.py` has no `skip`, `xfail` or `importorskip`, and no mark except `parametrize`. There is no
-`conftest.py` under `src/payload/`. `pyproject.toml` `addopts` is `-ra --import-mode=importlib`, which deselects
-nothing. Every one of the 8 test functions asserts. The precondition `pytest.raises(UnicodeEncodeError)` in
-`test_ac1` is real: U+274C has no cp1252 code point. FAILED-TO-REFUTE.
+Tree: the three mutated files were restored (`cmp` identical, `git status --porcelain` empty before this report was
+written); `tmp/` is empty. The working files are CRLF because the other process's rebase checked them out under
+`core.autocrlf=true`; their content is the index blobs (`git show HEAD:src/payload/test/test_run_checks.py` hashes
+to the backup's `13b0eb95...`). This report is the only change.
 
-## Step 4: red-for-the-right-reason
-
-`evidence/red/wave-1.txt` collected 9 items. Its one failure is an `AssertionError` at `test_run_checks.py:123`
-(`B101` missing), and the output carries the issue's exact symptom. It is not a load or collection error. M0
-reproduced the same failing test at the same line. AC-2, AC-3 and UB-3 also passed at red, which is consistent:
-the pre-change crash already exited 1, AC-3's clean source holds no U+274C, and UB-3 runs on UTF-8. AC-4 names only
-the AC-1 test as the red one. FAILED-TO-REFUTE.
-
-## Step 5: coverage of the change
-
-Every new line of `run_checks.py` is executed by a child-process test except two:
-
-- `report.unlink()` in `run_check`. Every child test builds a fresh scratch project (`make_project` creates only
-  `project/src`), so `reports/bandit.txt` never exists before the run. The in-process tests never call
-  `run_check`. M5 survives. A test that pre-creates the report with a sentinel would kill it.
-- `LIST_MAX_ARGS = 16`. It is read only by `listed()`, which only `main(["--list"])` calls. Grep over every test
-  suite finds no caller of either. `bandit_argv()` now has 14 elements, so at 12 `--list` would print
-  `... (+2 more)`. M6 survives.
-
-Both are REFUTED. Neither one maps to an AC or UB statement: they are §Change behaviours of I1.
-
-## Dispatch point 4: UTF-8 stdout and the console-script fallback
-
-- UTF-8 stdout. In `relay_text`, encoding with utf-8 and then decoding is a lossless round trip, because
-  `read_text(errors="replace")` produces no lone surrogates. `test_ac3[utf-8]` and `test_ub3` are green. M1 kills
-  `test_ub3`, so the UTF-8 listing depends on the relay.
-- Console-script fallback. `runnable` returns `(script, *argv[3:])`, and `argv[3:]` holds
-  `-f txt -o reports/bandit.txt`. `test_ub1_console_script_fallback_keeps_the_arguments` asserts exactly that.
-  The script is `bandit = bandit.cli.main:main` (`bandit-1.9.4.dist-info/entry_points.txt`). That is the same
-  `main` whose `-o` is `argparse.FileType("w", encoding="utf-8")` (`bandit/cli/main.py`). The relay is keyed on the
-  check name, not on `argv[0]`. No test runs the console script end to end; `runnable` itself is unchanged code.
-
-## Tree restoration
-
-The worktree's `run_checks.py` has CRLF line endings, so it was backed up byte for byte to `tmp/`. M0 was restored
-with `cp -p`. M1 to M8 were written and restored as bytes by a throwaway harness in `tmp/`, which checked each
-restore. After M0 and again after the harness, `cmp` against the backup was identical and `git status --porcelain`
-was empty. The `tmp/` files were removed afterwards. This report is the only file added.
-
-REFUTED CHG-STALE CHG-LIST
+VERIFIED
