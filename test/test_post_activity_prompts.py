@@ -56,6 +56,16 @@ SELF_CHECK_ITEM_6 = "6. CLAUDE.md + rules"
 SELF_CHECK_ITEM_7 = "7. Settings"
 SELF_CHECK_PHRASES = ("plain `python scripts/run_checks.py`", "no `--group`", "`tests` group")
 
+# The I1 restatement: the `post-activity.md` bullet of the `## Integration` list in the setup-kiro 8.23 body, up to
+# the next bullet; the list ends at the body's closing fence.
+TESTS_MUST_NOT_FAIL_HEADING = "### 8.23 `tests-must-not-fail.md` (always)"
+INTEGRATION_HEADING = "## Integration"
+CLOSING_FENCE = "```"
+POST_ACTIVITY_BULLET = "- `post-activity.md`"
+NEXT_BULLET = "- "
+INTEGRATION_PHRASES = ("plus the non-test `run_checks.py` groups",)
+FORBIDDEN_INTEGRATION_PHRASES = ("plus `run_checks.py`;",)
+
 # UB-2: step 1 of the 8.6 body.
 STEP_1_PHRASES = (
     "python scripts/run_tests.py <paths or -k expr>",
@@ -236,6 +246,19 @@ def test_claude_self_check_flags_a_plain_run_checks() -> None:
     item_6 = line_block(text=read_prompt(name=CLAUDE_PROMPT), start=SELF_CHECK_ITEM_6, stop=SELF_CHECK_ITEM_7)
     missing = missing_phrases(text=item_6, phrases=SELF_CHECK_PHRASES)
     assert not missing, f"self-check item 6 lacks {missing}"
+
+
+def test_kiro_823_integration_names_the_non_test_groups() -> None:
+    """I1: 8.23's `## Integration` bullet on post-activity.md names the non-test groups, not a plain run_checks.py."""
+    section = line_block(
+        text=read_prompt(name=KIRO_PROMPT), start=TESTS_MUST_NOT_FAIL_HEADING, stop=NEXT_STEERING_HEADING
+    )
+    integration = line_block(text=section, start=INTEGRATION_HEADING, stop=CLOSING_FENCE)
+    bullet = line_block(text=integration, start=POST_ACTIVITY_BULLET, stop=NEXT_BULLET)
+    missing = missing_phrases(text=bullet, phrases=INTEGRATION_PHRASES)
+    assert not missing, f"the 8.23 `post-activity.md` Integration bullet lacks {missing}"
+    forbidden = present_phrases(text=bullet, phrases=FORBIDDEN_INTEGRATION_PHRASES)
+    assert not forbidden, f"the 8.23 `post-activity.md` Integration bullet still says {forbidden}"
 
 
 @pytest.mark.parametrize("site", FULL_RUN_SITES, ids=[site.site_id for site in FULL_RUN_SITES])
