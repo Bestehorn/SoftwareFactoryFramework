@@ -396,8 +396,9 @@ path).
   `opener` at its default, so the redirect tests exercise the opener `from_config` builds.
 - **Subcommands** — `src/payload/test/test_gitlab_wrapper_compat.py`: `config/gitlab.json` in `tmp_path` (chdir),
   `main(argv=…)`, standard output by `capsys`, the exit code from the return value or `SystemExit`; `pipeline_wait`
-  also directly, with a `Transport` holding a fake clock and sleep. Two subprocess tests run `sys.executable
-  <scripts dir>/gitlab_wrapper.py` with `cwd=tmp_path`, proving the bootstrap when the script is run.
+  also directly, with a `Transport` holding a fake clock and sleep. Subprocess tests run with `cwd=tmp_path`: two run
+  `sys.executable <scripts dir>/gitlab_wrapper.py`, and `test_script_loads_by_path` loads the file by path in a fresh
+  interpreter, the one place the bootstrap is exercised.
 - **Framework tests** (`test/`, not shipped, CI's Python 3.10): the coverage test (D8);
   `test_gitlab_api_properties.py` (which puts `src/payload/scripts` on `sys.path` as D8 does) with the Hypothesis
   properties (Hypothesis is this repository's dev extra) and the UB-2 import scan (`sys.stdlib_module_names`, Python
@@ -529,7 +530,7 @@ S = `test/test_setup_prompts_gitlab_wrapper.py`, D = `src/payload/test/test_wrap
 | AC-5.2 | `registry.discover_families`, `PENDING` | V `test_a_family_module_is_discovered_alone` |
 | AC-5.3 | every `families/<family>.py` | V `test_every_index_row_is_mapped_or_pending` |
 | AC-5.4 | coverage test | V `test_every_index_row_is_mapped_or_pending` (socket guard) |
-| UB-1 | `commands/*`, `gitlab_wrapper.main`, the setup prompts | C `test_a_subcommand_form` (one case per form), `test_claim_check_exit_codes`, `test_pipeline_wait_exit_codes`, `test_issue_start_refusals`, `test_issue_reopen_of_open_issue`, `test_delivery_verb_through_main`, `test_script_usage_error_exits_2`, `test_script_without_config_exits_1`; S `test_both_prompts_copy_the_package_with_the_entry`; D unchanged |
+| UB-1 | `commands/*`, `gitlab_wrapper.main`, the setup prompts | C `test_a_subcommand_form` (one case per form), `test_claim_check_exit_codes`, `test_pipeline_wait_exit_codes`, `test_issue_start_refusals`, `test_issue_reopen_of_open_issue`, `test_delivery_verb_through_main`, `test_script_usage_error_exits_2`, `test_script_without_config_exits_1`, `test_script_loads_by_path`; S `test_both_prompts_copy_the_package_with_the_entry`; D unchanged |
 | UB-2 | `_load_config`, `Transport.from_config` | C `test_template_config_sends_private_token`, `test_load_config_refusals`, `test_environment_token_ignored`; P `test_standard_library_only` |
 | UB-3 | the diff | verifier `git diff --name-only` evidence |
 
