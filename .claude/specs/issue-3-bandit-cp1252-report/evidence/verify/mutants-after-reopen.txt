@@ -1,0 +1,53 @@
+=== mutant m5 (m5: report.unlink() -> pass; m6: LIST_MAX_ARGS = 12)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_run_checks.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-3
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+.......F...                                                              [100%]
+================================== FAILURES ===================================
+_____________ test_chg_stale_report_deleted_before_the_check_runs _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_run_checks.py:215: in test_chg_stale_report_deleted_before_the_check_runs
+    assert STALE_SENTINEL not in run.output, f"the stale report was relayed as this run's:\n{run.output}"
+E   AssertionError: the stale report was relayed as this run's:
+E     --- RUN  security/bandit: 'D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe' -m bandit -r src -x src/_version.py -f txt -o reports/bandit.txt
+E     STALE-REPORT-SENTINEL
+E     --- PASS security/bandit (0.1s, exit 0)
+E     
+E   assert 'STALE-REPORT-SENTINEL' not in '--- RUN  se... exit 0)\r\n'
+E     
+E     'STALE-REPORT-SENTINEL' is contained here:
+E       ndit.txt
+E       STALE-REPORT-SENTINEL
+E       --- PASS security/bandit (0.1s, exit 0)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_run_checks.py::test_chg_stale_report_deleted_before_the_check_runs
+======================== 1 failed, 10 passed in 6.26s =========================
+exit=1
+=== mutant m6 (m5: report.unlink() -> pass; m6: LIST_MAX_ARGS = 12)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_run_checks.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-3
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+........F..                                                              [100%]
+================================== FAILURES ===================================
+________________ test_chg_list_shows_the_bandit_command_whole _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-3\src\payload\test\test_run_checks.py:238: in test_chg_list_shows_the_bandit_command_whole
+    assert REPORT_ARGS in bandit_line, f"{REPORT_ARGS!r} is missing from the bandit line: {bandit_line}"
+E   AssertionError: '-o reports/bandit.txt' is missing from the bandit line:   bandit: 'D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe' -m bandit -c pyproject.toml -r src scripts -x src/_version.py -f txt ... (+2 more)
+E   assert '-o reports/bandit.txt' in "  bandit: 'D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\\python.exe' -m bandit -c pyproject.toml -r src scripts -x src/_version.py -f txt ... (+2 more)"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_run_checks.py::test_chg_list_shows_the_bandit_command_whole
+======================== 1 failed, 10 passed in 6.18s =========================
+exit=1
