@@ -99,9 +99,9 @@ runs the module (`pyproject.toml` `[tool.pytest.ini_options]` `testpaths` includ
 
 ## Tasks (one wave)
 
-- [ ] T1 TEST: write the module described under Tests; capture it red before I1 — Files:
+- [x] T1 TEST: write the module described under Tests; capture it red before I1 — Files:
   `test/test_agent_rule_references.py` — Validates: AC-1, AC-2, AC-3, AC-4, UB-1, UB-2
-- [ ] I1 IMPL: mark the ten bodies per AC-1 and AC-2; write the AC-3 parentheticals, headings and S-AGENTS — Files:
+- [x] I1 IMPL: mark the ten bodies per AC-1 and AC-2; write the AC-3 parentheticals, headings and S-AGENTS — Files:
   the ten bodies under Files, `prompts/setup-claude.txt`, `prompts/setup-kiro.txt` — Validates: AC-1, AC-2, AC-3
 
 ## Residuals

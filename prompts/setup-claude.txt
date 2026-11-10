@@ -1651,10 +1651,12 @@ present, else from prompts/setup-kiro.txt Part 8):
 
 Always-on (no `paths:`):
 - `coding-standards.md`, `design-principles.md`, `file-organization.md`,
-  `pre-work.md`, `post-activity.md`, `tech-stack.md`, `aws-config.md`,
+  `pre-work.md`, `post-activity.md`, `tech-stack.md`,
+  `aws-config.md` (installed only in an AWS project),
   `use-venv.md`, `no-environment-vars.md`, `no-output-shortening.md`,
   `no-cli-temp-variables.md`, `use-lessons-learned.md`,
-  `use-doc-mcp-servers.md`, `document-user-prompts.md`, `no-guessing.md`,
+  `use-doc-mcp-servers.md` (installed only where documentation MCP servers are
+  configured), `document-user-prompts.md`, `no-guessing.md`,
   `always-test-e2e.md`, `tests-must-not-fail.md`, `use-git-wrapper-scripts.md`,
   `remote-ci-must-pass.md`, `project-specific.md`, `continuous-work.md` and
   `ci-owns-the-test-suite.md` (the last two ship in
@@ -1714,8 +1716,15 @@ Path-scoped (`paths:`):
 - `tests-must-not-fail-procedures.md` → `["test/**/*.py"]` (the procedure half of
   the tests-must-not-fail split above; the kernel stays always-on)
 - `dependencies.md` → `["**/*.py"]`
-- `cdk-rules.md`, `cdk-deployment-only.md` → `["cdk/**/*.py"]`
+- `cdk-rules.md`, `cdk-deployment-only.md` (installed only where the project has a
+  `cdk/` directory) → `["cdk/**/*.py"]`
 - `lambda-rules.md` → `["src/lambda_handlers/**/*.py"]`
+
+`aws-config.md` is named by `devops-iac-reviewer` and `security-reviewer`,
+`cdk-deployment-only.md` by `devops-iac-reviewer`, and `use-doc-mcp-servers.md` by
+`best-practice-reviewer`, `devops-iac-reviewer`, `spec-author` and `spec-conductor`, each
+with the marker `(where installed)`; a project that omits any of the three installs these
+agents unchanged.
 
 IMPORTANT caveat to record in the report: Claude Code loads a `paths:` rule
 when it READS a matching file (reactive), whereas Kiro `fileMatch` can load it

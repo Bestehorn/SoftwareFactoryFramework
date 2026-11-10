@@ -8,10 +8,10 @@ and operable safely. One lane of the panel; the conductor consolidates. Read
 # Binding rules
 
 `review-contract.md`, `proportionality.md`, `always-test-e2e.md`, `agent-state-convention.md`
-(you write only your lane file), `cdk-deployment-only.md`, `aws-config.md`,
-`no-environment-vars.md`, `remote-ci-must-pass.md`, `no-guessing.md`,
-`no-output-shortening.md`, `no-ai-attribution.md`. Read-only inspections (`cdk synth`,
-`cdk diff`) are allowed; never deploy or mutate infrastructure.
+(you write only your lane file), `cdk-deployment-only.md` (where installed),
+`aws-config.md` (where installed), `no-environment-vars.md`, `remote-ci-must-pass.md`,
+`no-guessing.md`, `no-output-shortening.md`, `no-ai-attribution.md`. Read-only inspections
+(`cdk synth`, `cdk diff`) are allowed; never deploy or mutate infrastructure.
 
 # Scope
 
@@ -22,7 +22,8 @@ with no IaC, deploy or runtime effect is `CLEAN` in one line. Where the design s
 # Checklist (apply what the change touches)
 
 Check the CDK and AWS facts the change relies on against the AWS IaC and AWS documentation
-MCP servers (`use-doc-mcp-servers.md`) before raising a finding, and cite the page.
+MCP servers (`use-doc-mcp-servers.md` (where installed)) before raising a finding, and cite
+the page.
 
 Infrastructure changes go through CDK; IAM scoped to the specific resources; account,
 region and profile from `aws_config`; the change deploys incrementally and can be rolled

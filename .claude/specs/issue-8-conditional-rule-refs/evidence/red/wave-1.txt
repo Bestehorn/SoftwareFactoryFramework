@@ -1,0 +1,119 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_agent_rule_references.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-8
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [82 items]
+
+..FF..F.FF...............F..FF.FF.F.....F............................... [ 87%]
+..........                                                               [100%]
+================================== FAILURES ===================================
+________ test_claude_bodies_mark_conditional_rules[security-reviewer] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:134: in test_claude_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: claude-security-reviewer names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'aws-config.md': (1, 0)}
+E   assert not {'aws-config.md': (1, 0)}
+______ test_claude_bodies_mark_conditional_rules[best-practice-reviewer] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:134: in test_claude_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: claude-best-practice-reviewer names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'use-doc-mcp-servers.md': (1, 0)}
+___________ test_claude_bodies_mark_conditional_rules[spec-author] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:134: in test_claude_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: claude-spec-author names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'use-doc-mcp-servers.md': (1, 0)}
+__________ test_claude_bodies_mark_conditional_rules[spec-conductor] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:134: in test_claude_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: claude-spec-conductor names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'use-doc-mcp-servers.md': (1, 0)}
+_______ test_claude_bodies_mark_conditional_rules[devops-iac-reviewer] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:134: in test_claude_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: claude-devops-iac-reviewer names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'aws-config.md': (1, 0), 'cdk-deployment-only.md': (1, 0), 'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'aws-config.md': (1, 0), 'cdk-deployment-only.md': (1, 0), 'use-doc-mcp-servers.md': (1, 0)}
+_______ test_kiro_bodies_mark_conditional_rules[best-practice-reviewer] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:139: in test_kiro_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: kiro-best-practice-reviewer names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'use-doc-mcp-servers.md': (1, 0)}
+_________________ test_setup_claude_states_install_conditions _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:149: in test_setup_claude_states_install_conditions
+    assert not missing, f"setup-claude Part 8.2 lacks the install-condition phrases {missing}"
+E   AssertionError: setup-claude Part 8.2 lacks the install-condition phrases ['`aws-config.md` (installed only in an AWS project)', '`use-doc-mcp-servers.md` (installed only where documentation MCP servers are configured)', '`cdk-deployment-only.md` (installed only where the project has a `cdk/` directory)', '`aws-config.md` is named by `devops-iac-reviewer` and `security-reviewer`, `cdk-deployment-only.md` by `devops-iac-reviewer`, and `use-doc-mcp-servers.md` by `best-practice-reviewer`, `devops-iac-reviewer`, `spec-author` and `spec-conductor`, each with the marker `(where installed)`; a project that omits any of the three installs these agents unchanged.']
+E   assert not ['`aws-config.md` (installed only in an AWS project)', '`use-doc-mcp-servers.md` (installed only where documentation M...or`, each with the marker `(where installed)`; a project that omits any of the three installs these agents unchanged.']
+________ test_kiro_bodies_mark_conditional_rules[devops-iac-reviewer] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:139: in test_kiro_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: kiro-devops-iac-reviewer names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'aws-config.md': (1, 0), 'cdk-deployment-only.md': (1, 0), 'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'aws-config.md': (1, 0), 'cdk-deployment-only.md': (1, 0), 'use-doc-mcp-servers.md': (1, 0)}
+_________ test_kiro_bodies_mark_conditional_rules[security-reviewer] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:139: in test_kiro_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: kiro-security-reviewer names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'aws-config.md': (1, 0)}
+E   assert not {'aws-config.md': (1, 0)}
+__________________ test_setup_kiro_states_install_conditions __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:159: in test_setup_kiro_states_install_conditions
+    assert not missing, f"setup-kiro lacks the install-condition headings or sentence {missing}"
+E   AssertionError: setup-kiro lacks the install-condition headings or sentence ['### 8.9 `aws-config.md` (always; installed only in an AWS project)', '### 8.17 `cdk-deployment-only.md` (conditional, CDK; installed only where the project has a `cdk/` directory)', '### 8.19 `use-doc-mcp-servers.md` (always; installed only where documentation MCP servers are configured) — replaces 4 separate files', '### 8A.1 Create the agents directory and install the fleet: `aws-config.md` is named by `devops-iac-reviewer` and `security-reviewer`, `cdk-deployment-only.md` by `devops-iac-reviewer`, and `use-doc-mcp-servers.md` by `best-practice-reviewer`, `devops-iac-reviewer`, `spec-author` and `spec-conductor`, each with the marker `(where installed)`; a project that omits any of the three installs these agents unchanged.']
+E   assert not ['### 8.9 `aws-config.md` (always; installed only in an AWS project)', '### 8.17 `cdk-deployment-only.md` (conditional...or`, each with the marker `(where installed)`; a project that omits any of the three installs these agents unchanged.']
+____________ test_kiro_bodies_mark_conditional_rules[spec-author] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:139: in test_kiro_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: kiro-spec-author names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'use-doc-mcp-servers.md': (1, 0)}
+___________ test_kiro_bodies_mark_conditional_rules[spec-conductor] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_agent_rule_references.py:139: in test_kiro_bodies_mark_conditional_rules
+    _assert_marked(path=path)
+test\test_agent_rule_references.py:126: in _assert_marked
+    assert not unmarked, (
+E   AssertionError: kiro-spec-conductor names a conditionally installed rule without `(where installed)`; rule: (backticked occurrences, marked occurrences) = {'use-doc-mcp-servers.md': (1, 0)}
+E   assert not {'use-doc-mcp-servers.md': (1, 0)}
+=========================== short test summary info ===========================
+FAILED test/test_agent_rule_references.py::test_claude_bodies_mark_conditional_rules[security-reviewer]
+FAILED test/test_agent_rule_references.py::test_claude_bodies_mark_conditional_rules[best-practice-reviewer]
+FAILED test/test_agent_rule_references.py::test_claude_bodies_mark_conditional_rules[spec-author]
+FAILED test/test_agent_rule_references.py::test_claude_bodies_mark_conditional_rules[spec-conductor]
+FAILED test/test_agent_rule_references.py::test_claude_bodies_mark_conditional_rules[devops-iac-reviewer]
+FAILED test/test_agent_rule_references.py::test_kiro_bodies_mark_conditional_rules[best-practice-reviewer]
+FAILED test/test_agent_rule_references.py::test_setup_claude_states_install_conditions
+FAILED test/test_agent_rule_references.py::test_kiro_bodies_mark_conditional_rules[devops-iac-reviewer]
+FAILED test/test_agent_rule_references.py::test_kiro_bodies_mark_conditional_rules[security-reviewer]
+FAILED test/test_agent_rule_references.py::test_setup_kiro_states_install_conditions
+FAILED test/test_agent_rule_references.py::test_kiro_bodies_mark_conditional_rules[spec-author]
+FAILED test/test_agent_rule_references.py::test_kiro_bodies_mark_conditional_rules[spec-conductor]
+======================== 12 failed, 70 passed in 4.32s ========================

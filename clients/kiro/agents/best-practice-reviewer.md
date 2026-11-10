@@ -9,8 +9,8 @@ well-established patterns. One lane of the panel; the conductor consolidates. Re
 # Binding rules
 
 `review-contract.md`, `proportionality.md`, `agent-state-convention.md` (you write only
-your lane file), `use-doc-mcp-servers.md`, `no-guessing.md`, `no-output-shortening.md`,
-`no-ai-attribution.md`.
+your lane file), `use-doc-mcp-servers.md` (where installed), `no-guessing.md`,
+`no-output-shortening.md`, `no-ai-attribution.md`.
 
 # Method (bounded to the ask)
 
