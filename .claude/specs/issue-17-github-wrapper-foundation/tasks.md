@@ -52,28 +52,28 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_api_registry.py`
 
 Run: `python scripts/run_tests.py test/test_github_wrapper_coverage.py src/payload/test/test_github_api_registry.py`
 
-- [ ] 3.1 TEST: V per D7 — `index_rows`, `graphql_only` and the pure `coverage_gaps`, the package loaded with
+- [x] 3.1 TEST: V per D7 — `index_rows`, `graphql_only` and the pure `coverage_gaps`, the package loaded with
   `src/payload/scripts` on `sys.path`; `test_the_reference_is_read_whole`, `test_a_gap_is_named` (synthetic index),
   `test_every_operation_is_covered_or_pending` (its failure message lists every gap),
   `test_discovery_follows_the_directory`, `test_one_module_per_family_holding_only_its_own_ids`,
   `test_the_wrapper_imports_only_the_standard_library` (the entry script and every module under `github_api/`). —
   Files: test/test_github_wrapper_coverage.py — Validates: AC-1.2, AC-1.3, AC-5.1, AC-5.2, AC-5.3, UB-2.2
-- [ ] 3.2 IMPL: the records D5 names for the issues and claim commands — `issues/list-for-repo`, `issues/get`,
+- [x] 3.2 IMPL: the records D5 names for the issues and claim commands — `issues/list-for-repo`, `issues/get`,
   `issues/list-comments`, `issues/create`, `issues/update`, `issues/create-comment`, `issues/add-labels`,
   `issues/remove-label`, `issues/add-assignees`, `issues/remove-assignees`, `users/get-authenticated` — each with its
   index row, the parameter names documented in the section its index row's Reference links, its paging kind and item
   key (D4); each module's `FAMILY`, and `PENDING` every other ID of the family. — Files:
   src/payload/scripts/github_api/families/issues.py, src/payload/scripts/github_api/families/users.py — Validates:
   AC-1.2, AC-1.3, AC-5.3
-- [ ] 3.3 IMPL: as 3.2 for `pulls/create`, `pulls/get`, `pulls/create-review`, `pulls/merge`, `checks/list-for-ref`,
+- [x] 3.3 IMPL: as 3.2 for `pulls/create`, `pulls/get`, `pulls/create-review`, `pulls/merge`, `checks/list-for-ref`,
   `repos/get-combined-status-for-ref`. — Files: src/payload/scripts/github_api/families/pulls.py,
   src/payload/scripts/github_api/families/checks.py, src/payload/scripts/github_api/families/repos.py — Validates:
   AC-1.2, AC-1.3, AC-5.3
-- [ ] 3.4 IMPL: as 3.2 for `actions/list-repo-workflows`, `actions/list-workflow-runs-for-repo`,
+- [x] 3.4 IMPL: as 3.2 for `actions/list-repo-workflows`, `actions/list-workflow-runs-for-repo`,
   `actions/list-workflow-runs`, `actions/get-workflow-run`, `actions/download-workflow-run-logs`, `git/delete-ref`
   (`ref` in `multi_segment`). — Files: src/payload/scripts/github_api/families/actions.py,
   src/payload/scripts/github_api/families/git.py — Validates: AC-1.2, AC-1.3, AC-5.3
-- [ ] 3.5 IMPL: `graphql_only.py` — `OPERATIONS` empty (D5 declares no `GraphQLOperation`), `PENDING_CAPABILITIES`
+- [x] 3.5 IMPL: `graphql_only.py` — `OPERATIONS` empty (D5 declares no `GraphQLOperation`), `PENDING_CAPABILITIES`
   every first cell of the "Only in GraphQL" table, verbatim; and one module per index family 3.2–3.4 do not own, each
   with `FAMILY`, an empty `OPERATIONS` and `PENDING` every ID of the family (D2 requires a module per family, so this
   one data task spans more than three files). — Files: src/payload/scripts/github_api/graphql_only.py,
