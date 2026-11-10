@@ -26,3 +26,12 @@
 **Evidence:** review/*/iteration-0{1..4}.md; review/iteration-03-conductor.md
 **Supersedes:** none
 **Artifacts touched:** design.md, requirements.md
+
+## DL-004 — 2026-11-10T19:06:38Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** Approve tasks.md after tasks review iteration 01 (both lanes CLEAN, A+B = 0; test-architect TEST-READY 24/24); C/D applied in one author pass (fork parity moved to wave 4, wave-5 run line extended, F.1 restated).
+**Driver:** review/spec-review-agent/tasks-iteration-01.md, review/test-architect/tasks-iteration-01.md.
+**Alternatives considered:** spec-review C2's separate task 4.2 (would depend on a same-wave sibling).
+**Evidence:** tasks.md coverage table; lane files.
+**Supersedes:** none
+**Artifacts touched:** tasks.md
