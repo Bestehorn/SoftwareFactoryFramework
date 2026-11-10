@@ -11,6 +11,7 @@ is already right.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import tempfile
@@ -62,11 +63,19 @@ def run(ctx: lib.Context) -> lib.Decision:
             delete=False,
         )
         try:
-            json.dump(data, handle, indent=2)
-            handle.write("\n")
-        finally:
-            handle.close()
-        os.replace(handle.name, str(settings))
+            try:
+                json.dump(data, handle, indent=2)
+                handle.write("\n")
+            finally:
+                handle.close()
+            os.replace(handle.name, str(settings))
+        except BaseException:
+            # A failed write must not leave its temp file in the project (measured on Windows: os.replace
+            # refused while another process held settings.local.json open, and `.settings.local.<x>.tmp` stayed
+            # behind as an untracked file). The error still reaches the notice below.
+            with contextlib.suppress(OSError):
+                os.unlink(handle.name)
+            raise
     except json.JSONDecodeError:
         return lib.allow(stdout=_invalid(scoped, ctx))
     except Exception as exc:  # noqa: BLE001 — never wedge a session over a temp dir
