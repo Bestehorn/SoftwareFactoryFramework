@@ -44,3 +44,12 @@
 **Evidence:** tasks.md task 5.5; design.md D2 install path; evidence/green/wave-5a.txt (# tasks: 5.1 5.3 5.4).
 **Supersedes:** none
 **Artifacts touched:** tasks.md, evidence/green/wave-5a.txt
+
+## DL-006 — 2026-11-10T22:53:48Z — issue-work-orchestrator — phase:IMPLEMENT
+
+**Decision:** Absorb the run_checks.py file-list batching fix into this change (fix-first branch 1): a file-list check whose command line exceeds MAX_COMMAND_LINE_CHARS runs in batches repeating its fixed arguments.
+**Driver:** run_checks.py --group security on this branch: `[WinError 206] The filename or extension is too long`, detect-secrets exit 127 — this branch's tracked files exceed CreateProcess's 32,767-character cap, so the post-activity check fails here and on every Windows session once it lands.
+**Alternatives considered:** file it (rejected: small, clear, blocking); run detect-secrets in process (rejected: the runner keeps tools as subprocesses).
+**Evidence:** evidence/red/run-checks-batching.txt, evidence/green/run-checks-batching.txt; product run_checks lint/types/security 5 passed, detect-secrets as 2 commands.
+**Supersedes:** none
+**Artifacts touched:** src/payload/scripts/run_checks.py, src/payload/test/test_run_checks.py

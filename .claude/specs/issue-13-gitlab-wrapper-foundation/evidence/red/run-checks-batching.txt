@@ -1,0 +1,118 @@
+# tasks: run-checks-batching (absorbed fix, DL-006)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_run_checks.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [21 items]
+
+.......FFFFFFFF.FF...                                                    [100%]
+================================== FAILURES ===================================
+_________ test_a_long_file_list_check_runs_in_batches_under_the_bound _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:386: in test_a_long_file_list_check_runs_in_batches_under_the_bound
+    assert max(lengths) <= WINDOWS_COMMAND_LINE_LIMIT, (
+E   AssertionError: an invocation's command line is 98499 characters, over the Windows cap of 32767: 1696 files ran as 1 invocation(s) of [98499] characters
+E   assert 98499 <= 32767
+E    +  where 98499 = max([98499])
+____________________ test_a_failing_batch_fails_the_check _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:418: in test_a_failing_batch_fails_the_check
+    assert result.returncode == FIRST_FAILING_EXIT, (
+E   AssertionError: the check returned 0 from 1 invocation(s) answered [0]; with the second batch exiting 2 and every later one 5, the verdict is 2
+E   assert 0 == 2
+E    +  where 0 = Result(group='security', name='detect-secrets', command="'D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\....py src/package_04/module_00004_xxxx.p ...(truncated)", returncode=0, seconds=2.479972317814827e-05, skipped_reason='').returncode
+_____________ test_a_short_check_runs_once_unchanged[ruff-check] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:451: in test_a_short_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+_____________ test_a_short_check_runs_once_unchanged[ruff-format] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:451: in test_a_short_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+________________ test_a_short_check_runs_once_unchanged[mypy] _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:451: in test_a_short_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+_______________ test_a_short_check_runs_once_unchanged[bandit] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:451: in test_a_short_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+_______________ test_a_short_check_runs_once_unchanged[pytest] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:451: in test_a_short_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+_____________ test_a_short_check_runs_once_unchanged[hook-suite] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:451: in test_a_short_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+_________________ test_a_short_check_runs_once_unchanged[e2e] _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:451: in test_a_short_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+______________ test_a_short_file_list_check_runs_once_unchanged _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:470: in test_a_short_file_list_check_runs_once_unchanged
+    bound = module_bound()
+            ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-13\src\payload\test\test_run_checks.py:315: in module_bound
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+E   AssertionError: run_checks.MAX_COMMAND_LINE_CHARS is None, not an int
+E   assert (False)
+E    +  where False = isinstance(None, int)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_run_checks.py::test_a_long_file_list_check_runs_in_batches_under_the_bound
+FAILED src/payload/test/test_run_checks.py::test_a_failing_batch_fails_the_check
+FAILED src/payload/test/test_run_checks.py::test_a_short_check_runs_once_unchanged[ruff-check]
+FAILED src/payload/test/test_run_checks.py::test_a_short_check_runs_once_unchanged[ruff-format]
+FAILED src/payload/test/test_run_checks.py::test_a_short_check_runs_once_unchanged[mypy]
+FAILED src/payload/test/test_run_checks.py::test_a_short_check_runs_once_unchanged[bandit]
+FAILED src/payload/test/test_run_checks.py::test_a_short_check_runs_once_unchanged[pytest]
+FAILED src/payload/test/test_run_checks.py::test_a_short_check_runs_once_unchanged[hook-suite]
+FAILED src/payload/test/test_run_checks.py::test_a_short_check_runs_once_unchanged[e2e]
+FAILED src/payload/test/test_run_checks.py::test_a_short_file_list_check_runs_once_unchanged
+======================= 10 failed, 11 passed in 14.01s ========================

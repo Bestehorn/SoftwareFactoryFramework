@@ -10,6 +10,15 @@ bandit as ``python -m bandit`` with the console-script fallback of ``runnable`` 
 (UB-1), and passes ``-c pyproject.toml`` exactly when that file exists (UB-2); a stale report is deleted before the
 check runs and never relayed, and ``--list`` prints the bandit command whole (the change's own behaviour).
 
+Also proven: a file-list check whose command line would exceed ``MAX_COMMAND_LINE_CHARS`` (the Windows command line
+cap is 32,767 characters; one detect-secrets invocation over every tracked file crossed it with ``[WinError 206]``)
+runs as several invocations, each repeating the fixed leading arguments before a consecutive, non-empty batch of the
+files, every file in exactly one batch and in order, each command line within the bound; the check fails with the
+first non-zero exit code of its batches and still runs every batch; it prints one ``--- RUN`` and one ``--- PASS`` or
+``--- FAIL`` line; and every check whose command fits runs exactly once with its argv unchanged. These tests run no
+process: ``subprocess.call`` is a recorder, ``importable`` and ``tracked_files`` are faked, and a ``subprocess.run``
+fails the test. A command line is measured as ``subprocess.list2cmdline`` joins it, which is what Windows receives.
+
 The child-process tests run ``run_check`` for ``security/bandit`` in a fresh interpreter whose stdio encoding is
 set with ``PYTHONIOENCODING`` for that one subprocess, inside a scratch project under ``tmp_path`` that has no
 ``pyproject.toml`` — so bandit's B101 is not skipped. The in-process tests call the loaded module directly.
@@ -23,8 +32,9 @@ import importlib.util
 import os
 import subprocess
 import sys
-from dataclasses import dataclass
-from pathlib import Path
+from collections.abc import Sequence
+from dataclasses import dataclass, field
+from pathlib import Path, PurePosixPath
 from types import ModuleType
 
 import pytest
@@ -237,3 +247,233 @@ def test_chg_list_shows_the_bandit_command_whole(
     bandit_line = bandit_lines[0]
     assert REPORT_ARGS in bandit_line, f"{REPORT_ARGS!r} is missing from the bandit line: {bandit_line}"
     assert LIST_TRUNCATION_MARK not in bandit_line, f"--list cut the bandit command short: {bandit_line}"
+
+
+#: The command line cap of Windows' CreateProcess, in characters: the limit one detect-secrets invocation over every
+#: tracked file crossed (`[WinError 206] The filename or extension is too long`). A fact of the OS, not the bound.
+WINDOWS_COMMAND_LINE_LIMIT = 32_767
+#: The module constant every invocation's command line must stay within; the module picks its value.
+BOUND_NAME = "MAX_COMMAND_LINE_CHARS"
+#: The long file list's own command line spans more than this many Windows limits, so it needs several batches.
+LONG_LIST_SPAN = 3
+SECURITY_GROUP = "security"
+DETECT_SECRETS = "detect-secrets"  # pragma: allowlist secret — the check's name, not a secret
+#: What follows the interpreter in every detect-secrets invocation, before its batch of files.
+DETECT_SECRETS_FIXED_ARGS = ("-m", "detect_secrets.pre_commit_hook", "--baseline", ".secrets.baseline")
+SHORT_FILE_LIST = ("README.md", "pyproject.toml", "src/payload/scripts/run_checks.py")
+#: The exit codes the fake answers the failing-batch test's first invocations with; every later one exits
+#: LATER_FAILING_EXIT, so the check's verdict must be FIRST_FAILING_EXIT, the first non-zero code.
+FIRST_FAILING_EXIT = 2
+LATER_FAILING_EXIT = 5
+FAILING_BATCH_EXITS = (0, FIRST_FAILING_EXIT)
+#: The status lines run_check prints per check, as prefixes; `{check}` is `<group>/<name>`.
+RUN_PREFIX = "--- RUN  {check}:"
+PASS_PREFIX = "--- PASS {check} "
+FAIL_PREFIX = "--- FAIL {check} "
+RUN_TESTS_SCRIPT = Path("scripts") / "run_tests.py"
+PYPROJECT = "pyproject.toml"
+
+
+@dataclass
+class CallRecorder:
+    """Stands in for subprocess.call: records every argv and answers each invocation with its scripted exit code."""
+
+    scripted_exits: tuple[int, ...] = ()
+    later_exit: int = 0
+    calls: list[tuple[str, ...]] = field(default_factory=list)
+
+    def exit_for(self, index: int) -> int:
+        return self.scripted_exits[index] if index < len(self.scripted_exits) else self.later_exit
+
+    def __call__(self, args: Sequence[str], **kwargs: object) -> int:
+        self.calls.append(tuple(args))
+        return self.exit_for(index=len(self.calls) - 1)
+
+
+def refuse_subprocess(*popenargs: object, **kwargs: object) -> None:
+    raise AssertionError(f"run_check started a real process: {popenargs} {kwargs}")
+
+
+def isolate(monkeypatch: pytest.MonkeyPatch, project: Path, files: Sequence[str], recorder: CallRecorder) -> None:
+    """Run checks in `project` with no real process: every tool importable, `files` as the tracked files, `recorder`
+    as subprocess.call, and any subprocess.run a test failure."""
+    monkeypatch.chdir(project)
+    monkeypatch.setattr(target=run_checks, name="importable", value=lambda module: True)
+    monkeypatch.setattr(target=run_checks, name="tracked_files", value=lambda: list(files))
+    monkeypatch.setattr(target=run_checks.subprocess, name="run", value=refuse_subprocess)
+    monkeypatch.setattr(target=run_checks.subprocess, name="call", value=recorder)
+
+
+def command_line_length(argv: Sequence[str]) -> int:
+    """The length of the command line Windows' CreateProcess receives for `argv` (subprocess joins it this way)."""
+    return len(subprocess.list2cmdline(seq=argv))
+
+
+def module_bound() -> int:
+    """MAX_COMMAND_LINE_CHARS, asserted to be an int under the Windows cap."""
+    bound = getattr(run_checks, BOUND_NAME, None)
+    assert isinstance(bound, int) and not isinstance(bound, bool), f"run_checks.{BOUND_NAME} is {bound!r}, not an int"
+    assert 0 < bound < WINDOWS_COMMAND_LINE_LIMIT, (
+        f"run_checks.{BOUND_NAME} is {bound}, not under the Windows cap of {WINDOWS_COMMAND_LINE_LIMIT}"
+    )
+    return bound
+
+
+def long_file_list() -> list[str]:
+    """Tracked-file paths of varied lengths whose own command line spans more than LONG_LIST_SPAN Windows caps."""
+    files: list[str] = []
+    length = 0
+    while length <= LONG_LIST_SPAN * WINDOWS_COMMAND_LINE_LIMIT:
+        index = len(files)
+        module_name = f"module_{index:05d}_{'x' * (index % 53)}.py"
+        path = PurePosixPath("src", f"package_{index % 37:02d}", module_name).as_posix()
+        files.append(path)
+        length += len(path) + 1
+    return files
+
+
+def detect_secrets_spec() -> object:
+    """The inventory's detect-secrets entry, as run_groups would hand it to run_check."""
+    specs = [spec for group, name, spec in run_checks.CHECKS if group == SECURITY_GROUP and name == DETECT_SECRETS]
+    assert len(specs) == 1, f"expected one {SECURITY_GROUP}/{DETECT_SECRETS} entry in CHECKS, found {len(specs)}"
+    return specs[0]
+
+
+def detect_secrets_head() -> tuple[str, ...]:
+    return (run_checks.PY, *DETECT_SECRETS_FIXED_ARGS)
+
+
+def status_line_counts(output: str, check: str) -> tuple[int, ...]:
+    """How many `--- RUN`, `--- PASS` and `--- FAIL` lines `output` holds for `check` (`<group>/<name>`)."""
+    lines = output.splitlines()
+    return tuple(
+        sum(1 for line in lines if line.startswith(prefix.format(check=check)))
+        for prefix in (RUN_PREFIX, PASS_PREFIX, FAIL_PREFIX)
+    )
+
+
+def joined_batches(recorder: CallRecorder) -> list[str]:
+    """Every file the invocations carried after the fixed head, in invocation order."""
+    head_length = len(detect_secrets_head())
+    return [path for call in recorder.calls for path in call[head_length:]]
+
+
+def make_full_project(base: Path) -> None:
+    """Every path an inventory check looks for, so each check takes its full, runnable form."""
+    for directory in (*run_checks.LINT_PATHS, *run_checks.BANDIT_PATHS):
+        (base / directory).mkdir(exist_ok=True)
+    (base / run_checks.E2E_DIR).mkdir(parents=True, exist_ok=True)
+    (base / run_checks.HOOK_TESTS_DIR).mkdir(parents=True, exist_ok=True)
+    (base / PYPROJECT).write_text("[tool.bandit]\n", encoding="utf-8")
+    (base / RUN_TESTS_SCRIPT).write_text("", encoding="utf-8")
+
+
+def test_a_long_file_list_check_runs_in_batches_under_the_bound(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A file list too long for one Windows command line runs as consecutive batches, each within the bound.
+
+    Every invocation repeats the fixed head (interpreter, `-m detect_secrets.pre_commit_hook --baseline
+    .secrets.baseline`) before a non-empty batch; the batches, joined, are the tracked files, each once, in order.
+    """
+    files = long_file_list()
+    recorder = CallRecorder()
+    isolate(monkeypatch=monkeypatch, project=tmp_path, files=files, recorder=recorder)
+    result = run_checks.run_check(group=SECURITY_GROUP, name=DETECT_SECRETS, spec=detect_secrets_spec())
+    output = capsys.readouterr().out
+    assert recorder.calls, f"the check started no invocation ({result}):\n{output}"
+    lengths = [command_line_length(argv=call) for call in recorder.calls]
+    assert max(lengths) <= WINDOWS_COMMAND_LINE_LIMIT, (
+        f"an invocation's command line is {max(lengths)} characters, over the Windows cap of "
+        f"{WINDOWS_COMMAND_LINE_LIMIT}: {len(files)} files ran as {len(lengths)} invocation(s) of {lengths} characters"
+    )
+    bound = module_bound()
+    assert max(lengths) <= bound, f"invocations of {lengths} characters, over run_checks.{BOUND_NAME} = {bound}"
+    head = detect_secrets_head()
+    heads = [call[: len(head)] for call in recorder.calls]
+    assert all(call_head == head for call_head in heads), f"not every invocation starts with {head}: {set(heads)}"
+    batch_sizes = [len(call) - len(head) for call in recorder.calls]
+    assert all(size > 0 for size in batch_sizes), f"an invocation carries no file; files per invocation {batch_sizes}"
+    joined = joined_batches(recorder=recorder)
+    assert joined == files, (
+        f"the batches hold {len(joined)} paths for {len(files)} tracked files: not every file once, in order"
+    )
+    assert result.returncode == 0, f"every batch exited 0, yet the check returned {result.returncode}"
+    check = f"{SECURITY_GROUP}/{DETECT_SECRETS}"
+    assert status_line_counts(output=output, check=check) == (1, 1, 0), (
+        f"expected one RUN and one PASS line for {check}, no FAIL line:\n{output}"
+    )
+
+
+def test_a_failing_batch_fails_the_check(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A non-zero batch fails the check with the first non-zero exit code, and every later batch still runs."""
+    files = long_file_list()
+    recorder = CallRecorder(scripted_exits=FAILING_BATCH_EXITS, later_exit=LATER_FAILING_EXIT)
+    isolate(monkeypatch=monkeypatch, project=tmp_path, files=files, recorder=recorder)
+    result = run_checks.run_check(group=SECURITY_GROUP, name=DETECT_SECRETS, spec=detect_secrets_spec())
+    output = capsys.readouterr().out
+    answered = [recorder.exit_for(index=index) for index in range(len(recorder.calls))]
+    assert result.returncode == FIRST_FAILING_EXIT, (
+        f"the check returned {result.returncode} from {len(answered)} invocation(s) answered {answered}; with the "
+        f"second batch exiting {FIRST_FAILING_EXIT} and every later one {LATER_FAILING_EXIT}, the verdict is "
+        f"{FIRST_FAILING_EXIT}"
+    )
+    joined = joined_batches(recorder=recorder)
+    assert joined == files, (
+        f"after a failing batch the invocations carried {len(joined)} of {len(files)} tracked files, in order: "
+        f"every batch must still run"
+    )
+    check = f"{SECURITY_GROUP}/{DETECT_SECRETS}"
+    assert status_line_counts(output=output, check=check) == (1, 0, 1), (
+        f"expected one RUN and one FAIL line for {check}, no PASS line:\n{output}"
+    )
+
+
+OTHER_CHECKS = tuple(entry for entry in run_checks.CHECKS if entry[1] != DETECT_SECRETS)
+
+
+@pytest.mark.parametrize(("group", "name", "spec"), OTHER_CHECKS, ids=[entry[1] for entry in OTHER_CHECKS])
+def test_a_short_check_runs_once_unchanged(
+    group: str,
+    name: str,
+    spec: object,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Every other inventory check fits the bound, and runs as exactly one invocation of its own argv."""
+    make_full_project(base=tmp_path)
+    recorder = CallRecorder()
+    isolate(monkeypatch=monkeypatch, project=tmp_path, files=SHORT_FILE_LIST, recorder=recorder)
+    argv = tuple(run_checks.resolve(spec=spec))
+    bound = module_bound()
+    assert command_line_length(argv=argv) <= bound, f"{group}/{name} does not fit run_checks.{BOUND_NAME}: {argv}"
+    result = run_checks.run_check(group=group, name=name, spec=spec)
+    output = capsys.readouterr().out
+    assert recorder.calls == [argv], f"{group}/{name} ran as {recorder.calls}, not once as {argv}"
+    assert result.returncode == 0, f"{group}/{name} returned {result.returncode} from one invocation exiting 0"
+    check = f"{group}/{name}"
+    assert status_line_counts(output=output, check=check) == (1, 1, 0), (
+        f"expected one RUN and one PASS line for {check}, no FAIL line:\n{output}"
+    )
+
+
+def test_a_short_file_list_check_runs_once_unchanged(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """detect-secrets over a file list that fits the bound runs once: the fixed head, then every file in order."""
+    recorder = CallRecorder()
+    isolate(monkeypatch=monkeypatch, project=tmp_path, files=SHORT_FILE_LIST, recorder=recorder)
+    argv = (*detect_secrets_head(), *SHORT_FILE_LIST)
+    bound = module_bound()
+    assert command_line_length(argv=argv) <= bound, f"the short file list does not fit run_checks.{BOUND_NAME}"
+    result = run_checks.run_check(group=SECURITY_GROUP, name=DETECT_SECRETS, spec=detect_secrets_spec())
+    output = capsys.readouterr().out
+    assert recorder.calls == [argv], f"the short file list ran as {recorder.calls}, not once as {argv}"
+    assert result.returncode == 0, f"the check returned {result.returncode} from one invocation exiting 0"
+    check = f"{SECURITY_GROUP}/{DETECT_SECRETS}"
+    assert status_line_counts(output=output, check=check) == (1, 1, 0), (
+        f"expected one RUN and one PASS line for {check}, no FAIL line:\n{output}"
+    )
