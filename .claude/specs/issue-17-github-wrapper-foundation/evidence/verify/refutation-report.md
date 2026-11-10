@@ -94,3 +94,36 @@ Every mutated file restored with `git checkout`. Re-green after the last restore
 predate this run and were left. The only change to the tree is this file.
 
 REFUTED R1 R2 R3
+
+## Re-verification 2026-11-10 (head faa6ceb)
+
+`git diff 95fc3b8 faa6ceb -- src/payload/scripts prompts docs` printed nothing: the delta is three test files and spec
+evidence. Each mutant was applied with Edit, its paired tests run once, then `git checkout -- <file>`; every target's
+sha256 equalled its pre-mutation value and `git status --porcelain` printed nothing after each restore.
+
+| Id | Claim | Mutant | Command | Result | Capture |
+|---|---|---|---|---|---|
+| CI | suite green on the tree's SHA | none | `get-pr-checks 26` | FAILED-TO-REFUTE | `head faa6cebe…` = local HEAD; `report`, `verify (lint/tests/types/security)` all `completed`/`success`; `statuses: []` under `combined_status: pending` |
+| R1 | Part 5.3 copies the package | copy clause deleted | RT S | FAILED-TO-REFUTE | `1 failed`: `the sentence that copies …github_wrapper.py… does not copy src/payload/scripts/github_api/ to scripts/github_api/` |
+| R1 | rewritten test still holds Part 6.2 | package bullet deleted | RT S | FAILED-TO-REFUTE | `1 failed`: `the top-level bullet that copies … does not copy …`; `section does not name src/payload/scripts/github_api/` |
+| R2 | `--limit` 0 and below print nothing | `if args.limit <= 0` guard deleted | RT C -k "limit-of-zero or negative-limit" | FAILED-TO-REFUTE | `2 failed`: `the standard output differs from the golden` |
+| R2 | non-UTF-8 credential exits 2 | `_one_token` try/except deleted | RT C -k credential-not-utf-8 | FAILED-TO-REFUTE | `UnicodeDecodeError: 'utf-8' codec can't decode byte 0x93 in position 0` |
+| R2 | same | decode with `errors="ignore"` | same | FAILED-TO-REFUTE | `exit code 0, the golden is 2; stdout '{\n  "number": 5, …'` |
+| R3 | non-integer rate header: plain error, no retry | `_integer_header` reads a non-integer as 0 | RT T -k non_integer_rate_limit_header | FAILED-TO-REFUTE | `6 failed`: `GitHubRateLimitError … still applied after 3 retries` |
+| R3 | same | `_rate_limit_of` `except ValueError` returns a 0 s retry-after limit | same | FAILED-TO-REFUTE | `6 failed`: same, `waiting 0.0 seconds before retry 1 of 3` |
+
+Vacuity: Grep `skip|xfail|deselect|assert True|pytest\.mark\.|#\s*assert|^\s*pass$` over the three changed test files
+matches only `parametrize`; every new test is killed above. The `credential-not-utf-8` row routes the issue, and the
+`errors="ignore"` kill shows the bytes reach `credentials/github-pat.txt`. The row carries no `log` expectation, like
+the existing `credential-refused` rows. The three new rows are not `c_only`, so P runs them on the fork too.
+
+Existing rows: the fixture diff changes no existing row's argv, stdout, exit code or routes (the first `list-issues`
+row's route moved into `open_issues`, the same `ListRouteSpec` arguments); `Project.build` still writes `str` content
+as `content.encode(encoding="utf-8")`. RT S T C P: `539 passed` before the first mutant and after the last restore.
+
+Coverage: the R2/R3 lines (the `--limit` guard, `_one_token`'s `except UnicodeDecodeError`, `_rate_limit_of`'s
+`except ValueError`) run under their tests: mutating each flips the test's verdict.
+
+Tree: restored; `tmp/` empty, no `.coverage`; the only change is this section.
+
+Verdict: VERIFIED
