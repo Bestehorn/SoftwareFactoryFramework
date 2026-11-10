@@ -54,7 +54,7 @@ def seed_run(arena: Path, body: str) -> Path:
 
 
 def prompt(text: str, meta: bool = False) -> dict:
-    record = {"type": "user", "message": {"role": "user", "content": text}}
+    record: dict[str, object] = {"type": "user", "message": {"role": "user", "content": text}}
     if meta:
         record["isMeta"] = True
     return record

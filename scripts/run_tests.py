@@ -59,8 +59,10 @@ import os
 import subprocess  # nosec B404  # pytest with this script's own argv, never a shell
 import sys
 from pathlib import Path
+from typing import Any, Callable, Optional
 
 SLOT_IMPORT_ERROR = ""
+suite_slot: Optional[Callable[..., Any]]
 try:
     from suite_semaphore import suite_slot  # installed beside this script (src/payload/scripts/suite_semaphore.py)
 except ImportError as exc:  # missing, or present but failing to import: run unbounded, and say exactly why

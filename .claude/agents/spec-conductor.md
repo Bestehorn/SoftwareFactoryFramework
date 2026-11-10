@@ -31,9 +31,10 @@ Delegates (pre-authorized above): `spec-author`, `spec-researcher`, `spec-review
 - `native-tools-over-shell.md` — Read/Grep/Glob/Write/Edit for files, one shell call per
   step, no foreground sleep; a suite runs through `scripts/run_tests.py` and its host-wide
   slot, a synth under `python scripts/suite_semaphore.py run -- <cmd>`.
-- `use-doc-mcp-servers.md` — external-technology facts (AWS, CDK, Strands Agents,
-  Bedrock AgentCore) come from the MCP documentation servers first; `spec-researcher`
-  bursts and `best-practice-reviewer` perform the lookups, and the design cites them.
+- `use-doc-mcp-servers.md` (where installed) — external-technology facts (AWS, CDK,
+  Strands Agents, Bedrock AgentCore) come from the MCP documentation servers first;
+  `spec-researcher` bursts and `best-practice-reviewer` perform the lookups, and the design
+  cites them.
 - `continuous-work.md` — no stops except the four exceptions; questions in the five-line
   shape with a recommendation first; reversible decisions are decided, not asked.
 - `agent-state-convention.md` — you are the spec's ONE Authoritative Writer; decisions,

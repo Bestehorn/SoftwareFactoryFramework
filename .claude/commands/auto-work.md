@@ -196,9 +196,10 @@ Honor the agent definition's mandates throughout: wrapper-only remote ops
 early and often, delegate EVERY conflict to `code-merge-reviewer`, keep each issue updated
 live per `.claude/rules/issue-tracking.md`, keep git clean (`keep-git-clean.md`), stay
 main-checkout-free, append a `DL-NNN` entry for every material decision
-(`agent-state-convention.md`), and put no Claude/AI/bot into any branch, worktree, commit,
-PR, or issue text and never add a `Co-Authored-By` or `🤖 Generated with Claude Code` trailer
-(`no-ai-attribution.md`). Never touch `.kiro/`.
+(`agent-state-convention.md`), attribute no work to a tool in any commit, PR, or issue text
+(naming a path or product as the subject of the work is fine), put no Claude/AI/bot into a
+branch or worktree name, and never add a `Co-Authored-By` or `🤖 Generated with Claude Code`
+trailer (`no-ai-attribution.md`). Never touch `.kiro/`.
 
 Route a defect you DISCOVER along the way through `issue-filing-discipline.md` rather than
 filing by reflex: blocking → absorb it into the current change; small and clear (a few lines,

@@ -16,7 +16,7 @@ SID = "abcd1234-1111-2222-3333-444455556666"
 
 
 def record(kind: str, text: str, *, model: str = "claude", tool_use: bool = False) -> str:
-    content = [{"type": "text", "text": text}] if text else []
+    content: list[dict[str, object]] = [{"type": "text", "text": text}] if text else []
     if tool_use:
         content.append({"type": "tool_use", "id": "t1", "name": "Bash", "input": {"command": "echo"}})
     return json.dumps({"type": kind, "message": {"role": kind, "model": model, "content": content}})

@@ -440,7 +440,8 @@ def _is_framework_entry(entry: Any) -> bool:
     for hook in entry.get("hooks", []) if isinstance(entry.get("hooks"), list) else []:
         if not isinstance(hook, dict):
             continue
-        args = hook.get("args") if isinstance(hook.get("args"), list) else []
+        raw_args = hook.get("args")
+        args = raw_args if isinstance(raw_args, list) else []
         text = " ".join([str(hook.get("command", "")), *[str(a) for a in args]])
         if LAUNCHER in args or "hooks.py" in text:
             return True
@@ -450,7 +451,8 @@ def _is_framework_entry(entry: Any) -> bool:
 def _launch_fields(entry: Dict[str, Any]) -> Dict[str, Any]:
     """The fields of one framework entry that --check compares: matcher, timeout, command, event, launch form."""
     hook = next((h for h in entry.get("hooks", []) if isinstance(h, dict)), {})
-    args = hook.get("args") if isinstance(hook.get("args"), list) else []
+    raw_args = hook.get("args")
+    args = raw_args if isinstance(raw_args, list) else []
     return {
         "matcher": entry.get("matcher"),
         "timeout": hook.get("timeout"),
@@ -491,11 +493,13 @@ def registration_check(project_dir: Path) -> Tuple[int, str]:
         return 2, f"{path}: not readable JSON ({exc})\n"
     if not isinstance(data, dict):
         return 2, f"{path}: the top level is not an object\n"
-    actual = data.get("hooks") if isinstance(data.get("hooks"), dict) else {}
+    raw_actual = data.get("hooks")
+    actual = raw_actual if isinstance(raw_actual, dict) else {}
     expected = json.loads(registration_block())["hooks"]
     differences: List[str] = []
     for key in sorted(set(expected) | set(actual)):
-        entries = actual.get(key) if isinstance(actual.get(key), list) else []
+        raw_entries = actual.get(key)
+        entries = raw_entries if isinstance(raw_entries, list) else []
         have = [entry for entry in entries if _is_framework_entry(entry)]
         if key not in expected:
             if have:

@@ -182,12 +182,35 @@ def ruff_format_argv() -> Argv:
     return (PY, "-m", "ruff", "format", "--check", *existing(LINT_PATHS))
 
 
+BANDIT_REPORT = Path("reports") / "bandit.txt"
+
+
 def bandit_argv() -> Argv:
     """bandit with the project's `[tool.bandit]` config — the `-c pyproject.toml` the pre-commit bandit hook
     passes too, so CI and the commit hook judge alike. Without it bandit ignored the configured skips and
-    excluded directories, and flagged every `assert` of a test directory under `src/`."""
+    excluded directories, and flagged every `assert` of a test directory under `src/`. The `txt` report goes to
+    BANDIT_REPORT, a file bandit opens as UTF-8, and run_check relays it: written to a cp1252 stdout, a report
+    character cp1252 cannot encode crashed bandit's formatter and the check failed with no finding shown."""
     config = ("-c", "pyproject.toml") if Path("pyproject.toml").is_file() else ()
-    return (PY, "-m", "bandit", *config, "-r", *existing(BANDIT_PATHS), "-x", "src/_version.py")
+    return (
+        PY,
+        "-m",
+        "bandit",
+        *config,
+        "-r",
+        *existing(BANDIT_PATHS),
+        "-x",
+        "src/_version.py",
+        "-f",
+        "txt",
+        "-o",
+        BANDIT_REPORT.as_posix(),
+    )
+
+
+# Checks whose tool writes its report to a file rather than to the inherited stdout, by check name. run_check
+# prepares the file before the command and relays its text to its own stdout afterwards (see bandit_argv).
+RELAYED_REPORTS: dict[str, Path] = {"bandit": BANDIT_REPORT}
 
 
 # The check inventory. Each entry: (group, name, argv-or-argv-factory).
@@ -302,7 +325,7 @@ def readable(argv: Argv) -> str:
     return line if len(line) <= MAX_COMMAND_CHARS else line[:MAX_COMMAND_CHARS] + " ...(truncated)"
 
 
-LIST_MAX_ARGS = 12
+LIST_MAX_ARGS = 16
 
 
 def listed(spec: Argv | Callable[[], Argv]) -> str:
@@ -312,6 +335,18 @@ def listed(spec: Argv | Callable[[], Argv]) -> str:
     if len(argv) <= LIST_MAX_ARGS:
         return shlex.join(argv)
     return f"{shlex.join(argv[:LIST_MAX_ARGS])} ... (+{len(argv) - LIST_MAX_ARGS} more)"
+
+
+def relay_text(text: str) -> None:
+    """Write `text` to this process's stdout in a form its encoding can always take.
+
+    A character the stream's encoding cannot represent becomes its backslash escape instead of a
+    UnicodeEncodeError, so a relayed report is shown whole on a cp1252 console as on a UTF-8 one.
+    """
+    encoding = sys.stdout.encoding or "utf-8"
+    shown = text if text.endswith("\n") else text + "\n"
+    sys.stdout.write(shown.encode(encoding=encoding, errors="backslashreplace").decode(encoding=encoding))
+    sys.stdout.flush()
 
 
 def run_check(group: str, name: str, spec: Argv | Callable[[], Argv]) -> Result:
@@ -329,6 +364,11 @@ def run_check(group: str, name: str, spec: Argv | Callable[[], Argv]) -> Result:
             skipped_reason=reason,
         )
 
+    report = RELAYED_REPORTS.get(name)
+    if report is not None:
+        report.parent.mkdir(parents=True, exist_ok=True)
+        if report.exists():
+            report.unlink()  # a stale report must never be relayed as this run's
     print(f"--- RUN  {group}/{name}: {shown}", flush=True)
     started = time.monotonic()
     try:
@@ -337,6 +377,8 @@ def run_check(group: str, name: str, spec: Argv | Callable[[], Argv]) -> Result:
         print(f"--- ERROR {group}/{name}: {exc}", flush=True)
         code = 127
     elapsed = time.monotonic() - started
+    if report is not None and report.exists():
+        relay_text(text=report.read_text(encoding="utf-8", errors="replace"))
     print(
         f"--- {'PASS' if code == 0 else 'FAIL'} {group}/{name} ({elapsed:.1f}s, exit {code})",
         flush=True,

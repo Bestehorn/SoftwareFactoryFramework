@@ -21,9 +21,10 @@ Honor the always-loaded rules throughout: read COMPLETE command output
 (`no-output-shortening.md`), cite evidence for every claim (`no-guessing.md`), all remote
 operations through the wrapper script (`use-git-wrapper-scripts.md`), venv discipline
 (`use-venv.md`), commit only what belongs and leave no stale worktree/branch
-(`keep-git-clean.md`), keep the issue as the live record (`issue-tracking.md`), never put
-Claude/AI/bot into a branch, commit, PR, or issue and never add a `Co-Authored-By` or
-`🤖 Generated with Claude Code` trailer (`no-ai-attribution.md`), CI must be green
+(`keep-git-clean.md`), keep the issue as the live record (`issue-tracking.md`), never
+attribute work to a tool in a commit, PR, or issue (naming a path or product as the subject
+of the work is fine), put no Claude/AI/bot into a branch or worktree name, and never add a
+`Co-Authored-By` or `🤖 Generated with Claude Code` trailer (`no-ai-attribution.md`), CI must be green
 (`remote-ci-must-pass.md`), tests run in CI and not on every commit
 (`ci-owns-the-test-suite.md`), and log every material decision as `DL-NNN`
 (`agent-state-convention.md`). Never touch `.kiro/`.
