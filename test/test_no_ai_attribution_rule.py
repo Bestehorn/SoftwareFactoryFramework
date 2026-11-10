@@ -40,6 +40,7 @@ SENTENCE_END = ". "
 
 WHITESPACE_RUN = re.compile(pattern=r"\s+")
 PARAGRAPH_BREAK = re.compile(pattern=r"\n[ \t]*\n")
+CLAUSE_BREAK = re.compile(pattern=r"\. |; ")
 
 # The key phrases of the change.
 K0 = "**Never attribute work to"
@@ -51,6 +52,13 @@ K3 = (
 )
 CLAUDE_K4 = '"claude" (or "AI", "assistant", "bot", "LLM", "Anthropic", "Copilot", a model name)'
 KIRO_K4 = '"claude"/"AI"/"assistant"/"bot"/"LLM"/"Anthropic"/"Copilot"/a model name'
+
+# UB-2: the allowance sentence names its message domain directly before K3 and keeps the guard that bars it from
+# every authored name; the self-check's own allowance clause is limited to messages the same way.
+ALLOWANCE_DOMAIN = "In commit messages (subject line included), PR/MR titles and bodies, and issue text,"
+ALLOWANCE_NAME_GUARD = "the allowance never extends to a branch, worktree, tag, stash, ref or label name"
+SELF_CHECK_ALLOWANCE = "a path, command, setting or product named as the subject of the work"
+SELF_CHECK_ALLOWANCE_DOMAIN = "in a commit message, PR/MR text or issue text"
 
 # The anchors of the four restatements in the Claude setup prompt.
 SETUP_CLAUDE_ANCHORS = (
@@ -109,11 +117,12 @@ class KiroRuleBody(RuleBody):
 
 @dataclass(frozen=True)
 class Restatement:
-    """A command or agent that restates the rule's clause, with the trailer phrase it keeps."""
+    """A command or agent that restates the rule's clause, with the trailer phrase and the name clause it keeps."""
 
     name: str
     path: Path
     kept_phrase: str
+    kept_name_phrase: str
 
 
 CLAUDE_BODY = RuleBody(
@@ -146,11 +155,33 @@ BODIES = (CLAUDE_BODY, KIRO_BODY)
 
 COMMAND_KEPT_PHRASE = "never add a `Co-Authored-By`"
 AGENT_KEPT_PHRASE = "strip any such trailer the tool adds"
+COMMAND_NAME_PHRASE = "put no Claude/AI/bot into a branch or worktree name"
+AGENT_NAME_PHRASE = "no branch or worktree name carries Claude/AI/assistant/bot"
 RESTATEMENTS = (
-    Restatement(name="work-issue-command", path=WORK_ISSUE_COMMAND_PATH, kept_phrase=COMMAND_KEPT_PHRASE),
-    Restatement(name="auto-work-command", path=AUTO_WORK_COMMAND_PATH, kept_phrase=COMMAND_KEPT_PHRASE),
-    Restatement(name="claude-orchestrator", path=CLAUDE_ORCHESTRATOR_PATH, kept_phrase=AGENT_KEPT_PHRASE),
-    Restatement(name="kiro-orchestrator", path=KIRO_ORCHESTRATOR_PATH, kept_phrase=AGENT_KEPT_PHRASE),
+    Restatement(
+        name="work-issue-command",
+        path=WORK_ISSUE_COMMAND_PATH,
+        kept_phrase=COMMAND_KEPT_PHRASE,
+        kept_name_phrase=COMMAND_NAME_PHRASE,
+    ),
+    Restatement(
+        name="auto-work-command",
+        path=AUTO_WORK_COMMAND_PATH,
+        kept_phrase=COMMAND_KEPT_PHRASE,
+        kept_name_phrase=COMMAND_NAME_PHRASE,
+    ),
+    Restatement(
+        name="claude-orchestrator",
+        path=CLAUDE_ORCHESTRATOR_PATH,
+        kept_phrase=AGENT_KEPT_PHRASE,
+        kept_name_phrase=AGENT_NAME_PHRASE,
+    ),
+    Restatement(
+        name="kiro-orchestrator",
+        path=KIRO_ORCHESTRATOR_PATH,
+        kept_phrase=AGENT_KEPT_PHRASE,
+        kept_name_phrase=AGENT_NAME_PHRASE,
+    ),
 )
 
 
@@ -189,6 +220,46 @@ def _self_check_paragraph(body: RuleBody) -> str:
     self_check = [part for part in _paragraphs(text=body.read()) if marker in part]
     assert self_check, f"{body.name} body: no paragraph contains {SELF_CHECK_MARKER!r}"
     return self_check[0]
+
+
+def _sentence_around(normalised: str, index: int) -> str:
+    """The sentence of a normalised text that holds the character at ``index``, without its closing period."""
+    previous_end = normalised.rfind(SENTENCE_END, 0, index)
+    start = 0 if previous_end == -1 else previous_end + len(SENTENCE_END)
+    end = normalised.find(SENTENCE_END, index)
+    return normalised[start:] if end == -1 else normalised[start:end]
+
+
+def _clauses(paragraph: str) -> list[str]:
+    """The clauses of a normalised paragraph: the parts between one sentence end or semicolon and the next."""
+    return [clause for clause in CLAUSE_BREAK.split(string=paragraph) if clause]
+
+
+def _ub2_allowance_problems(body: RuleBody) -> list[str]:
+    normalised = _normalise(text=body.read())
+    k3_at = normalised.find(_normalise(text=K3))
+    assert k3_at != -1, f"{body.name} body lacks the allowance sentence {K3!r}"
+    problems = []
+    if _normalise(text=f"{ALLOWANCE_DOMAIN} {K3}") not in normalised:
+        problems.append(
+            f"{body.name} allowance sentence does not name its message domain {ALLOWANCE_DOMAIN!r} right before K3"
+        )
+    if _normalise(text=ALLOWANCE_NAME_GUARD) not in _sentence_around(normalised=normalised, index=k3_at):
+        problems.append(f"{body.name} allowance sentence lost the guard {ALLOWANCE_NAME_GUARD!r}")
+    return problems
+
+
+def _ub2_self_check_allowance_problems(body: RuleBody) -> list[str]:
+    exemption = _normalise(text=SELF_CHECK_ALLOWANCE)
+    clauses = [clause for clause in _clauses(paragraph=_self_check_paragraph(body=body)) if exemption in clause]
+    assert clauses, f"{body.name} self-check paragraph: no clause exempts {SELF_CHECK_ALLOWANCE!r}"
+    domain = _normalise(text=SELF_CHECK_ALLOWANCE_DOMAIN)
+    return [
+        f"{body.name} self-check exempts a path or product beyond messages (lacks {SELF_CHECK_ALLOWANCE_DOMAIN!r}):"
+        f" {clause!r}"
+        for clause in clauses
+        if domain not in clause
+    ]
 
 
 def _ac1_problems(body: RuleBody) -> list[str]:
@@ -261,6 +332,18 @@ def test_ub2_body_still_bans_the_listed_words_in_authored_names(body: RuleBody) 
     assert not missing_k4, f"{body.name} opening paragraph lost the listed words {missing_k4}"
 
 
+@pytest.mark.parametrize("body", BODIES, ids=lambda body: body.name)
+def test_ub2_allowance_sentence_names_its_message_domain_and_keeps_the_name_guard(body: RuleBody) -> None:
+    problems = _ub2_allowance_problems(body=body)
+    assert not problems, "\n".join(problems)
+
+
+@pytest.mark.parametrize("body", BODIES, ids=lambda body: body.name)
+def test_ub2_self_check_allowance_is_limited_to_messages(body: RuleBody) -> None:
+    problems = _ub2_self_check_allowance_problems(body=body)
+    assert not problems, "\n".join(problems)
+
+
 @pytest.mark.parametrize("anchor", SETUP_CLAUDE_ANCHORS, ids=SETUP_CLAUDE_ANCHOR_IDS)
 def test_ub3_setup_claude_restatement_states_attribution_and_names_only(anchor: str) -> None:
     text = _normalise(text=CLAUDE_SETUP_PROMPT_PATH.read_text(encoding="utf-8"))
@@ -280,3 +363,9 @@ def test_ub3_restatement_file_states_attribution_and_names_only(restatement: Res
     assert not found, f"{restatement.name} restates the blanket word ban: {found}"
     missing = _missing(text=text, phrases=(restatement.kept_phrase,))
     assert not missing, f"{restatement.name} lost the kept trailer phrase {missing}"
+
+
+@pytest.mark.parametrize("restatement", RESTATEMENTS, ids=lambda restatement: restatement.name)
+def test_ub3_restatement_file_keeps_its_branch_and_worktree_name_clause(restatement: Restatement) -> None:
+    missing = _missing(text=restatement.path.read_text(encoding="utf-8"), phrases=(restatement.kept_name_phrase,))
+    assert not missing, f"{restatement.name} lost its branch and worktree name clause {missing}"

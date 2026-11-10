@@ -38,4 +38,4 @@ full text for `claude`, `AI`, `assistant`, `bot`, `LLM`, `Anthropic`, `Copilot`,
 `Co-Authored-By`, `Generated with`. Any hit that is attribution of work to a tool, or is in
 one of the names you author, is a defect — restate descriptively before the artifact is
 created. A hit inside a path, command, setting or product named as the subject of the work
-is not.
+in a commit message, PR/MR text or issue text is not.

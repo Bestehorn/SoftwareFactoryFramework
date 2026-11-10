@@ -3029,7 +3029,8 @@ subjects imperative ≤72 chars; PR/MR titles the outcome.
 for `claude`, `AI`, `assistant`, `bot`, `LLM`, `Anthropic`, `Copilot`, `🤖`,
 `Co-Authored-By`, `Generated with`. If any is attribution of work to a tool or
 appears in one of the names you author, remove it and restate descriptively; a path,
-command, setting or product named as the subject of the work stays.
+command, setting or product named as the subject of the work in a commit message,
+PR/MR text or issue text stays.
 ```
 
 ### 8.29 `keep-git-clean.md` (always) — fleet convention
