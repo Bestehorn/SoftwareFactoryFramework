@@ -124,7 +124,7 @@ belongs to the module whose name sorts first. A record is transcribed from its r
   `delete-branch`; `test_pipeline_wait_exit_codes` — 0, 10, and 11 with `--timeout-seconds 0`, and `pipeline_wait`
   directly on a `Transport` holding a fake clock and sleep, imported inside the test — Files:
   `src/payload/test/test_gitlab_wrapper_compat.py` — Validates: UB-1
-- [ ] 5.2 TEST: S `test_both_prompts_copy_the_package_with_the_entry` — each section cut from its heading to the next
+- [x] 5.2 TEST: S `test_both_prompts_copy_the_package_with_the_entry` — each section cut from its heading to the next
   `###` heading, as `test/test_setup_prompts_gitignore.py` cuts PART 3; both GitLab copy steps name
   `src/payload/scripts/gitlab_api/` with the entry script, and both "Shipped Python" lists name `scripts/gitlab_api/`
   — Files: `test/test_setup_prompts_gitlab_wrapper.py` — Validates: UB-1
@@ -134,7 +134,7 @@ belongs to the module whose name sorts first. A record is transcribed from its r
 - [x] 5.4 IMPL: the `label`, `mr` and `delete-branch` handlers of D6; `commands/mr.py`'s docstring carries the own-MR
   approval caveat — Files: `gitlab_api/commands/label.py`, `gitlab_api/commands/mr.py`,
   `gitlab_api/commands/branch.py` — Validates: UB-1
-- [ ] 5.5 IMPL: D2's install path — `prompts/setup-claude.txt` Part 5.3 and `prompts/setup-kiro.txt` Part 6.2 copy
+- [x] 5.5 IMPL: D2's install path — `prompts/setup-claude.txt` Part 5.3 and `prompts/setup-kiro.txt` Part 6.2 copy
   `src/payload/scripts/gitlab_api/` with the entry script, both "Shipped Python" lists name `scripts/gitlab_api/`,
   the GitLab half of the "skeletons" sentence and Part 5.3's docstring pointers restated as D2 states them (the GitHub text stays #17's), the setup-kiro APPENDIX lists
   `gitlab_api/  # if GitLab` under `scripts/`; the map names the package, its suites and the coverage test, under its

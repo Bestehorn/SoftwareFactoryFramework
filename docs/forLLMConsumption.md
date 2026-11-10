@@ -33,6 +33,12 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   `src/payload/test/test_github_api_*.py`, `src/payload/test/test_github_wrapper_compat.py`; in `test/`,
   `test_github_wrapper_coverage.py` (every API-reference operation covered by a record or pending) and
   `test_github_wrapper_fork_parity.py`. Not yet installed here: sessions run the fork (`config/toolchain.json`).
+- `src/payload/scripts/gitlab_api/` — the package of the product GitLab wrapper, copied with its entry script
+  `gitlab_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of
+  `docs/api-reference/gitlab/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites:
+  `src/payload/test/test_gitlab_api_*.py`, `src/payload/test/test_gitlab_wrapper_compat.py`; in `test/`,
+  `test_gitlab_wrapper_coverage.py` (every API-reference operation covered by a record or pending). Not installed
+  here: the repository is on GitHub (`config/toolchain.json`).
 - `templates/` — config skeletons, CI templates, git hooks, `docs/` shipped verbatim. No Python.
 - `docs/reports/`, `docs/design/agents/` — this repository's own records; `docs/README.md` maps the old layout.
 - `test/` — this repository's own tests: `test_layout.py` (layout guard), `test_toolchain_integrity.py`,
