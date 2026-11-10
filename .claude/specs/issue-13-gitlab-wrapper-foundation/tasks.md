@@ -67,10 +67,10 @@ Every `gitlab_api/families/<module>.py` below follows D2's family module contrac
 and `PENDING`, the `(method, path)` keys of the family's index rows that no record maps; a key two families link
 belongs to the module whose name sorts first. A record is transcribed from its row's `rest/<stem>.md` attribute table
 (D1, D5).
-- [ ] 3.1 TEST: V `test_every_index_row_is_mapped_or_pending` — the real `operations-index.md` against
+- [x] 3.1 TEST: V `test_every_index_row_is_mapped_or_pending` — the real `operations-index.md` against
   `discover_families()` under the socket guard — Files: `test/test_gitlab_wrapper_coverage.py` — Validates: AC-5.3,
   AC-5.4
-- [ ] 3.2 TEST: C — `config/gitlab.json` in `tmp_path` (chdir), `main(argv=…)`, standard output by `capsys`,
+- [x] 3.2 TEST: C — `config/gitlab.json` in `tmp_path` (chdir), `main(argv=…)`, standard output by `capsys`,
   `FakeGitLab` and the guard autouse — with `test_load_config_refusals`, `test_delivery_verb_through_main`, the
   subprocess `test_script_usage_error_exits_2`, and the subprocess `test_script_loads_by_path` (`sys.executable -c`
   loads `<scripts dir>/gitlab_wrapper.py` with `importlib.util.spec_from_file_location` and `exec_module`,
@@ -78,26 +78,26 @@ belongs to the module whose name sorts first. A record is transcribed from its r
   wave's captures also run
   `src/payload/test/test_wrapper_delivery.py`, unedited — Files: `src/payload/test/test_gitlab_wrapper_compat.py` —
   Validates: UB-1, UB-2
-- [ ] 3.3 IMPL: the `plan#` and `verify#` records D6 names, the rest pending — Files: `gitlab_api/families/plan.py`,
+- [x] 3.3 IMPL: the `plan#` and `verify#` records D6 names, the rest pending — Files: `gitlab_api/families/plan.py`,
   `gitlab_api/families/verify.py` — Validates: AC-5.3, UB-1
-- [ ] 3.4 IMPL: the `ai-coding#`, `create#` and `software-supply-chain-security#` records D6 names, the rest pending —
+- [x] 3.4 IMPL: the `ai-coding#`, `create#` and `software-supply-chain-security#` records D6 names, the rest pending —
   Files: `gitlab_api/families/ai_coding.py`, `gitlab_api/families/create.py`,
   `gitlab_api/families/software_supply_chain_security.py` — Validates: AC-5.3, UB-1
-- [ ] 3.5 IMPL: pending only — Files: `gitlab_api/families/agent_foundations.py`, `gitlab_api/families/ai_clients.py`,
+- [x] 3.5 IMPL: pending only — Files: `gitlab_api/families/agent_foundations.py`, `gitlab_api/families/ai_clients.py`,
   `gitlab_api/families/analytics.py` — Validates: AC-5.3
-- [ ] 3.6 IMPL: pending only — Files: `gitlab_api/families/data_access.py`, `gitlab_api/families/deploy.py`,
+- [x] 3.6 IMPL: pending only — Files: `gitlab_api/families/data_access.py`, `gitlab_api/families/deploy.py`,
   `gitlab_api/families/developer_experience.py` — Validates: AC-5.3
-- [ ] 3.7 IMPL: pending only — Files: `gitlab_api/families/facilitated_functionality.py`,
+- [x] 3.7 IMPL: pending only — Files: `gitlab_api/families/facilitated_functionality.py`,
   `gitlab_api/families/fulfillment.py`, `gitlab_api/families/gitlab_dedicated.py` — Validates: AC-5.3
-- [ ] 3.8 IMPL: pending only — Files: `gitlab_api/families/gitlab_delivery.py`, `gitlab_api/families/growth.py`,
+- [x] 3.8 IMPL: pending only — Files: `gitlab_api/families/gitlab_delivery.py`, `gitlab_api/families/growth.py`,
   `gitlab_api/families/no_stage_assigned.py` — Validates: AC-5.3
-- [ ] 3.9 IMPL: pending only — Files: `gitlab_api/families/openapi_only.py`, `gitlab_api/families/orbit.py`,
+- [x] 3.9 IMPL: pending only — Files: `gitlab_api/families/openapi_only.py`, `gitlab_api/families/orbit.py`,
   `gitlab_api/families/package.py` — Validates: AC-5.3
-- [ ] 3.10 IMPL: pending only — Files: `gitlab_api/families/runtime.py`, `gitlab_api/families/security_factory.py`,
+- [x] 3.10 IMPL: pending only — Files: `gitlab_api/families/runtime.py`, `gitlab_api/families/security_factory.py`,
   `gitlab_api/families/security_governance.py` — Validates: AC-5.3
-- [ ] 3.11 IMPL: pending only — Files: `gitlab_api/families/security_platform.py`,
+- [x] 3.11 IMPL: pending only — Files: `gitlab_api/families/security_platform.py`,
   `gitlab_api/families/security_risk_management.py`, `gitlab_api/families/tenant_scale.py` — Validates: AC-5.3
-- [ ] 3.12 IMPL: the entry script per D3 and D7 — the import bootstrap; `_load_config` with the token-character,
+- [x] 3.12 IMPL: the entry script per D3 and D7 — the import bootstrap; `_load_config` with the token-character,
   `in_progress_label` and `token_type` rules; `main(argv=None)`: UTF-8 `reconfigure` of standard output and standard
   error, a delivery verb to the unchanged `steward_delegate`, the parser of the discovered `gitlab_api.commands`
   modules, `Transport.from_config`, a `GitLabAPIError` logged and returned as 1; `__main__`; the usage docstring for

@@ -1,8 +1,8 @@
-"""GitLab API wrapper for CI/CD and issue operations.
+"""GitLab API wrapper for CI/CD, issue, merge-request and delivery operations.
 
 Usage:
-    python scripts/gitlab_wrapper.py pipeline status
-    python scripts/gitlab_wrapper.py pipeline log
+    python scripts/gitlab_wrapper.py pipeline status [--count N]   # the latest N pipelines (default 1)
+    python scripts/gitlab_wrapper.py pipeline log                  # the traces of the latest pipeline's failed jobs
     python scripts/gitlab_wrapper.py pipeline wait <pipeline_id> --timeout-seconds 540   # foreground; re-issue on 11
         # BLOCKS until the pipeline is terminal, polling internally; exit 0 on success,
         # 10 when it ended without success (failed/canceled/skipped/manual), 11 on timeout —
@@ -11,15 +11,20 @@ Usage:
         # (parallel-by-default.md) — never `sleep` in a tool call.
     python scripts/gitlab_wrapper.py issue list
     python scripts/gitlab_wrapper.py issue list --state opened --assignee "*" --labels in-progress
-    python scripts/gitlab_wrapper.py issue create --title "..." --labels "bug"
+        # --state opened|closed|all; --assignee <username>, "*" (any assignee) or none (no assignee)
+    python scripts/gitlab_wrapper.py issue show <iid>
+    python scripts/gitlab_wrapper.py issue create --title "..." [--description "..."] [--labels "bug"]
     python scripts/gitlab_wrapper.py issue comment <iid> --body "..."
     python scripts/gitlab_wrapper.py issue start <iid>        # claim in-progress (idempotent, verified)
     python scripts/gitlab_wrapper.py issue claim-check <iid>  # read-only; exit 3 if open+unclaimed
     python scripts/gitlab_wrapper.py issue release <iid>      # drop the claim
-    python scripts/gitlab_wrapper.py issue label-add <iid> --labels in-progress
-    python scripts/gitlab_wrapper.py issue assign <iid> --me
+    python scripts/gitlab_wrapper.py issue label-add <iid> --labels in-progress      # additive: other labels stay
+    python scripts/gitlab_wrapper.py issue label-remove <iid> --labels in-progress
+    python scripts/gitlab_wrapper.py issue assign <iid> --me | --user <username> | --unassign
     python scripts/gitlab_wrapper.py issue close <iid>
-    python scripts/gitlab_wrapper.py issue reopen <iid>       # undo a premature close
+    python scripts/gitlab_wrapper.py issue reopen <iid>       # undo a premature close; exit 0 if already open
+    python scripts/gitlab_wrapper.py label list
+    python scripts/gitlab_wrapper.py label create --name <name> --color <color> [--description "..."]
     python scripts/gitlab_wrapper.py mr create --source <branch> --target main --title "..."
     python scripts/gitlab_wrapper.py mr get <mr_iid>
     python scripts/gitlab_wrapper.py mr checks <mr_iid>
@@ -33,219 +38,162 @@ Usage:
     python scripts/gitlab_wrapper.py check-handoff <iid>                            # 0 ready, 4 not (reasons printed)
     python scripts/gitlab_wrapper.py check-landed <mr_iid> [<mr_iid> ...]           # 0 all landed, 4 not
 
-Credentials: config/gitlab.json (gitignored).
+Exit codes: 0 done; 1 a GitLab API error, a refused claim or a refused config/gitlab.json (the reason on standard
+error); 2 a usage error; 3 `issue claim-check` on an open, unclaimed issue; 10 and 11 `pipeline wait` (above). The
+delivery verbs (`enqueue-pr` to `check-landed`) run the merge steward, scripts/merge_steward.py, and return its exit
+code (0 accepted, 4 refused with the reason printed); on a host that is not the queue's (config/delivery.json
+`host`) they refuse with 2. Results go to standard output (JSON, or the job traces of `pipeline log`); diagnostics go
+to standard error.
 
-This wrapper is the project's mandated entry point for all GitLab API
-operations (see .kiro/steering/use-git-wrapper-scripts.md). Direct use
-of `glab`, `gh`, raw curl, or requests against the GitLab API is
-forbidden. If a host requires corporate-SSO cookie auth (e.g.
-Midway-protected GitLab), add that handling here as a clearly-commented
-extension point.
+Credentials: config/gitlab.json (gitignored; copy config/gitlab.json.template and fill in real values), and nothing
+else: no environment variable is read. Its keys:
+    hostname           the GitLab host: gitlab.com or a self-hosted instance
+    project_id         the numeric project ID (Settings > General)
+    token              the access token, with at least the 'api' scope; printable ASCII without the space ('!' to
+                       '~'), so a pasted space, line break or invisible character is refused, by key, never echoed
+    token_type         optional, how the token is sent: "private" (the default; a personal, project or group access
+                       token, as PRIVATE-TOKEN), "bearer" (an OAuth 2.0 access token, as Authorization: Bearer) or
+                       "job" (a CI/CD job token, as JOB-TOKEN; GitLab accepts it on a few endpoints only). The merge
+                       steward the delivery verbs run sends every token as PRIVATE-TOKEN.
+    in_progress_label  optional: the label `issue start` adds and verifies (default "in-progress")
+
+This wrapper is the project's mandated entry point for all GitLab API operations (the use-git-wrapper-scripts rule,
+in .claude/rules/ or .kiro/steering/). Direct use of `glab`, `gh`, raw curl, or requests against the GitLab API is
+forbidden. The requests are built by the package beside this file, scripts/gitlab_api/: one record per endpoint, one
+request path (gitlab_api/transport.py), and the subcommands in gitlab_api/commands/, whose modules this script
+discovers. If a host requires corporate-SSO cookie auth (e.g. Midway-protected GitLab), add that handling in
+gitlab_api/transport.py, the one request path, as a clearly-commented extension point.
 """
 
 from __future__ import annotations
 
 import argparse
+import importlib
+import io
 import json
 import logging
+import pkgutil
 import sys
 from pathlib import Path
-from typing import Any
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+from types import ModuleType
+from typing import Any, Dict, List, Optional, Sequence
+
+# The import bootstrap (design.md D3): `python scripts/gitlab_wrapper.py` puts this directory first on sys.path, a test
+# loading the file with importlib.util.spec_from_file_location does not; either way gitlab_api imports absolutely.
+SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+import gitlab_api.commands  # noqa: E402
+from gitlab_api.errors import GitLabAPIError  # noqa: E402
+from gitlab_api.transport import (  # noqa: E402
+    FIELD_HOSTNAME,
+    FIELD_IN_PROGRESS_LABEL,
+    FIELD_PROJECT_ID,
+    FIELD_TOKEN,
+    FIELD_TOKEN_TYPE,
+    TokenType,
+    Transport,
+    token_type_of,
+)
 
 CONFIG_FILE = Path("config") / "gitlab.json"
 PLACEHOLDER_MARKER = "PASTE_"
+REQUIRED_KEYS = (FIELD_HOSTNAME, FIELD_PROJECT_ID, FIELD_TOKEN)
+DEFAULT_IN_PROGRESS_LABEL = "in-progress"
+# The characters a token may hold: printable ASCII without the space. A pasted line break, space or zero-width space
+# is refused at load, named by its key and never echoed.
+PRINTABLE_FIRST = "!"
+PRINTABLE_LAST = "~"
 
-FIELD_HOSTNAME = "hostname"
-FIELD_PROJECT_ID = "project_id"
-FIELD_TOKEN = "token"  # nosec B105 — a config field name, not a secret
-FIELD_TITLE = "title"
-FIELD_DESCRIPTION = "description"
-FIELD_LABELS = "labels"
-FIELD_CONFIDENTIAL = "confidential"
-FIELD_STATUS = "status"
-FIELD_ID = "id"
+# This wrapper's host as config/delivery.json names it (`steward_delegate`'s `host`).
+DELIVERY_HOST = "gitlab"
+TEXT_ENCODING = "utf-8"
+STREAM_ERRORS = "replace"
+EXIT_OK = 0
+EXIT_API_ERROR = 1
+
+# The command-module contract (design.md D6). Every module of gitlab_api.commands whose name does not start with `_`
+# (`_common` is a helper) defines `register(subparsers)`: it adds its argv group to `subparsers`, the top-level
+# parser's `add_subparsers` action, and gives each subcommand's parser `set_defaults(handler=<function>)`. `main` calls
+# `handler(transport=…, project=…, in_progress_label=…, args=…)`; it returns None (exit 0) or the exit code.
+COMMAND_DEST = "subcommand"
+HANDLER = "handler"
+PRIVATE_MODULE_PREFIX = "_"
 
 logger = logging.getLogger("gitlab_wrapper")
 
 
-class GitLabAPIError(RuntimeError):
-    def __init__(self, message: str, status_code: int = 0, details: Any = None) -> None:
-        super().__init__(message)
-        self.status_code = status_code
-        self.details = details
+# --- config/gitlab.json -------------------------------------------------------------------------------------------
 
 
-def _load_config() -> dict[str, Any]:
-    if not CONFIG_FILE.exists():
+def _read_config() -> Dict[str, Any]:
+    """The JSON object of config/gitlab.json; a missing file, invalid JSON or another top-level value raises."""
+    if not CONFIG_FILE.is_file():
         raise GitLabAPIError(
             f"Missing credentials file: {CONFIG_FILE}. Copy config/gitlab.json.template and fill in real values."
         )
-    config = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-    for key in (FIELD_HOSTNAME, FIELD_PROJECT_ID, FIELD_TOKEN):
-        value = config.get(key, "")
-        if not value or str(value).startswith(PLACEHOLDER_MARKER):
-            raise GitLabAPIError(f"{CONFIG_FILE} is incomplete: fill in '{key}'.")
+    try:
+        config = json.loads(s=CONFIG_FILE.read_text(encoding=TEXT_ENCODING))
+    except json.JSONDecodeError as error:
+        # The position only: the error's text never quotes the file, which holds the token.
+        raise GitLabAPIError(
+            f"{CONFIG_FILE} is not valid JSON: {error.msg} at line {error.lineno}, column {error.colno}."
+        ) from None
+    if not isinstance(config, dict):
+        raise GitLabAPIError(f"{CONFIG_FILE} must hold one JSON object.")
     return config
 
 
-def _api_request(
-    *,
-    method: str,
-    path: str,
-    config: dict[str, Any],
-    payload: dict[str, Any] | None = None,
-) -> Any:
-    url = f"https://{config[FIELD_HOSTNAME]}/api/v4{path}"
-    body = json.dumps(payload).encode("utf-8") if payload is not None else None
-    req = Request(url=url, data=body, method=method)
-    req.add_header("PRIVATE-TOKEN", str(config[FIELD_TOKEN]))
-    req.add_header("Accept", "application/json")
-    if body is not None:
-        req.add_header("Content-Type", "application/json")
-    try:
-        with urlopen(req) as resp:  # nosec B310 — https URL with a fixed scheme
-            data = resp.read().decode("utf-8")
-            return json.loads(data) if data else {}
-    except HTTPError as exc:
-        details = exc.read().decode("utf-8", errors="replace")
+def _refuse_incomplete(*, config: Dict[str, Any]) -> None:
+    """An absent, empty or `PASTE_` value of `hostname`, `project_id` or `token` raises, naming the key."""
+    for key in REQUIRED_KEYS:
+        value = config.get(key)
+        if not value or str(value).startswith(PLACEHOLDER_MARKER):
+            raise GitLabAPIError(f"{CONFIG_FILE} is incomplete: fill in '{key}'.")
+
+
+def _refuse_token_characters(*, token: str) -> None:
+    """A token holding a character outside `!` to `~` raises, naming the key and the character's code point, never
+    the token's value (design.md D7)."""
+    refused = next((character for character in token if not PRINTABLE_FIRST <= character <= PRINTABLE_LAST), None)
+    if refused is not None:
         raise GitLabAPIError(
-            f"GitLab API error: {exc.code} {exc.reason}",
-            status_code=exc.code,
-            details=details,
-        ) from exc
+            f"{CONFIG_FILE}: '{FIELD_TOKEN}' holds the character U+{ord(refused):04X}, and a token holds printable "
+            f"ASCII without the space only ('{PRINTABLE_FIRST}' to '{PRINTABLE_LAST}'): paste it again without spaces, "
+            "line breaks or invisible characters."
+        )
 
 
-PIPELINE_TERMINAL_STATUSES = frozenset({"success", "failed", "canceled", "skipped", "manual"})
-
-# Blocking-wait verdicts. Deliberately NOT 1/2/3: 1 is this wrapper's API-error exit (see
-# __main__), 2 is argparse's usage error, 3 is `issue claim-check`'s "open and unclaimed".
-# A caller that saw 1 could not tell "pipeline failed" from "the API call failed".
-EXIT_WAIT_NOT_SUCCESS = 10
-EXIT_WAIT_TIMEOUT = 11
-
-
-def pipeline_wait(
-    *,
-    config: dict[str, Any],
-    pipeline_id: int,
-    timeout_seconds: int = 540,  # the contract's bounded foreground wait; the caller re-issues on 11
-    interval_seconds: int = 30,
-) -> int:
-    """Block until the pipeline is terminal.
-
-    Exit-code semantics: 0 success, 10 not success (failed/canceled/skipped/manual), 11 timeout —
-    distinct from the wrapper's 1/2/3 (API error / usage error / claim-check unclaimed).
-
-    This is the ONE sanctioned way for an agent to wait on CI. The agent does the unblocked work first, then
-    runs this in the FOREGROUND with `--timeout-seconds 540` (under the tool's 10-minute ceiling), re-issuing
-    it while it exits 11 — never as a background task, which dies with the session's process and never wakes
-    the agent once stopped (measured 2026-10-10: 82 of 82). A `sleep N` in a
-    tool call, repeated, was measured at over a thousand hours of idle across three projects, each
-    wake-up re-reading a 400,000-token context.
-    """
-    import time
-
-    path = f"/projects/{config[FIELD_PROJECT_ID]}/pipelines/{pipeline_id}"
-    deadline = time.monotonic() + timeout_seconds
-    status = ""
-    while time.monotonic() < deadline:
-        data = _api_request(method="GET", path=path, config=config)
-        status = str(data.get(FIELD_STATUS, ""))
-        if status in PIPELINE_TERMINAL_STATUSES:
-            print(json.dumps({FIELD_ID: pipeline_id, FIELD_STATUS: status, "web_url": data.get("web_url", "")}))
-            return 0 if status == "success" else EXIT_WAIT_NOT_SUCCESS
-        time.sleep(interval_seconds)
-    print(json.dumps({FIELD_ID: pipeline_id, FIELD_STATUS: status or "unknown", "timeout_seconds": timeout_seconds}))
-    return EXIT_WAIT_TIMEOUT
+def _token_type(*, config: Dict[str, Any]) -> TokenType:
+    """The configured `token_type`: absent or empty is `private` (as `Transport.from_config` reads it); a value other
+    than `private`, `bearer` and `job` raises."""
+    configured = config.get(FIELD_TOKEN_TYPE)
+    if configured is None or configured == "":
+        return TokenType.PRIVATE
+    try:
+        return token_type_of(value=configured)
+    except GitLabAPIError as refusal:
+        raise GitLabAPIError(f"{CONFIG_FILE}: {refusal}") from None
 
 
-# Implement subcommand functions per the module docstring:
-# pipeline_status, pipeline_log, pipeline_wait (above — a REQUIRED subcommand,
-# wired as `pipeline wait <id> [--timeout-seconds N]`), issue_create, issue_list,
-# issue_show, label_list, label_create. Each takes named parameters and prints JSON
-# or human-readable output.
-#
-# Merge-request / CI lifecycle subcommands (required by the
-# issue-work-orchestrator agent — see prompts/setup-claude.txt Part 13).
-# All paths are under /projects/{project_id} (URL-encode the id if it is a
-# namespace/path rather than a numeric id):
-#   - issue_list: support --state (opened/closed/all), --assignee (a
-#     username, "*" for any-assignee, or "none"), and --labels filters, so
-#     the orchestrator can detect "in progress" issues (assignee set OR an
-#     in-progress label) and skip them. Map --assignee "*" -> assignee_id=Any,
-#     "none" -> assignee_id=None, else assignee_username=<user>.
-#   - issue_comment(iid, body): POST /issues/{iid}/notes
-#   - issue_close(iid): PUT /issues/{iid}?state_event=close
-#   - issue_reopen(iid): PUT /issues/{iid}?state_event=reopen. REQUIRED, not
-#     optional: it is how a close made over unfinished checklist items is undone
-#     (@close-session / /close-session step 2, and the Closing section of the
-#     issue-tracking rule). Idempotent — an already-opened issue exits 0.
-#     Re-claiming afterwards is issue_start's job, not this one's.
-#   - mr_create(source, target, title, description): POST /merge_requests
-#       {"source_branch","target_branch","title","description",
-#        "remove_source_branch": true}
-#   - mr_get(iid): GET /merge_requests/{iid} -> state (opened/merged/closed),
-#       draft/work_in_progress, merge_status, has_conflicts, approvals.
-#   - mr_checks(iid): GET /merge_requests/{iid}/pipelines (latest pipeline
-#       status) and/or the head pipeline jobs for CI status.
-#   - mr_approve(iid): POST /merge_requests/{iid}/approve  (requires the
-#       approvals feature; a user cannot approve their own MR on many
-#       instances — surface that so the orchestrator polls for external
-#       approval instead).
-#   - mr_merge(iid): PUT /merge_requests/{iid}/merge
-#       {"should_remove_source_branch": true,
-#        "merge_when_pipeline_succeeds": true (optional)}
-#   - delete_branch(branch): DELETE /repository/branches/{url-encoded-branch}
-#     (only needed if the MR did not auto-remove the source branch).
-#
-# Delivery subcommands (REQUIRED when config/delivery.json says "merge": "steward"; see
-# .claude/docs/delivery.md and src/payload/scripts/merge_steward.py). They DELEGATE — the queue's
-# rules live in ONE place, scripts/merge_steward.py, never re-implemented here:
-#   - `enqueue-pr <iid>` (the same verb on both hosts, so the docs name one) ->
-#     `steward_delegate("enqueue-pr", [iid], _load_config()["token"], "gitlab")` (below): the
-#     steward's exit code passes through (0 queued, 4 refused with the reason printed — MR pipeline
-#     not green on the head, a closing keyword under watcher verification, a hold label, ...).
-#   - `dequeue-pr <iid> --reason <text>`, `queue-status [--json]`, `wait-landed <iid> --timeout-seconds 540`
-#     and `check-handoff <issue>` the same way.
-# The wrapper hands the steward ITS token on stdin (`--token-stdin`), so no second secret exists and
-# the steward never reads a token from a file git tracks. Under
-# "merge": "steward", mr_merge is refused by the merge-steward PreToolUse gate (only the steward
-# lands the trunk); keep it implemented for "merge": "direct" projects and for the bootstrap MR
-# that installs the steward.
-#
-# Issue metadata + checklist subcommands (best-effort; see the
-# issue-tracking rule, .claude/rules/issue-tracking.md). GitLab supports
-# most of these natively:
-#
-#   *** IN-PROGRESS CLAIM — the deterministic, non-destructive path. ***
-#   NEVER set the in-progress label via `issue update --labels` (the plain
-#   "labels" field on PUT is a FULL REPLACE and silently drops other labels —
-#   this repeatedly caused the label to vanish and duplicate work). Use the
-#   DEDICATED additive fields instead:
-#   - label_add(iid, labels):    PUT /issues/{iid} {"add_labels": "a,b"}    (merge)
-#   - label_remove(iid, labels): PUT /issues/{iid} {"remove_labels": "a,b"} (subtract)
-#   - issue_assign(iid, --me|--user U|--unassign): set/clear the assignee
-#     (the "in progress" claim). PUT /issues/{iid} {"assignee_ids":[<id>]}.
-#     Resolve --me via GET /user; a username via GET /users?username=...;
-#     unassign with assignee_ids=[0]. assignee_ids is a JSON array, so send it
-#     as a JSON body, not urlencoded form fields.
-#   - issue_start(iid): THE CLAIM the orchestrator uses. Idempotent AND
-#     fail-closed: (1) re-fetch, abort if state != "opened"; (2) abort if
-#     already assigned to a different user (unless --force); (3) resolve the
-#     current user; (4) ONE PUT with {"add_labels": <in-progress label>,
-#     "assignee_ids":[me]}; (5) RE-READ and VERIFY the label is present AND
-#     the current user is an assignee — if not, exit non-zero printing the
-#     observed state (a claim is never believed unless it verifiably took).
-#     The in-progress label name is read from config/gitlab.json key
-#     "in_progress_label" (default "in-progress").
-#   - issue_release(iid): inverse of start — remove_labels=<in-progress> +
-#     assignee_ids=[0], for when an issue is too ambiguous to work now.
-#   - issue_claim_check(iid): READ-ONLY. Exit 0 if the issue is claimed
-#     (in-progress label present OR an assignee set) or not "opened"; exit 3
-#     if it is OPEN and UNCLAIMED. Consumed by the claim-before-worktree
-#     PreToolUse hook, which BLOCKS worktree creation for an unclaimed issue.
+def _load_config() -> Dict[str, Any]:
+    """config/gitlab.json, checked, with `token_type` and `in_progress_label` filled in (design.md D7).
+
+    It is the only source of the credential: nothing reads an environment variable, and `token` stays the key
+    `merge_steward.read_token` reads. Every refusal is a `GitLabAPIError` that names the key."""
+    config = _read_config()
+    _refuse_incomplete(config=config)
+    _refuse_token_characters(token=str(config[FIELD_TOKEN]))
+    config[FIELD_TOKEN_TYPE] = _token_type(config=config).value
+    config[FIELD_IN_PROGRESS_LABEL] = str(config.get(FIELD_IN_PROGRESS_LABEL) or DEFAULT_IN_PROGRESS_LABEL)
+    return config
+
+
+# Issue metadata and checklist subcommands, not served yet (#15 builds them; see the issue-tracking rule,
+# .claude/rules/issue-tracking.md). A project that needs one sooner adds a module to scripts/gitlab_api/commands/
+# defining register(subparsers). All paths are under /projects/{project_id} (URL-encode the id if it is a
+# namespace/path rather than a numeric id); GitLab supports most of these natively:
 #   - set_due_date / start: PUT /issues/{iid} {"due_date": "<YYYY-MM-DD>"}
 #     for a target/end date; GitLab has no first-class "start date" on plain
 #     issues (it exists on epics), so record the start as a dated note unless
@@ -267,9 +215,6 @@ def pipeline_wait(
 #     the gate needs no description parsing of its own.
 # For every field the host or this issue does not support, return a clear
 # "unsupported" result so the caller can fall back to a note and continue.
-#
-# If a host requires corporate-SSO cookie auth, add it at the documented
-# extension point above (same as the read-only subcommands).
 
 
 # The delivery verbs (`enqueue-pr`, `dequeue-pr`, `queue-status`) — a REFERENCE IMPLEMENTATION, wired as-is in
@@ -310,23 +255,79 @@ def steward_delegate(verb: str, args: list[str], token: str, host: str) -> int:
     return subprocess.run(command, input=token + "\n", text=True, check=False).returncode  # nosec B603  # fixed argv
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="GitLab API wrapper")
-    parser.add_argument("subcommand")
-    args = parser.parse_args()
-    _ = _load_config()
-    raise NotImplementedError(
-        f"Subcommand '{args.subcommand}' not yet implemented in this skeleton. "
-        "Extend the wrapper as needed and remove this NotImplementedError."
+# --- The command line ---------------------------------------------------------------------------------------------
+
+
+def command_modules(*, package: ModuleType) -> List[ModuleType]:
+    """Every command module of ``package``, sorted by name, found by scanning it with ``pkgutil.iter_modules`` (the
+    pattern of ``registry.discover_families``); a module whose name starts with ``_`` is a helper and is skipped."""
+    names = sorted(
+        info.name
+        for info in pkgutil.iter_modules(path=package.__path__)
+        if not info.name.startswith(PRIVATE_MODULE_PREFIX)
     )
+    return [importlib.import_module(name=f"{package.__name__}.{name}") for name in names]
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """The parser of every discovered command module; no file lists the modules."""
+    parser = argparse.ArgumentParser(
+        prog=Path(__file__).name, description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    subparsers = parser.add_subparsers(dest=COMMAND_DEST, metavar=COMMAND_DEST, required=True)
+    for module in command_modules(package=gitlab_api.commands):
+        module.register(subparsers=subparsers)
+    return parser
+
+
+def _utf8_streams() -> None:
+    """Standard output and standard error write UTF-8: on Windows a pipe otherwise uses the ANSI code page, which
+    cannot print every character of a job trace or an issue."""
+    for stream in (sys.stdout, sys.stderr):
+        if isinstance(stream, io.TextIOWrapper):
+            stream.reconfigure(encoding=TEXT_ENCODING, errors=STREAM_ERRORS)
+
+
+def _report(*, error: GitLabAPIError) -> int:
+    """Log a refusal or an API error, its message and then its details, and return the API-error exit code."""
+    logger.error("%s", error)
+    if error.details:
+        logger.error("%s", error.details)
+    return EXIT_API_ERROR
+
+
+def _run(*, argv: List[str]) -> int:
+    """A delivery verb goes to the merge steward with the rest of argv unparsed; anything else is parsed before the
+    config is read, so a usage error exits 2 whatever the config, then served by its command module's handler."""
+    if argv and argv[0] in DELIVERY_VERBS:
+        config = _load_config()
+        return steward_delegate(verb=argv[0], args=argv[1:], token=str(config[FIELD_TOKEN]), host=DELIVERY_HOST)
+    parser = build_parser()
+    args = parser.parse_args(args=argv)
+    handler = getattr(args, HANDLER, None)
+    if not callable(handler):
+        parser.error(message=f"'{getattr(args, COMMAND_DEST)}' needs one of its subcommands (see --help)")
+    config = _load_config()
+    result = handler(
+        transport=Transport.from_config(config=config),
+        project=str(config[FIELD_PROJECT_ID]),
+        in_progress_label=str(config[FIELD_IN_PROGRESS_LABEL]),
+        args=args,
+    )
+    return EXIT_OK if result is None else int(result)
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    """Run one subcommand (``None``: ``sys.argv[1:]``) and return its exit code; a ``GitLabAPIError`` of any kind is
+    logged and returns 1 (design.md D7)."""
+    _utf8_streams()
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    try:
+        return _run(argv=arguments)
+    except GitLabAPIError as error:
+        return _report(error=error)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    try:
-        main()
-    except GitLabAPIError as exc:
-        logger.error("%s", exc)
-        if exc.details:
-            logger.error("%s", exc.details)
-        sys.exit(1)
+    sys.exit(main())

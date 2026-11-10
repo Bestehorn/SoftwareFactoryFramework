@@ -38,6 +38,7 @@ if str(SCRIPTS) not in sys.path:
 
 PACKAGE = "gitlab_api"
 REGISTRY = PACKAGE + ".registry"
+INDEX = ROOT / "docs" / "api-reference" / "gitlab" / "operations-index.md"
 
 METHODS = ("DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT")
 TABLE_HEADER = "| Method | Path | Reference |"
@@ -384,3 +385,19 @@ def test_checker_names_each_unlisted_row(tmp_path: Path, monkeypatch: pytest.Mon
     )
     with pytest.raises(AssertionError, match=re.escape(malformed)):
         index_rows(path=broken)
+
+
+# --- AC-5.3, AC-5.4: every row of the real index is mapped or pending, offline ------------------------------------
+
+
+def test_every_index_row_is_mapped_or_pending() -> None:
+    """Every row of the real `operations-index.md` is mapped by a record of a family module or listed in the `PENDING`
+    of its key's family module (a key two families link is the family's whose module name sorts first). The modules
+    are what `discover_families()` finds in the real `gitlab_api.families` package. The failure message is the gap
+    report: every unlisted key as a `PENDING` tuple literal under the family module that must list it. The module's
+    socket guard is installed, so the check runs with no network access."""
+    registry = registry_module()
+    rows = index_rows(path=INDEX)
+    mapped, pending = declared_keys(families=registry.discover_families())
+    gaps = coverage_gaps(rows=rows, mapped=mapped, pending=pending)
+    assert not gaps, gap_report(gaps=gaps)
