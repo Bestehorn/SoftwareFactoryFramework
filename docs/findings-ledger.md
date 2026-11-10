@@ -9,3 +9,4 @@ deleted from git; what changes is what a session loads.
 | Date | Subject | Finding | Evidence | Why not filed | Status |
 |---|---|---|---|---|---|
 | 2026-11-10 | issue-intake state | parallel intake runs write the same top-level state files; one resume_state.md was overwritten | 8 parallel intakes 2026-11-10 | no lost work; no measured damage | open |
+| 2026-11-10 | setup prompts | 4 prose spots name AWS/MCP rules unconditionally | issue-8 spec evidence/verify/refutation-report.md | outside #8's agent-body ask; no observed failure | open |
