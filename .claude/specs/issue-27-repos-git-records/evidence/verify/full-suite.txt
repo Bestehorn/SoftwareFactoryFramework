@@ -1,0 +1,40 @@
+# Whole-suite verdict: CI run 42957338836, read through scripts/github_wrapper.py from the main checkout
+# Worktree HEAD (git rev-parse HEAD): 99c26c7270957f3bbb9917eca17d96264fb86b0e
+
+$ python scripts/github_wrapper.py wait-run 42957338836 --timeout-seconds 540
+{"run_id": 42957338836, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/42957338836"}
+exit=0
+
+$ python scripts/github_wrapper.py get-run 42957338836   (fields quoted from the full JSON)
+"head_branch": "issue-27-repos-git-records"
+"head_sha": "99c26c7270957f3bbb9917eca17d96264fb86b0e"  # pragma: allowlist secret
+"event": "pull_request"
+"status": "completed"
+"conclusion": "success"
+"pull_requests": [ { "number": 47, "head": { "sha": "99c26c7270957f3bbb9917eca17d96264fb86b0e" } } ]  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py get-jobs 42957338836
+130315444068   completed    success      verify (security)
+130315444314   completed    success      verify (lint)
+130315444329   completed    success      verify (tests)
+130315444489   completed    success      verify (types)
+130316139054   completed    success      report
+exit=0
+
+$ python scripts/github_wrapper.py get-job-logs 130315444329   (lines quoted from the full log)
+--- RUN  tests/pytest: python scripts/run_tests.py --workers auto --coverage --junit reports/junit.xml
+4 workers [2465 items]
+src/payload/scripts/github_api/commands/call.py                               140      0   100%
+src/payload/scripts/github_api/families/git.py                                  7      0   100%
+src/payload/scripts/github_api/families/repos.py                                7      0   100%
+src/payload/test/test_github_api_git.py                                       128      6    95%   53-58
+src/payload/test/test_github_api_repos.py                                     165     14    92%   59-64, 796, 799, 802, 805, 819-820, 822, 824
+src/payload/test/test_wrapper_delivery.py                                      53      0   100%
+Required test coverage of 80% reached. Total coverage: 91.45%
+============================ 2465 passed in 23.87s =============================
+--- PASS tests/pytest (24.4s, exit 0)
+1053 passed in 4.99s
+--- PASS tests/hook-suite (5.2s, exit 0)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+
+Verdict: GREEN on the SHA of the tree under test.

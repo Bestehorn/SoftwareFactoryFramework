@@ -1,0 +1,519 @@
+## BASELINE (unmutated tree, HEAD 99c26c7): both F modules
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [66 items]
+
+..................................................................       [100%]
+============================= 66 passed in 7.55s ==============================
+exit=0
+
+## M1 repos.py repos/list-commit-statuses-for-ref: multi_segment=frozenset({"ref"}) -> frozenset()
+ src/payload/scripts/github_api/families/repos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [47 items]
+
+..F................F...........................                          [100%]
+================================== FAILURES ===================================
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:841: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 records differ from their sections:
+E     "repos/list-commit-statuses-for-ref": declared None, the section documents frozenset({'ref'})
+E   assert not ['"repos/list-commit-statuses-for-ref": declared None, the section documents frozenset({\'ref\'})']
+__ test_a_list_record_prints_every_item[repos/list-commit-statuses-for-ref] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/commits/heads%2Ffeature%2Flogin/statuses?per_page=1
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-commit-statuses-for-ref]
+======================== 2 failed, 45 passed in 5.69s =========================
+exit=1
+
+## M2 git.py git/list-matching-refs: multi_segment=frozenset({"ref"}) -> frozenset()
+warning: in the working copy of 'src/payload/scripts/github_api/families/git.py', LF will be replaced by CRLF the next time Git touches it
+ src/payload/scripts/github_api/families/git.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_git.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [19 items]
+
+...............F..F                                                      [100%]
+================================== FAILURES ===================================
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:283: in test_the_multi_segment_parameters_are_the_sections
+    assert declared == MULTI_SEGMENT_PARAMETERS, (
+E   AssertionError: families/git.py declares the multi-segment parameters {'git/get-commit': frozenset({'commit_sha'}), 'git/get-ref': frozenset({'ref'}), 'git/update-ref': frozenset({'ref'}), 'git/delete-ref': frozenset({'ref'}), 'git/get-tree': frozenset({'tree_sha'})}; rest/git.md documents {'git/get-commit': frozenset({'commit_sha'}), 'git/list-matching-refs': frozenset({'ref'}), 'git/get-ref': frozenset({'ref'}), 'git/update-ref': frozenset({'ref'}), 'git/delete-ref': frozenset({'ref'}), 'git/get-tree': frozenset({'tree_sha'})}
+E   assert {'git/get-com...{'ref'}), ...} == {'git/get-com...{'ref'}), ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mgit/list-matching-refs[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mref[39;49;00m[33m'[39;49;00m})}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_list_record_prints_every_item[AC-6/exit-0/list-matching-refs-of-a-ref-holding-a-slash] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/git/matching-refs/heads%2Ffeature%2Flogin
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_git.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_git.py::test_a_list_record_prints_every_item[AC-6/exit-0/list-matching-refs-of-a-ref-holding-a-slash]
+======================== 2 failed, 17 passed in 4.05s =========================
+exit=1
+
+## M3 repos.py repos/list-branches: paging=Paging.LINK -> Paging.NONE
+ src/payload/scripts/github_api/families/repos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [47 items]
+
+...F................F..........................                          [100%]
+================================== FAILURES ===================================
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:852: in test_every_list_record_has_a_case
+    assert paged == cased, (
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['repos/list-branches']
+E   assert {'repos/get-a...ulesets', ...} == {'repos/get-a...ulesets', ...}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mrepos/list-branches[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__________ test_a_list_record_prints_every_item[repos/list-branches] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-branches: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-branches]
+======================== 2 failed, 45 passed in 5.14s =========================
+exit=1
+
+## M4 repos.py repos/get-all-environments: item_key="environments" -> "environment"
+ src/payload/scripts/github_api/families/repos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [47 items]
+
+.......F.......................................                          [100%]
+================================== FAILURES ===================================
+______ test_a_list_record_prints_every_item[repos/get-all-environments] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-all-environments: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/repos/o/r/environments?per_page=1" returned no item list under "environment"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-all-environments]
+======================== 1 failed, 46 passed in 5.80s =========================
+exit=1
+
+## M5 repos.py repos/list-releases: item_key=None -> "releases"
+ src/payload/scripts/github_api/families/repos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [47 items]
+
+.......................................F.......                          [100%]
+================================== FAILURES ===================================
+__________ test_a_list_record_prints_every_item[repos/list-releases] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-releases: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/repos/o/r/releases?per_page=1" returned no item list under "releases"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-releases]
+======================== 1 failed, 46 passed in 5.39s =========================
+exit=1
+
+## M6 call.py GATED_OPERATIONS: "git/update-ref" removed
+ src/payload/scripts/github_api/commands/call.py | 1 -
+ 1 file changed, 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_git.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [19 items]
+
+..................F                                                      [100%]
+================================== FAILURES ===================================
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/git/refs/heads/topic
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref]
+======================== 1 failed, 18 passed in 4.10s =========================
+exit=1
+
+## M7 call.py GATED_OPERATIONS: "repos/delete-file" removed
+ src/payload/scripts/github_api/commands/call.py | 1 -
+ 1 file changed, 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [47 items]
+
+..............................................F                          [100%]
+================================== FAILURES ===================================
+_________ test_a_branch_writing_record_is_refused[repos/delete-file] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for DELETE https://api.github.com/repos/o/r/contents/docs/guide/intro.md
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/delete-file]
+======================== 1 failed, 46 passed in 5.34s =========================
+exit=1
+
+## M8 call.py refuse_gated: body reverted to the pre-change form (subcommand = GATED_OPERATIONS.get(...); refuse only if not None)
+ src/payload/scripts/github_api/commands/call.py | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [107 items]
+
+.........................................F.........F.F.FFFF............. [ 67%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+____________ test_a_branch_writing_record_is_refused[repos/merge] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/merges
+________ test_a_branch_writing_record_is_refused[repos/merge-upstream] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/merge-upstream
+________ test_a_branch_writing_record_is_refused[repos/rename-branch] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/branches/issue-17-wrapper/rename
+_ test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PUT https://api.github.com/repos/o/r/contents/docs/guide/intro.md
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/git/refs
+_________ test_a_branch_writing_record_is_refused[repos/delete-file] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for DELETE https://api.github.com/repos/o/r/contents/docs/guide/intro.md
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/git/refs/heads/topic
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge-upstream]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/rename-branch]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/delete-file]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref]
+======================== 7 failed, 100 passed in 6.82s ========================
+exit=1
+
+## M9 call.py refuse_gated: the None branch removed (an ID mapped to None is refused as "use the None subcommand, which sends it")
+ src/payload/scripts/github_api/commands/call.py | 2 --
+ 1 file changed, 2 deletions(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [66 items]
+
+..........................................FFFF................F.FF       [100%]
+================================== FAILURES ===================================
+________ test_a_branch_writing_record_is_refused[repos/rename-branch] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:890: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-7/exit-2/repos/rename-branch: no log record matches every one of ['"repos/rename\\-branch"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "repos/rename-branch": use the None subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:275 call refuses the GitHub operation "repos/rename-branch": use the None subcommand, which sends it
+____________ test_a_branch_writing_record_is_refused[repos/merge] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:890: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-7/exit-2/repos/merge: no log record matches every one of ['"repos/merge"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "repos/merge": use the None subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:275 call refuses the GitHub operation "repos/merge": use the None subcommand, which sends it
+_ test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:890: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-7/exit-2/repos/create-or-update-file-contents: no log record matches every one of ['"repos/create\\-or\\-update\\-file\\-contents"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "repos/create-or-update-file-contents": use the None subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:275 call refuses the GitHub operation "repos/create-or-update-file-contents": use the None subcommand, which sends it
+________ test_a_branch_writing_record_is_refused[repos/merge-upstream] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:890: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-7/exit-2/repos/merge-upstream: no log record matches every one of ['"repos/merge\\-upstream"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "repos/merge-upstream": use the None subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:275 call refuses the GitHub operation "repos/merge-upstream": use the None subcommand, which sends it
+_________ test_a_branch_writing_record_is_refused[repos/delete-file] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:890: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-7/exit-2/repos/delete-file: no log record matches every one of ['"repos/delete\\-file"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "repos/delete-file": use the None subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:275 call refuses the GitHub operation "repos/delete-file": use the None subcommand, which sends it
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_git.py:328: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-7/exit-2/git/create-ref: no log record matches every one of ['"git/create\\-ref"', '(?i)\\bno\\s+(?:\\w+\\s+)?subcommand\\b']: ['call refuses the GitHub operation "git/create-ref": use the None subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:275 call refuses the GitHub operation "git/create-ref": use the None subcommand, which sends it
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_git.py:328: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-7/exit-2/git/update-ref: no log record matches every one of ['"git/update\\-ref"', '(?i)\\bno\\s+(?:\\w+\\s+)?subcommand\\b']: ['call refuses the GitHub operation "git/update-ref": use the None subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:275 call refuses the GitHub operation "git/update-ref": use the None subcommand, which sends it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/rename-branch]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge-upstream]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/delete-file]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref]
+======================== 7 failed, 59 passed in 6.13s =========================
+exit=1
+
+## M10 repos.py repos/get-commit: paging=Paging.NONE -> Paging.LINK (two keys in its Paging: line)
+ src/payload/scripts/github_api/families/repos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [47 items]
+
+...F...........................................                          [100%]
+================================== FAILURES ===================================
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:852: in test_every_list_record_has_a_case
+    assert paged == cased, (
+E   AssertionError: Paging.LINK records without a case: ['repos/get-commit']; cases without a Paging.LINK record: []
+E   assert {'repos/get-a...-suites', ...} == {'repos/get-a...ulesets', ...}
+E     
+E     Extra items in the left set:
+E     [0m[33m'[39;49;00m[33mrepos/get-commit[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_every_list_record_has_a_case
+======================== 1 failed, 46 passed in 5.18s =========================
+exit=1
+
+## M11 repos.py PENDING: frozenset({"repos/upload-release-asset"}) -> frozenset()
+ src/payload/scripts/github_api/families/repos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [58 items]
+
+F......................................................F..               [100%]
+================================== FAILURES ===================================
+_______________________ test_only_the_upload_is_pending _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:807: in test_only_the_upload_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 0 IDs, not only repos/upload-release-asset: []
+E   assert not ['PENDING holds 0 IDs, not only repos/upload-release-asset: []']
+_________________ test_every_operation_is_covered_or_pending __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:580: in test_every_operation_is_covered_or_pending
+    assert not gaps, gap_message(gaps=gaps)
+E   AssertionError: 1 operations and capabilities are neither covered by a record nor pending; declare a record, or put each on its family module's PENDING (a capability on graphql_only.PENDING_CAPABILITIES):
+E       repos/upload-release-asset
+E   assert not ['repos/upload-release-asset']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_only_the_upload_is_pending
+FAILED test/test_github_wrapper_coverage.py::test_every_operation_is_covered_or_pending
+======================== 2 failed, 56 passed in 5.43s =========================
+exit=1
+
+## M12 repos.py repos/create-deploy-key: body_params {title, key, read_only} -> {title, key} (AC-2, AC-5 via N)
+ src/payload/scripts/github_api/families/repos.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+.....F.....F.                                                            [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "repos/create-deploy-key": body names: documented and not declared ["read_only"]; declared and not documented []
+E   assert not ['"repos/create-deploy-key": body names: documented and not declared ["read_only"]; declared and not documented []']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 227 records:
+E     "repos/create-deploy-key": exit 2, not 0; log ['The GitHub operation "repos/create-deploy-key" documents no body parameter ["read_only"]; its path parameters are ["owner", "repo"], its query parameters are [], its body parameters are ["key", "title"]']; stderr ''
+E     "repos/create-deploy-key": 0 requests sent, one expected
+E   assert not ['"repos/create-deploy-key": exit 2, not 0; log [\'The GitHub operation "repos/create-deploy-key" documents no body pa... its body parameters are ["key", "title"]\']; stderr \'\'', '"repos/create-deploy-key": 0 requests sent, one expected']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:277 The GitHub operation "repos/create-deploy-key" documents no body parameter ["read_only"]; its path parameters are ["owner", "repo"], its query parameters are [], its body parameters are ["key", "title"]
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed, 11 passed in 18.22s ========================
+exit=1
+
+## M13 git.py git/get-tag: api_version=API_VERSION_DEFAULT -> "2026-03-10"
+warning: in the working copy of 'src/payload/scripts/github_api/families/git.py', LF will be replaced by CRLF the next time Git touches it
+ src/payload/scripts/github_api/families/git.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_git.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [19 items]
+
+..............F....                                                      [100%]
+================================== FAILURES ===================================
+___ test_every_record_sends_the_default_version_and_media_type[git/get-tag] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:272: in test_every_record_sends_the_default_version_and_media_type
+    assert record.api_version == transport.API_VERSION_DEFAULT, f"{operation_id}: api_version {record.api_version!r}"
+E   AssertionError: git/get-tag: api_version '2026-03-10'
+E   assert '2026-03-10' == '2022-11-28'
+E     
+E     [0m[91m- 2022-11-28[39;49;00m[90m[39;49;00m
+E     [92m+ 2026-03-10[39;49;00m[90m[39;49;00m
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/get-tag]
+======================== 1 failed, 18 passed in 4.72s =========================
+exit=1
+
+## RESTORED (all mutants reverted; sha256 of repos.py/git.py/call.py equal to the pre-mutation values): the green set re-run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_github_api_call.py test/test_github_wrapper_contract.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py test/test_github_api_call_properties.py src/payload/test/test_wrapper_delivery.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [639 items]
+
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 33%]
+........................................................................ [ 45%]
+........................................................................ [ 56%]
+........................................................................ [ 67%]
+........................................................................ [ 78%]
+........................................................................ [ 90%]
+...............................................................          [100%]
+======================= 639 passed in 74.80s (0:01:14) ========================
+exit=0
