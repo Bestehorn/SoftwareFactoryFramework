@@ -1,0 +1,28 @@
+# tasks: 4.1 4.2 4.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_actions.py src/payload/test/test_github_api_activity.py src/payload/test/test_github_api_agent_automations.py src/payload/test/test_github_api_agent_merge.py src/payload/test/test_github_api_agent_tasks.py src/payload/test/test_github_api_agents.py src/payload/test/test_github_api_api_insights.py src/payload/test/test_github_api_apps.py src/payload/test/test_github_api_billing.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_campaigns.py src/payload/test/test_github_api_checks.py src/payload/test/test_github_api_classroom.py src/payload/test/test_github_api_code_quality.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_code_security.py src/payload/test/test_github_api_codes_of_conduct.py src/payload/test/test_github_api_codespaces.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_copilot_spaces.py src/payload/test/test_github_api_credentials.py src/payload/test/test_github_api_dependabot.py src/payload/test/test_github_api_dependency_graph.py src/payload/test/test_github_api_emojis.py src/payload/test/test_github_api_gists.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_gitignore.py src/payload/test/test_github_api_hosted_compute.py src/payload/test/test_github_api_interactions.py src/payload/test/test_github_api_issues.py src/payload/test/test_github_api_licenses.py src/payload/test/test_github_api_markdown.py src/payload/test/test_github_api_meta.py src/payload/test/test_github_api_migrations.py src/payload/test/test_github_api_oidc.py src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_packages.py src/payload/test/test_github_api_private_registries.py src/payload/test/test_github_api_projects.py src/payload/test/test_github_api_pull_request_stacks.py src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_rate_limit.py src/payload/test/test_github_api_reactions.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_search.py src/payload/test/test_github_api_secret_scanning.py src/payload/test/test_github_api_security_advisories.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_users.py src/payload/test/test_github_wrapper_compat.py test/test_github_api_call_properties.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [1085 items]
+
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 19%]
+........................................................................ [ 26%]
+........................................................................ [ 33%]
+........................................................................ [ 39%]
+........................................................................ [ 46%]
+........................................................................ [ 53%]
+........................................................................ [ 59%]
+........................................................................ [ 66%]
+........................................................................ [ 72%]
+........................................................................ [ 79%]
+........................................................................ [ 86%]
+........................................................................ [ 92%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+====================== 1085 passed in 161.22s (0:02:41) =======================
+exit=0

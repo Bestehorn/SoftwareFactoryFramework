@@ -3,8 +3,9 @@
 
 The method has two halves. The reference half: ``reference_sections`` reads every
 ``docs/api-reference/github/rest/<category>.md`` once and keys its sections by operation ID. A section starts at its
-line `` `<METHOD> <path>` · operationId `<id>` `` and ends at the next heading. Its path and query parameters are the
-rows of its ``Parameter`` table, told apart by the ``In`` cell. Its body parameters are the first-level names of the
+line `` `<METHOD> <path>` · operationId `<id>` `` and ends at the next heading. Its host is the one its ``- Host: `…` ``
+line names, ``https://api.github.com`` when it has none (issue #46 D5). Its path and query parameters are the rows of
+its ``Parameter`` table, told apart by the ``In`` cell. Its body parameters are the first-level names of the
 ``Field`` table after a ``Request body (`application/json`…)`` line, read as ``docs/api-reference/README.md`` "Body
 field paths" writes them: a row whose Type cell is ``constraint`` names no field, a leading variant label
 (``{variant 1}``, ``{single_select}``) is removed with the ``.`` after it, and the name is the text before the first
@@ -93,6 +94,11 @@ OPERATION_LINE = re.compile(
     rf"operationId `(?P<{GROUP_OPERATION_ID}>[^`]+)`"
 )
 HEADING_PREFIX = "#"
+# A section's host line, `` - Host: `https://uploads.github.com` (not `https://api.github.com`) ``; a section without
+# one is on the REST API host (`conventions.md` "Hosts and base URLs").
+GROUP_HOST = "host"
+HOST_LINE = re.compile(rf"^- Host: `(?P<{GROUP_HOST}>[^`]+)`")
+REST_API_HOST = "https://api.github.com"
 TABLE_ROW_PREFIX = "|"
 ESCAPED_CELL_SEPARATOR = "\\|"
 #: A cell boundary: a ``|`` the generator did not escape (a Type cell such as ``string \| null`` holds escaped ones).
@@ -199,7 +205,8 @@ UNREACHABLE_EXAMPLES = {
 @dataclass(frozen=True)
 class ReferenceSection:
     """One operation's section of ``rest/<category>.md``: its operation ID, method and path template, the names of its
-    ``path`` and ``query`` rows, and the first-level names of its JSON request body."""
+    ``path`` and ``query`` rows, the first-level names of its JSON request body, and the host its ``- Host:`` line
+    names, ``https://api.github.com`` when it has none."""
 
     operation_id: str
     method: str
@@ -207,6 +214,7 @@ class ReferenceSection:
     path_names: FrozenSet[str]
     query_names: FrozenSet[str]
     body_names: FrozenSet[str]
+    host: str = REST_API_HOST
 
 
 def _cells(*, line: str) -> List[str]:
@@ -236,25 +244,30 @@ def first_level_name(*, field_path: str) -> str:
 
 
 class _SectionReader:
-    """Reads the lines of one section after its operation line: the ``Parameter`` table's rows by their ``In`` cell,
-    and the ``Field`` table that follows a JSON request-body line."""
+    """Reads the lines of one section after its operation line: its ``- Host:`` line, the ``Parameter`` table's rows by
+    their ``In`` cell, and the ``Field`` table that follows a JSON request-body line."""
 
     def __init__(self, *, operation_id: str, method: str, path: str, source: str) -> None:
         self._operation_id = operation_id
         self._method = method
         self._path = path
         self._source = source
+        self._host = REST_API_HOST
         self._parameters: Dict[str, Set[str]] = {IN_PATH: set(), IN_QUERY: set()}
         self._body: Set[str] = set()
         self._table: Optional[str] = None
         self._body_follows = False
 
     def read(self, *, line: str) -> None:
-        """Take one line of the section: a table's header starts it, a non-table line ends it."""
+        """Take one line of the section: a table's header starts it, a non-table line ends it, and a ``- Host:`` line
+        names the section's host."""
         if not line.startswith(TABLE_ROW_PREFIX):
             self._table = None
             if line.startswith(JSON_REQUEST_BODY):
                 self._body_follows = True
+            host = HOST_LINE.match(string=line)
+            if host is not None:
+                self._host = host.group(GROUP_HOST)
             return
         cells = _cells(line=line)
         if self._table is None:
@@ -292,6 +305,7 @@ class _SectionReader:
             path_names=frozenset(self._parameters[IN_PATH]),
             query_names=frozenset(self._parameters[IN_QUERY]),
             body_names=frozenset(self._body),
+            host=self._host,
         )
 
 
@@ -524,7 +538,7 @@ def _budget_record(*, registry: ModuleType, transport: ModuleType, body_params: 
 @dataclass(frozen=True)
 class PlannedCall:
     """One record's ``call`` in the every-record test: the argv, the shape its section documents, and the route that
-    answers exactly that method, path and query."""
+    answers exactly that method, path and query on the section's host."""
 
     operation_id: str
     argv: Tuple[str, ...]
@@ -548,7 +562,7 @@ def _answer_of(*, record: Any, link: Any) -> Any:
 
 def _plan_call(*, record: Any, section: ReferenceSection, link: Any) -> PlannedCall:
     """The ``call`` of ``record`` giving a value for every path, query and body parameter ``section`` documents, with
-    ``--path``, ``--query`` and ``--raw-field``, and the route of the call the section documents."""
+    ``--path``, ``--query`` and ``--raw-field``, and the route of the call the section documents, on its host."""
     names = section.path_names | section.query_names | section.body_names
     names |= frozenset(PATH_PLACEHOLDER.findall(string=section.path))
     values = {name: _value_of(name=name) for name in names}
@@ -562,7 +576,7 @@ def _plan_call(*, record: Any, section: ReferenceSection, link: Any) -> PlannedC
         argv.extend(token for name in sorted(documented) for token in (option, f"{name}={values[name]}"))
     route = fx.StaticRouteSpec(
         method=section.method,
-        url=expected.path,
+        url=f"{section.host}{expected.path}",
         replies=(fx.Reply(body=_answer_of(record=record, link=link)),),
         query={name: values[name] for name in section.query_names},
     )
@@ -760,6 +774,16 @@ READ_SECTIONS: Tuple[ReferenceSection, ...] = (
         query_names=frozenset({"exclude_pull_requests"}),
         body_names=frozenset(),
     ),
+    # A `- Host:` line naming another host, and a request body that is not JSON, which names no field.
+    ReferenceSection(
+        operation_id="repos/upload-release-asset",
+        method="POST",
+        path="/repos/{owner}/{repo}/releases/{release_id}/assets",
+        path_names=frozenset({"owner", "repo", "release_id"}),
+        query_names=frozenset({"name", "label"}),
+        body_names=frozenset(),
+        host="https://uploads.github.com",
+    ),
 )
 
 
@@ -771,7 +795,7 @@ READ_SECTIONS: Tuple[ReferenceSection, ...] = (
 @pytest.mark.parametrize(argnames="expected", argvalues=READ_SECTIONS, ids=_section_id)
 def test_a_section_is_read_as_the_reference_writes_it(expected: ReferenceSection) -> None:
     """AC-3.2 (the reader the method uses): ``reference_sections`` reads one section per operation the index heading
-    counts, and D5's five sections as the reference writes them: their method, path, path and query rows, and the
+    counts, and D5's sections as the reference writes them: their method, path, host, path and query rows, and the
     first-level body names under D5's rules for variant labels and ``constraint`` rows."""
     sections = reference_sections(rest_dir=REST_DIR)
 

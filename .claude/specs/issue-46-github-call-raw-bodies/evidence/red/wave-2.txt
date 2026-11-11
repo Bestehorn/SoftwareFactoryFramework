@@ -1,0 +1,120 @@
+# tasks: 2.1 2.2 2.3 2.4
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_actions.py src/payload/test/test_github_api_activity.py src/payload/test/test_github_api_apps.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_checks.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_dependabot.py src/payload/test/test_github_api_gists.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_issues.py src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_reactions.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_search.py src/payload/test/test_github_api_secret_scanning.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_users.py src/payload/test/test_github_wrapper_compat.py test/test_github_api_call_properties.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [951 items]
+
+.....F..F............................................................... [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 22%]
+..................................................F.F......F.F..F....... [ 30%]
+........................................................................ [ 37%]
+........................................................................ [ 45%]
+........................................................................ [ 52%]
+........................................................................ [ 60%]
+........................................................................ [ 68%]
+....................FF.................................................. [ 75%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 98%]
+...............                                                          [100%]
+================================== FAILURES ===================================
+_____________ test_a_raw_body_with_body_members_is_refused[field] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1304: in test_a_raw_body_with_body_members_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:891: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: []
+____________________ test_an_asset_is_uploaded_to_its_host ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1317: in test_an_asset_is_uploaded_to_its_host
+    requests = fx.run_product_case(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2810: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2713: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-4.2/exit-0/asset-uploaded-to-its-host: exit code 2, the golden is 0; stdout ''
+_________________________ test_no_repos_id_is_pending _________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:803: in test_no_repos_id_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 1 IDs, none expected: ['repos/upload-release-asset']
+E     1 IDs have no record: ['repos/upload-release-asset']
+E   assert not ["PENDING holds 1 IDs, none expected: ['repos/upload-release-asset']", "1 IDs have no record: ['repos/upload-release-asset']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:822: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 1 problems:
+E     "repos/upload-release-asset": no record
+E   assert not ['"repos/upload-release-asset": no record']
+__ test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1268: in test_a_raw_body_the_call_cannot_send_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=stderr)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.1/exit-2/input-for-a-json-record: no log record matches every one of ['"issues/update"', '\\-\\-input']: []
+_ test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1272: in test_a_raw_body_the_call_cannot_send_is_refused
+    assert messages, f"{case.name}: no usage error names the option {OPTION_INPUT}: {stderr!r}"
+E   AssertionError: issue-46/AC-1.1/exit-2/input-file-that-does-not-exist: no usage error names the option --input: 'usage: -c [-h]\n          {enqueue-pr,dequeue-pr,queue-status,call,list-workflows,list-runs,get-run,get-logs,wait-run,claim-check,start-issue,release-issue,label-add,label-remove,assign,issue,list-issues,get-issue,get-issue-comments,comment-issue,update-issue,create-issue,reopen-issue,checklist,create-pr,get-pr,get-pr-checks,approve-pr,merge-pr,delete-remote-branch} ...\n-c: error: unrecognized arguments: --input D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-997\\popen-gw0\\test_a_raw_body_the_call_canno1\\missing.md\n'
+E   assert []
+___________ test_a_raw_body_with_body_members_is_refused[raw-field] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1304: in test_a_raw_body_with_body_members_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:891: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/raw-field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: []
+_______________ test_any_bytes_are_sent_as_given[octet-stream] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_api_call_properties.py:148: in test_any_bytes_are_sent_as_given
+    @pytest.mark.parametrize(argnames="media_type", argvalues=RAW_MEDIA_TYPES, ids=RAW_MEDIA_TYPE_IDS)
+                   ^^^^^^^^^^^^^
+test\test_github_api_call_properties.py:162: in test_any_bytes_are_sent_as_given
+    read = call.read_input(text=str(path))
+           ^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.commands.call' has no attribute 'read_input'
+E   Failing test case: test_any_bytes_are_sent_as_given(
+E       media_type='application/octet-stream',
+E       body=b'',
+E   )
+________________ test_any_bytes_are_sent_as_given[text-plain] _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_api_call_properties.py:148: in test_any_bytes_are_sent_as_given
+    @pytest.mark.parametrize(argnames="media_type", argvalues=RAW_MEDIA_TYPES, ids=RAW_MEDIA_TYPE_IDS)
+                   ^^^^^^^^^^^^^
+test\test_github_api_call_properties.py:162: in test_any_bytes_are_sent_as_given
+    read = call.read_input(text=str(path))
+           ^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.commands.call' has no attribute 'read_input'
+E   Failing test case: test_any_bytes_are_sent_as_given(
+E       media_type='text/plain',
+E       body=b'',
+E   )
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field]
+FAILED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host
+FAILED src/payload/test/test_github_api_repos.py::test_no_repos_id_is_pending
+FAILED src/payload/test/test_github_api_repos.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record]
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist]
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field]
+FAILED test/test_github_api_call_properties.py::test_any_bytes_are_sent_as_given[octet-stream]
+FAILED test/test_github_api_call_properties.py::test_any_bytes_are_sent_as_given[text-plain]
+================== 9 failed, 942 passed in 111.72s (0:01:51) ==================

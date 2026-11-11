@@ -1,0 +1,944 @@
+# Wave 1 mutants — issue #46 verification, 2026-11-11T09:02:53
+worktree HEAD 10a22235371adeb3e4d1195fea1f0d8ab5dcde86  # pragma: allowlist secret
+paired tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+git status --porcelain before:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## W1-01 — request_raw sends to the API root instead of the record's root
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '        url = _api_url(root=root, path=path, query=query)' -> '        url = _api_url(root=API_ROOT, path=path, query=query); root = API_ROOT'
+file src/payload/scripts/github_api/transport.py sha256 mutated 13154a6835c36a8f8df2c612a3cb85c53a742c02afc22e7f014fbb7e8da0eab8  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py .FE...................     [ 91%]
+src\payload\test\test_github_api_registry.py FE                          [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+=================================== ERRORS ====================================
+_ ERROR at teardown of test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin] _
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repos/o/r/releases/3/assets?name=build+artifacts.zip']
+_______ ERROR at teardown of test_send_sends_a_raw_record_to_its_origin _______
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build']
+================================== FAILURES ===================================
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=build+artifacts.zip
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=build+artifacts.zip
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+=========== 2 failed, 21 passed, 112 deselected, 2 errors in 3.58s ============
+
+--- exit 1; summary: 2 failed, 21 passed, 112 deselected, 2 errors in 3.58s
+VERDICT W1-01: KILLED (4 failing ids)
+
+## W1-02 — request_raw re-encodes the raw body: CRLF becomes LF
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: 'method=method, url=url, data=data, headers=headers, api_version=api_version, allowed_origin=root' -> 'method=method, url=url, data=None if data is None else data.replace(b"\\r\\n", b"\\n"), headers=headers, api_version=api_version, allowed_origin=root'
+file src/payload/scripts/github_api/transport.py sha256 mutated 4bda248722fa6a88503054b9387a8501568dcaeb13bc55dfa096e58012edcb69  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py F....................      [ 91%]
+src\payload\test\test_github_api_registry.py F                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the bytes as given
+    assert b'# Title\n\n...UTF-8: \xff\n' == b'# Title\r\n...UTF-8: \xff\n'
+      
+      At index 7 diff: b'\n' != b'\r'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:505: AssertionError: the bytes as given
+E   AssertionError: assert b'PK\x03\x04\x89\xff\x00\n' == b'PK\x03\x04\x89\xff\x00\r\n'
+      
+      At index 7 diff: b'\n' != b'\r'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_registry.py:694: AssertionError: assert b'PK\x03\x04\x89\xff\x00\n' == b'PK\x03\x04\x89\xff\x00\r\n'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+================ 2 failed, 21 passed, 112 deselected in 3.25s =================
+
+--- exit 1; summary: 2 failed, 21 passed, 112 deselected in 3.25s
+VERDICT W1-02: KILLED (2 failing ids)
+
+## W1-03 — request_raw re-encodes the raw body: a byte that is not UTF-8 is replaced
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: 'method=method, url=url, data=data, headers=headers, api_version=api_version, allowed_origin=root' -> 'method=method, url=url, data=None if data is None else data.decode("utf-8", "replace").encode("utf-8"), headers=headers, api_version=api_version, allowed_origin=root'
+file src/payload/scripts/github_api/transport.py sha256 mutated 654fe5a327cc91545327d7b3f86167d7750ea6763e2b247bb55c353780eb7d90  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py FF...................      [ 91%]
+src\payload\test\test_github_api_registry.py F                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the bytes as given
+    assert b'# Title\r\n...xef\xbf\xbd\n' == b'# Title\r\n...UTF-8: \xff\n'
+      
+      At index 37 diff: b'\xef' != b'\xff'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:505: AssertionError: the bytes as given
+E   AssertionError: the bytes as given
+    assert b'PK\x03\x04\...e asset bytes' == b'PK\x03\x04\...e asset bytes'
+      
+      At index 4 diff: b'\xef' != b'\xff'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:505: AssertionError: the bytes as given
+E   AssertionError: assert b'PK\x03\x04\...f\xbd\x00\r\n' == b'PK\x03\x04\x89\xff\x00\r\n'
+      
+      At index 4 diff: b'\xef' != b'\x89'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_registry.py:694: AssertionError: assert b'PK\x03\x04\...f\xbd\x00\r\n' == b'PK\x03\x04\x89\xff\x00\r\n'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+================ 3 failed, 20 passed, 112 deselected in 3.65s =================
+
+--- exit 1; summary: 3 failed, 20 passed, 112 deselected in 3.65s
+VERDICT W1-03: KILLED (3 failing ids)
+
+## W1-04 — request_raw drops the Content-Type
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '            headers[HEADER_CONTENT_TYPE] = content_type' -> '            pass'
+file src/payload/scripts/github_api/transport.py sha256 mutated fcab4d4996d3e85e7d72431c07d63ae8425c48b6b94d1e45a1f8ba927a7c79e0  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py FF...................      [ 91%]
+src\payload\test\test_github_api_registry.py F                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the media type as given
+    assert 'application/...rm-urlencoded' == 'text/plain'
+      
+      - text/plain
+      + application/x-www-form-urlencoded
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:506: AssertionError: the media type as given
+E   AssertionError: the media type as given
+    assert 'application/...rm-urlencoded' == 'application/octet-stream'
+      
+      - application/octet-stream
+      + application/x-www-form-urlencoded
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:506: AssertionError: the media type as given
+E   AssertionError: assert 'application/...rm-urlencoded' == 'application/zip'
+      
+      - application/zip
+      + application/x-www-form-urlencoded
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_registry.py:695: AssertionError: assert 'application/...rm-urlencoded' == 'application/zip'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+================ 3 failed, 20 passed, 112 deselected in 3.84s =================
+
+--- exit 1; summary: 3 failed, 20 passed, 112 deselected in 3.84s
+VERDICT W1-04: KILLED (3 failing ids)
+
+## W1-05 — request_raw sends a Content-Type with no body (data=None)
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '        if data is not None:\n            headers[HEADER_CONTENT_TYPE] = content_type' -> '        if True:\n            headers[HEADER_CONTENT_TYPE] = content_type'
+file src/payload/scripts/github_api/transport.py sha256 mutated b67e84b7c97bd6988acde19ceeab2e1b30797fd82a19a350983772658ea08a6f  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py FF...................      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: data=None sends no Content-Type
+    assert 'text/plain' is None
+     +  where 'text/plain' = header(name='content-type')
+     +    where header = RecordedRequest(method='POST', url='https://api.github.com/markdown/raw', body=None, headers={'host': 'api.github.com'...arer transport-test-token', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}).header
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:508: AssertionError: data=None sends no Content-Type
+E   AssertionError: data=None sends no Content-Type
+    assert 'application/octet-stream' is None
+     +  where 'application/octet-stream' = header(name='content-type')
+     +    where header = RecordedRequest(method='POST', url='https://uploads.github.com/repos/o/r/releases/3/assets?name=build+artifacts.zip', ...arer transport-test-token', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}).header
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:508: AssertionError: data=None sends no Content-Type
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+================ 2 failed, 21 passed, 112 deselected in 3.78s =================
+
+--- exit 1; summary: 2 failed, 21 passed, 112 deselected in 3.78s
+VERDICT W1-05: KILLED (2 failing ids)
+
+## W1-06 — the same-origin 307 re-send drops the body
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '                data=req.data,' -> '                data=None,'
+file src/payload/scripts/github_api/transport.py sha256 mutated c152e35dc99057216138dd93baa6324532bd24d9d23a28679f5b1e0b54ed430f  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py ...........FFF.......      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py F                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the same method, body, content-type and credential
+    assert ('PATCH', Non...t-test-token') == ('PATCH', b'{...t-test-token')
+      
+      At index 1 diff: None != b'{"description": "d"}'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:710: AssertionError: the same method, body, content-type and credential
+E   AssertionError: the same method, body, content-type and credential
+    assert ('PATCH', Non...t-test-token') == ('PATCH', b'{...t-test-token')
+      
+      At index 1 diff: None != b'{"description": "d"}'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:710: AssertionError: the same method, body, content-type and credential
+E   AssertionError: the same method, body, content-type and credential
+    assert ('PATCH', Non...t-test-token') == ('PATCH', b'{...t-test-token')
+      
+      At index 1 diff: None != b'{"description": "d"}'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:710: AssertionError: the same method, body, content-type and credential
+E   AssertionError: issue-46/AC-3.1/exit-0/repository-update-follows-its-307: the requests other than GET differ from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2718: AssertionError: issue-46/AC-3.1/exit-0/repository-update-follows-its-307: the requests other than GET differ from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+================ 4 failed, 19 passed, 112 deselected in 3.38s =================
+
+--- exit 1; summary: 4 failed, 19 passed, 112 deselected in 3.38s
+VERDICT W1-06: KILLED (4 failing ids)
+
+## W1-07 — the same-origin 307 re-send changes the method
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '                method=req.get_method(),' -> '                method="POST",'
+file src/payload/scripts/github_api/transport.py sha256 mutated b64177bc921cea63797aaea4830c7c0ce102990d53cd9dba989ce0ef7d91ca3d  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py ...........FEFEFEFEFEFE... [ 86%]
+.                                                                        [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py F                               [100%]
+
+=================================== ERRORS ====================================
+_ ERROR at teardown of test_a_same_origin_307_is_re_sent_once[patch-absolute-location] _
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repositories/42']
+_ ERROR at teardown of test_a_same_origin_307_is_re_sent_once[patch-relative-location] _
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repositories/42']
+_ ERROR at teardown of test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port] _
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com:443/repositories/42']
+_ ERROR at teardown of test_a_same_origin_307_is_re_sent_once[delete-without-a-body] _
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repositories/42']
+_____ ERROR at teardown of test_a_second_307_ends_as_an_http_error[patch] _____
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repositories/42']
+____ ERROR at teardown of test_a_second_307_ends_as_an_http_error[delete] _____
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repositories/42']
+================================== FAILURES ===================================
+the fake GitHub host has no route for POST https://api.github.com/repositories/42
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repositories/42
+the fake GitHub host has no route for POST https://api.github.com/repositories/42
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repositories/42
+the fake GitHub host has no route for POST https://api.github.com:443/repositories/42
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com:443/repositories/42
+the fake GitHub host has no route for POST https://api.github.com/repositories/42
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repositories/42
+the fake GitHub host has no route for POST https://api.github.com/repositories/42
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repositories/42
+the fake GitHub host has no route for POST https://api.github.com/repositories/42
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repositories/42
+the fake GitHub host has no route for POST https://api.github.com/repositories/42
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repositories/42
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+ERROR src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+ERROR src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+=========== 7 failed, 16 passed, 112 deselected, 6 errors in 2.91s ============
+
+--- exit 1; summary: 7 failed, 16 passed, 112 deselected, 6 errors in 2.91s
+VERDICT W1-07: KILLED (13 failing ids)
+
+## W1-08 — the same-origin 307 re-send drops the headers (Content-Type and credential)
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '                headers=dict(req.headers),' -> '                headers={},'
+file src/payload/scripts/github_api/transport.py sha256 mutated c90509ab1ae0fcadd50a75e1d531a7a3a98fb15caa22d39fa1389e3181ea9226  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py ...........FFFF......      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py F                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the same method, body, content-type and credential
+    assert ('PATCH', b'{...ncoded', None) == ('PATCH', b'{...t-test-token')
+      
+      At index 2 diff: 'application/x-www-form-urlencoded' != 'application/json'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:710: AssertionError: the same method, body, content-type and credential
+E   AssertionError: the same method, body, content-type and credential
+    assert ('PATCH', b'{...ncoded', None) == ('PATCH', b'{...t-test-token')
+      
+      At index 2 diff: 'application/x-www-form-urlencoded' != 'application/json'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:710: AssertionError: the same method, body, content-type and credential
+E   AssertionError: the same method, body, content-type and credential
+    assert ('PATCH', b'{...ncoded', None) == ('PATCH', b'{...t-test-token')
+      
+      At index 2 diff: 'application/x-www-form-urlencoded' != 'application/json'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:710: AssertionError: the same method, body, content-type and credential
+E   AssertionError: the same method, body, content-type and credential
+    assert ('DELETE', None, None, None) == ('DELETE', No...t-test-token')
+      
+      At index 3 diff: None != 'Bearer transport-test-token'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:710: AssertionError: the same method, body, content-type and credential
+E   AssertionError: issue-46/AC-3.1/exit-0/repository-update-follows-its-307: the requests other than GET differ from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2718: AssertionError: issue-46/AC-3.1/exit-0/repository-update-follows-its-307: the requests other than GET differ from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+================ 5 failed, 18 passed, 112 deselected in 3.01s =================
+
+--- exit 1; summary: 5 failed, 18 passed, 112 deselected in 3.01s
+VERDICT W1-08: KILLED (5 failing ids)
+
+## W1-09 — the 307 re-send branch never applies (D3 reverted)
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '            code == STATUS_TEMPORARY_REDIRECT' -> '            code == -1'
+file src/payload/scripts/github_api/transport.py sha256 mutated 42f95dd1c261b02f5798300e8dcb7cbd11412f76e97ce6779688faefb901018a  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py ...........FFFFFF....      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py F                               [100%]
+
+================================== FAILURES ===================================
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+E   github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_api\transport.py:593: github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+E   github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_api\transport.py:593: github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+E   github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_api\transport.py:593: github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+E   github_api.errors.GitHubAPIError: GitHub API DELETE "https://api.github.com/repos/o/r" failed: HTTP 307
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_api\transport.py:593: github_api.errors.GitHubAPIError: GitHub API DELETE "https://api.github.com/repos/o/r" failed: HTTP 307
+E   AssertionError: the request and its one re-send; the second 307 is not followed
+    assert ['https://api...om/repos/o/r'] == ['https://api...ositories/42']
+      
+      Right contains one more item: 'https://api.github.com/repositories/42'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:730: AssertionError: the request and its one re-send; the second 307 is not followed
+E   AssertionError: the request and its one re-send; the second 307 is not followed
+    assert ['https://api...om/repos/o/r'] == ['https://api...ositories/42']
+      
+      Right contains one more item: 'https://api.github.com/repositories/42'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:730: AssertionError: the request and its one re-send; the second 307 is not followed
+E   AssertionError: issue-46/AC-3.1/exit-0/repository-update-follows-its-307: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_wrapper:github_wrapper.py:306 GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2713: AssertionError: issue-46/AC-3.1/exit-0/repository-update-follows-its-307: exit code 1, the golden is 0; stdout ''
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+================ 7 failed, 16 passed, 112 deselected in 3.65s =================
+
+--- exit 1; summary: 7 failed, 16 passed, 112 deselected in 3.65s
+VERDICT W1-09: KILLED (8 failing ids)
+
+## W1-10 — a cross-origin 307 is re-sent with the credential (the branch's origin comparison removed)
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '            and origin(url=newurl) == origin(url=req.full_url)' -> '            and True'
+file src/payload/scripts/github_api/transport.py sha256 mutated 1dd75a78009bf9a92347d2f3e9d0d3314861e3baae67d4b7dd7bd112ef3481e2  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py .................FFFF      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   Failed: DID NOT RAISE GitHubAPIError
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:751: Failed: DID NOT RAISE GitHubAPIError
+E   Failed: DID NOT RAISE GitHubAPIError
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:751: Failed: DID NOT RAISE GitHubAPIError
+E   Failed: DID NOT RAISE GitHubAPIError
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:751: Failed: DID NOT RAISE GitHubAPIError
+E   Failed: DID NOT RAISE GitHubAPIError
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:751: Failed: DID NOT RAISE GitHubAPIError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[another-host]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[the-api-host-over-http]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[the-api-host-on-another-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[the-upload-origin]
+================ 4 failed, 19 passed, 112 deselected in 5.34s =================
+
+--- exit 1; summary: 4 failed, 19 passed, 112 deselected in 5.34s
+VERDICT W1-10: KILLED (4 failing ids)
+
+## W1-11 — a cross-origin redirect keeps the credential (the strip removed)
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '                redirected.remove_header(header_name=name.capitalize())' -> '                pass'
+file src/payload/scripts/github_api/transport.py sha256 mutated 567a83c74f229c04d9af27917ca15ccdb6c8a644308b0c58609fd5fe765a37f2  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py ..FFF.FF.............      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+      
+      At index 1 diff: 'Bearer transport-test-token' != None
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:612: AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+E   AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+      
+      At index 1 diff: 'Bearer transport-test-token' != None
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:612: AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+E   AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...', None, None]
+      
+      At index 1 diff: 'Bearer transport-test-token' != None
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:612: AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...', None, None]
+E   AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+      
+      At index 1 diff: 'Bearer transport-test-token' != None
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:612: AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+E   AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+      
+      At index 1 diff: 'Bearer transport-test-token' != None
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:612: AssertionError: assert ['Bearer tran...t-test-token'] == ['Bearer tran...-token', None]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[another-host-from-request]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[another-host-from-download]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[back-to-the-api-host]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[same-host-over-http]
+FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[api-host-on-another-port]
+================ 5 failed, 18 passed, 112 deselected in 5.53s =================
+
+--- exit 1; summary: 5 failed, 18 passed, 112 deselected in 5.53s
+VERDICT W1-11: KILLED (5 failing ids)
+
+## W1-12 — REST_ROOTS admits another host
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: 'REST_ROOTS = (API_ROOT, UPLOAD_ORIGIN)' -> 'REST_ROOTS = (API_ROOT, UPLOAD_ORIGIN, "https://uploads.example.com")'
+file src/payload/scripts/github_api/transport.py sha256 mutated 7695125d52b321aec9c1f6b4da8149555251cae84398a192c81560d4e651744b  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py FF...................      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the API root and the upload origin, and no other
+    assert {'https://api...s.github.com'} == {'https://api...s.github.com'}
+      
+      Extra items in the left set:
+      'https://uploads.example.com'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:482: AssertionError: the API root and the upload origin, and no other
+E   AssertionError: the API root and the upload origin, and no other
+    assert {'https://api...s.github.com'} == {'https://api...s.github.com'}
+      
+      Extra items in the left set:
+      'https://uploads.example.com'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:482: AssertionError: the API root and the upload origin, and no other
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+================ 2 failed, 21 passed, 112 deselected in 3.76s =================
+
+--- exit 1; summary: 2 failed, 21 passed, 112 deselected in 3.76s
+VERDICT W1-12: KILLED (2 failing ids)
+
+## W1-13 — request_raw does not check REST_ROOTS
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '        if root not in REST_ROOTS:' -> '        if False:'
+file src/payload/scripts/github_api/transport.py sha256 mutated b3441b737355e9dbdd2996b19efa91be41b02f6dee14714e30ce01f52ab0089f  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py FEFE...................    [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+=================================== ERRORS ====================================
+_ ERROR at teardown of test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root] _
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com.example.net/markdown/raw']
+_ ERROR at teardown of test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin] _
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com.example.net/repos/o/r/releases/3/assets']
+================================== FAILURES ===================================
+the fake GitHub host has no route for POST https://api.github.com.example.net/markdown/raw
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com.example.net/markdown/raw
+the fake GitHub host has no route for POST https://api.github.com.example.net/repos/o/r/releases/3/assets
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com.example.net/repos/o/r/releases/3/assets
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+ERROR src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+=========== 2 failed, 21 passed, 112 deselected, 2 errors in 4.20s ============
+
+--- exit 1; summary: 2 failed, 21 passed, 112 deselected, 2 errors in 4.20s
+VERDICT W1-13: KILLED (4 failing ids)
+
+## W1-14 — a 307 answering the re-sent request is re-sent again (the once guard removed)
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: '            and not isinstance(req, ResentRequest)' -> '            and True'
+file src/payload/scripts/github_api/transport.py sha256 mutated 6f1bbd5d0fcdee624efb378bac1c53d3e4354a6e6df49c3a1f9a3762a8ea3f78  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py ...............FF....      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   Failed: DID NOT RAISE GitHubAPIError
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:727: Failed: DID NOT RAISE GitHubAPIError
+E   Failed: DID NOT RAISE GitHubAPIError
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:727: Failed: DID NOT RAISE GitHubAPIError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+================ 2 failed, 21 passed, 112 deselected in 3.64s =================
+
+--- exit 1; summary: 2 failed, 21 passed, 112 deselected in 3.64s
+VERDICT W1-14: KILLED (2 failing ids)
+
+## W1-15 — a DELETE's same-origin 307 is not re-sent
+file src/payload/scripts/github_api/transport.py sha256 before 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435  # pragma: allowlist secret
+edit src/payload/scripts/github_api/transport.py: 'RESENT_METHODS = frozenset({METHOD_PATCH, METHOD_DELETE})' -> 'RESENT_METHODS = frozenset({METHOD_PATCH})'
+file src/payload/scripts/github_api/transport.py sha256 mutated c6a8f824e804715aed7804a6e1ebff772e7ec3a20bd51cf1b42bcc990634a8cc  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/transport.py sha256 restored 59bda4d6457c96d0e30ab7024f7241b91ba15367953caa8782740f1e61b29435 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py ..............F.F....      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+E   github_api.errors.GitHubAPIError: GitHub API DELETE "https://api.github.com/repos/o/r" failed: HTTP 307
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_api\transport.py:593: github_api.errors.GitHubAPIError: GitHub API DELETE "https://api.github.com/repos/o/r" failed: HTTP 307
+E   AssertionError: the request and its one re-send; the second 307 is not followed
+    assert ['https://api...om/repos/o/r'] == ['https://api...ositories/42']
+      
+      Right contains one more item: 'https://api.github.com/repositories/42'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_transport.py:730: AssertionError: the request and its one re-send; the second 307 is not followed
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+================ 2 failed, 21 passed, 112 deselected in 3.21s =================
+
+--- exit 1; summary: 2 failed, 21 passed, 112 deselected in 3.21s
+VERDICT W1-15: KILLED (2 failing ids)
+
+## W1-16 — registry.send ignores the record's root
+file src/payload/scripts/github_api/registry.py sha256 before 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d  # pragma: allowlist secret
+edit src/payload/scripts/github_api/registry.py: '        root=operation.root,' -> '        root=API_ROOT,'
+file src/payload/scripts/github_api/registry.py sha256 mutated af478aa485658eeea547d31ec75f73a277390c0207a156beed34409319aeea2d  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/registry.py sha256 restored 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py .....................      [ 91%]
+src\payload\test\test_github_api_registry.py FE                          [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+=================================== ERRORS ====================================
+_______ ERROR at teardown of test_send_sends_a_raw_record_to_its_origin _______
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build']
+================================== FAILURES ===================================
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+============ 1 failed, 22 passed, 112 deselected, 1 error in 3.21s ============
+
+--- exit 1; summary: 1 failed, 22 passed, 112 deselected, 1 error in 3.21s
+VERDICT W1-16: KILLED (2 failing ids)
+
+## W1-17 — registry.send ignores the record's content_type
+file src/payload/scripts/github_api/registry.py sha256 before 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d  # pragma: allowlist secret
+edit src/payload/scripts/github_api/registry.py: '        content_type=operation.content_type,' -> '        content_type="application/octet-stream",'
+file src/payload/scripts/github_api/registry.py sha256 mutated 1839372ecf864ca1cbaec0190ee4986a4ec0de0fc3639acfbab86709a3dc4e07  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/registry.py sha256 restored 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py .....................      [ 91%]
+src\payload\test\test_github_api_registry.py F                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: assert 'application/octet-stream' == 'application/zip'
+      
+      - application/zip
+      + application/octet-stream
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_registry.py:695: AssertionError: assert 'application/octet-stream' == 'application/zip'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+================ 1 failed, 22 passed, 112 deselected in 3.40s =================
+
+--- exit 1; summary: 1 failed, 22 passed, 112 deselected in 3.40s
+VERDICT W1-17: KILLED (1 failing ids)
+
+## W1-18 — registry.send accepts data for a record whose body is JSON
+file src/payload/scripts/github_api/registry.py sha256 before 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d  # pragma: allowlist secret
+edit src/payload/scripts/github_api/registry.py: '    if operation.content_type is None and data is not None:' -> '    if False:'
+file src/payload/scripts/github_api/registry.py sha256 mutated e78226da8b20a4b6ad8e68db268eef4090143f418eada909d31db54a86b8049d  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/registry.py sha256 restored 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py .....................      [ 91%]
+src\payload\test\test_github_api_registry.py FE                          [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+=================================== ERRORS ====================================
+_______ ERROR at teardown of test_send_sends_a_raw_record_to_its_origin _______
+E   AssertionError: the fake GitHub host received requests no route answers: ['PATCH https://api.github.com/repos/o/r/issues/7']
+================================== FAILURES ===================================
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/issues/7
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/issues/7
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+============ 1 failed, 22 passed, 112 deselected, 1 error in 3.20s ============
+
+--- exit 1; summary: 1 failed, 22 passed, 112 deselected, 1 error in 3.20s
+VERDICT W1-18: KILLED (2 failing ids)
+
+## W1-19 — registry.send sends every record through Transport.request (the raw path ignored)
+file src/payload/scripts/github_api/registry.py sha256 before 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d  # pragma: allowlist secret
+edit src/payload/scripts/github_api/registry.py: '    if operation.content_type is None:' -> '    if True:'
+file src/payload/scripts/github_api/registry.py sha256 mutated 8ad783d9cfb89b857ec616092d25cc3916fdf990f52bf0d52400ee0119403ff6  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/registry.py sha256 restored 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py .....................      [ 91%]
+src\payload\test\test_github_api_registry.py FE                          [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+=================================== ERRORS ====================================
+_______ ERROR at teardown of test_send_sends_a_raw_record_to_its_origin _______
+E   AssertionError: the fake GitHub host received requests no route answers: ['POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build']
+================================== FAILURES ===================================
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+============ 1 failed, 22 passed, 112 deselected, 1 error in 3.42s ============
+
+--- exit 1; summary: 1 failed, 22 passed, 112 deselected, 1 error in 3.42s
+VERDICT W1-19: KILLED (2 failing ids)
+
+## Re-confirm green on the restored tree
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py -k raw_body_is_sent_unchanged_to_its_root or same_origin_307_is_re_sent_once or second_307_ends_as_an_http_error or cross_origin_307_is_not_followed or cross_origin_redirect_drops_the_credential or send_sends_a_raw_record_to_its_origin or repository_update_follows_its_307 -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 135 items / 112 deselected / 23 selected
+
+src\payload\test\test_github_api_transport.py .....................      [ 91%]
+src\payload\test\test_github_api_registry.py .                           [ 95%]
+src\payload\test\test_github_api_call.py .                               [100%]
+
+===================== 23 passed, 112 deselected in 3.37s ======================
+
+--- exit 0; summary: 23 passed, 112 deselected in 3.37s
+GREEN-AFTER-RESTORE: yes
+git status --porcelain after:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## Summary
+W1-01 KILLED exit=1 :: 2 failed, 21 passed, 112 deselected, 2 errors in 3.58s
+    ERROR src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+    ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+W1-02 KILLED exit=1 :: 2 failed, 21 passed, 112 deselected in 3.25s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+W1-03 KILLED exit=1 :: 3 failed, 20 passed, 112 deselected in 3.65s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+W1-04 KILLED exit=1 :: 3 failed, 20 passed, 112 deselected in 3.84s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+W1-05 KILLED exit=1 :: 2 failed, 21 passed, 112 deselected in 3.78s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+W1-06 KILLED exit=1 :: 4 failed, 19 passed, 112 deselected in 3.38s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+    FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+W1-07 KILLED exit=1 :: 7 failed, 16 passed, 112 deselected, 6 errors in 2.91s
+    ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+    ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+    ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+    ERROR src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+    ERROR src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+    ERROR src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+    FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+W1-08 KILLED exit=1 :: 5 failed, 18 passed, 112 deselected in 3.01s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+    FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+W1-09 KILLED exit=1 :: 7 failed, 16 passed, 112 deselected in 3.65s
+    ERROR    github_wrapper:github_wrapper.py:306 GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+    FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+W1-10 KILLED exit=1 :: 4 failed, 19 passed, 112 deselected in 5.34s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[another-host]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[the-api-host-over-http]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[the-api-host-on-another-port]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_307_is_not_followed[the-upload-origin]
+W1-11 KILLED exit=1 :: 5 failed, 18 passed, 112 deselected in 5.53s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[another-host-from-request]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[another-host-from-download]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[back-to-the-api-host]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[same-host-over-http]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_cross_origin_redirect_drops_the_credential[api-host-on-another-port]
+W1-12 KILLED exit=1 :: 2 failed, 21 passed, 112 deselected in 3.76s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+W1-13 KILLED exit=1 :: 2 failed, 21 passed, 112 deselected, 2 errors in 4.20s
+    ERROR src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+    ERROR src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+W1-14 KILLED exit=1 :: 2 failed, 21 passed, 112 deselected in 3.64s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+W1-15 KILLED exit=1 :: 2 failed, 21 passed, 112 deselected in 3.21s
+    FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+    FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+W1-16 KILLED exit=1 :: 1 failed, 22 passed, 112 deselected, 1 error in 3.21s
+    ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+W1-17 KILLED exit=1 :: 1 failed, 22 passed, 112 deselected in 3.40s
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+W1-18 KILLED exit=1 :: 1 failed, 22 passed, 112 deselected, 1 error in 3.20s
+    ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+W1-19 KILLED exit=1 :: 1 failed, 22 passed, 112 deselected, 1 error in 3.42s
+    ERROR src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+    FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin

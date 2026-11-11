@@ -304,3 +304,24 @@ def test_the_usage_names_the_operation_call(monkeypatch: pytest.MonkeyPatch) -> 
     assert isinstance(usage, str), f"{ENTRY_SCRIPT} has no module docstring"
     missing = [text for text in USAGE_CALL_TEXTS if text not in usage]
     assert missing == [], f"the usage of {ENTRY_SCRIPT} does not name: {missing}"
+
+
+# AC-5.1: what design D6's usage lines give the entry script's docstring for the raw body input. None of these texts is
+# in the docstring before D6's lines, so the test cannot pass on the earlier usage.
+USAGE_RAW_BODY_TEXTS = (
+    "call markdown/render-raw --input",
+    "--input FILE",
+    "standard input",
+    "repos/upload-release-asset",
+    "uploads.github.com",
+    "with -f/-F",
+)
+
+
+def test_the_usage_names_the_raw_body_input(monkeypatch: pytest.MonkeyPatch) -> None:
+    """AC-5.1: the entry script's ``__doc__`` names ``call`` with ``--input FILE``, its standard-input form, the two
+    records it sends, the upload host, and its refusal beside ``-f/-F`` (design D6)."""
+    usage = load_wrapper(monkeypatch=monkeypatch).__doc__
+    assert isinstance(usage, str), f"{ENTRY_SCRIPT} has no module docstring"
+    missing = [text for text in USAGE_RAW_BODY_TEXTS if text not in usage]
+    assert missing == [], f"the usage of {ENTRY_SCRIPT} does not name: {missing}"

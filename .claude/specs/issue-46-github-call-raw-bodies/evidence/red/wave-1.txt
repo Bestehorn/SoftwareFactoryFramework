@@ -1,0 +1,236 @@
+# tasks: 1.1 1.2 1.3 1.4
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_actions.py src/payload/test/test_github_api_activity.py src/payload/test/test_github_api_apps.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_checks.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_dependabot.py src/payload/test/test_github_api_gists.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_issues.py src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_reactions.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_search.py src/payload/test/test_github_api_secret_scanning.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_users.py src/payload/test/test_github_wrapper_compat.py test/test_github_api_call_properties.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [943 items]
+
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 22%]
+...............................F...........................F............ [ 30%]
+...........................................................F.F.......... [ 38%]
+.........F.....F......F..F.F.F.......................................... [ 45%]
+........................................................................ [ 53%]
+........................................................................ [ 61%]
+........................................................................ [ 68%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+........................................................................ [ 91%]
+........................................................................ [ 99%]
+.......                                                                  [100%]
+================================== FAILURES ===================================
+_________________ test_send_sends_a_raw_record_to_its_origin __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:646: in test_send_sends_a_raw_record_to_its_origin
+    upload = api.registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'root'
+__________________ test_a_repository_update_follows_its_307 ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1088: in test_a_repository_update_follows_its_307
+    requests = fx.run_product_case(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2810: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2713: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-3.1/exit-0/repository-update-follows-its-307: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_wrapper:github_wrapper.py:302 GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+___ test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:482: in test_a_raw_body_is_sent_unchanged_to_its_root
+    assert set(api.transport.REST_ROOTS) == {API, UPLOADS}, "the API root and the upload origin, and no other"
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.transport' has no attribute 'REST_ROOTS'
+__ test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:482: in test_a_raw_body_is_sent_unchanged_to_its_root
+    assert set(api.transport.REST_ROOTS) == {API, UPLOADS}, "the API root and the upload origin, and no other"
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.transport' has no attribute 'REST_ROOTS'
+_______ test_a_same_origin_307_is_re_sent_once[patch-absolute-location] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\scripts\github_api\transport.py:526: in _send
+    return self._open(request=request, url=url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:501: in _open
+    with self._opener.open(request) as answer:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:493: in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:602: in http_response
+    response = self.parent.error(
+C:\Program Files\Python314\Lib\urllib\request.py:525: in error
+    result = self._call_chain(*args)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:697: in http_error_302
+    new = self.redirect_request(req, fp, code, msg, headers, newurl)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:202: in redirect_request
+    redirected = super().redirect_request(req=req, fp=fp, code=code, msg=msg, headers=headers, newurl=newurl)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:634: in redirect_request
+    raise HTTPError(req.full_url, code, msg, headers, fp)
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+src\payload\test\test_github_api_transport.py:705: in test_a_same_origin_307_is_re_sent_once
+    response = transport.request(method=case.method, path=REPO_PATH, body=case.body)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:393: in request
+    return self._send(
+src\payload\scripts\github_api\transport.py:530: in _send
+    raise _http_failure(method=method, url=url, error=error, limit=limit) from error
+E   github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+_______ test_a_same_origin_307_is_re_sent_once[patch-relative-location] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\scripts\github_api\transport.py:526: in _send
+    return self._open(request=request, url=url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:501: in _open
+    with self._opener.open(request) as answer:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:493: in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:602: in http_response
+    response = self.parent.error(
+C:\Program Files\Python314\Lib\urllib\request.py:525: in error
+    result = self._call_chain(*args)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:697: in http_error_302
+    new = self.redirect_request(req, fp, code, msg, headers, newurl)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:202: in redirect_request
+    redirected = super().redirect_request(req=req, fp=fp, code=code, msg=msg, headers=headers, newurl=newurl)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:634: in redirect_request
+    raise HTTPError(req.full_url, code, msg, headers, fp)
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+src\payload\test\test_github_api_transport.py:705: in test_a_same_origin_307_is_re_sent_once
+    response = transport.request(method=case.method, path=REPO_PATH, body=case.body)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:393: in request
+    return self._send(
+src\payload\scripts\github_api\transport.py:530: in _send
+    raise _http_failure(method=method, url=url, error=error, limit=limit) from error
+E   github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+_ test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\scripts\github_api\transport.py:526: in _send
+    return self._open(request=request, url=url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:501: in _open
+    with self._opener.open(request) as answer:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:493: in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:602: in http_response
+    response = self.parent.error(
+C:\Program Files\Python314\Lib\urllib\request.py:525: in error
+    result = self._call_chain(*args)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:697: in http_error_302
+    new = self.redirect_request(req, fp, code, msg, headers, newurl)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:202: in redirect_request
+    redirected = super().redirect_request(req=req, fp=fp, code=code, msg=msg, headers=headers, newurl=newurl)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:634: in redirect_request
+    raise HTTPError(req.full_url, code, msg, headers, fp)
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+src\payload\test\test_github_api_transport.py:705: in test_a_same_origin_307_is_re_sent_once
+    response = transport.request(method=case.method, path=REPO_PATH, body=case.body)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:393: in request
+    return self._send(
+src\payload\scripts\github_api\transport.py:530: in _send
+    raise _http_failure(method=method, url=url, error=error, limit=limit) from error
+E   github_api.errors.GitHubAPIError: GitHub API PATCH "https://api.github.com/repos/o/r" failed: HTTP 307
+________ test_a_same_origin_307_is_re_sent_once[delete-without-a-body] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\scripts\github_api\transport.py:526: in _send
+    return self._open(request=request, url=url)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:501: in _open
+    with self._opener.open(request) as answer:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:493: in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:602: in http_response
+    response = self.parent.error(
+C:\Program Files\Python314\Lib\urllib\request.py:525: in error
+    result = self._call_chain(*args)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:697: in http_error_302
+    new = self.redirect_request(req, fp, code, msg, headers, newurl)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:202: in redirect_request
+    redirected = super().redirect_request(req=req, fp=fp, code=code, msg=msg, headers=headers, newurl=newurl)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:634: in redirect_request
+    raise HTTPError(req.full_url, code, msg, headers, fp)
+E   urllib.error.HTTPError: HTTP Error 307: Temporary Redirect
+
+The above exception was the direct cause of the following exception:
+src\payload\test\test_github_api_transport.py:705: in test_a_same_origin_307_is_re_sent_once
+    response = transport.request(method=case.method, path=REPO_PATH, body=case.body)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\transport.py:393: in request
+    return self._send(
+src\payload\scripts\github_api\transport.py:530: in _send
+    raise _http_failure(method=method, url=url, error=error, limit=limit) from error
+E   github_api.errors.GitHubAPIError: GitHub API DELETE "https://api.github.com/repos/o/r" failed: HTTP 307
+_______________ test_a_second_307_ends_as_an_http_error[patch] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:730: in test_a_second_307_ends_as_an_http_error
+    assert fake.urls() == [REPOSITORY_URL, MOVED_URL], "the request and its one re-send; the second 307 is not followed"
+E   AssertionError: the request and its one re-send; the second 307 is not followed
+E   assert ['https://api...om/repos/o/r'] == ['https://api...ositories/42']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mhttps://api.github.com/repositories/42[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_______________ test_a_second_307_ends_as_an_http_error[delete] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:730: in test_a_second_307_ends_as_an_http_error
+    assert fake.urls() == [REPOSITORY_URL, MOVED_URL], "the request and its one re-send; the second 307 is not followed"
+E   AssertionError: the request and its one re-send; the second 307 is not followed
+E   assert ['https://api...om/repos/o/r'] == ['https://api...ositories/42']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mhttps://api.github.com/repositories/42[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin
+FAILED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[markdown-on-the-api-root]
+FAILED src/payload/test/test_github_api_transport.py::test_a_raw_body_is_sent_unchanged_to_its_root[asset-on-the-upload-origin]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-absolute-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-relative-location]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[patch-location-with-the-default-port]
+FAILED src/payload/test/test_github_api_transport.py::test_a_same_origin_307_is_re_sent_once[delete-without-a-body]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[patch]
+FAILED src/payload/test/test_github_api_transport.py::test_a_second_307_ends_as_an_http_error[delete]
+================= 10 failed, 933 passed in 132.88s (0:02:12) ==================

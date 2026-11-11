@@ -73,6 +73,8 @@ HEADER_CONTENT_TYPE = "content-type"
 HEADER_LINK = "link"
 HEADER_LOCATION = "location"
 MEDIA_TYPE_JSON = "application/json; charset=utf-8"
+#: The ``Content-Type`` the product's and the fork's ``CONTENT_TYPE_JSON`` send with a JSON request body.
+CONTENT_TYPE_JSON = "application/json"
 FIELD_TOTAL_COUNT = "total_count"
 METHOD_GET = "GET"
 
@@ -630,7 +632,8 @@ class ListFailureRouteSpec(RouteSpec):
 
 @dataclass(frozen=True)
 class NonGetRequest:
-    """A request other than ``GET`` as the golden comparison sees it: method, path as sent, decoded query, JSON body."""
+    """A request other than ``GET`` as the golden comparison sees it: method, path as sent, decoded query, and body:
+    parsed as JSON, or the bytes as sent for a body that is not JSON (issue #46 design D5)."""
 
     method: str
     path: str
@@ -639,8 +642,12 @@ class NonGetRequest:
 
     @classmethod
     def of(cls, *, request: RecordedRequest) -> NonGetRequest:
-        """``request`` in the comparison's form."""
-        return cls(method=request.method, path=request.path, body=request.json(), query=request.query)
+        """``request`` in the comparison's form: its body parsed as JSON when its ``content-type`` is absent or
+        ``application/json``, its bytes as sent under any other ``content-type``, so a body that is not UTF-8 is
+        compared rather than decoded."""
+        content_type = request.header(name=HEADER_CONTENT_TYPE)
+        body = request.json() if content_type is None or content_type == CONTENT_TYPE_JSON else request.body
+        return cls(method=request.method, path=request.path, body=body, query=request.query)
 
 
 @dataclass(frozen=True)
