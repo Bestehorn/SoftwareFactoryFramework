@@ -15,7 +15,9 @@ What is pinned (issue #13, ``design.md`` D4 and "Correctness Properties"):
   spent (AC-3.2 to AC-3.4); every ``conventions.md`` "Body shapes" error becomes a ``GitLabAPIError`` carrying the
   status, the raw body and the shape's text (AC-3.5);
 - GraphQL POSTs ``{"query", "variables"}`` to ``/api/graphql`` (AC-4.1), pages a connection by ``endCursor``
-  (AC-4.2), and raises on top-level ``errors`` or a mutation payload's ``errors`` even at HTTP ``200`` (AC-4.3).
+  (AC-4.2), and raises on top-level ``errors`` or a mutation payload's ``errors`` even at HTTP ``200`` (AC-4.3);
+- ``Response.is_json`` (issue #41, ``design.md`` D2) reads the ``Content-Type``, parameters ignored: true for
+  ``application/json; charset=utf-8``, false for ``text/plain`` and with no ``Content-Type`` (#41 AC-1.5).
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
@@ -953,4 +955,41 @@ def test_empty_payload_errors_and_query_errors_fields_return_data(
 
     assert result == data, (
         "an empty mutation `errors` list, and an `errors` field of a query's object, are data, not a failure"
+    )
+
+
+# --- issue #41 AC-1.5 Response.is_json ----------------------------------------------------------------------------
+
+CONTENT_TYPE_JSON_UTF8 = f"{CONTENT_TYPE_JSON}; charset=utf-8"
+
+# (scripted headers, raw body, is_json): a str body is served verbatim and gains no Content-Type from the fake host.
+IS_JSON_CASES = [
+    pytest.param(((HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON_UTF8),), '{"id": 1}', True, id="json-with-charset"),
+    pytest.param(((HEADER_CONTENT_TYPE, CONTENT_TYPE_TEXT),), "a job trace", False, id="text-plain"),
+    pytest.param((), "a job trace", False, id="no-content-type"),
+]
+
+
+@pytest.mark.parametrize(("headers", "raw_body", "expected"), IS_JSON_CASES)
+def test_is_json_reads_the_content_type(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    headers: Tuple[Tuple[str, str], ...],
+    raw_body: str,
+    expected: bool,
+) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    url = f"{REST_BASE}/projects/1"
+    fake_gitlab.script(method="GET", url=url, headers=headers, body=raw_body)
+
+    response = client.request(method="GET", path="/projects/1")
+
+    assert recorded_urls(fake=fake_gitlab) == [url]
+    assert (response.headers.get_all(HEADER_CONTENT_TYPE) or []) == [value for _, value in headers], (
+        "the response carries exactly the scripted Content-Type, or none"
+    )
+    assert response.is_json is expected, (
+        f"is_json is {expected} for Content-Type {headers!r}: the media type alone decides, parameters ignored and "
+        "text/plain assumed when the header is absent (#41 D2, AC-1.5)"
     )

@@ -1,0 +1,355 @@
+# mutant: W1-revert (wave 1)
+# change: registry.py and transport.py written as on origin/main (wave 1's implementation removed)
+# files: src/payload/scripts/gitlab_api/registry.py, src/payload/scripts/gitlab_api/transport.py
+# tests: src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py
+# expected to fail: test_send_returns_the_response_of_the_record, test_attribute_name_drops_one_trailing_bracket_pair, test_variables_are_the_documents_definitions, test_is_json_reads_the_content_type
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [93 items]
+
+..............FF.FFFFF.................................................. [ 77%]
+..................FFF                                                    [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'send'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:317: AttributeError: module 'gitlab_api.registry' has no attribute 'send'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'attribute_name'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:351: AttributeError: module 'gitlab_api.registry' has no attribute 'attribute_name'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'attribute_name'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:351: AttributeError: module 'gitlab_api.registry' has no attribute 'attribute_name'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'attribute_name'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:351: AttributeError: module 'gitlab_api.registry' has no attribute 'attribute_name'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'capability'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:369: TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'capability'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'capability'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:369: TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'capability'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'capability'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:369: TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'capability'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: 'Response' object has no attribute 'is_json'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_transport.py:992: AttributeError: 'Response' object has no attribute 'is_json'
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: 'Response' object has no attribute 'is_json'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_transport.py:992: AttributeError: 'Response' object has no attribute 'is_json'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: 'Response' object has no attribute 'is_json'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_transport.py:992: AttributeError: 'Response' object has no attribute 'is_json'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_send_returns_the_response_of_the_record
+FAILED src/payload/test/test_gitlab_api_registry.py::test_attribute_name_drops_one_trailing_bracket_pair[array-suffix]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_attribute_name_drops_one_trailing_bracket_pair[one-pair-only]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_attribute_name_drops_one_trailing_bracket_pair[hash-key-unchanged]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_variables_are_the_documents_definitions[definitions-in-order]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_variables_are_the_documents_definitions[connection-drops-after]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_variables_are_the_documents_definitions[no-connection-keeps-after]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_is_json_reads_the_content_type[json-with-charset]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_is_json_reads_the_content_type[text-plain]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_is_json_reads_the_content_type[no-content-type]
+======================== 10 failed, 83 passed in 6.53s ========================
+exit=1
+# expected failures seen: 4/4; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/registry.py, src/payload/scripts/gitlab_api/transport.py equal to the baseline: yes
+
+# mutant: W1-send-guard (wave 1)
+# change: registry.send: the GraphQL-record refusal removed
+# files: src/payload/scripts/gitlab_api/registry.py
+# tests: src/payload/test/test_gitlab_api_registry.py
+# expected to fail: test_send_returns_the_response_of_the_record
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [20 items]
+
+...................F                                                     [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AttributeError: 'GraphQLOperation' object has no attribute 'path'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\scripts\gitlab_api\registry.py:280: AttributeError: 'GraphQLOperation' object has no attribute 'path'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_send_returns_the_response_of_the_record
+======================== 1 failed, 19 passed in 3.61s =========================
+exit=1
+# expected failures seen: 1/1; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/registry.py equal to the baseline: yes
+
+# mutant: W1-send-query (wave 1)
+# change: registry.send: the request sent with an empty query (encoded.query dropped)
+# files: src/payload/scripts/gitlab_api/registry.py
+# tests: src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py
+# expected to fail: test_an_operation_call_sends_its_record[fixed-pairs-after-the-attributes], test_every_record_is_sent_as_its_section_documents
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [70 items]
+
+.....F.....F...FF.....F..............................................F   [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+    assert () == (('options', 'true'),)
+      
+      Right contains one more item: [0m([33m'[39;49;00m[33moptions[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtrue[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:902: AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+    assert () == (('options[]'...ions[]', '2'))
+      
+      Right contains 2 more items, first extra item: [0m([33m'[39;49;00m[33moptions[][39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33ma[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:902: AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: one request: the record's method, its path with each :name one encoded segment, the query as sent (AC-1.2)
+    assert [('GET', 'htt...hetic_fixed')] == [('GET', 'htt...x&scope=all')]
+      
+      At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242/synthetic_fixed[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242/synthetic_fixed?search=x&scope=all[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:731: AssertionError: one request: the record's method, its path with each :name one encoded segment, the query as sent (AC-1.2)
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+    assert () == (('options[k]...g]', 'false'))
+      
+      Right contains 3 more items, first extra item: [0m([33m'[39;49;00m[33moptions[k][39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mv[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:902: AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+    assert () == (('options[0]...e]', 'world'))
+      
+      Right contains 4 more items, first extra item: [0m([33m'[39;49;00m[33moptions[0][key][39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mVAR1[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:902: AssertionError: a query attribute is sent as registry.encode's bracket pairs (AC-1.3): https://gitlab.example.com/api/v4/projects/4242/synthetic_attributes
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: ai-coding#retrieve-a-merge-request: the attribute 'include_diverged_commits_count' was given but is not sent in the query
+      ai-coding#retrieve-a-merge-request: the attribute 'include_rebase_in_progress' was given but is not sent in the query
+      ai-coding#retrieve-a-merge-request: the attribute 'render_html' was given but is not sent in the query
+      verify#retrieve-a-log-file-for-a-job: the attribute 'byte_offset' was given but is not sent in the query
+      verify#retrieve-a-log-file-for-a-job: the attribute 'byte_limit' was given but is not sent in the query
+    assert not ["ai-coding#retrieve-a-merge-request: the attribute 'include_diverged_commits_count' was given but is not sent in the ... the query", "verify#retrieve-a-log-file-for-a-job: the attribute 'byte_limit' was given but is not sent in the query"]
+---------------------------- Captured stdout call -----------------------------
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+[]
+{}
+[]
+{}
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_contract.py:932: AssertionError: ai-coding#retrieve-a-merge-request: the attribute 'include_diverged_commits_count' was given but is not sent in the query
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[scalar-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[fixed-pairs-after-the-attributes]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[hash-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array_of_hashes-query]
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 6 failed, 64 passed in 8.51s =========================
+exit=1
+# expected failures seen: 2/2; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/registry.py equal to the baseline: yes
+
+# mutant: W1-variables-connection (wave 1)
+# change: registry.variables: a connection record keeps its cursor `after`
+# files: src/payload/scripts/gitlab_api/registry.py
+# tests: src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py
+# expected to fail: test_variables_are_the_documents_definitions[connection-drops-after], test_an_undocumented_parameter_is_refused[connection-cursor]
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [79 items]
+
+...................F..................................................F. [ 91%]
+.......                                                                  [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: each $name followed, after any white space, by `:` is a definition, in order; a connection record leaves out its cursor `after` (design.md D2, AC-2.2)
+    assert ('fullPath', 'after') == ('fullPath',)
+      
+      Left contains one more item: [0m[33m'[39;49;00m[33mafter[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:375: AssertionError: each $name followed, after any white space, by `:` is a definition, in order; a connection record leaves out its cursor `after` (design.md D2, AC-2.2)
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: a refused call exits 2, got 1; stderr:
+      
+    assert 1 == 2
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:303 the GraphQL connection project.issues is absent or forbidden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:345: AssertionError: a refused call exits 2, got 1; stderr:
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_variables_are_the_documents_definitions[connection-drops-after]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undocumented_parameter_is_refused[connection-cursor]
+======================== 2 failed, 77 passed in 6.25s =========================
+exit=1
+# expected failures seen: 2/2; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/registry.py equal to the baseline: yes
+
+# mutant: W1-variables-regex (wave 1)
+# change: registry.VARIABLE_DEFINITION: no white space allowed before the `:`
+# files: src/payload/scripts/gitlab_api/registry.py
+# tests: src/payload/test/test_gitlab_api_registry.py
+# expected to fail: test_variables_are_the_documents_definitions[definitions-in-order]
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [20 items]
+
+..................F.                                                     [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: each $name followed, after any white space, by `:` is a definition, in order; a connection record leaves out its cursor `after` (design.md D2, AC-2.2)
+    assert ('fullPath',) == ('fullPath', 'first')
+      
+      Right contains one more item: [0m[33m'[39;49;00m[33mfirst[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:375: AssertionError: each $name followed, after any white space, by `:` is a definition, in order; a connection record leaves out its cursor `after` (design.md D2, AC-2.2)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_variables_are_the_documents_definitions[definitions-in-order]
+======================== 1 failed, 19 passed in 3.71s =========================
+exit=1
+# expected failures seen: 1/1; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/registry.py equal to the baseline: yes
+
+# mutant: W1-attribute-name (wave 1)
+# change: registry.attribute_name: returns the name unchanged
+# files: src/payload/scripts/gitlab_api/registry.py
+# tests: src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py
+# expected to fail: test_attribute_name_drops_one_trailing_bracket_pair[array-suffix], test_an_operation_call_sends_its_record[query-in-the-order-given], test_a_section_is_read_as_the_reference_writes_it
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [90 items]
+
+..............FF.........F.............................................. [ 80%]
+..........F....F..                                                       [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: 'iids[]' names the Param 'iids': one trailing [] is dropped, nothing else (design.md D2, AC-1.3)
+    assert 'iids[]' == 'iids'
+      
+      [0m[91m- iids[39;49;00m[90m[39;49;00m
+      [92m+ iids[][39;49;00m[90m[39;49;00m
+      ?     ++[90m[39;49;00m
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:351: AssertionError: 'iids[]' names the Param 'iids': one trailing [] is dropped, nothing else (design.md D2, AC-1.3)
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: 'a[][]' names the Param 'a[]': one trailing [] is dropped, nothing else (design.md D2, AC-1.3)
+    assert 'a[][]' == 'a[]'
+      
+      [0m[91m- a[][39;49;00m[90m[39;49;00m
+      [92m+ a[][][39;49;00m[90m[39;49;00m
+      ?    ++[90m[39;49;00m
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_registry.py:351: AssertionError: 'a[][]' names the Param 'a[]': one trailing [] is dropped, nothing else (design.md D2, AC-1.3)
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: call ['plan#list-all-project-issues', '--query', 'state=opened', '--query', 'assignee_username=a', '--query', 'assignee_username=b', '--query', 'iids[]=3'] exits 0, got 2; stderr:
+      
+    assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 plan#list-all-project-issues: "iids[]" given with --query is not documented; its path parameters: id; its attributes: assignee_id (query, scalar), assignee_username (query, array), author_id (query, scalar), author_username (query, scalar), confidential (query, scalar), created_after (query, scalar), created_before (query, scalar), due_date (query, scalar), epic_id (query, scalar), iids (query, array), issue_type (query, scalar), iteration_id (query, scalar), iteration_title (query, scalar), labels (query, scalar), milestone (query, scalar), my_reaction_emoji (query, scalar), not (query, hash), order_by (query, scalar), scope (query, scalar), search (query, scalar), sort (query, scalar), state (query, scalar), updated_after (query, scalar), updated_before (query, scalar), weight (query, scalar), with_labels_details (query, scalar), cursor (query, scalar), closed_by_id (query, scalar), milestone_id (query, scalar), in (query, scalar), not[labels] (query, array), not[milestone] (query, scalar), not[milestone_id] (query, scalar), not[iids] (query, array), not[author_id] (query, scalar), not[author_username] (query, scalar), not[assignee_id] (query, scalar), not[assignee_username] (query, array), not[weight] (query, scalar), not[iteration_id] (query, scalar), not[iteration_title] (query, scalar), health_status (query, scalar), page (query, scalar), per_page (query, scalar)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: AssertionError: call ['plan#list-all-project-issues', '--query', 'state=opened', '--query', 'assignee_username=a', '--query', 'assignee_username=b', '--query', 'iids[]=3'] exits 0, got 2; stderr:
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: assert {'id': 'path'...not': 'query'} == {'id': 'path'...not': 'query'}
+      
+      Omitting 2 identical items, use -vv to show
+      Differing items:
+      [0m{[33m'[39;49;00m[33miids[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33miids[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_contract.py:715: AssertionError: assert {'id': 'path'...not': 'query'} == {'id': 'path'...not': 'query'}
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: plan#list-all-project-issues: the Param 'iids' matches no row of the section's table
+      plan#list-all-project-issues: the query row 'iids[]' is not declared by the record
+    assert not ["plan#list-all-project-issues: the Param 'iids' matches no row of the section's table", "plan#list-all-project-issues: the query row 'iids[]' is not declared by the record"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_contract.py:879: AssertionError: plan#list-all-project-issues: the Param 'iids' matches no row of the section's table
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_attribute_name_drops_one_trailing_bracket_pair[array-suffix]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_attribute_name_drops_one_trailing_bracket_pair[one-pair-only]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[query-in-the-order-given]
+FAILED test/test_gitlab_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+======================== 5 failed, 85 passed in 9.40s =========================
+exit=1
+# expected failures seen: 3/3; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/registry.py equal to the baseline: yes
+
+# mutant: W1-is-json (wave 1)
+# change: transport.Response.is_json: the raw Content-Type compared, parameters kept
+# files: src/payload/scripts/gitlab_api/transport.py
+# tests: src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_call.py
+# expected to fail: test_is_json_reads_the_content_type[json-with-charset], test_a_json_or_empty_body_prints_as_documented[json-with-charset]
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [132 items]
+
+.................................................................F...... [ 54%]
+............................F...............................             [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: is_json is True for Content-Type (('Content-Type', 'application/json; charset=utf-8'),): the media type alone decides, parameters ignored and text/plain assumed when the header is absent (#41 D2, AC-1.5)
+    assert False is True
+     +  where False = Response(status=200, headers=<http.client.HTTPMessage object at 0x000001A1F821DBD0>, body=b'{"id": 1}').is_json
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_transport.py:992: AssertionError: is_json is True for Content-Type (('Content-Type', 'application/json; charset=utf-8'),): the media type alone decides, parameters ignored and text/plain assumed when the header is absent (#41 D2, AC-1.5)
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: a JSON Content-Type prints print_json of the body, an empty body nothing (AC-1.5):
+      {"iid": 5, "title": "Caf� parser", "labels": ["bug"]}
+    assert '{"iid": 5, "...ls": ["bug"]}' == '{\n  "iid": ...ug"\n  ]\n}\n'
+      
+      [0m[92m+ {"iid": 5, "title": "Caf� parser", "labels": ["bug"]}[39;49;00m[90m[39;49;00m
+      [91m- {[39;49;00m[90m[39;49;00m
+      [91m-   "iid": 5,[39;49;00m[90m[39;49;00m
+      [91m-   "title": "Caf\u00e9 parser",[39;49;00m[90m[39;49;00m
+      [91m-   "labels": [[39;49;00m[90m[39;49;00m
+      [91m-     "bug"[39;49;00m[90m[39;49;00m
+      [91m-   ][39;49;00m[90m[39;49;00m
+      [91m- }[39;49;00m[90m[39;49;00m
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1068: AssertionError: a JSON Content-Type prints print_json of the body, an empty body nothing (AC-1.5):
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_is_json_reads_the_content_type[json-with-charset]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_json_or_empty_body_prints_as_documented[json-with-charset]
+======================== 2 failed, 130 passed in 8.96s ========================
+exit=1
+# expected failures seen: 2/2; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/transport.py equal to the baseline: yes
+

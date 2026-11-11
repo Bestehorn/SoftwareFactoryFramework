@@ -37,13 +37,22 @@ Usage:
     python scripts/gitlab_wrapper.py wait-landed <mr_iid> --timeout-seconds 540     # 0 landed, 10 returned, 11 re-issue
     python scripts/gitlab_wrapper.py check-handoff <iid>                            # 0 ready, 4 not (reasons printed)
     python scripts/gitlab_wrapper.py check-landed <mr_iid> [<mr_iid> ...]           # 0 all landed, 4 not
+    python scripts/gitlab_wrapper.py call plan#retrieve-a-project-issue --path issue_iid=5   # any record, by its id
+        # --path NAME=VALUE (id defaults to project_id on a /projects/:id path); --query NAME=VALUE (a query
+        # attribute as text; repeat it for each item of an array); -f/--raw-field NAME=TEXT (an attribute, a string);
+        # -F/--field NAME=JSON (an attribute: a number, boolean, array, object or quoted string); --file NAME=PATH
+        # (a file attribute, sent multipart). A GraphQL record takes its variables with -f and -F.
+        # A list prints as one JSON array of every page's items, a JSON response as indented JSON, an empty body as
+        # nothing, any other body as its bytes unchanged. An unknown operation, an undocumented parameter, a missing
+        # path parameter, a value of the wrong shape, and ai-coding#merge-a-merge-request and plan#create-an-issue
+        # (use mr merge and issue create) are refused before any request: exit 2.
 
 Exit codes: 0 done; 1 a GitLab API error, a refused claim or a refused config/gitlab.json (the reason on standard
-error); 2 a usage error; 3 `issue claim-check` on an open, unclaimed issue; 10 and 11 `pipeline wait` (above). The
-delivery verbs (`enqueue-pr` to `check-landed`) run the merge steward, scripts/merge_steward.py, and return its exit
-code (0 accepted, 4 refused with the reason printed); on a host that is not the queue's (config/delivery.json
-`host`) they refuse with 2. Results go to standard output (JSON, or the job traces of `pipeline log`); diagnostics go
-to standard error.
+error); 2 a usage error or a refused `call`; 3 `issue claim-check` on an open, unclaimed issue; 10 and 11
+`pipeline wait` (above). The delivery verbs (`enqueue-pr` to `check-landed`) run the merge steward,
+scripts/merge_steward.py, and return its exit code (0 accepted, 4 refused with the reason printed); on a host that is
+not the queue's (config/delivery.json `host`) they refuse with 2. Results go to standard output (JSON, or the job
+traces of `pipeline log`); diagnostics go to standard error.
 
 Credentials: config/gitlab.json (gitignored; copy config/gitlab.json.template and fill in real values), and nothing
 else: no environment variable is read. Its keys:
@@ -60,9 +69,10 @@ else: no environment variable is read. Its keys:
 This wrapper is the project's mandated entry point for all GitLab API operations (the use-git-wrapper-scripts rule,
 in .claude/rules/ or .kiro/steering/). Direct use of `glab`, `gh`, raw curl, or requests against the GitLab API is
 forbidden. The requests are built by the package beside this file, scripts/gitlab_api/: one record per endpoint, one
-request path (gitlab_api/transport.py), and the subcommands in gitlab_api/commands/, whose modules this script
-discovers. If a host requires corporate-SSO cookie auth (e.g. Midway-protected GitLab), add that handling in
-gitlab_api/transport.py, the one request path, as a clearly-commented extension point.
+request path (gitlab_api/transport.py), and the subcommands in gitlab_api/commands/ (`commands/call.py` calls any
+record by its id), whose modules this script discovers. If a host requires corporate-SSO cookie auth (e.g.
+Midway-protected GitLab), add that handling in gitlab_api/transport.py, the one request path, as a clearly-commented
+extension point.
 """
 
 from __future__ import annotations

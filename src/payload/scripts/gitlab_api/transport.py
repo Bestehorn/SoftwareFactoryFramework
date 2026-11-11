@@ -257,11 +257,19 @@ class Response:
         return self.body.decode(encoding=TEXT_ENCODING, errors=DECODE_ERRORS)
 
     @property
+    def is_json(self) -> bool:
+        """Whether the ``Content-Type``'s media type is ``application/json`` (issue #41, design.md D2).
+
+        ``get_content_type`` lower-cases the type and drops its parameters, so ``application/json; charset=utf-8`` is
+        JSON, and reads an absent header as ``text/plain`` (Python docs, ``email.message.Message``)."""
+        return self.headers.get_content_type() == CONTENT_TYPE_JSON
+
+    @property
     def value(self) -> Any:
         """JSON when the ``Content-Type`` is JSON, the text otherwise (a job trace), ``None`` when the body is empty."""
         if not self.body:
             return None
-        if self.headers.get_content_type() != CONTENT_TYPE_JSON:
+        if not self.is_json:
             return self.text
         try:
             return json.loads(s=self.text)

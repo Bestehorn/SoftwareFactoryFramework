@@ -14,6 +14,12 @@ repository, which is why the module lives in `test/`. It puts `src/payload/scrip
 `gitlab_api` inside each test, so it collects while the package is absent. No test of the module may open a network
 connection: a `socket.socket.connect` guard is installed for every one.
 
+Issue #41 (design D6) adds the checks of a regenerated reference and of the GraphQL-only capabilities:
+`family_problems` names each `PENDING` key and each record that the index no longer bears out, `only_in_graphql`
+reads the first cells of the table under `### Only in GraphQL` in `graphql/conventions.md`, and `capability_problems`
+names each capability neither served by a `graphql_only` record nor in `graphql_only.PENDING_CAPABILITIES`, and each
+entry or record capability the table lacks.
+
 Run: ``python scripts/run_tests.py test/test_gitlab_wrapper_coverage.py``
 """
 
@@ -27,7 +33,7 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from types import ModuleType
-from typing import AbstractSet, FrozenSet, Iterable, Iterator, Mapping, NamedTuple, Sequence, Tuple
+from typing import AbstractSet, Any, FrozenSet, Iterable, Iterator, Mapping, NamedTuple, Sequence, Tuple
 
 import pytest
 
@@ -39,6 +45,24 @@ if str(SCRIPTS) not in sys.path:
 PACKAGE = "gitlab_api"
 REGISTRY = PACKAGE + ".registry"
 INDEX = ROOT / "docs" / "api-reference" / "gitlab" / "operations-index.md"
+GRAPHQL_ONLY = PACKAGE + ".graphql_only"
+CONVENTIONS = ROOT / "docs" / "api-reference" / "gitlab" / "graphql" / "conventions.md"
+
+# The two tables of `graphql/conventions.md` "Only in GraphQL / only in REST", each read under its heading (D6).
+ONLY_IN_GRAPHQL_HEADING = "### Only in GraphQL"
+ONLY_IN_REST_HEADING = "### Only in REST"
+HEADING_PREFIX = "#"
+CELL_SEPARATOR = "|"
+SEPARATOR_ROW = re.compile(r"\|(?:\s*:?-+:?\s*\|)+")
+SEPARATOR_CHARACTERS = "-:"
+CAPABILITY_HEADER = "Capability"
+FIRST_CAPABILITY = "Work items"
+LAST_CAPABILITY = "Query cost introspection"
+# The names of the GraphQL capability module (D6).
+ATTRIBUTE_OPERATIONS = "OPERATIONS"
+ATTRIBUTE_PENDING_CAPABILITIES = "PENDING_CAPABILITIES"
+# A package-manager protocol path (AC-6.1).
+ROUTE_PREFIX = "/<route-prefix>/"
 
 METHODS = ("DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT")
 TABLE_HEADER = "| Method | Path | Reference |"
@@ -162,6 +186,130 @@ def registry_module() -> ModuleType:
         if missing.name not in (PACKAGE, REGISTRY):
             raise
         raise AssertionError(f"{REGISTRY} is not importable from {SCRIPTS}: {missing}") from missing
+
+
+def graphql_only_module() -> ModuleType:
+    """`gitlab_api.graphql_only`, imported inside a test as `registry_module` imports the registry; while it is absent
+    the test fails on this assertion."""
+    try:
+        return importlib.import_module(name=GRAPHQL_ONLY)
+    except ModuleNotFoundError as missing:
+        if missing.name not in (PACKAGE, GRAPHQL_ONLY):
+            raise
+        raise AssertionError(f"{GRAPHQL_ONLY} is not importable from {SCRIPTS}: {missing}") from missing
+
+
+# --- Issue #41, D6: what a regenerated reference no longer bears out ---------------------------------------------
+
+
+def reference_keys(rows: Iterable[IndexRow]) -> dict[str, set[Key]]:
+    """Each Reference's operation ID, mapped to the keys of the rows carrying it; a Reference can carry several."""
+    keys: dict[str, set[Key]] = {}
+    for row in rows:
+        keys.setdefault(operation_id(reference=row.reference), set()).add(row.key)
+    return keys
+
+
+def pending_key_problems(*, name: str, pending: AbstractSet[Key], owners: Mapping[Key, str]) -> list[str]:
+    """Each `PENDING` key of the family module `name` that no row carries, or whose family is another module."""
+    problems: list[str] = []
+    for key in sorted(pending):
+        owner = owners.get(key)
+        if owner is None:
+            problems.append(f"families/{name}.py: PENDING holds {key!r}, which no row of the index carries")
+        elif owner != name:
+            problems.append(f"families/{name}.py: PENDING holds {key!r}, a key of families/{owner}.py")
+    return problems
+
+
+def record_key_problems(*, name: str, records: Iterable[Any], references: Mapping[str, AbstractSet[Key]]) -> list[str]:
+    """Each record of the family module `name` whose operation ID is the Reference of no row, or whose
+    `(method, path)` is on none of the rows carrying its Reference."""
+    problems: list[str] = []
+    for record in records:
+        declared = (record.method, record.path)
+        keys = references.get(record.operation_id)
+        if keys is None:
+            problems.append(
+                f"families/{name}.py: the record {record.operation_id!r} is the Reference of no row of the index"
+            )
+        elif declared not in keys:
+            problems.append(
+                f"families/{name}.py: the record {record.operation_id!r} declares {declared!r}; "
+                f"the rows of its Reference carry {sorted(keys)!r}"
+            )
+    return problems
+
+
+def family_problems(*, rows: Sequence[IndexRow], families: Iterable[ModuleType]) -> list[str]:
+    """Per family module, every declaration the index does not bear out (design D6): a `PENDING` key that no row
+    carries or whose family (`key_families`) is another module, a record whose operation ID is the Reference of no
+    row, and a record whose `(method, path)` is on none of the rows carrying its Reference. Each problem names the
+    module and the key or the ID."""
+    owners = key_families(rows=rows)
+    references = reference_keys(rows=rows)
+    problems: list[str] = []
+    for module in families:
+        name = module.__name__.rpartition(".")[2]
+        problems.extend(pending_key_problems(name=name, pending=module.PENDING, owners=owners))
+        problems.extend(record_key_problems(name=name, records=module.OPERATIONS, references=references))
+    return problems
+
+
+def first_cell(line: str) -> str:
+    """The stripped first cell of one Markdown table row."""
+    return line.strip().strip(CELL_SEPARATOR).split(CELL_SEPARATOR)[0].strip()
+
+
+def table_first_cells(*, path: Path, heading: str) -> list[str]:
+    """The first cell of every data row of the table under the one line `heading` of a Markdown file, up to the
+    table's end. The header row and the separator row are no data rows; a heading met before any table ends the
+    search, so the table of a later section is never read."""
+    lines = [raw.rstrip() for raw in path.read_text(encoding="utf-8").splitlines()]
+    starts = [number for number, line in enumerate(lines) if line == heading]
+    assert len(starts) == 1, f"{path.name}: {len(starts)} lines are {heading!r}, expected one"
+    table: list[str] = []
+    for line in lines[starts[0] + 1 :]:
+        if line.startswith(CELL_SEPARATOR):
+            table.append(line)
+        elif table or line.startswith(HEADING_PREFIX):
+            break
+    assert len(table) >= 2 and SEPARATOR_ROW.fullmatch(table[1]), (
+        f"{path.name}: the table under {heading!r} has no header and separator row: {table}"
+    )
+    return [first_cell(line=line) for line in table[2:]]
+
+
+def only_in_graphql(*, path: Path) -> list[str]:
+    """The first cells of the table under the `### Only in GraphQL` heading, up to the table's end (design D6)."""
+    return table_first_cells(path=path, heading=ONLY_IN_GRAPHQL_HEADING)
+
+
+def capability_problems(*, capabilities: Sequence[str], module: ModuleType) -> list[str]:
+    """What a GraphQL capability module leaves unaccounted (design D6): each capability neither served by a record's
+    `capability` nor in `PENDING_CAPABILITIES`, then each `PENDING_CAPABILITIES` entry and each record `capability`
+    that `capabilities` (the table's first cells) lacks. Each problem names the capability."""
+    name = module.__name__
+    records = tuple(module.OPERATIONS)
+    pending = frozenset(module.PENDING_CAPABILITIES)
+    accounted = {record.capability for record in records} | pending
+    listed = frozenset(capabilities)
+    problems = [
+        f"{name}: the capability {capability!r} is neither served by a record nor in {ATTRIBUTE_PENDING_CAPABILITIES}"
+        for capability in capabilities
+        if capability not in accounted
+    ]
+    problems.extend(
+        f"{name}: {ATTRIBUTE_PENDING_CAPABILITIES} holds {entry!r}, which the Only in GraphQL table lacks"
+        for entry in sorted(pending - listed)
+    )
+    problems.extend(
+        f"{name}: the record {record.operation_id!r} serves {record.capability!r}, which the Only in GraphQL table "
+        "lacks"
+        for record in records
+        if record.capability not in listed
+    )
+    return problems
 
 
 # --- Synthetic families packages and indexes --------------------------------------------------------------------
@@ -290,6 +438,44 @@ CHECKER_FAMILIES = (
 # The rows neither mapped nor listed by their key's family.
 UNLISTED_ROWS = (DELETE_WIDGET, UPDATE_GADGET, TOKEN_INFO, CONTESTED_IN_ALPHA_BETA, CONTESTED_IN_GAMMA, LIST_DELTAS)
 
+# AC-5.3's regeneration: alpha-beta maps `LIST_WIDGETS` and lists `CREATE_WIDGET`, which matches the index before it;
+# a regenerated index adds a row, drops one, or gives the record's Reference another path or another method.
+REGENERATION_FAMILY = SyntheticFamily(
+    family=ALPHA_BETA, records=(LIST_WIDGETS,), pending=frozenset({CREATE_WIDGET.key})
+)
+REGENERATION_MODULE = f"families/{REGENERATION_FAMILY.module_name}.py"
+REGENERATION_RECORD_ID = operation_id(reference=LIST_WIDGETS.reference)
+BEFORE_REGENERATION = (LIST_WIDGETS, CREATE_WIDGET)
+LIST_WIDGETS_OTHER_PATH = IndexRow(method=LIST_WIDGETS.method, path="/widgets/all", reference=LIST_WIDGETS.reference)
+LIST_WIDGETS_OTHER_METHOD = IndexRow(method="HEAD", path=LIST_WIDGETS.path, reference=LIST_WIDGETS.reference)
+
+# AC-6.2's synthetic capability module: a table of three capabilities, one served, one pending, one neither, and a
+# pending entry and a record capability that the table lacks.
+SERVED_CAPABILITY = "Served capability"
+PENDING_CAPABILITY = "Pending capability"
+UNLISTED_CAPABILITY = "Unlisted capability"
+RETIRED_PENDING_CAPABILITY = "Retired pending capability"
+RETIRED_SERVED_CAPABILITY = "Retired served capability"
+SYNTHETIC_CAPABILITIES = (SERVED_CAPABILITY, PENDING_CAPABILITY, UNLISTED_CAPABILITY)
+EVERY_CAPABILITY = (*SYNTHETIC_CAPABILITIES, RETIRED_PENDING_CAPABILITY, RETIRED_SERVED_CAPABILITY)
+SYNTHETIC_GRAPHQL_ONLY = "synthetic_graphql_only"
+SYNTHETIC_DOCUMENT = "query Q { currentUser { id } }"
+
+
+def capability_module(*, registry: ModuleType, served: Iterable[str], pending: Iterable[str]) -> ModuleType:
+    """A synthetic GraphQL capability module: one `GraphQLOperation` (`graphql#<field>`) per served capability, and
+    `PENDING_CAPABILITIES`."""
+    module = ModuleType(name=SYNTHETIC_GRAPHQL_ONLY)
+    records = tuple(
+        registry.GraphQLOperation(
+            operation_id=f"graphql#syntheticField{number}", capability=capability, document=SYNTHETIC_DOCUMENT
+        )
+        for number, capability in enumerate(served)
+    )
+    setattr(module, ATTRIBUTE_OPERATIONS, records)
+    setattr(module, ATTRIBUTE_PENDING_CAPABILITIES, frozenset(pending))
+    return module
+
 
 @pytest.fixture(autouse=True)
 def refuse_network(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -401,3 +587,201 @@ def test_every_index_row_is_mapped_or_pending() -> None:
     mapped, pending = declared_keys(families=registry.discover_families())
     gaps = coverage_gaps(rows=rows, mapped=mapped, pending=pending)
     assert not gaps, gap_report(gaps=gaps)
+
+
+# --- Issue #41 AC-5.3: a regenerated index names each changed key or ID ------------------------------------------
+
+
+@pytest.mark.parametrize(
+    argnames=("regenerated", "expected_gaps", "expected_problems"),
+    argvalues=[
+        pytest.param((*BEFORE_REGENERATION, DELETE_WIDGET), [DELETE_WIDGET], [], id="key_added"),
+        pytest.param(
+            (LIST_WIDGETS,),
+            [],
+            [(REGENERATION_MODULE, repr(CREATE_WIDGET.key))],
+            id="pending_key_removed",
+        ),
+        pytest.param(
+            (CREATE_WIDGET,),
+            [],
+            [(REGENERATION_MODULE, repr(REGENERATION_RECORD_ID))],
+            id="record_row_removed",
+        ),
+        pytest.param(
+            (LIST_WIDGETS_OTHER_PATH, CREATE_WIDGET),
+            [LIST_WIDGETS_OTHER_PATH],
+            [
+                (
+                    REGENERATION_MODULE,
+                    repr(REGENERATION_RECORD_ID),
+                    repr(LIST_WIDGETS.key),
+                    repr(LIST_WIDGETS_OTHER_PATH.key),
+                )
+            ],
+            id="record_path_changed",
+        ),
+        pytest.param(
+            (LIST_WIDGETS_OTHER_METHOD, CREATE_WIDGET),
+            [LIST_WIDGETS_OTHER_METHOD],
+            [
+                (
+                    REGENERATION_MODULE,
+                    repr(REGENERATION_RECORD_ID),
+                    repr(LIST_WIDGETS.key),
+                    repr(LIST_WIDGETS_OTHER_METHOD.key),
+                )
+            ],
+            id="record_method_changed_same_path",
+        ),
+    ],
+)
+def test_a_regenerated_index_names_each_changed_key(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    package_prefix: str,
+    regenerated: Tuple[IndexRow, ...],
+    expected_gaps: list[IndexRow],
+    expected_problems: Sequence[Tuple[str, ...]],
+) -> None:
+    """AC-5.3: on a synthetic families package that matches the index before the regeneration, a regenerated index
+    that adds a key no record maps and no `PENDING` lists makes `coverage_gaps` return its row; one that lacks a
+    pending key, lacks the row of a record's Reference, or gives that row another path, or another method with the
+    same path, makes `family_problems` name the module and the key or the ID (a changed row's key shown beside the
+    record's). A changed method or path is also a removal plus an addition, so its new row is a gap as well."""
+    registry = registry_module()
+    monkeypatch.syspath_prepend(path=str(tmp_path))
+    package = write_package(root=tmp_path, name=f"{package_prefix}_regeneration", families=(REGENERATION_FAMILY,))
+    families = registry.discover_families(package=package)
+    mapped, pending = declared_keys(families=families)
+
+    before_index = tmp_path / "before-operations-index.md"
+    before_index.write_text(data=index_text(rows=BEFORE_REGENERATION), encoding="utf-8")
+    before_rows = index_rows(path=before_index)
+    before = (
+        coverage_gaps(rows=before_rows, mapped=mapped, pending=pending),
+        family_problems(rows=before_rows, families=families),
+    )
+    assert before == ([], []), f"the synthetic package must match the index before the regeneration: {before}"
+
+    regenerated_index = tmp_path / "operations-index.md"
+    regenerated_index.write_text(data=index_text(rows=regenerated), encoding="utf-8")
+    rows = index_rows(path=regenerated_index)
+    gaps = coverage_gaps(rows=rows, mapped=mapped, pending=pending)
+    problems = family_problems(rows=rows, families=families)
+
+    assert gaps == sorted(expected_gaps), f"coverage_gaps returned {gaps} for the regenerated index {rows}"
+    assert len(problems) == len(expected_problems), (
+        f"family_problems returned {problems} for the regenerated index {rows}; expected one problem per "
+        f"{expected_problems}"
+    )
+    unshown = [
+        f"{problem!r} does not show {fragment}"
+        for problem, fragments in zip(problems, expected_problems)
+        for fragment in fragments
+        if fragment not in problem
+    ]
+    assert not unshown, "\n".join(unshown)
+
+
+def test_every_declared_key_is_in_its_family() -> None:
+    """AC-5.3, AC-6.3: every `PENDING` key of every family module of the real `gitlab_api.families` package is the
+    key of a row of the real `operations-index.md` whose family is that module, and every record's operation ID is
+    the Reference of a row whose key is the record's `(method, path)`. The failure message names each module and key
+    or ID; the module's socket guard is installed, so the check runs with no network access."""
+    registry = registry_module()
+    problems = family_problems(rows=index_rows(path=INDEX), families=registry.discover_families())
+    assert not problems, "declarations the operations index does not bear out:\n" + "\n".join(problems)
+
+
+# --- Issue #41 AC-6.1: a `/<route-prefix>/` key is held to the rule as any other key ------------------------------
+
+
+def test_a_route_prefix_key_is_held_to_the_rule(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, package_prefix: str
+) -> None:
+    """AC-6.1: the synthetic `gamma` without `RELEASE_FILE`, a `/<route-prefix>/` key, on its `PENDING` makes
+    `coverage_gaps` return that row beside the other unlisted rows, and the gap report lists the key under
+    `families/gamma.py`; no route prefix is excluded from the rule."""
+    registry = registry_module()
+    monkeypatch.syspath_prepend(path=str(tmp_path))
+    assert RELEASE_FILE.path.startswith(ROUTE_PREFIX), f"{RELEASE_FILE} is no {ROUTE_PREFIX} key"
+    index = tmp_path / "operations-index.md"
+    index.write_text(data=index_text(rows=SYNTHETIC_ROWS), encoding="utf-8")
+    rows = index_rows(path=index)
+    alpha_beta, gamma = CHECKER_FAMILIES
+    unlisted = SyntheticFamily(family=gamma.family, records=gamma.records, pending=gamma.pending - {RELEASE_FILE.key})
+    package = write_package(root=tmp_path, name=f"{package_prefix}_route_prefix", families=(alpha_beta, unlisted))
+    mapped, pending = declared_keys(families=registry.discover_families(package=package))
+
+    gaps = coverage_gaps(rows=rows, mapped=mapped, pending=pending)
+
+    assert gaps == sorted((*UNLISTED_ROWS, RELEASE_FILE)), f"coverage_gaps returned {gaps}"
+    listed = gaps_by_family(gaps=gaps).get(unlisted.module_name, {})
+    assert listed.get(RELEASE_FILE.key) == [RELEASE_FILE.reference], f"families/gamma.py is told to list {listed}"
+    report = gap_report(gaps=gaps)
+    assert repr(RELEASE_FILE.key) in report, report
+
+
+# --- Issue #41 AC-6.2, AC-6.3: every GraphQL-only capability is served or pending ---------------------------------
+
+
+def test_a_capability_neither_served_nor_pending_is_named() -> None:
+    """AC-6.2: on a synthetic table and capability module, `capability_problems` names the capability that is neither
+    served nor pending, the `PENDING_CAPABILITIES` entry the table lacks and the record capability the table lacks,
+    and not the served or the pending capability; a module that accounts for every capability has no problem."""
+    registry = registry_module()
+    module = capability_module(
+        registry=registry,
+        served=(SERVED_CAPABILITY, RETIRED_SERVED_CAPABILITY),
+        pending=(PENDING_CAPABILITY, RETIRED_PENDING_CAPABILITY),
+    )
+
+    problems = capability_problems(capabilities=SYNTHETIC_CAPABILITIES, module=module)
+
+    named = [capability for capability in EVERY_CAPABILITY if any(repr(capability) in line for line in problems)]
+    assert named == [UNLISTED_CAPABILITY, RETIRED_PENDING_CAPABILITY, RETIRED_SERVED_CAPABILITY], problems
+    assert len(problems) == len(named), f"one problem per named capability: {problems}"
+    accounted = capability_module(
+        registry=registry, served=(SERVED_CAPABILITY,), pending=(PENDING_CAPABILITY, UNLISTED_CAPABILITY)
+    )
+    assert capability_problems(capabilities=SYNTHETIC_CAPABILITIES, module=accounted) == []
+
+
+def test_the_only_in_graphql_table_is_read_whole() -> None:
+    """AC-6.2: `only_in_graphql` reads the real `graphql/conventions.md` table under `### Only in GraphQL` from its
+    first data row, `Work items`, to its last, `Query cost introspection`, each capability once, and nothing of its
+    header and separator rows or of the `### Only in REST` table that follows it."""
+    capabilities = only_in_graphql(path=CONVENTIONS)
+
+    assert capabilities[:1] == [FIRST_CAPABILITY], (
+        f"the first capability read is not {FIRST_CAPABILITY!r}: {capabilities}"
+    )
+    assert capabilities[-1:] == [LAST_CAPABILITY], (
+        f"the last capability read is not {LAST_CAPABILITY!r}: {capabilities}"
+    )
+    assert len(set(capabilities)) == len(capabilities), f"a capability is read twice: {capabilities}"
+    only_in_rest = table_first_cells(path=CONVENTIONS, heading=ONLY_IN_REST_HEADING)
+    assert only_in_rest, f"{CONVENTIONS.name}: the {ONLY_IN_REST_HEADING!r} table has no rows to tell apart"
+    leaked = [
+        cell
+        for cell in capabilities
+        if cell in (CAPABILITY_HEADER, *only_in_rest) or not cell.strip(SEPARATOR_CHARACTERS)
+    ]
+    assert not leaked, f"only_in_graphql read {leaked}, which are no Only in GraphQL row"
+
+
+def test_every_graphql_only_capability_is_served_or_pending() -> None:
+    """AC-6.2, AC-6.3: every first cell of the real "Only in GraphQL" table, experimental or not, is served by a
+    `graphql_only` record's `capability` or held in `graphql_only.PENDING_CAPABILITIES`, and neither names a
+    capability the table lacks. `gitlab_api.graphql_only` is imported inside the test; the failure message names
+    each capability."""
+    graphql_only = graphql_only_module()
+    assert hasattr(graphql_only, ATTRIBUTE_PENDING_CAPABILITIES), (
+        f"{GRAPHQL_ONLY} declares no {ATTRIBUTE_PENDING_CAPABILITIES}; design D6 holds there every capability of the "
+        "Only in GraphQL table that no record serves"
+    )
+
+    problems = capability_problems(capabilities=only_in_graphql(path=CONVENTIONS), module=graphql_only)
+
+    assert not problems, "GraphQL-only capabilities neither served nor pending, or unknown:\n" + "\n".join(problems)
