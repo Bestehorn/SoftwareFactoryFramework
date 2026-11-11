@@ -16,17 +16,31 @@ for the test, so every opener in the process reaches the fake and no socket open
 scripted, as a ``urllib.response.addinfourl`` with ``msg`` set and an ``http.client.HTTPMessage``: urllib's error
 processor, its redirect machinery and any handler the wrapper adds run unchanged (``HTTPErrorProcessor.http_response``
 reads ``code``, ``msg`` and ``info()``). Every request is recorded — method, URL, headers as urllib stores them
-(``Private-token``), body. An unscripted request is recorded and then raises ``AssertionError``, which no ``OSError``
-handler of the code under test can swallow.
+(``Private-token``), body. ``FakeGitLab.script_next`` queues a response for whatever request comes next with no scripted
+response left for its method and URL; those are served in the order they were queued. An unscripted request with no
+such response queued is recorded and then raises ``AssertionError``, which no ``OSError`` handler of the code under
+test can swallow.
 
 ``install_socket_guard`` makes ``socket.socket.connect`` (and ``connect_ex``) raise ``AssertionError``, so a request
 that bypasses the fake fails the test instead of reaching the network.
+
+A suite that drives the product's entry script in-process uses the three entry-script helpers::
+
+    write_config(root=tmp_path, config=config)  # config: the JSON object of config/gitlab.json, hostname HOST
+    monkeypatch.chdir(tmp_path)  # the entry script reads config/gitlab.json from the working directory
+    code = run_main(wrapper=load_wrapper(module_name="gitlab_wrapper_under_test"), argv=["issue", "show", "7"])
+
+``load_wrapper`` loads ``src/payload/scripts/gitlab_wrapper.py`` by path, afresh on every call and without a
+``sys.modules`` entry; ``run_main`` is ``main(argv=...)``'s exit code — its return value, or the code of the
+``SystemExit`` it raised (argparse exits 2 on a usage error).
 
 Python 3.9 standard library plus pytest. The module deliberately has no ``from __future__ import annotations``: its
 dataclasses then need no ``sys.modules`` entry, so a suite may load it with or without registering it.
 """
 
 import http.client
+import importlib.util
+import inspect
 import io
 import json
 import socket
@@ -34,6 +48,8 @@ import urllib.request
 import urllib.response
 from collections import deque
 from dataclasses import dataclass
+from pathlib import Path
+from types import ModuleType
 from typing import Any, Deque, Dict, List, Mapping, Optional, Sequence, Tuple, Union
 
 import pytest
@@ -45,6 +61,13 @@ GRAPHQL_URL = f"https://{HOST}/api/graphql"
 HEADER_CONTENT_TYPE = "Content-Type"
 CONTENT_TYPE_JSON = "application/json"
 TEXT_ENCODING = "utf-8"
+
+# The product's entry script, and where it reads its config from: config/gitlab.json under the working directory.
+SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
+WRAPPER_FILE = SCRIPTS_DIR / "gitlab_wrapper.py"
+CONFIG_DIR = "config"
+CONFIG_FILE_NAME = "gitlab.json"
+MAIN_ARGV = "argv"
 
 HeaderItems = Union[Mapping[str, str], Sequence[Tuple[str, str]]]
 
@@ -139,6 +162,7 @@ class FakeGitLab:
     def __init__(self) -> None:
         self.requests: List[RecordedRequest] = []
         self._scripted: Dict[Tuple[str, str], Deque[ScriptedResponse]] = {}
+        self._unmatched: Deque[ScriptedResponse] = deque()
 
     def install(self, *, monkeypatch: pytest.MonkeyPatch) -> "FakeGitLab":
         """Route ``https_open`` and ``http_open`` of every handler to this fake for the rest of the test."""
@@ -164,12 +188,18 @@ class FakeGitLab:
         key = (method.upper(), url)
         self._scripted.setdefault(key, deque()).append(_scripted_response(status=status, headers=headers, body=body))
 
+    def script_next(self, *, status: int = 200, headers: HeaderItems = (), body: Any = None) -> None:
+        """Queue one response for the next request that has no scripted response left for its method and URL; such
+        responses are served in the order they were queued, and the request is recorded as every request is."""
+        self._unmatched.append(_scripted_response(status=status, headers=headers, body=body))
+
     def remaining(self) -> List[Tuple[str, str]]:
         """``(method, url)`` of every scripted response not served yet."""
         return [key for key, queue in self._scripted.items() for _ in queue]
 
     def serve(self, *, request: urllib.request.Request) -> FakeResponse:
-        """Record ``request``, then answer it with its next scripted response or raise ``AssertionError``."""
+        """Record ``request``, then answer it with its next scripted response, else with the next ``script_next``
+        response, else raise ``AssertionError``."""
         recorded = RecordedRequest(
             method=request.get_method(),
             url=request.full_url,
@@ -178,11 +208,13 @@ class FakeGitLab:
         )
         self.requests.append(recorded)
         queue = self._scripted.get((recorded.method.upper(), recorded.url))
-        if not queue:
-            raise AssertionError(
-                f"unscripted request: {recorded.method} {recorded.url} (still scripted: {self.remaining()})"
-            )
-        return FakeResponse(scripted=queue.popleft(), url=recorded.url)
+        if queue:
+            return FakeResponse(scripted=queue.popleft(), url=recorded.url)
+        if self._unmatched:
+            return FakeResponse(scripted=self._unmatched.popleft(), url=recorded.url)
+        raise AssertionError(
+            f"unscripted request: {recorded.method} {recorded.url} (still scripted: {self.remaining()})"
+        )
 
 
 def install_socket_guard(*, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -193,3 +225,37 @@ def install_socket_guard(*, monkeypatch: pytest.MonkeyPatch) -> None:
 
     monkeypatch.setattr(socket.socket, "connect", refuse)
     monkeypatch.setattr(socket.socket, "connect_ex", refuse)
+
+
+# --- The entry script, run in-process --------------------------------------------------------------------------------
+
+
+def load_wrapper(*, module_name: str) -> ModuleType:
+    """``src/payload/scripts/gitlab_wrapper.py``, loaded by path afresh under ``module_name`` and not registered in
+    ``sys.modules``, as ``test_wrapper_delivery.load`` loads a wrapper; the script's own bootstrap puts its directory
+    on ``sys.path``."""
+    spec = importlib.util.spec_from_file_location(name=module_name, location=WRAPPER_FILE)
+    assert spec and spec.loader, f"{WRAPPER_FILE} is missing"
+    module = importlib.util.module_from_spec(spec=spec)
+    spec.loader.exec_module(module=module)
+    return module
+
+
+def write_config(*, root: Path, config: Mapping[str, Any]) -> Path:
+    """Write ``config`` as ``config/gitlab.json`` under ``root``, creating ``config/``; the file written."""
+    config_dir = root / CONFIG_DIR
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_file = config_dir / CONFIG_FILE_NAME
+    config_file.write_text(data=json.dumps(obj=dict(config)), encoding=TEXT_ENCODING)
+    return config_file
+
+
+def run_main(*, wrapper: ModuleType, argv: Sequence[str]) -> Any:
+    """``wrapper.main(argv=argv)``'s exit code: its return value, or the code of the ``SystemExit`` it raised."""
+    assert MAIN_ARGV in inspect.signature(obj=wrapper.main).parameters, (
+        "the entry script's main takes the argument vector: main(argv=None) -> int"
+    )
+    try:
+        return wrapper.main(argv=list(argv))
+    except SystemExit as exit_request:
+        return exit_request.code

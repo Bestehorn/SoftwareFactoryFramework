@@ -19,19 +19,19 @@ minimal code that turns them green. No task edits an existing line of C, of P, o
 
 Run: `python scripts/run_tests.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py`
 
-- [ ] 1.1 TEST: R, on its synthetic families (`serve_families`) and a `Transport` on the fake host, each reaching
+- [x] 1.1 TEST: R, on its synthetic families (`serve_families`) and a `Transport` on the fake host, each reaching
   `registry.<name>` through `gitlab_module`: `test_send_returns_the_response_of_the_record` (a `204`'s `Response` is
   returned; a GraphQL ID raises `ValueError` with no request), `test_attribute_name_drops_one_trailing_bracket_pair`,
   `test_variables_are_the_documents_definitions` (its `GraphQLOperation`s built with `capability`). — Files:
   src/payload/test/test_gitlab_api_registry.py — Validates: AC-1.2, AC-1.3, AC-2.2
-- [ ] 1.2 TEST: T — `test_is_json_reads_the_content_type`: true for `application/json; charset=utf-8`, false for
+- [x] 1.2 TEST: T — `test_is_json_reads_the_content_type`: true for `application/json; charset=utf-8`, false for
   `text/plain` and with no `Content-Type`. — Files: src/payload/test/test_gitlab_api_transport.py — Validates: AC-1.5
-- [ ] 1.3 TEST (fixtures; adds no test): fx gains D8's `FakeGitLab.script_next(*, status=200, headers=(), body=None)`
+- [x] 1.3 TEST (fixtures; adds no test): fx gains D8's `FakeGitLab.script_next(*, status=200, headers=(), body=None)`
   (served to the next request that matches no scripted method and URL, recorded as usual), `load_wrapper(*,
   module_name)`, `write_config(*, root, config)` and `run_main(*, wrapper, argv)` (the return value or the `SystemExit`
   code). C keeps its own `load_wrapper`, `write_json` and `main_exit_code`, unedited. — Files:
   src/payload/test/gitlab_wrapper_fixtures.py — Validates: UB-1.1 (C, R and T load fx on this Run line)
-- [ ] 1.4 IMPL: D2's registry additions — `GraphQLOperation.capability: str` after `operation_id`;
+- [x] 1.4 IMPL: D2's registry additions — `GraphQLOperation.capability: str` after `operation_id`;
   `attribute_name(*, name)`; `variables(*, operation)` (each `$name` followed, after any white space, by `:`, in order;
   for a record with a `connection`, without `transport.FIELD_AFTER`, imported inside the function);
   `send(transport, operation_id, *, values=None) -> Response` (`lookup`, `encode`, `expand`, `Transport.request`; a
