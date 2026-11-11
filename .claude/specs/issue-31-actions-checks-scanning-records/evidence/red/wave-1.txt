@@ -1,0 +1,1455 @@
+# tasks: TEST-1 TEST-2 TEST-3 TEST-4 TEST-5
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_actions.py src/payload/test/test_github_api_checks.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_dependabot.py src/payload/test/test_github_api_secret_scanning.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [73 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFFF...FFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 98%]
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_actions.py:640: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 195 IDs: ['actions/add-custom-labels-to-self-hosted-runner-for-org', 'actions/add-custom-labels-to-self-hosted-runner-for-repo', 'actions/add-repo-access-to-self-hosted-runner-group-in-org', 'actions/add-selected-repo-to-org-secret', 'actions/add-selected-repo-to-org-variable', 'actions/add-self-hosted-runner-to-group-for-org', 'actions/approve-workflow-run', 'actions/cancel-workflow-run', 'actions/create-environment-variable', 'actions/create-hosted-runner-for-org', 'actions/create-or-update-environment-secret', 'actions/create-or-update-org-secret', 'actions/create-or-update-repo-secret', 'actions/create-org-actions-policy', 'actions/create-org-variable', 'actions/create-registration-token-for-org', 'actions/create-registration-token-for-repo', 'actions/create-remove-token-for-org', 'actions/create-remove-token-for-repo', 'actions/create-repo-actions-policy', 'actions/create-repo-variable', 'actions/create-self-hosted-runner-group-for-org', 'actions/create-workflow-dispatch', 'actions/delete-actions-cache-by-id', 'actions/delete-actions-cache-by-key', 'actions/delete-artifact', 'actions/delete-custom-image-from-org', 'actions/delete-custom-image-version-from-org', 'actions/delete-environment-secret', 'actions/delete-environment-variable', 'actions/delete-hosted-runner-for-org', 'actions/delete-org-actions-policy', 'actions/delete-org-secret', 'actions/delete-org-variable', 'actions/delete-repo-actions-policy', 'actions/delete-repo-secret', 'actions/delete-repo-variable', 'actions/delete-self-hosted-runner-from-org', 'actions/delete-self-hosted-runner-from-repo', 'actions/delete-self-hosted-runner-group-from-org', 'actions/delete-workflow-run', 'actions/delete-workflow-run-logs', 'actions/disable-selected-repository-github-actions-organization', 'actions/disable-selected-repository-self-hosted-runners-organization', 'actions/disable-workflow', 'actions/download-artifact', 'actions/download-job-logs-for-workflow-run', 'actions/download-step-logs-for-workflow-run-job', 'actions/download-workflow-run-attempt-logs', 'actions/enable-selected-repository-github-actions-organization', 'actions/enable-selected-repository-self-hosted-runners-organization', 'actions/enable-workflow', 'actions/force-cancel-workflow-run', 'actions/generate-runner-jitconfig-for-org', 'actions/generate-runner-jitconfig-for-repo', 'actions/get-actions-cache-list', 'actions/get-actions-cache-retention-limit-for-enterprise', 'actions/get-actions-cache-retention-limit-for-organization', 'actions/get-actions-cache-retention-limit-for-repository', 'actions/get-actions-cache-storage-limit-for-enterprise', 'actions/get-actions-cache-storage-limit-for-organization', 'actions/get-actions-cache-storage-limit-for-repository', 'actions/get-actions-cache-usage', 'actions/get-actions-cache-usage-by-repo-for-org', 'actions/get-actions-cache-usage-for-org', 'actions/get-allowed-actions-organization', 'actions/get-allowed-actions-repository', 'actions/get-artifact', 'actions/get-artifact-and-log-retention-settings-organization', 'actions/get-artifact-and-log-retention-settings-repository', 'actions/get-concurrency-group-for-repository', 'actions/get-custom-image-for-org', 'actions/get-custom-image-version-for-org', 'actions/get-custom-oidc-sub-claim-for-repo', 'actions/get-environment-public-key', 'actions/get-environment-secret', 'actions/get-environment-variable', 'actions/get-fork-pr-contributor-approval-permissions-organization', 'actions/get-fork-pr-contributor-approval-permissions-repository', 'actions/get-github-actions-default-workflow-permissions-organization', 'actions/get-github-actions-default-workflow-permissions-repository', 'actions/get-github-actions-permissions-organization', 'actions/get-github-actions-permissions-repository', 'actions/get-hosted-runner-for-org', 'actions/get-hosted-runners-github-owned-images-for-org', 'actions/get-hosted-runners-limits-for-org', 'actions/get-hosted-runners-machine-specs-for-org', 'actions/get-hosted-runners-partner-images-for-org', 'actions/get-hosted-runners-platforms-for-org', 'actions/get-job-for-workflow-run', 'actions/get-org-actions-policies', 'actions/get-org-actions-policy', 'actions/get-org-public-key', 'actions/get-org-secret', 'actions/get-org-variable', 'actions/get-pending-deployments-for-run', 'actions/get-private-repo-fork-pr-workflows-settings-organization', 'actions/get-private-repo-fork-pr-workflows-settings-repository', 'actions/get-repo-actions-policies', 'actions/get-repo-actions-policy', 'actions/get-repo-public-key', 'actions/get-repo-secret', 'actions/get-repo-variable', 'actions/get-reviews-for-run', 'actions/get-runner-version-deprecation-for-org', 'actions/get-runner-version-deprecation-for-repo', 'actions/get-self-hosted-runner-for-org', 'actions/get-self-hosted-runner-for-repo', 'actions/get-self-hosted-runner-group-for-org', 'actions/get-self-hosted-runners-permissions-organization', 'actions/get-workflow', 'actions/get-workflow-access-to-repository', 'actions/get-workflow-run-attempt', 'actions/get-workflow-run-usage', 'actions/get-workflow-usage', 'actions/list-artifacts-for-repo', 'actions/list-concurrency-groups-for-repository', 'actions/list-concurrency-groups-for-workflow-run', 'actions/list-custom-image-versions-for-org', 'actions/list-custom-images-for-org', 'actions/list-environment-secrets', 'actions/list-environment-variables', 'actions/list-github-hosted-runners-in-group-for-org', 'actions/list-hosted-runners-for-org', 'actions/list-jobs-for-workflow-run', 'actions/list-jobs-for-workflow-run-attempt', 'actions/list-labels-for-self-hosted-runner-for-org', 'actions/list-labels-for-self-hosted-runner-for-repo', 'actions/list-org-secrets', 'actions/list-org-variables', 'actions/list-repo-access-to-self-hosted-runner-group-in-org', 'actions/list-repo-organization-secrets', 'actions/list-repo-organization-variables', 'actions/list-repo-secrets', 'actions/list-repo-variables', 'actions/list-runner-applications-for-org', 'actions/list-runner-applications-for-repo', 'actions/list-selected-repos-for-org-secret', 'actions/list-selected-repos-for-org-variable', 'actions/list-selected-repositories-enabled-github-actions-organization', 'actions/list-selected-repositories-self-hosted-runners-organization', 'actions/list-self-hosted-runner-groups-for-org', 'actions/list-self-hosted-runners-for-org', 'actions/list-self-hosted-runners-for-repo', 'actions/list-self-hosted-runners-in-group-for-org', 'actions/list-workflow-run-artifacts', 'actions/re-run-job-for-workflow-run', 'actions/re-run-workflow', 'actions/re-run-workflow-failed-jobs', 'actions/remove-all-custom-labels-from-self-hosted-runner-for-org', 'actions/remove-all-custom-labels-from-self-hosted-runner-for-repo', 'actions/remove-custom-label-from-self-hosted-runner-for-org', 'actions/remove-custom-label-from-self-hosted-runner-for-repo', 'actions/remove-repo-access-to-self-hosted-runner-group-in-org', 'actions/remove-selected-repo-from-org-secret', 'actions/remove-selected-repo-from-org-variable', 'actions/remove-self-hosted-runner-from-group-for-org', 'actions/review-custom-gates-for-run', 'actions/review-pending-deployments-for-run', 'actions/set-actions-cache-retention-limit-for-enterprise', 'actions/set-actions-cache-retention-limit-for-organization', 'actions/set-actions-cache-retention-limit-for-repository', 'actions/set-actions-cache-storage-limit-for-enterprise', 'actions/set-actions-cache-storage-limit-for-organization', 'actions/set-actions-cache-storage-limit-for-repository', 'actions/set-allowed-actions-organization', 'actions/set-allowed-actions-repository', 'actions/set-artifact-and-log-retention-settings-organization', 'actions/set-artifact-and-log-retention-settings-repository', 'actions/set-custom-labels-for-self-hosted-runner-for-org', 'actions/set-custom-labels-for-self-hosted-runner-for-repo', 'actions/set-custom-oidc-sub-claim-for-repo', 'actions/set-fork-pr-contributor-approval-permissions-organization', 'actions/set-fork-pr-contributor-approval-permissions-repository', 'actions/set-github-actions-default-workflow-permissions-organization', 'actions/set-github-actions-default-workflow-permissions-repository', 'actions/set-github-actions-permissions-organization', 'actions/set-github-actions-permissions-repository', 'actions/set-private-repo-fork-pr-workflows-settings-organization', 'actions/set-private-repo-fork-pr-workflows-settings-repository', 'actions/set-repo-access-to-self-hosted-runner-group-in-org', 'actions/set-selected-repos-for-org-secret', 'actions/set-selected-repos-for-org-variable', 'actions/set-selected-repositories-enabled-github-actions-organization', 'actions/set-selected-repositories-self-hosted-runners-organization', 'actions/set-self-hosted-runners-in-group-for-org', 'actions/set-self-hosted-runners-permissions-organization', 'actions/set-workflow-access-to-repository', 'actions/update-environment-variable', 'actions/update-hosted-runner-for-org', 'actions/update-org-actions-policy', 'actions/update-org-variable', 'actions/update-repo-actions-policy', 'actions/update-repo-variable', 'actions/update-self-hosted-runner-group-for-org']
+E     195 IDs have no record: ['actions/add-custom-labels-to-self-hosted-runner-for-org', 'actions/add-custom-labels-to-self-hosted-runner-for-repo', 'actions/add-repo-access-to-self-hosted-runner-group-in-org', 'actions/add-selected-repo-to-org-secret', 'actions/add-selected-repo-to-org-variable', 'actions/add-self-hosted-runner-to-group-for-org', 'actions/approve-workflow-run', 'actions/cancel-workflow-run', 'actions/create-environment-variable', 'actions/create-hosted-runner-for-org', 'actions/create-or-update-environment-secret', 'actions/create-or-update-org-secret', 'actions/create-or-update-repo-secret', 'actions/create-org-actions-policy', 'actions/create-org-variable', 'actions/create-registration-token-for-org', 'actions/create-registration-token-for-repo', 'actions/create-remove-token-for-org', 'actions/create-remove-token-for-repo', 'actions/create-repo-actions-policy', 'actions/create-repo-variable', 'actions/create-self-hosted-runner-group-for-org', 'actions/create-workflow-dispatch', 'actions/delete-actions-cache-by-id', 'actions/delete-actions-cache-by-key', 'actions/delete-artifact', 'actions/delete-custom-image-from-org', 'actions/delete-custom-image-version-from-org', 'actions/delete-environment-secret', 'actions/delete-environment-variable', 'actions/delete-hosted-runner-for-org', 'actions/delete-org-actions-policy', 'actions/delete-org-secret', 'actions/delete-org-variable', 'actions/delete-repo-actions-policy', 'actions/delete-repo-secret', 'actions/delete-repo-variable', 'actions/delete-self-hosted-runner-from-org', 'actions/delete-self-hosted-runner-from-repo', 'actions/delete-self-hosted-runner-group-from-org', 'actions/delete-workflow-run', 'actions/delete-workflow-run-logs', 'actions/disable-selected-repository-github-actions-organization', 'actions/disable-selected-repository-self-hosted-runners-organization', 'actions/disable-workflow', 'actions/download-artifact', 'actions/download-job-logs-for-workflow-run', 'actions/download-step-logs-for-workflow-run-job', 'actions/download-workflow-run-attempt-logs', 'actions/enable-selected-repository-github-actions-organization', 'actions/enable-selected-repository-self-hosted-runners-organization', 'actions/enable-workflow', 'actions/force-cancel-workflow-run', 'actions/generate-runner-jitconfig-for-org', 'actions/generate-runner-jitconfig-for-repo', 'actions/get-actions-cache-list', 'actions/get-actions-cache-retention-limit-for-enterprise', 'actions/get-actions-cache-retention-limit-for-organization', 'actions/get-actions-cache-retention-limit-for-repository', 'actions/get-actions-cache-storage-limit-for-enterprise', 'actions/get-actions-cache-storage-limit-for-organization', 'actions/get-actions-cache-storage-limit-for-repository', 'actions/get-actions-cache-usage', 'actions/get-actions-cache-usage-by-repo-for-org', 'actions/get-actions-cache-usage-for-org', 'actions/get-allowed-actions-organization', 'actions/get-allowed-actions-repository', 'actions/get-artifact', 'actions/get-artifact-and-log-retention-settings-organization', 'actions/get-artifact-and-log-retention-settings-repository', 'actions/get-concurrency-group-for-repository', 'actions/get-custom-image-for-org', 'actions/get-custom-image-version-for-org', 'actions/get-custom-oidc-sub-claim-for-repo', 'actions/get-environment-public-key', 'actions/get-environment-secret', 'actions/get-environment-variable', 'actions/get-fork-pr-contributor-approval-permissions-organization', 'actions/get-fork-pr-contributor-approval-permissions-repository', 'actions/get-github-actions-default-workflow-permissions-organization', 'actions/get-github-actions-default-workflow-permissions-repository', 'actions/get-github-actions-permissions-organization', 'actions/get-github-actions-permissions-repository', 'actions/get-hosted-runner-for-org', 'actions/get-hosted-runners-github-owned-images-for-org', 'actions/get-hosted-runners-limits-for-org', 'actions/get-hosted-runners-machine-specs-for-org', 'actions/get-hosted-runners-partner-images-for-org', 'actions/get-hosted-runners-platforms-for-org', 'actions/get-job-for-workflow-run', 'actions/get-org-actions-policies', 'actions/get-org-actions-policy', 'actions/get-org-public-key', 'actions/get-org-secret', 'actions/get-org-variable', 'actions/get-pending-deployments-for-run', 'actions/get-private-repo-fork-pr-workflows-settings-organization', 'actions/get-private-repo-fork-pr-workflows-settings-repository', 'actions/get-repo-actions-policies', 'actions/get-repo-actions-policy', 'actions/get-repo-public-key', 'actions/get-repo-secret', 'actions/get-repo-variable', 'actions/get-reviews-for-run', 'actions/get-runner-version-deprecation-for-org', 'actions/get-runner-version-deprecation-for-repo', 'actions/get-self-hosted-runner-for-org', 'actions/get-self-hosted-runner-for-repo', 'actions/get-self-hosted-runner-group-for-org', 'actions/get-self-hosted-runners-permissions-organization', 'actions/get-workflow', 'actions/get-workflow-access-to-repository', 'actions/get-workflow-run-attempt', 'actions/get-workflow-run-usage', 'actions/get-workflow-usage', 'actions/list-artifacts-for-repo', 'actions/list-concurrency-groups-for-repository', 'actions/list-concurrency-groups-for-workflow-run', 'actions/list-custom-image-versions-for-org', 'actions/list-custom-images-for-org', 'actions/list-environment-secrets', 'actions/list-environment-variables', 'actions/list-github-hosted-runners-in-group-for-org', 'actions/list-hosted-runners-for-org', 'actions/list-jobs-for-workflow-run', 'actions/list-jobs-for-workflow-run-attempt', 'actions/list-labels-for-self-hosted-runner-for-org', 'actions/list-labels-for-self-hosted-runner-for-repo', 'actions/list-org-secrets', 'actions/list-org-variables', 'actions/list-repo-access-to-self-hosted-runner-group-in-org', 'actions/list-repo-organization-secrets', 'actions/list-repo-organization-variables', 'actions/list-repo-secrets', 'actions/list-repo-variables', 'actions/list-runner-applications-for-org', 'actions/list-runner-applications-for-repo', 'actions/list-selected-repos-for-org-secret', 'actions/list-selected-repos-for-org-variable', 'actions/list-selected-repositories-enabled-github-actions-organization', 'actions/list-selected-repositories-self-hosted-runners-organization', 'actions/list-self-hosted-runner-groups-for-org', 'actions/list-self-hosted-runners-for-org', 'actions/list-self-hosted-runners-for-repo', 'actions/list-self-hosted-runners-in-group-for-org', 'actions/list-workflow-run-artifacts', 'actions/re-run-job-for-workflow-run', 'actions/re-run-workflow', 'actions/re-run-workflow-failed-jobs', 'actions/remove-all-custom-labels-from-self-hosted-runner-for-org', 'actions/remove-all-custom-labels-from-self-hosted-runner-for-repo', 'actions/remove-custom-label-from-self-hosted-runner-for-org', 'actions/remove-custom-label-from-self-hosted-runner-for-repo', 'actions/remove-repo-access-to-self-hosted-runner-group-in-org', 'actions/remove-selected-repo-from-org-secret', 'actions/remove-selected-repo-from-org-variable', 'actions/remove-self-hosted-runner-from-group-for-org', 'actions/review-custom-gates-for-run', 'actions/review-pending-deployments-for-run', 'actions/set-actions-cache-retention-limit-for-enterprise', 'actions/set-actions-cache-retention-limit-for-organization', 'actions/set-actions-cache-retention-limit-for-repository', 'actions/set-actions-cache-storage-limit-for-enterprise', 'actions/set-actions-cache-storage-limit-for-organization', 'actions/set-actions-cache-storage-limit-for-repository', 'actions/set-allowed-actions-organization', 'actions/set-allowed-actions-repository', 'actions/set-artifact-and-log-retention-settings-organization', 'actions/set-artifact-and-log-retention-settings-repository', 'actions/set-custom-labels-for-self-hosted-runner-for-org', 'actions/set-custom-labels-for-self-hosted-runner-for-repo', 'actions/set-custom-oidc-sub-claim-for-repo', 'actions/set-fork-pr-contributor-approval-permissions-organization', 'actions/set-fork-pr-contributor-approval-permissions-repository', 'actions/set-github-actions-default-workflow-permissions-organization', 'actions/set-github-actions-default-workflow-permissions-repository', 'actions/set-github-actions-permissions-organization', 'actions/set-github-actions-permissions-repository', 'actions/set-private-repo-fork-pr-workflows-settings-organization', 'actions/set-private-repo-fork-pr-workflows-settings-repository', 'actions/set-repo-access-to-self-hosted-runner-group-in-org', 'actions/set-selected-repos-for-org-secret', 'actions/set-selected-repos-for-org-variable', 'actions/set-selected-repositories-enabled-github-actions-organization', 'actions/set-selected-repositories-self-hosted-runners-organization', 'actions/set-self-hosted-runners-in-group-for-org', 'actions/set-self-hosted-runners-permissions-organization', 'actions/set-workflow-access-to-repository', 'actions/update-environment-variable', 'actions/update-hosted-runner-for-org', 'actions/update-org-actions-policy', 'actions/update-org-variable', 'actions/update-repo-actions-policy', 'actions/update-repo-variable', 'actions/update-self-hosted-runner-group-for-org']
+E   assert not ["PENDING still holds 195 IDs: ['actions/add-custom-labels-to-self-hosted-runner-for-org', 'actions/add-custom-labels-...tions/update-repo-actions-policy', 'actions/update-repo-variable', 'actions/update-self-hosted-runner-group-for-org']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_actions.py:656: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 195 problems:
+E     "actions/add-custom-labels-to-self-hosted-runner-for-org": no record
+E     "actions/add-custom-labels-to-self-hosted-runner-for-repo": no record
+E     "actions/add-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/add-selected-repo-to-org-secret": no record
+E     "actions/add-selected-repo-to-org-variable": no record
+E     "actions/add-self-hosted-runner-to-group-for-org": no record
+E     "actions/approve-workflow-run": no record
+E     "actions/cancel-workflow-run": no record
+E     "actions/create-environment-variable": no record
+E     "actions/create-hosted-runner-for-org": no record
+E     "actions/create-or-update-environment-secret": no record
+E     "actions/create-or-update-org-secret": no record
+E     "actions/create-or-update-repo-secret": no record
+E     "actions/create-org-actions-policy": no record
+E     "actions/create-org-variable": no record
+E     "actions/create-registration-token-for-org": no record
+E     "actions/create-registration-token-for-repo": no record
+E     "actions/create-remove-token-for-org": no record
+E     "actions/create-remove-token-for-repo": no record
+E     "actions/create-repo-actions-policy": no record
+E     "actions/create-repo-variable": no record
+E     "actions/create-self-hosted-runner-group-for-org": no record
+E     "actions/create-workflow-dispatch": no record
+E     "actions/delete-actions-cache-by-id": no record
+E     "actions/delete-actions-cache-by-key": no record
+E     "actions/delete-artifact": no record
+E     "actions/delete-custom-image-from-org": no record
+E     "actions/delete-custom-image-version-from-org": no record
+E     "actions/delete-environment-secret": no record
+E     "actions/delete-environment-variable": no record
+E     "actions/delete-hosted-runner-for-org": no record
+E     "actions/delete-org-actions-policy": no record
+E     "actions/delete-org-secret": no record
+E     "actions/delete-org-variable": no record
+E     "actions/delete-repo-actions-policy": no record
+E     "actions/delete-repo-secret": no record
+E     "actions/delete-repo-variable": no record
+E     "actions/delete-self-hosted-runner-from-org": no record
+E     "actions/delete-self-hosted-runner-from-repo": no record
+E     "actions/delete-self-hosted-runner-group-from-org": no record
+E     "actions/delete-workflow-run": no record
+E     "actions/delete-workflow-run-logs": no record
+E     "actions/disable-selected-repository-github-actions-organization": no record
+E     "actions/disable-selected-repository-self-hosted-runners-organization": no record
+E     "actions/disable-workflow": no record
+E     "actions/download-artifact": no record
+E     "actions/download-job-logs-for-workflow-run": no record
+E     "actions/download-step-logs-for-workflow-run-job": no record
+E     "actions/download-workflow-run-attempt-logs": no record
+E     "actions/enable-selected-repository-github-actions-organization": no record
+E     "actions/enable-selected-repository-self-hosted-runners-organization": no record
+E     "actions/enable-workflow": no record
+E     "actions/force-cancel-workflow-run": no record
+E     "actions/generate-runner-jitconfig-for-org": no record
+E     "actions/generate-runner-jitconfig-for-repo": no record
+E     "actions/get-actions-cache-list": no record
+E     "actions/get-actions-cache-retention-limit-for-enterprise": no record
+E     "actions/get-actions-cache-retention-limit-for-organization": no record
+E     "actions/get-actions-cache-retention-limit-for-repository": no record
+E     "actions/get-actions-cache-storage-limit-for-enterprise": no record
+E     "actions/get-actions-cache-storage-limit-for-organization": no record
+E     "actions/get-actions-cache-storage-limit-for-repository": no record
+E     "actions/get-actions-cache-usage": no record
+E     "actions/get-actions-cache-usage-by-repo-for-org": no record
+E     "actions/get-actions-cache-usage-for-org": no record
+E     "actions/get-allowed-actions-organization": no record
+E     "actions/get-allowed-actions-repository": no record
+E     "actions/get-artifact": no record
+E     "actions/get-artifact-and-log-retention-settings-organization": no record
+E     "actions/get-artifact-and-log-retention-settings-repository": no record
+E     "actions/get-concurrency-group-for-repository": no record
+E     "actions/get-custom-image-for-org": no record
+E     "actions/get-custom-image-version-for-org": no record
+E     "actions/get-custom-oidc-sub-claim-for-repo": no record
+E     "actions/get-environment-public-key": no record
+E     "actions/get-environment-secret": no record
+E     "actions/get-environment-variable": no record
+E     "actions/get-fork-pr-contributor-approval-permissions-organization": no record
+E     "actions/get-fork-pr-contributor-approval-permissions-repository": no record
+E     "actions/get-github-actions-default-workflow-permissions-organization": no record
+E     "actions/get-github-actions-default-workflow-permissions-repository": no record
+E     "actions/get-github-actions-permissions-organization": no record
+E     "actions/get-github-actions-permissions-repository": no record
+E     "actions/get-hosted-runner-for-org": no record
+E     "actions/get-hosted-runners-github-owned-images-for-org": no record
+E     "actions/get-hosted-runners-limits-for-org": no record
+E     "actions/get-hosted-runners-machine-specs-for-org": no record
+E     "actions/get-hosted-runners-partner-images-for-org": no record
+E     "actions/get-hosted-runners-platforms-for-org": no record
+E     "actions/get-job-for-workflow-run": no record
+E     "actions/get-org-actions-policies": no record
+E     "actions/get-org-actions-policy": no record
+E     "actions/get-org-public-key": no record
+E     "actions/get-org-secret": no record
+E     "actions/get-org-variable": no record
+E     "actions/get-pending-deployments-for-run": no record
+E     "actions/get-private-repo-fork-pr-workflows-settings-organization": no record
+E     "actions/get-private-repo-fork-pr-workflows-settings-repository": no record
+E     "actions/get-repo-actions-policies": no record
+E     "actions/get-repo-actions-policy": no record
+E     "actions/get-repo-public-key": no record
+E     "actions/get-repo-secret": no record
+E     "actions/get-repo-variable": no record
+E     "actions/get-reviews-for-run": no record
+E     "actions/get-runner-version-deprecation-for-org": no record
+E     "actions/get-runner-version-deprecation-for-repo": no record
+E     "actions/get-self-hosted-runner-for-org": no record
+E     "actions/get-self-hosted-runner-for-repo": no record
+E     "actions/get-self-hosted-runner-group-for-org": no record
+E     "actions/get-self-hosted-runners-permissions-organization": no record
+E     "actions/get-workflow": no record
+E     "actions/get-workflow-access-to-repository": no record
+E     "actions/get-workflow-run-attempt": no record
+E     "actions/get-workflow-run-usage": no record
+E     "actions/get-workflow-usage": no record
+E     "actions/list-artifacts-for-repo": no record
+E     "actions/list-concurrency-groups-for-repository": no record
+E     "actions/list-concurrency-groups-for-workflow-run": no record
+E     "actions/list-custom-image-versions-for-org": no record
+E     "actions/list-custom-images-for-org": no record
+E     "actions/list-environment-secrets": no record
+E     "actions/list-environment-variables": no record
+E     "actions/list-github-hosted-runners-in-group-for-org": no record
+E     "actions/list-hosted-runners-for-org": no record
+E     "actions/list-jobs-for-workflow-run": no record
+E     "actions/list-jobs-for-workflow-run-attempt": no record
+E     "actions/list-labels-for-self-hosted-runner-for-org": no record
+E     "actions/list-labels-for-self-hosted-runner-for-repo": no record
+E     "actions/list-org-secrets": no record
+E     "actions/list-org-variables": no record
+E     "actions/list-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/list-repo-organization-secrets": no record
+E     "actions/list-repo-organization-variables": no record
+E     "actions/list-repo-secrets": no record
+E     "actions/list-repo-variables": no record
+E     "actions/list-runner-applications-for-org": no record
+E     "actions/list-runner-applications-for-repo": no record
+E     "actions/list-selected-repos-for-org-secret": no record
+E     "actions/list-selected-repos-for-org-variable": no record
+E     "actions/list-selected-repositories-enabled-github-actions-organization": no record
+E     "actions/list-selected-repositories-self-hosted-runners-organization": no record
+E     "actions/list-self-hosted-runner-groups-for-org": no record
+E     "actions/list-self-hosted-runners-for-org": no record
+E     "actions/list-self-hosted-runners-for-repo": no record
+E     "actions/list-self-hosted-runners-in-group-for-org": no record
+E     "actions/list-workflow-run-artifacts": no record
+E     "actions/re-run-job-for-workflow-run": no record
+E     "actions/re-run-workflow": no record
+E     "actions/re-run-workflow-failed-jobs": no record
+E     "actions/remove-all-custom-labels-from-self-hosted-runner-for-org": no record
+E     "actions/remove-all-custom-labels-from-self-hosted-runner-for-repo": no record
+E     "actions/remove-custom-label-from-self-hosted-runner-for-org": no record
+E     "actions/remove-custom-label-from-self-hosted-runner-for-repo": no record
+E     "actions/remove-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/remove-selected-repo-from-org-secret": no record
+E     "actions/remove-selected-repo-from-org-variable": no record
+E     "actions/remove-self-hosted-runner-from-group-for-org": no record
+E     "actions/review-custom-gates-for-run": no record
+E     "actions/review-pending-deployments-for-run": no record
+E     "actions/set-actions-cache-retention-limit-for-enterprise": no record
+E     "actions/set-actions-cache-retention-limit-for-organization": no record
+E     "actions/set-actions-cache-retention-limit-for-repository": no record
+E     "actions/set-actions-cache-storage-limit-for-enterprise": no record
+E     "actions/set-actions-cache-storage-limit-for-organization": no record
+E     "actions/set-actions-cache-storage-limit-for-repository": no record
+E     "actions/set-allowed-actions-organization": no record
+E     "actions/set-allowed-actions-repository": no record
+E     "actions/set-artifact-and-log-retention-settings-organization": no record
+E     "actions/set-artifact-and-log-retention-settings-repository": no record
+E     "actions/set-custom-labels-for-self-hosted-runner-for-org": no record
+E     "actions/set-custom-labels-for-self-hosted-runner-for-repo": no record
+E     "actions/set-custom-oidc-sub-claim-for-repo": no record
+E     "actions/set-fork-pr-contributor-approval-permissions-organization": no record
+E     "actions/set-fork-pr-contributor-approval-permissions-repository": no record
+E     "actions/set-github-actions-default-workflow-permissions-organization": no record
+E     "actions/set-github-actions-default-workflow-permissions-repository": no record
+E     "actions/set-github-actions-permissions-organization": no record
+E     "actions/set-github-actions-permissions-repository": no record
+E     "actions/set-private-repo-fork-pr-workflows-settings-organization": no record
+E     "actions/set-private-repo-fork-pr-workflows-settings-repository": no record
+E     "actions/set-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/set-selected-repos-for-org-secret": no record
+E     "actions/set-selected-repos-for-org-variable": no record
+E     "actions/set-selected-repositories-enabled-github-actions-organization": no record
+E     "actions/set-selected-repositories-self-hosted-runners-organization": no record
+E     "actions/set-self-hosted-runners-in-group-for-org": no record
+E     "actions/set-self-hosted-runners-permissions-organization": no record
+E     "actions/set-workflow-access-to-repository": no record
+E     "actions/update-environment-variable": no record
+E     "actions/update-hosted-runner-for-org": no record
+E     "actions/update-org-actions-policy": no record
+E     "actions/update-org-variable": no record
+E     "actions/update-repo-actions-policy": no record
+E     "actions/update-repo-variable": no record
+E     "actions/update-self-hosted-runner-group-for-org": no record
+E   assert not ['"actions/add-custom-labels-to-self-hosted-runner-for-org": no record', '"actions/add-custom-labels-to-self-hosted-ru...ns/add-selected-repo-to-org-variable": no record', '"actions/add-self-hosted-runner-to-group-for-org": no record', ...]
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_actions.py:672: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 195 records differ from their sections:
+E     "actions/add-custom-labels-to-self-hosted-runner-for-org": no record
+E     "actions/add-custom-labels-to-self-hosted-runner-for-repo": no record
+E     "actions/add-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/add-selected-repo-to-org-secret": no record
+E     "actions/add-selected-repo-to-org-variable": no record
+E     "actions/add-self-hosted-runner-to-group-for-org": no record
+E     "actions/approve-workflow-run": no record
+E     "actions/cancel-workflow-run": no record
+E     "actions/create-environment-variable": no record
+E     "actions/create-hosted-runner-for-org": no record
+E     "actions/create-or-update-environment-secret": no record
+E     "actions/create-or-update-org-secret": no record
+E     "actions/create-or-update-repo-secret": no record
+E     "actions/create-org-actions-policy": no record
+E     "actions/create-org-variable": no record
+E     "actions/create-registration-token-for-org": no record
+E     "actions/create-registration-token-for-repo": no record
+E     "actions/create-remove-token-for-org": no record
+E     "actions/create-remove-token-for-repo": no record
+E     "actions/create-repo-actions-policy": no record
+E     "actions/create-repo-variable": no record
+E     "actions/create-self-hosted-runner-group-for-org": no record
+E     "actions/create-workflow-dispatch": no record
+E     "actions/delete-actions-cache-by-id": no record
+E     "actions/delete-actions-cache-by-key": no record
+E     "actions/delete-artifact": no record
+E     "actions/delete-custom-image-from-org": no record
+E     "actions/delete-custom-image-version-from-org": no record
+E     "actions/delete-environment-secret": no record
+E     "actions/delete-environment-variable": no record
+E     "actions/delete-hosted-runner-for-org": no record
+E     "actions/delete-org-actions-policy": no record
+E     "actions/delete-org-secret": no record
+E     "actions/delete-org-variable": no record
+E     "actions/delete-repo-actions-policy": no record
+E     "actions/delete-repo-secret": no record
+E     "actions/delete-repo-variable": no record
+E     "actions/delete-self-hosted-runner-from-org": no record
+E     "actions/delete-self-hosted-runner-from-repo": no record
+E     "actions/delete-self-hosted-runner-group-from-org": no record
+E     "actions/delete-workflow-run": no record
+E     "actions/delete-workflow-run-logs": no record
+E     "actions/disable-selected-repository-github-actions-organization": no record
+E     "actions/disable-selected-repository-self-hosted-runners-organization": no record
+E     "actions/disable-workflow": no record
+E     "actions/download-artifact": no record
+E     "actions/download-job-logs-for-workflow-run": no record
+E     "actions/download-step-logs-for-workflow-run-job": no record
+E     "actions/download-workflow-run-attempt-logs": no record
+E     "actions/enable-selected-repository-github-actions-organization": no record
+E     "actions/enable-selected-repository-self-hosted-runners-organization": no record
+E     "actions/enable-workflow": no record
+E     "actions/force-cancel-workflow-run": no record
+E     "actions/generate-runner-jitconfig-for-org": no record
+E     "actions/generate-runner-jitconfig-for-repo": no record
+E     "actions/get-actions-cache-list": no record
+E     "actions/get-actions-cache-retention-limit-for-enterprise": no record
+E     "actions/get-actions-cache-retention-limit-for-organization": no record
+E     "actions/get-actions-cache-retention-limit-for-repository": no record
+E     "actions/get-actions-cache-storage-limit-for-enterprise": no record
+E     "actions/get-actions-cache-storage-limit-for-organization": no record
+E     "actions/get-actions-cache-storage-limit-for-repository": no record
+E     "actions/get-actions-cache-usage": no record
+E     "actions/get-actions-cache-usage-by-repo-for-org": no record
+E     "actions/get-actions-cache-usage-for-org": no record
+E     "actions/get-allowed-actions-organization": no record
+E     "actions/get-allowed-actions-repository": no record
+E     "actions/get-artifact": no record
+E     "actions/get-artifact-and-log-retention-settings-organization": no record
+E     "actions/get-artifact-and-log-retention-settings-repository": no record
+E     "actions/get-concurrency-group-for-repository": no record
+E     "actions/get-custom-image-for-org": no record
+E     "actions/get-custom-image-version-for-org": no record
+E     "actions/get-custom-oidc-sub-claim-for-repo": no record
+E     "actions/get-environment-public-key": no record
+E     "actions/get-environment-secret": no record
+E     "actions/get-environment-variable": no record
+E     "actions/get-fork-pr-contributor-approval-permissions-organization": no record
+E     "actions/get-fork-pr-contributor-approval-permissions-repository": no record
+E     "actions/get-github-actions-default-workflow-permissions-organization": no record
+E     "actions/get-github-actions-default-workflow-permissions-repository": no record
+E     "actions/get-github-actions-permissions-organization": no record
+E     "actions/get-github-actions-permissions-repository": no record
+E     "actions/get-hosted-runner-for-org": no record
+E     "actions/get-hosted-runners-github-owned-images-for-org": no record
+E     "actions/get-hosted-runners-limits-for-org": no record
+E     "actions/get-hosted-runners-machine-specs-for-org": no record
+E     "actions/get-hosted-runners-partner-images-for-org": no record
+E     "actions/get-hosted-runners-platforms-for-org": no record
+E     "actions/get-job-for-workflow-run": no record
+E     "actions/get-org-actions-policies": no record
+E     "actions/get-org-actions-policy": no record
+E     "actions/get-org-public-key": no record
+E     "actions/get-org-secret": no record
+E     "actions/get-org-variable": no record
+E     "actions/get-pending-deployments-for-run": no record
+E     "actions/get-private-repo-fork-pr-workflows-settings-organization": no record
+E     "actions/get-private-repo-fork-pr-workflows-settings-repository": no record
+E     "actions/get-repo-actions-policies": no record
+E     "actions/get-repo-actions-policy": no record
+E     "actions/get-repo-public-key": no record
+E     "actions/get-repo-secret": no record
+E     "actions/get-repo-variable": no record
+E     "actions/get-reviews-for-run": no record
+E     "actions/get-runner-version-deprecation-for-org": no record
+E     "actions/get-runner-version-deprecation-for-repo": no record
+E     "actions/get-self-hosted-runner-for-org": no record
+E     "actions/get-self-hosted-runner-for-repo": no record
+E     "actions/get-self-hosted-runner-group-for-org": no record
+E     "actions/get-self-hosted-runners-permissions-organization": no record
+E     "actions/get-workflow": no record
+E     "actions/get-workflow-access-to-repository": no record
+E     "actions/get-workflow-run-attempt": no record
+E     "actions/get-workflow-run-usage": no record
+E     "actions/get-workflow-usage": no record
+E     "actions/list-artifacts-for-repo": no record
+E     "actions/list-concurrency-groups-for-repository": no record
+E     "actions/list-concurrency-groups-for-workflow-run": no record
+E     "actions/list-custom-image-versions-for-org": no record
+E     "actions/list-custom-images-for-org": no record
+E     "actions/list-environment-secrets": no record
+E     "actions/list-environment-variables": no record
+E     "actions/list-github-hosted-runners-in-group-for-org": no record
+E     "actions/list-hosted-runners-for-org": no record
+E     "actions/list-jobs-for-workflow-run": no record
+E     "actions/list-jobs-for-workflow-run-attempt": no record
+E     "actions/list-labels-for-self-hosted-runner-for-org": no record
+E     "actions/list-labels-for-self-hosted-runner-for-repo": no record
+E     "actions/list-org-secrets": no record
+E     "actions/list-org-variables": no record
+E     "actions/list-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/list-repo-organization-secrets": no record
+E     "actions/list-repo-organization-variables": no record
+E     "actions/list-repo-secrets": no record
+E     "actions/list-repo-variables": no record
+E     "actions/list-runner-applications-for-org": no record
+E     "actions/list-runner-applications-for-repo": no record
+E     "actions/list-selected-repos-for-org-secret": no record
+E     "actions/list-selected-repos-for-org-variable": no record
+E     "actions/list-selected-repositories-enabled-github-actions-organization": no record
+E     "actions/list-selected-repositories-self-hosted-runners-organization": no record
+E     "actions/list-self-hosted-runner-groups-for-org": no record
+E     "actions/list-self-hosted-runners-for-org": no record
+E     "actions/list-self-hosted-runners-for-repo": no record
+E     "actions/list-self-hosted-runners-in-group-for-org": no record
+E     "actions/list-workflow-run-artifacts": no record
+E     "actions/re-run-job-for-workflow-run": no record
+E     "actions/re-run-workflow": no record
+E     "actions/re-run-workflow-failed-jobs": no record
+E     "actions/remove-all-custom-labels-from-self-hosted-runner-for-org": no record
+E     "actions/remove-all-custom-labels-from-self-hosted-runner-for-repo": no record
+E     "actions/remove-custom-label-from-self-hosted-runner-for-org": no record
+E     "actions/remove-custom-label-from-self-hosted-runner-for-repo": no record
+E     "actions/remove-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/remove-selected-repo-from-org-secret": no record
+E     "actions/remove-selected-repo-from-org-variable": no record
+E     "actions/remove-self-hosted-runner-from-group-for-org": no record
+E     "actions/review-custom-gates-for-run": no record
+E     "actions/review-pending-deployments-for-run": no record
+E     "actions/set-actions-cache-retention-limit-for-enterprise": no record
+E     "actions/set-actions-cache-retention-limit-for-organization": no record
+E     "actions/set-actions-cache-retention-limit-for-repository": no record
+E     "actions/set-actions-cache-storage-limit-for-enterprise": no record
+E     "actions/set-actions-cache-storage-limit-for-organization": no record
+E     "actions/set-actions-cache-storage-limit-for-repository": no record
+E     "actions/set-allowed-actions-organization": no record
+E     "actions/set-allowed-actions-repository": no record
+E     "actions/set-artifact-and-log-retention-settings-organization": no record
+E     "actions/set-artifact-and-log-retention-settings-repository": no record
+E     "actions/set-custom-labels-for-self-hosted-runner-for-org": no record
+E     "actions/set-custom-labels-for-self-hosted-runner-for-repo": no record
+E     "actions/set-custom-oidc-sub-claim-for-repo": no record
+E     "actions/set-fork-pr-contributor-approval-permissions-organization": no record
+E     "actions/set-fork-pr-contributor-approval-permissions-repository": no record
+E     "actions/set-github-actions-default-workflow-permissions-organization": no record
+E     "actions/set-github-actions-default-workflow-permissions-repository": no record
+E     "actions/set-github-actions-permissions-organization": no record
+E     "actions/set-github-actions-permissions-repository": no record
+E     "actions/set-private-repo-fork-pr-workflows-settings-organization": no record
+E     "actions/set-private-repo-fork-pr-workflows-settings-repository": no record
+E     "actions/set-repo-access-to-self-hosted-runner-group-in-org": no record
+E     "actions/set-selected-repos-for-org-secret": no record
+E     "actions/set-selected-repos-for-org-variable": no record
+E     "actions/set-selected-repositories-enabled-github-actions-organization": no record
+E     "actions/set-selected-repositories-self-hosted-runners-organization": no record
+E     "actions/set-self-hosted-runners-in-group-for-org": no record
+E     "actions/set-self-hosted-runners-permissions-organization": no record
+E     "actions/set-workflow-access-to-repository": no record
+E     "actions/update-environment-variable": no record
+E     "actions/update-hosted-runner-for-org": no record
+E     "actions/update-org-actions-policy": no record
+E     "actions/update-org-variable": no record
+E     "actions/update-repo-actions-policy": no record
+E     "actions/update-repo-variable": no record
+E     "actions/update-self-hosted-runner-group-for-org": no record
+E   assert not ['"actions/add-custom-labels-to-self-hosted-runner-for-org": no record', '"actions/add-custom-labels-to-self-hosted-ru...ns/add-selected-repo-to-org-variable": no record', '"actions/add-self-hosted-runner-to-group-for-org": no record', ...]
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_actions.py:703: in test_every_list_record_has_a_case
+    assert not problems, f"{len(problems)} paging problems:\n" + "\n".join(problems)
+E   AssertionError: 31 paging problems:
+E     "actions/get-actions-cache-list": declared absent, the section documents 'actions_caches'
+E     "actions/get-actions-cache-usage-by-repo-for-org": declared absent, the section documents 'repository_cache_usages'
+E     "actions/get-org-actions-policies": declared absent, the section documents 'policies'
+E     "actions/get-repo-actions-policies": declared absent, the section documents 'policies'
+E     "actions/list-artifacts-for-repo": declared absent, the section documents 'artifacts'
+E     "actions/list-concurrency-groups-for-repository": declared absent, the section documents 'concurrency_groups'
+E     "actions/list-concurrency-groups-for-workflow-run": declared absent, the section documents 'concurrency_groups'
+E     "actions/list-environment-secrets": declared absent, the section documents 'secrets'
+E     "actions/list-environment-variables": declared absent, the section documents 'variables'
+E     "actions/list-github-hosted-runners-in-group-for-org": declared absent, the section documents 'runners'
+E     "actions/list-hosted-runners-for-org": declared absent, the section documents 'runners'
+E     "actions/list-jobs-for-workflow-run": declared absent, the section documents 'jobs'
+E     "actions/list-jobs-for-workflow-run-attempt": declared absent, the section documents 'jobs'
+E     "actions/list-org-secrets": declared absent, the section documents 'secrets'
+E     "actions/list-org-variables": declared absent, the section documents 'variables'
+E     "actions/list-repo-access-to-self-hosted-runner-group-in-org": declared absent, the section documents 'repositories'
+E     "actions/list-repo-organization-secrets": declared absent, the section documents 'secrets'
+E     "actions/list-repo-organization-variables": declared absent, the section documents 'variables'
+E     "actions/list-repo-secrets": declared absent, the section documents 'secrets'
+E     "actions/list-repo-variables": declared absent, the section documents 'variables'
+E     "actions/list-selected-repos-for-org-secret": declared absent, the section documents 'repositories'
+E     "actions/list-selected-repos-for-org-variable": declared absent, the section documents 'repositories'
+E     "actions/list-selected-repositories-enabled-github-actions-organization": declared absent, the section documents 'repositories'
+E     "actions/list-selected-repositories-self-hosted-runners-organization": declared absent, the section documents 'repositories'
+E     "actions/list-self-hosted-runner-groups-for-org": declared absent, the section documents 'runner_groups'
+E     "actions/list-self-hosted-runners-for-org": declared absent, the section documents 'runners'
+E     "actions/list-self-hosted-runners-for-repo": declared absent, the section documents 'runners'
+E     "actions/list-self-hosted-runners-in-group-for-org": declared absent, the section documents 'runners'
+E     "actions/list-workflow-run-artifacts": declared absent, the section documents 'artifacts'
+E     "actions/get-actions-cache-usage-for-org": no record
+E     "actions/get-hosted-runner-for-org": no record
+E   assert not ['"actions/get-actions-cache-list": declared absent, the section documents \'actions_caches\'', '"actions/get-actions-...'"actions/list-concurrency-groups-for-repository": declared absent, the section documents \'concurrency_groups\'', ...]
+_ test_a_list_record_prints_every_item[actions/list-concurrency-groups-for-repository] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-concurrency-groups-for-repository: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-concurrency-groups-for-repository"
+_ test_a_list_record_prints_every_item[actions/list-concurrency-groups-for-workflow-run] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-concurrency-groups-for-workflow-run: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-concurrency-groups-for-workflow-run"
+____ test_a_list_record_prints_every_item[actions/get-actions-cache-list] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/get-actions-cache-list: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/get-actions-cache-list"
+___ test_a_list_record_prints_every_item[actions/list-environment-secrets] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-environment-secrets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-environment-secrets"
+_ test_a_list_record_prints_every_item[actions/get-actions-cache-usage-by-repo-for-org] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/get-actions-cache-usage-by-repo-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/get-actions-cache-usage-by-repo-for-org"
+__ test_a_list_record_prints_every_item[actions/list-environment-variables] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-environment-variables: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-environment-variables"
+___ test_a_list_record_prints_every_item[actions/get-org-actions-policies] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/get-org-actions-policies: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/get-org-actions-policies"
+_ test_a_list_record_prints_every_item[actions/list-github-hosted-runners-in-group-for-org] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-github-hosted-runners-in-group-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-github-hosted-runners-in-group-for-org"
+___ test_a_list_record_prints_every_item[actions/get-repo-actions-policies] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/get-repo-actions-policies: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/get-repo-actions-policies"
+__ test_a_list_record_prints_every_item[actions/list-hosted-runners-for-org] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-hosted-runners-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-hosted-runners-for-org"
+____ test_a_list_record_prints_every_item[actions/list-artifacts-for-repo] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-artifacts-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-artifacts-for-repo"
+__ test_a_list_record_prints_every_item[actions/list-jobs-for-workflow-run] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-jobs-for-workflow-run: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-jobs-for-workflow-run"
+______ test_a_list_record_prints_every_item[actions/list-org-variables] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-org-variables: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-org-variables"
+_ test_a_list_record_prints_every_item[actions/list-jobs-for-workflow-run-attempt] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-jobs-for-workflow-run-attempt: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-jobs-for-workflow-run-attempt"
+_ test_a_list_record_prints_every_item[actions/list-repo-access-to-self-hosted-runner-group-in-org] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-repo-access-to-self-hosted-runner-group-in-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-repo-access-to-self-hosted-runner-group-in-org"
+_______ test_a_list_record_prints_every_item[actions/list-org-secrets] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-org-secrets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-org-secrets"
+_ test_a_list_record_prints_every_item[actions/list-repo-organization-secrets] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-repo-organization-secrets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-repo-organization-secrets"
+_ test_a_list_record_prints_every_item[actions/list-selected-repos-for-org-variable] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-selected-repos-for-org-variable: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-selected-repos-for-org-variable"
+_ test_a_list_record_prints_every_item[actions/list-repo-organization-variables] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-repo-organization-variables: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-repo-organization-variables"
+_ test_a_list_record_prints_every_item[actions/list-selected-repositories-enabled-github-actions-organization] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-selected-repositories-enabled-github-actions-organization: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-selected-repositories-enabled-github-actions-organization"
+_______ test_a_list_record_prints_every_item[actions/list-repo-secrets] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-repo-secrets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-repo-secrets"
+_ test_a_list_record_prints_every_item[actions/list-selected-repositories-self-hosted-runners-organization] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-selected-repositories-self-hosted-runners-organization: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-selected-repositories-self-hosted-runners-organization"
+_ test_a_list_record_prints_every_item[actions/list-self-hosted-runner-groups-for-org] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-self-hosted-runner-groups-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-self-hosted-runner-groups-for-org"
+______ test_a_list_record_prints_every_item[actions/list-repo-variables] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-repo-variables: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-repo-variables"
+_ test_a_list_record_prints_every_item[actions/list-self-hosted-runners-for-org] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-self-hosted-runners-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-self-hosted-runners-for-org"
+_ test_a_list_record_prints_every_item[actions/list-selected-repos-for-org-secret] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-selected-repos-for-org-secret: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-selected-repos-for-org-secret"
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_checks.py:272: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 11 IDs: ['checks/create', 'checks/create-suite', 'checks/get', 'checks/get-suite', 'checks/list-annotations', 'checks/list-for-suite', 'checks/list-suites-for-ref', 'checks/rerequest-run', 'checks/rerequest-suite', 'checks/set-suites-preferences', 'checks/update']
+E     11 IDs have no record: ['checks/create', 'checks/create-suite', 'checks/get', 'checks/get-suite', 'checks/list-annotations', 'checks/list-for-suite', 'checks/list-suites-for-ref', 'checks/rerequest-run', 'checks/rerequest-suite', 'checks/set-suites-preferences', 'checks/update']
+E   assert not ["PENDING still holds 11 IDs: ['checks/create', 'checks/create-suite', 'checks/get', 'checks/get-suite', 'checks/list-...-suites-for-ref', 'checks/rerequest-run', 'checks/rerequest-suite', 'checks/set-suites-preferences', 'checks/update']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_checks.py:291: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 11 problems:
+E     "checks/create": no record
+E     "checks/create-suite": no record
+E     "checks/get": no record
+E     "checks/get-suite": no record
+E     "checks/list-annotations": no record
+E     "checks/list-for-suite": no record
+E     "checks/list-suites-for-ref": no record
+E     "checks/rerequest-run": no record
+E     "checks/rerequest-suite": no record
+E     "checks/set-suites-preferences": no record
+E     "checks/update": no record
+E   assert not ['"checks/create": no record', '"checks/create-suite": no record', '"checks/get": no record', '"checks/get-suite": no record', '"checks/list-annotations": no record', '"checks/list-for-suite": no record', ...]
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_checks.py:304: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 11 records differ from their sections:
+E     "checks/create": declared None, the section documents frozenset()
+E     "checks/create-suite": declared None, the section documents frozenset()
+E     "checks/get": declared None, the section documents frozenset()
+E     "checks/get-suite": declared None, the section documents frozenset()
+E     "checks/list-annotations": declared None, the section documents frozenset()
+E     "checks/list-for-suite": declared None, the section documents frozenset()
+E     "checks/list-suites-for-ref": declared None, the section documents frozenset({'ref'})
+E     "checks/rerequest-run": declared None, the section documents frozenset()
+E     "checks/rerequest-suite": declared None, the section documents frozenset()
+E     "checks/set-suites-preferences": declared None, the section documents frozenset()
+E     "checks/update": declared None, the section documents frozenset()
+E   assert not ['"checks/create": declared None, the section documents frozenset()', '"checks/create-suite": declared None, the secti..., the section documents frozenset()', '"checks/list-for-suite": declared None, the section documents frozenset()', ...]
+_ test_a_list_record_prints_every_item[actions/list-self-hosted-runners-for-repo] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-self-hosted-runners-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-self-hosted-runners-for-repo"
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_checks.py:315: in test_every_list_record_has_a_case
+    assert paged == cased, (
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['checks/list-annotations', 'checks/list-for-suite', 'checks/list-suites-for-ref']
+E   assert {'checks/list-for-ref'} == {'checks/list...ites-for-ref'}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mchecks/list-annotations[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mchecks/list-for-suite[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mchecks/list-suites-for-ref[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+________ test_a_list_record_prints_every_item[checks/list-annotations] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_checks.py:328: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/checks/list-annotations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "checks/list-annotations"
+_ test_a_list_record_prints_every_item[actions/list-self-hosted-runners-in-group-for-org] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-self-hosted-runners-in-group-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-self-hosted-runners-in-group-for-org"
+_________ test_a_list_record_prints_every_item[checks/list-for-suite] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_checks.py:328: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/checks/list-for-suite: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "checks/list-for-suite"
+__ test_a_list_record_prints_every_item[actions/list-workflow-run-artifacts] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_actions.py:713: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/actions/list-workflow-run-artifacts: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "actions/list-workflow-run-artifacts"
+_______________ test_only_the_branch_writing_record_is_pending ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:279: in test_only_the_branch_writing_record_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 25 IDs, not only code-scanning/commit-autofix: ['code-scanning/commit-autofix', 'code-scanning/create-autofix', 'code-scanning/create-variant-analysis', 'code-scanning/delete-analysis', 'code-scanning/delete-codeql-database', 'code-scanning/get-ai-scan-enablement', 'code-scanning/get-ai-scan-enablement-for-org', 'code-scanning/get-alert', 'code-scanning/get-analysis', 'code-scanning/get-autofix', 'code-scanning/get-codeql-database', 'code-scanning/get-default-setup', 'code-scanning/get-sarif', 'code-scanning/get-variant-analysis', 'code-scanning/get-variant-analysis-repo-task', 'code-scanning/list-alert-instances', 'code-scanning/list-alerts-for-org', 'code-scanning/list-alerts-for-repo', 'code-scanning/list-codeql-databases', 'code-scanning/list-recent-analyses', 'code-scanning/update-ai-scan-enablement', 'code-scanning/update-ai-scan-enablement-for-org', 'code-scanning/update-alert', 'code-scanning/update-default-setup', 'code-scanning/upload-sarif']
+E     24 IDs have no record: ['code-scanning/create-autofix', 'code-scanning/create-variant-analysis', 'code-scanning/delete-analysis', 'code-scanning/delete-codeql-database', 'code-scanning/get-ai-scan-enablement', 'code-scanning/get-ai-scan-enablement-for-org', 'code-scanning/get-alert', 'code-scanning/get-analysis', 'code-scanning/get-autofix', 'code-scanning/get-codeql-database', 'code-scanning/get-default-setup', 'code-scanning/get-sarif', 'code-scanning/get-variant-analysis', 'code-scanning/get-variant-analysis-repo-task', 'code-scanning/list-alert-instances', 'code-scanning/list-alerts-for-org', 'code-scanning/list-alerts-for-repo', 'code-scanning/list-codeql-databases', 'code-scanning/list-recent-analyses', 'code-scanning/update-ai-scan-enablement', 'code-scanning/update-ai-scan-enablement-for-org', 'code-scanning/update-alert', 'code-scanning/update-default-setup', 'code-scanning/upload-sarif']
+E   assert not ["PENDING holds 25 IDs, not only code-scanning/commit-autofix: ['code-scanning/commit-autofix', 'code-scanning/create-...nablement-for-org', 'code-scanning/update-alert', 'code-scanning/update-default-setup', 'code-scanning/upload-sarif']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:298: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 24 problems:
+E     "code-scanning/create-autofix": no record
+E     "code-scanning/create-variant-analysis": no record
+E     "code-scanning/delete-analysis": no record
+E     "code-scanning/delete-codeql-database": no record
+E     "code-scanning/get-ai-scan-enablement": no record
+E     "code-scanning/get-ai-scan-enablement-for-org": no record
+E     "code-scanning/get-alert": no record
+E     "code-scanning/get-analysis": no record
+E     "code-scanning/get-autofix": no record
+E     "code-scanning/get-codeql-database": no record
+E     "code-scanning/get-default-setup": no record
+E     "code-scanning/get-sarif": no record
+E     "code-scanning/get-variant-analysis": no record
+E     "code-scanning/get-variant-analysis-repo-task": no record
+E     "code-scanning/list-alert-instances": no record
+E     "code-scanning/list-alerts-for-org": no record
+E     "code-scanning/list-alerts-for-repo": no record
+E     "code-scanning/list-codeql-databases": no record
+E     "code-scanning/list-recent-analyses": no record
+E     "code-scanning/update-ai-scan-enablement": no record
+E     "code-scanning/update-ai-scan-enablement-for-org": no record
+E     "code-scanning/update-alert": no record
+E     "code-scanning/update-default-setup": no record
+E     "code-scanning/upload-sarif": no record
+E   assert not ['"code-scanning/create-autofix": no record', '"code-scanning/create-variant-analysis": no record', '"code-scanning/de... '"code-scanning/get-ai-scan-enablement": no record', '"code-scanning/get-ai-scan-enablement-for-org": no record', ...]
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:311: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 24 records differ from their sections:
+E     "code-scanning/create-autofix": declared None, the section documents frozenset()
+E     "code-scanning/create-variant-analysis": declared None, the section documents frozenset()
+E     "code-scanning/delete-analysis": declared None, the section documents frozenset()
+E     "code-scanning/delete-codeql-database": declared None, the section documents frozenset()
+E     "code-scanning/get-ai-scan-enablement": declared None, the section documents frozenset()
+E     "code-scanning/get-ai-scan-enablement-for-org": declared None, the section documents frozenset()
+E     "code-scanning/get-alert": declared None, the section documents frozenset()
+E     "code-scanning/get-analysis": declared None, the section documents frozenset()
+E     "code-scanning/get-autofix": declared None, the section documents frozenset()
+E     "code-scanning/get-codeql-database": declared None, the section documents frozenset()
+E     "code-scanning/get-default-setup": declared None, the section documents frozenset()
+E     "code-scanning/get-sarif": declared None, the section documents frozenset()
+E     "code-scanning/get-variant-analysis": declared None, the section documents frozenset()
+E     "code-scanning/get-variant-analysis-repo-task": declared None, the section documents frozenset()
+E     "code-scanning/list-alert-instances": declared None, the section documents frozenset()
+E     "code-scanning/list-alerts-for-org": declared None, the section documents frozenset()
+E     "code-scanning/list-alerts-for-repo": declared None, the section documents frozenset()
+E     "code-scanning/list-codeql-databases": declared None, the section documents frozenset()
+E     "code-scanning/list-recent-analyses": declared None, the section documents frozenset()
+E     "code-scanning/update-ai-scan-enablement": declared None, the section documents frozenset()
+E     "code-scanning/update-ai-scan-enablement-for-org": declared None, the section documents frozenset()
+E     "code-scanning/update-alert": declared None, the section documents frozenset()
+E     "code-scanning/update-default-setup": declared None, the section documents frozenset()
+E     "code-scanning/upload-sarif": declared None, the section documents frozenset()
+E   assert not ['"code-scanning/create-autofix": declared None, the section documents frozenset()', '"code-scanning/create-variant-an... frozenset()', '"code-scanning/get-ai-scan-enablement-for-org": declared None, the section documents frozenset()', ...]
+______ test_a_list_record_prints_every_item[checks/list-suites-for-ref] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_checks.py:328: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/checks/list-suites-for-ref: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "checks/list-suites-for-ref"
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:322: in test_every_list_record_has_a_case
+    assert paged == cased, (
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['code-scanning/list-alert-instances', 'code-scanning/list-alerts-for-org', 'code-scanning/list-alerts-for-repo', 'code-scanning/list-recent-analyses']
+E   assert set() == {'code-scanni...ent-analyses'}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mcode-scanning/list-recent-analyses[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mcode-scanning/list-alerts-for-org[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mcode-scanning/list-alert-instances[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mcode-scanning/list-alerts-for-repo[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__ test_a_list_record_prints_every_item[code-scanning/list-alert-instances] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_code_scanning.py:335: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/code-scanning/list-alert-instances: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "code-scanning/list-alert-instances"
+___ test_a_list_record_prints_every_item[code-scanning/list-alerts-for-org] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_code_scanning.py:335: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/code-scanning/list-alerts-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "code-scanning/list-alerts-for-org"
+__ test_a_list_record_prints_every_item[code-scanning/list-recent-analyses] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_code_scanning.py:335: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/code-scanning/list-recent-analyses: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "code-scanning/list-recent-analyses"
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_dependabot.py:296: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 27 IDs: ['dependabot/add-selected-repo-to-org-secret', 'dependabot/create-or-update-org-secret', 'dependabot/create-or-update-repo-secret', 'dependabot/delete-org-secret', 'dependabot/delete-repo-secret', 'dependabot/get-alert', 'dependabot/get-org-public-key', 'dependabot/get-org-secret', 'dependabot/get-repo-public-key', 'dependabot/get-repo-secret', 'dependabot/get-repository-runner-settings', 'dependabot/list-alerts-for-enterprise', 'dependabot/list-alerts-for-org', 'dependabot/list-alerts-for-repo', 'dependabot/list-org-secrets', 'dependabot/list-repo-secrets', 'dependabot/list-selected-repos-for-org-secret', 'dependabot/remove-selected-repo-from-org-secret', 'dependabot/repository-access-for-enterprise', 'dependabot/repository-access-for-org', 'dependabot/set-repository-access-default-level', 'dependabot/set-repository-access-default-level-for-enterprise', 'dependabot/set-repository-runner-settings', 'dependabot/set-selected-repos-for-org-secret', 'dependabot/update-alert', 'dependabot/update-repository-access-for-enterprise', 'dependabot/update-repository-access-for-org']
+E     27 IDs have no record: ['dependabot/add-selected-repo-to-org-secret', 'dependabot/create-or-update-org-secret', 'dependabot/create-or-update-repo-secret', 'dependabot/delete-org-secret', 'dependabot/delete-repo-secret', 'dependabot/get-alert', 'dependabot/get-org-public-key', 'dependabot/get-org-secret', 'dependabot/get-repo-public-key', 'dependabot/get-repo-secret', 'dependabot/get-repository-runner-settings', 'dependabot/list-alerts-for-enterprise', 'dependabot/list-alerts-for-org', 'dependabot/list-alerts-for-repo', 'dependabot/list-org-secrets', 'dependabot/list-repo-secrets', 'dependabot/list-selected-repos-for-org-secret', 'dependabot/remove-selected-repo-from-org-secret', 'dependabot/repository-access-for-enterprise', 'dependabot/repository-access-for-org', 'dependabot/set-repository-access-default-level', 'dependabot/set-repository-access-default-level-for-enterprise', 'dependabot/set-repository-runner-settings', 'dependabot/set-selected-repos-for-org-secret', 'dependabot/update-alert', 'dependabot/update-repository-access-for-enterprise', 'dependabot/update-repository-access-for-org']
+E   assert not ["PENDING still holds 27 IDs: ['dependabot/add-selected-repo-to-org-secret', 'dependabot/create-or-update-org-secret',...t/update-alert', 'dependabot/update-repository-access-for-enterprise', 'dependabot/update-repository-access-for-org']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_dependabot.py:315: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 27 problems:
+E     "dependabot/add-selected-repo-to-org-secret": no record
+E     "dependabot/create-or-update-org-secret": no record
+E     "dependabot/create-or-update-repo-secret": no record
+E     "dependabot/delete-org-secret": no record
+E     "dependabot/delete-repo-secret": no record
+E     "dependabot/get-alert": no record
+E     "dependabot/get-org-public-key": no record
+E     "dependabot/get-org-secret": no record
+E     "dependabot/get-repo-public-key": no record
+E     "dependabot/get-repo-secret": no record
+E     "dependabot/get-repository-runner-settings": no record
+E     "dependabot/list-alerts-for-enterprise": no record
+E     "dependabot/list-alerts-for-org": no record
+E     "dependabot/list-alerts-for-repo": no record
+E     "dependabot/list-org-secrets": no record
+E     "dependabot/list-repo-secrets": no record
+E     "dependabot/list-selected-repos-for-org-secret": no record
+E     "dependabot/remove-selected-repo-from-org-secret": no record
+E     "dependabot/repository-access-for-enterprise": no record
+E     "dependabot/repository-access-for-org": no record
+E     "dependabot/set-repository-access-default-level": no record
+E     "dependabot/set-repository-access-default-level-for-enterprise": no record
+E     "dependabot/set-repository-runner-settings": no record
+E     "dependabot/set-selected-repos-for-org-secret": no record
+E     "dependabot/update-alert": no record
+E     "dependabot/update-repository-access-for-enterprise": no record
+E     "dependabot/update-repository-access-for-org": no record
+E   assert not ['"dependabot/add-selected-repo-to-org-secret": no record', '"dependabot/create-or-update-org-secret": no record', '"d...delete-org-secret": no record', '"dependabot/delete-repo-secret": no record', '"dependabot/get-alert": no record', ...]
+__ test_a_list_record_prints_every_item[code-scanning/list-alerts-for-repo] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_code_scanning.py:335: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/code-scanning/list-alerts-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "code-scanning/list-alerts-for-repo"
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_dependabot.py:331: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 27 records differ from their sections:
+E     "dependabot/add-selected-repo-to-org-secret": declared None, the section documents frozenset()
+E     "dependabot/create-or-update-org-secret": declared None, the section documents frozenset()
+E     "dependabot/create-or-update-repo-secret": declared None, the section documents frozenset()
+E     "dependabot/delete-org-secret": declared None, the section documents frozenset()
+E     "dependabot/delete-repo-secret": declared None, the section documents frozenset()
+E     "dependabot/get-alert": declared None, the section documents frozenset()
+E     "dependabot/get-org-public-key": declared None, the section documents frozenset()
+E     "dependabot/get-org-secret": declared None, the section documents frozenset()
+E     "dependabot/get-repo-public-key": declared None, the section documents frozenset()
+E     "dependabot/get-repo-secret": declared None, the section documents frozenset()
+E     "dependabot/get-repository-runner-settings": declared None, the section documents frozenset()
+E     "dependabot/list-alerts-for-enterprise": declared None, the section documents frozenset()
+E     "dependabot/list-alerts-for-org": declared None, the section documents frozenset()
+E     "dependabot/list-alerts-for-repo": declared None, the section documents frozenset()
+E     "dependabot/list-org-secrets": declared None, the section documents frozenset()
+E     "dependabot/list-repo-secrets": declared None, the section documents frozenset()
+E     "dependabot/list-selected-repos-for-org-secret": declared None, the section documents frozenset()
+E     "dependabot/remove-selected-repo-from-org-secret": declared None, the section documents frozenset()
+E     "dependabot/repository-access-for-enterprise": declared None, the section documents frozenset()
+E     "dependabot/repository-access-for-org": declared None, the section documents frozenset()
+E     "dependabot/set-repository-access-default-level": declared None, the section documents frozenset()
+E     "dependabot/set-repository-access-default-level-for-enterprise": declared None, the section documents frozenset()
+E     "dependabot/set-repository-runner-settings": declared None, the section documents frozenset()
+E     "dependabot/set-selected-repos-for-org-secret": declared None, the section documents frozenset()
+E     "dependabot/update-alert": declared None, the section documents frozenset()
+E     "dependabot/update-repository-access-for-enterprise": declared None, the section documents frozenset()
+E     "dependabot/update-repository-access-for-org": declared None, the section documents frozenset()
+E   assert not ['"dependabot/add-selected-repo-to-org-secret": declared None, the section documents frozenset()', '"dependabot/create...e, the section documents frozenset()', '"dependabot/get-alert": declared None, the section documents frozenset()', ...]
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_dependabot.py:342: in test_every_list_record_has_a_case
+    assert paged == cased, (
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['dependabot/list-alerts-for-enterprise', 'dependabot/list-alerts-for-org', 'dependabot/list-alerts-for-repo', 'dependabot/list-org-secrets', 'dependabot/list-repo-secrets', 'dependabot/list-selected-repos-for-org-secret', 'dependabot/repository-access-for-enterprise', 'dependabot/repository-access-for-org']
+E   assert set() == {'dependabot/...-secret', ...}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mdependabot/list-org-secrets[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mdependabot/repository-access-for-org[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mdependabot/repository-access-for-enterprise[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mdependabot/list-alerts-for-org[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mdependabot/list-alerts-for-enterprise[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+____ test_a_list_record_prints_every_item[dependabot/list-alerts-for-org] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/list-alerts-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/list-alerts-for-org"
+_ test_a_list_record_prints_every_item[dependabot/list-alerts-for-enterprise] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/list-alerts-for-enterprise: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/list-alerts-for-enterprise"
+____ test_a_list_record_prints_every_item[dependabot/list-alerts-for-repo] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/list-alerts-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/list-alerts-for-repo"
+_ test_a_list_record_prints_every_item[dependabot/repository-access-for-org] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/repository-access-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/repository-access-for-org"
+_ test_a_list_record_prints_every_item[dependabot/repository-access-for-enterprise] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/repository-access-for-enterprise: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/repository-access-for-enterprise"
+______ test_a_list_record_prints_every_item[dependabot/list-org-secrets] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/list-org-secrets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/list-org-secrets"
+_ test_a_list_record_prints_every_item[dependabot/list-selected-repos-for-org-secret] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/list-selected-repos-for-org-secret: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/list-selected-repos-for-org-secret"
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_secret_scanning.py:270: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 17 IDs: ['secret-scanning/bulk-create-org-custom-patterns', 'secret-scanning/bulk-create-repo-custom-patterns', 'secret-scanning/bulk-delete-org-custom-patterns', 'secret-scanning/bulk-delete-repo-custom-patterns', 'secret-scanning/create-push-protection-bypass', 'secret-scanning/get-alert', 'secret-scanning/get-scan-history', 'secret-scanning/list-alerts-for-org', 'secret-scanning/list-alerts-for-repo', 'secret-scanning/list-locations-for-alert', 'secret-scanning/list-org-custom-patterns', 'secret-scanning/list-org-pattern-configs', 'secret-scanning/list-repo-custom-patterns', 'secret-scanning/update-alert', 'secret-scanning/update-org-custom-pattern', 'secret-scanning/update-org-pattern-configs', 'secret-scanning/update-repo-custom-pattern']
+E     17 IDs have no record: ['secret-scanning/bulk-create-org-custom-patterns', 'secret-scanning/bulk-create-repo-custom-patterns', 'secret-scanning/bulk-delete-org-custom-patterns', 'secret-scanning/bulk-delete-repo-custom-patterns', 'secret-scanning/create-push-protection-bypass', 'secret-scanning/get-alert', 'secret-scanning/get-scan-history', 'secret-scanning/list-alerts-for-org', 'secret-scanning/list-alerts-for-repo', 'secret-scanning/list-locations-for-alert', 'secret-scanning/list-org-custom-patterns', 'secret-scanning/list-org-pattern-configs', 'secret-scanning/list-repo-custom-patterns', 'secret-scanning/update-alert', 'secret-scanning/update-org-custom-pattern', 'secret-scanning/update-org-pattern-configs', 'secret-scanning/update-repo-custom-pattern']
+E   assert not ["PENDING still holds 17 IDs: ['secret-scanning/bulk-create-org-custom-patterns', 'secret-scanning/bulk-create-repo-cu...date-org-custom-pattern', 'secret-scanning/update-org-pattern-configs', 'secret-scanning/update-repo-custom-pattern']"]
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_secret_scanning.py:305: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 17 records differ from their sections:
+E     "secret-scanning/bulk-create-org-custom-patterns": declared None, the section documents frozenset()
+E     "secret-scanning/bulk-create-repo-custom-patterns": declared None, the section documents frozenset()
+E     "secret-scanning/bulk-delete-org-custom-patterns": declared None, the section documents frozenset()
+E     "secret-scanning/bulk-delete-repo-custom-patterns": declared None, the section documents frozenset()
+E     "secret-scanning/create-push-protection-bypass": declared None, the section documents frozenset()
+E     "secret-scanning/get-alert": declared None, the section documents frozenset()
+E     "secret-scanning/get-scan-history": declared None, the section documents frozenset()
+E     "secret-scanning/list-alerts-for-org": declared None, the section documents frozenset()
+E     "secret-scanning/list-alerts-for-repo": declared None, the section documents frozenset()
+E     "secret-scanning/list-locations-for-alert": declared None, the section documents frozenset()
+E     "secret-scanning/list-org-custom-patterns": declared None, the section documents frozenset()
+E     "secret-scanning/list-org-pattern-configs": declared None, the section documents frozenset()
+E     "secret-scanning/list-repo-custom-patterns": declared None, the section documents frozenset()
+E     "secret-scanning/update-alert": declared None, the section documents frozenset()
+E     "secret-scanning/update-org-custom-pattern": declared None, the section documents frozenset()
+E     "secret-scanning/update-org-pattern-configs": declared None, the section documents frozenset()
+E     "secret-scanning/update-repo-custom-pattern": declared None, the section documents frozenset()
+E   assert not ['"secret-scanning/bulk-create-org-custom-patterns": declared None, the section documents frozenset()', '"secret-scann...e section documents frozenset()', '"secret-scanning/get-alert": declared None, the section documents frozenset()', ...]
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_secret_scanning.py:316: in test_every_list_record_has_a_case
+    assert paged == cased, (
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['secret-scanning/list-alerts-for-org', 'secret-scanning/list-alerts-for-repo', 'secret-scanning/list-locations-for-alert', 'secret-scanning/list-org-custom-patterns', 'secret-scanning/list-repo-custom-patterns']
+E   assert set() == {'secret-scan...tom-patterns'}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33msecret-scanning/list-repo-custom-patterns[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msecret-scanning/list-alerts-for-org[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msecret-scanning/list-locations-for-alert[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msecret-scanning/list-alerts-for-repo[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msecret-scanning/list-org-custom-patterns[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____ test_a_list_record_prints_every_item[dependabot/list-repo-secrets] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_dependabot.py:355: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/dependabot/list-repo-secrets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "dependabot/list-repo-secrets"
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_secret_scanning.py:289: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 17 problems:
+E     "secret-scanning/bulk-create-org-custom-patterns": no record
+E     "secret-scanning/bulk-create-repo-custom-patterns": no record
+E     "secret-scanning/bulk-delete-org-custom-patterns": no record
+E     "secret-scanning/bulk-delete-repo-custom-patterns": no record
+E     "secret-scanning/create-push-protection-bypass": no record
+E     "secret-scanning/get-alert": no record
+E     "secret-scanning/get-scan-history": no record
+E     "secret-scanning/list-alerts-for-org": no record
+E     "secret-scanning/list-alerts-for-repo": no record
+E     "secret-scanning/list-locations-for-alert": no record
+E     "secret-scanning/list-org-custom-patterns": no record
+E     "secret-scanning/list-org-pattern-configs": no record
+E     "secret-scanning/list-repo-custom-patterns": no record
+E     "secret-scanning/update-alert": no record
+E     "secret-scanning/update-org-custom-pattern": no record
+E     "secret-scanning/update-org-pattern-configs": no record
+E     "secret-scanning/update-repo-custom-pattern": no record
+E   assert not ['"secret-scanning/bulk-create-org-custom-patterns": no record', '"secret-scanning/bulk-create-repo-custom-patterns": ...o record', '"secret-scanning/create-push-protection-bypass": no record', '"secret-scanning/get-alert": no record', ...]
+_ test_a_list_record_prints_every_item[secret-scanning/list-org-custom-patterns] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_secret_scanning.py:329: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/secret-scanning/list-org-custom-patterns: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "secret-scanning/list-org-custom-patterns"
+__ test_a_list_record_prints_every_item[secret-scanning/list-alerts-for-org] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_secret_scanning.py:329: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/secret-scanning/list-alerts-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "secret-scanning/list-alerts-for-org"
+_ test_a_list_record_prints_every_item[secret-scanning/list-repo-custom-patterns] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_secret_scanning.py:329: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/secret-scanning/list-repo-custom-patterns: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "secret-scanning/list-repo-custom-patterns"
+_ test_a_list_record_prints_every_item[secret-scanning/list-alerts-for-repo] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_secret_scanning.py:329: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/secret-scanning/list-alerts-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "secret-scanning/list-alerts-for-repo"
+_ test_a_list_record_prints_every_item[secret-scanning/list-locations-for-alert] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\test_github_api_secret_scanning.py:329: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-31\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/secret-scanning/list-locations-for-alert: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "secret-scanning/list-locations-for-alert"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_actions.py::test_nothing_is_pending
+FAILED src/payload/test/test_github_api_actions.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_actions.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_actions.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-concurrency-groups-for-repository]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-concurrency-groups-for-workflow-run]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/get-actions-cache-list]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-environment-secrets]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/get-actions-cache-usage-by-repo-for-org]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-environment-variables]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/get-org-actions-policies]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-github-hosted-runners-in-group-for-org]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/get-repo-actions-policies]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-hosted-runners-for-org]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-artifacts-for-repo]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-jobs-for-workflow-run]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-org-variables]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-jobs-for-workflow-run-attempt]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-repo-access-to-self-hosted-runner-group-in-org]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-org-secrets]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-repo-organization-secrets]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-selected-repos-for-org-variable]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-repo-organization-variables]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-selected-repositories-enabled-github-actions-organization]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-repo-secrets]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-selected-repositories-self-hosted-runners-organization]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-self-hosted-runner-groups-for-org]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-repo-variables]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-self-hosted-runners-for-org]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-selected-repos-for-org-secret]
+FAILED src/payload/test/test_github_api_checks.py::test_nothing_is_pending - ...
+FAILED src/payload/test/test_github_api_checks.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_checks.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-self-hosted-runners-for-repo]
+FAILED src/payload/test/test_github_api_checks.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_checks.py::test_a_list_record_prints_every_item[checks/list-annotations]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-self-hosted-runners-in-group-for-org]
+FAILED src/payload/test/test_github_api_checks.py::test_a_list_record_prints_every_item[checks/list-for-suite]
+FAILED src/payload/test/test_github_api_actions.py::test_a_list_record_prints_every_item[actions/list-workflow-run-artifacts]
+FAILED src/payload/test/test_github_api_code_scanning.py::test_only_the_branch_writing_record_is_pending
+FAILED src/payload/test/test_github_api_code_scanning.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_code_scanning.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_checks.py::test_a_list_record_prints_every_item[checks/list-suites-for-ref]
+FAILED src/payload/test/test_github_api_code_scanning.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alert-instances]
+FAILED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alerts-for-org]
+FAILED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-recent-analyses]
+FAILED src/payload/test/test_github_api_dependabot.py::test_nothing_is_pending
+FAILED src/payload/test/test_github_api_dependabot.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alerts-for-repo]
+FAILED src/payload/test/test_github_api_dependabot.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_dependabot.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/list-alerts-for-org]
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/list-alerts-for-enterprise]
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/list-alerts-for-repo]
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/repository-access-for-org]
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/repository-access-for-enterprise]
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/list-org-secrets]
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/list-selected-repos-for-org-secret]
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_nothing_is_pending
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_dependabot.py::test_a_list_record_prints_every_item[dependabot/list-repo-secrets]
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_a_list_record_prints_every_item[secret-scanning/list-org-custom-patterns]
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_a_list_record_prints_every_item[secret-scanning/list-alerts-for-org]
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_a_list_record_prints_every_item[secret-scanning/list-repo-custom-patterns]
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_a_list_record_prints_every_item[secret-scanning/list-alerts-for-repo]
+FAILED src/payload/test/test_github_api_secret_scanning.py::test_a_list_record_prints_every_item[secret-scanning/list-locations-for-alert]
+======================== 69 failed, 4 passed in 12.87s ========================
