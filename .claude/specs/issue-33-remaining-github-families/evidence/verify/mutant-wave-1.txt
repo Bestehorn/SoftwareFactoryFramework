@@ -1,0 +1,1346 @@
+# Wave 1 targeted mutants (issue #33), 2026-11-11, worktree HEAD 273d86b
+# Each mutant: exact byte replacement(s), paired tests through scripts/run_tests.py, complete output, restore with
+# sha256 before/after. KILLED = pytest exit 1 with failures. Harness: tmp/verify/mutate.py (disposable, removed after).
+
+====================================================================================================
+### M01 [WI1] agent-automations/list-repo-automations item_key automations -> None
+edit: src/payload/scripts/github_api/families/agent_automations.py scope=agent-automations/list-repo-automations 'item_key="automations",' -> 'item_key=None,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_automations.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_automations.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 9 items
+
+src\payload\test\test_github_api_agent_automations.py .F.F.....          [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_agent_automations.py:295: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.agent_automations: ["agent-automations/list-repo-automations: item_key None, expected 'automations'"]
+E   assert ["agent-autom...automations'"] == []
+E     
+E     Left contains one more item: "agent-automations/list-repo-automations: item_key None, expected 'automations'"
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/agent-automations/list-repo-automations] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_agent_automations.py:304: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/agent-automations/list-repo-automations: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/agents/repos/o/r/automations?per_page=1" returned no item list
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_automations.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_agent_automations.py::test_a_paged_record_prints_every_page[AC-4/exit-0/agent-automations/list-repo-automations]
+========================= 2 failed, 7 passed in 2.20s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/agent_automations.py sha256 before 9399d7265a8003d6acf5f6959fa1a8a27c09210e3f94e952f5e8a61b08a35508 after 9399d7265a8003d6acf5f6959fa1a8a27c09210e3f94e952f5e8a61b08a35508 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M02 [WI1] agent-automations/list-available-repo-automation-triggers NONE -> LINK (array, no Link)
+edit: src/payload/scripts/github_api/families/agent_automations.py scope=agent-automations/list-available-repo-automation-triggers 'paging=Paging.NONE,' -> 'paging=Paging.LINK,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_automations.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_automations.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 9 items
+
+src\payload\test\test_github_api_agent_automations.py .F.......          [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_agent_automations.py:293: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['agent-automations/list-automation-revisions', 'agent-automations/list-automations', 'agent-automations/list-available-repo-automation-triggers', 'agent-automations/list-repo-automation-tasks', 'agent-automations/list-repo-automations'], sections with a Paging line ['agent-automations/list-automation-revisions', 'agent-automations/list-automations', 'agent-automations/list-repo-automation-tasks', 'agent-automations/list-repo-automations']
+E   assert frozenset({'a...automations'}) == frozenset({'a...automations'})
+E     
+E     Extra items in the left set:
+E     'agent-automations/list-available-repo-automation-triggers'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_automations.py::test_the_records_follow_the_transcription_rules
+========================= 1 failed, 8 passed in 1.75s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/agent_automations.py sha256 before 9399d7265a8003d6acf5f6959fa1a8a27c09210e3f94e952f5e8a61b08a35508 after 9399d7265a8003d6acf5f6959fa1a8a27c09210e3f94e952f5e8a61b08a35508 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M03 [WI1] copilot/list-copilot-seats LINK -> NONE
+edit: src/payload/scripts/github_api/families/copilot.py scope=copilot/list-copilot-seats 'paging=Paging.LINK,' -> 'paging=Paging.NONE,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_copilot.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_copilot.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 4 items
+
+src\payload\test\test_github_api_copilot.py .F.F                         [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_copilot.py:251: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['copilot/list-copilot-coding-agent-selected-repositories-for-organization'], sections with a Paging line ['copilot/list-copilot-coding-agent-selected-repositories-for-organization', 'copilot/list-copilot-seats']
+E   assert frozenset({'c...rganization'}) == frozenset({'c...pilot-seats'})
+E     
+E     Extra items in the right set:
+E     'copilot/list-copilot-seats'
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/copilot/list-copilot-seats] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_copilot.py:262: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/copilot/list-copilot-seats: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_copilot.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_copilot.py::test_a_paged_record_prints_every_page[AC-4/exit-0/copilot/list-copilot-seats]
+========================= 2 failed, 2 passed in 1.51s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/copilot.py sha256 before fd406865686930886990aba1d86151abc54f3105497303cb516ec34f96393b14 after fd406865686930886990aba1d86151abc54f3105497303cb516ec34f96393b14 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M04 [WI1] copilot.PENDING emptied (DL-004 residual dropped)
+edit: src/payload/scripts/github_api/families/copilot.py scope=None 'frozenset({"copilot/set-copilot-content-exclusion-for-organization"})' -> 'frozenset()'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_copilot.py test/test_github_wrapper_coverage.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_copilot.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 15 items
+
+src\payload\test\test_github_api_copilot.py F...                         [ 26%]
+test\test_github_wrapper_coverage.py .......F...                         [100%]
+
+================================== FAILURES ===================================
+___________________ test_only_the_residual_ids_are_pending ____________________
+src\payload\test\test_github_api_copilot.py:233: in test_only_the_residual_ids_are_pending
+    assert pending == RESIDUAL_PENDING, (
+E   AssertionError: github_api.families.copilot.PENDING holds []; only ['copilot/set-copilot-content-exclusion-for-organization'] expected
+E   assert frozenset() == frozenset({'c...rganization'})
+E     
+E     Extra items in the right set:
+E     'copilot/set-copilot-content-exclusion-for-organization'
+E     Use -v to get more diff
+_________________ test_every_operation_is_covered_or_pending __________________
+test\test_github_wrapper_coverage.py:580: in test_every_operation_is_covered_or_pending
+    assert not gaps, gap_message(gaps=gaps)
+E   AssertionError: 1 operations and capabilities are neither covered by a record nor pending; declare a record, or put each on its family module's PENDING (a capability on graphql_only.PENDING_CAPABILITIES):
+E       copilot/set-copilot-content-exclusion-for-organization
+E   assert not ['copilot/set-copilot-content-exclusion-for-organization']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_copilot.py::test_only_the_residual_ids_are_pending
+FAILED test/test_github_wrapper_coverage.py::test_every_operation_is_covered_or_pending
+======================== 2 failed, 13 passed in 1.88s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/copilot.py sha256 before fd406865686930886990aba1d86151abc54f3105497303cb516ec34f96393b14 after fd406865686930886990aba1d86151abc54f3105497303cb516ec34f96393b14 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M05 [WI1] agents/list-org-secrets item_key secrets -> items
+edit: src/payload/scripts/github_api/families/agents.py scope=agents/list-org-secrets 'item_key="secrets",' -> 'item_key="items",'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agents.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agents.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 10 items
+
+src\payload\test\test_github_api_agents.py .FF.......                    [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_agents.py:259: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.agents: ["agents/list-org-secrets: item_key 'items', expected 'secrets'"]
+E   assert ["agents/list...ed 'secrets'"] == []
+E     
+E     Left contains one more item: "agents/list-org-secrets: item_key 'items', expected 'secrets'"
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/agents/list-org-secrets] __
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_agents.py:268: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/agents/list-org-secrets: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/orgs/acme/agents/secrets?per_page=1" returned no item list under "items"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agents.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_agents.py::test_a_paged_record_prints_every_page[AC-4/exit-0/agents/list-org-secrets]
+========================= 2 failed, 8 passed in 1.97s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/agents.py sha256 before 485b595a1ae4ee1d4edd6a007ee5b4f84d57442daa4df7859d8c1baac6d18490 after 485b595a1ae4ee1d4edd6a007ee5b4f84d57442daa4df7859d8c1baac6d18490 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M06 [WI1/IMPL-5] agent-tasks/create-task-in-repo removed from GATED_OPERATIONS
+edit: src/payload/scripts/github_api/commands/call.py scope=None '"agent-tasks/create-task-in-repo": None,' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_tasks.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_tasks.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 5 items
+
+src\payload\test\test_github_api_agent_tasks.py ....F                    [100%]
+
+================================== FAILURES ===================================
+__ test_a_branch_writing_record_is_refused[agent-tasks/create-task-in-repo] ___
+the fake GitHub host has no route for POST https://api.github.com/agents/repos/o/r/tasks
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_tasks.py::test_a_branch_writing_record_is_refused[agent-tasks/create-task-in-repo]
+========================= 1 failed, 4 passed in 1.40s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M07 [WI1/IMPL-5] agent-merge/put-agent-merge-enrollment removed from GATED_OPERATIONS
+edit: src/payload/scripts/github_api/commands/call.py scope=None '"agent-merge/put-agent-merge-enrollment": None,' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_merge.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_merge.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 3 items
+
+src\payload\test\test_github_api_agent_merge.py ..F                      [100%]
+
+================================== FAILURES ===================================
+_ test_a_branch_writing_record_is_refused[agent-merge/put-agent-merge-enrollment] _
+the fake GitHub host has no route for PUT https://api.github.com/agents/repos/o/r/pulls/77/agent-merge
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_merge.py::test_a_branch_writing_record_is_refused[agent-merge/put-agent-merge-enrollment]
+========================= 1 failed, 2 passed in 1.35s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M08 [WI1/IMPL-5] agent-automations/edit-repo-automation removed from GATED_OPERATIONS
+edit: src/payload/scripts/github_api/commands/call.py scope=None '"agent-automations/edit-repo-automation": None,' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_automations.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_automations.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 9 items
+
+src\payload\test\test_github_api_agent_automations.py .......F.          [100%]
+
+================================== FAILURES ===================================
+_ test_a_branch_writing_record_is_refused[agent-automations/edit-repo-automation] _
+the fake GitHub host has no route for PATCH https://api.github.com/agents/repos/o/r/automations/a7
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_automations.py::test_a_branch_writing_record_is_refused[agent-automations/edit-repo-automation]
+========================= 1 failed, 8 passed in 1.76s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M09 [WI1] agents/create-or-update-org-secret body name encrypted_value dropped
+edit: src/payload/scripts/github_api/families/agents.py scope=agents/create-or-update-org-secret '"encrypted_value", ' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers local test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [2 items]
+
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "agents/create-or-update-org-secret": body names: documented and not declared ["encrypted_value"]; declared and not documented []
+E   assert not ['"agents/create-or-update-org-secret": body names: documented and not declared ["encrypted_value"]; declared and not documented []']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 1250 records:
+E     "agents/create-or-update-org-secret": exit 2, not 0; log ['The GitHub operation "agents/create-or-update-org-secret" documents no body parameter ["encrypted_value"]; its path parameters are ["org", "secret_name"], its query parameters are [], its body parameters are ["key_id", "selected_repository_ids", "visibility"]']; stderr ''
+E     "agents/create-or-update-org-secret": 0 requests sent, one expected
+E   assert not ['"agents/create-or-update-org-secret": exit 2, not 0; log [\'The GitHub operation "agents/create-or-update-org-secret...repository_ids", "visibility"]\']; stderr \'\'', '"agents/create-or-update-org-secret": 0 requests sent, one expected']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:294 The GitHub operation "agents/create-or-update-org-secret" documents no body parameter ["encrypted_value"]; its path parameters are ["org", "secret_name"], its query parameters are [], its body parameters are ["key_id", "selected_repository_ids", "visibility"]
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed in 103.97s (0:01:43) ========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/agents.py sha256 before 485b595a1ae4ee1d4edd6a007ee5b4f84d57442daa4df7859d8c1baac6d18490 after 485b595a1ae4ee1d4edd6a007ee5b4f84d57442daa4df7859d8c1baac6d18490 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M10 [WI1] copilot-spaces/add-collaborator-for-org body name actor_identifier dropped
+edit: src/payload/scripts/github_api/families/copilot_spaces.py scope=copilot-spaces/add-collaborator-for-org '"actor_identifier", ' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers local test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [2 items]
+
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "copilot-spaces/add-collaborator-for-org": body names: documented and not declared ["actor_identifier"]; declared and not documented []
+E   assert not ['"copilot-spaces/add-collaborator-for-org": body names: documented and not declared ["actor_identifier"]; declared and not documented []']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 1250 records:
+E     "copilot-spaces/add-collaborator-for-org": exit 2, not 0; log ['The GitHub operation "copilot-spaces/add-collaborator-for-org" documents no body parameter ["actor_identifier"]; its path parameters are ["org", "space_number"], its query parameters are [], its body parameters are ["actor_type", "role"]']; stderr ''
+E     "copilot-spaces/add-collaborator-for-org": 0 requests sent, one expected
+E   assert not ['"copilot-spaces/add-collaborator-for-org": exit 2, not 0; log [\'The GitHub operation "copilot-spaces/add-collaborat...re ["actor_type", "role"]\']; stderr \'\'', '"copilot-spaces/add-collaborator-for-org": 0 requests sent, one expected']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:294 The GitHub operation "copilot-spaces/add-collaborator-for-org" documents no body parameter ["actor_identifier"]; its path parameters are ["org", "space_number"], its query parameters are [], its body parameters are ["actor_type", "role"]
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed in 89.81s (0:01:29) =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/copilot_spaces.py sha256 before 194aaf3f00e23ae7e1d5580e6e1c409941d84ea5b22ded0cfc86cbf59c637de8 after 194aaf3f00e23ae7e1d5580e6e1c409941d84ea5b22ded0cfc86cbf59c637de8 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M11 [WI2] codespaces/list-in-organization item_key codespaces -> None
+edit: src/payload/scripts/github_api/families/codespaces.py scope=codespaces/list-in-organization 'item_key="codespaces",' -> 'item_key=None,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_codespaces.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_codespaces.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 12 items
+
+src\payload\test\test_github_api_codespaces.py .F.....F....              [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_codespaces.py:344: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.codespaces: ["codespaces/list-in-organization: item_key None, expected 'codespaces'"]
+E   assert ["codespaces/...'codespaces'"] == []
+E     
+E     Left contains one more item: "codespaces/list-in-organization: item_key None, expected 'codespaces'"
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/codespaces/list-in-organization] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_codespaces.py:354: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/codespaces/list-in-organization: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/orgs/octo-org/codespaces?per_page=1" returned no item list
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_codespaces.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_codespaces.py::test_a_paged_record_prints_every_page[AC-4/exit-0/codespaces/list-in-organization]
+======================== 2 failed, 10 passed in 2.10s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/codespaces.py sha256 before 6a1d3a876dd108d17c4dbe390621c6f02be3cdec078178efe9e6fc22b12549ce after 6a1d3a876dd108d17c4dbe390621c6f02be3cdec078178efe9e6fc22b12549ce IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M12 [WI2] codespaces/list-repo-secrets item_key secrets -> repositories
+edit: src/payload/scripts/github_api/families/codespaces.py scope=codespaces/list-repo-secrets 'item_key="secrets",' -> 'item_key="repositories",'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_codespaces.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_codespaces.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 12 items
+
+src\payload\test\test_github_api_codespaces.py .F.......F..              [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_codespaces.py:344: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.codespaces: ["codespaces/list-repo-secrets: item_key 'repositories', expected 'secrets'"]
+E   assert ["codespaces/...ed 'secrets'"] == []
+E     
+E     Left contains one more item: "codespaces/list-repo-secrets: item_key 'repositories', expected 'secrets'"
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/codespaces/list-repo-secrets] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_codespaces.py:354: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/codespaces/list-repo-secrets: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/repos/o/r/codespaces/secrets?per_page=1" returned no item list under "repositories"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_codespaces.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_codespaces.py::test_a_paged_record_prints_every_page[AC-4/exit-0/codespaces/list-repo-secrets]
+======================== 2 failed, 10 passed in 2.03s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/codespaces.py sha256 before 6a1d3a876dd108d17c4dbe390621c6f02be3cdec078178efe9e6fc22b12549ce after 6a1d3a876dd108d17c4dbe390621c6f02be3cdec078178efe9e6fc22b12549ce IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M13 [WI2/IMPL-5] codespaces/export-for-authenticated-user removed from GATED_OPERATIONS
+edit: src/payload/scripts/github_api/commands/call.py scope=None '"codespaces/export-for-authenticated-user": None,' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_codespaces.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_codespaces.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 12 items
+
+src\payload\test\test_github_api_codespaces.py ...........F              [100%]
+
+================================== FAILURES ===================================
+_ test_a_branch_writing_record_is_refused[codespaces/export-for-authenticated-user] _
+the fake GitHub host has no route for POST https://api.github.com/user/codespaces/monalisa-space/exports
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_codespaces.py::test_a_branch_writing_record_is_refused[codespaces/export-for-authenticated-user]
+======================== 1 failed, 11 passed in 1.99s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M14 [WI2] codespaces/publish-for-authenticated-user put back on codespaces.PENDING
+edit: src/payload/scripts/github_api/families/codespaces.py scope=None 'PENDING: FrozenSet[str] = frozenset()' -> 'PENDING: FrozenSet[str] = frozenset({"codespaces/publish-for-authenticated-user"})'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_codespaces.py test/test_github_wrapper_coverage.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_codespaces.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 23 items
+
+src\payload\test\test_github_api_codespaces.py F...........              [ 52%]
+test\test_github_wrapper_coverage.py .........F.                         [100%]
+
+================================== FAILURES ===================================
+___________________ test_only_the_residual_ids_are_pending ____________________
+src\payload\test\test_github_api_codespaces.py:328: in test_only_the_residual_ids_are_pending
+    assert pending == RESIDUAL_PENDING, f"{FAMILY_MODULE}.PENDING still holds {sorted(pending - RESIDUAL_PENDING)}"
+E   AssertionError: github_api.families.codespaces.PENDING still holds ['codespaces/publish-for-authenticated-user']
+E   assert frozenset({'c...icated-user'}) == frozenset()
+E     
+E     Extra items in the left set:
+E     'codespaces/publish-for-authenticated-user'
+E     Use -v to get more diff
+_____________ test_one_module_per_family_holding_only_its_own_ids _____________
+test\test_github_wrapper_coverage.py:637: in test_one_module_per_family_holding_only_its_own_ids
+    assert not problems, "the family and capability modules break D2's contract:\n" + "\n".join(problems)
+E   AssertionError: the family and capability modules break D2's contract:
+E     github_api.families.codespaces: 'codespaces/publish-for-authenticated-user' is both covered and pending
+E   assert not ["github_api.families.codespaces: 'codespaces/publish-for-authenticated-user' is both covered and pending"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_codespaces.py::test_only_the_residual_ids_are_pending
+FAILED test/test_github_wrapper_coverage.py::test_one_module_per_family_holding_only_its_own_ids
+======================== 2 failed, 21 passed in 2.30s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/codespaces.py sha256 before 6a1d3a876dd108d17c4dbe390621c6f02be3cdec078178efe9e6fc22b12549ce after 6a1d3a876dd108d17c4dbe390621c6f02be3cdec078178efe9e6fc22b12549ce IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M15 [WI2] migrations/list-for-org LINK -> NONE
+edit: src/payload/scripts/github_api/families/migrations.py scope=migrations/list-for-org 'paging=Paging.LINK,' -> 'paging=Paging.NONE,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_migrations.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_migrations.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 6 items
+
+src\payload\test\test_github_api_migrations.py .FF...                    [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_migrations.py:229: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['migrations/list-for-authenticated-user', 'migrations/list-repos-for-authenticated-user', 'migrations/list-repos-for-org'], sections with a Paging line ['migrations/list-for-authenticated-user', 'migrations/list-for-org', 'migrations/list-repos-for-authenticated-user', 'migrations/list-repos-for-org']
+E   assert frozenset({'m...pos-for-org'}) == frozenset({'m...pos-for-org'})
+E     
+E     Extra items in the right set:
+E     'migrations/list-for-org'
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/migrations/list-for-org] __
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_migrations.py:240: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/migrations/list-for-org: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_migrations.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_migrations.py::test_a_paged_record_prints_every_page[AC-4/exit-0/migrations/list-for-org]
+========================= 2 failed, 4 passed in 1.79s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/migrations.py sha256 before fe6f90b84212406efb5f58b77df7406fb069be224681da2830948c8f676c3d06 after fe6f90b84212406efb5f58b77df7406fb069be224681da2830948c8f676c3d06 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M16 [WI2] projects/get-for-org NONE -> LINK (one object with Link)
+edit: src/payload/scripts/github_api/families/projects.py scope=projects/get-for-org 'paging=Paging.NONE,' -> 'paging=Paging.LINK,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_projects.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_projects.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 10 items
+
+src\payload\test\test_github_api_projects.py .F........                  [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_projects.py:251: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['projects/get-for-org', 'projects/list-fields-for-org', 'projects/list-fields-for-user', 'projects/list-for-org', 'projects/list-for-user', 'projects/list-items-for-org', 'projects/list-items-for-user', 'projects/list-view-items-for-org', 'projects/list-view-items-for-user'], sections with a Paging line ['projects/list-fields-for-org', 'projects/list-fields-for-user', 'projects/list-for-org', 'projects/list-for-user', 'projects/list-items-for-org', 'projects/list-items-for-user', 'projects/list-view-items-for-org', 'projects/list-view-items-for-user']
+E   assert frozenset({'p...or-org', ...}) == frozenset({'p...r-user', ...})
+E     
+E     Extra items in the left set:
+E     'projects/get-for-org'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_projects.py::test_the_records_follow_the_transcription_rules
+========================= 1 failed, 9 passed in 1.81s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/projects.py sha256 before 44f1a3c93acf0b751ec46a6925b7318e3089bc6ef32a1e29b8b44d1337c69bab after 44f1a3c93acf0b751ec46a6925b7318e3089bc6ef32a1e29b8b44d1337c69bab IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M17 [WI2] packages/restore-package-for-org query name token dropped
+edit: src/payload/scripts/github_api/families/packages.py scope=packages/restore-package-for-org 'query_params=frozenset({"token"}),' -> 'query_params=frozenset(),'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers local test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [2 items]
+
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "packages/restore-package-for-org": query names: documented and not declared ["token"]; declared and not documented []
+E   assert not ['"packages/restore-package-for-org": query names: documented and not declared ["token"]; declared and not documented []']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 1250 records:
+E     "packages/restore-package-for-org": exit 2, not 0; log ['The GitHub operation "packages/restore-package-for-org" documents no query parameter ["token"]; its path parameters are ["org", "package_type", "package_name"], its query parameters are [], its body parameters are []']; stderr ''
+E     "packages/restore-package-for-org": 0 requests sent, one expected
+E   assert not ['"packages/restore-package-for-org": exit 2, not 0; log [\'The GitHub operation "packages/restore-package-for-org" do...e [], its body parameters are []\']; stderr \'\'', '"packages/restore-package-for-org": 0 requests sent, one expected']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:294 The GitHub operation "packages/restore-package-for-org" documents no query parameter ["token"]; its path parameters are ["org", "package_type", "package_name"], its query parameters are [], its body parameters are []
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed in 80.34s (0:01:20) =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/packages.py sha256 before ad6abe0e2be8637430fb54f60715b0739fa57cece6741870bd97f90ca932a789 after ad6abe0e2be8637430fb54f60715b0739fa57cece6741870bd97f90ca932a789 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M18 [WI3] dependency-graph/diff-range LINK -> NONE
+edit: src/payload/scripts/github_api/families/dependency_graph.py scope=dependency-graph/diff-range 'paging=Paging.LINK,' -> 'paging=Paging.NONE,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_dependency_graph.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_dependency_graph.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 3 items
+
+src\payload\test\test_github_api_dependency_graph.py .F.                 [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_dependency_graph.py:219: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections that page {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records [], sections that page ['dependency-graph/diff-range']
+E   assert frozenset() == frozenset({'d.../diff-range'})
+E     
+E     Extra items in the right set:
+E     'dependency-graph/diff-range'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_dependency_graph.py::test_the_records_follow_the_transcription_rules
+========================= 1 failed, 2 passed in 1.31s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/dependency_graph.py sha256 before 4b36b1a75b4682c2c5a99ea20b78151e668136b072c32eb8049a2fcd2c354b4c after 4b36b1a75b4682c2c5a99ea20b78151e668136b072c32eb8049a2fcd2c354b4c IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M19 [WI3] dependency-graph/export-sbom NONE -> LINK (one object with Link)
+edit: src/payload/scripts/github_api/families/dependency_graph.py scope=dependency-graph/export-sbom 'paging=Paging.NONE,' -> 'paging=Paging.LINK,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_dependency_graph.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_dependency_graph.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 3 items
+
+src\payload\test\test_github_api_dependency_graph.py .F.                 [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_dependency_graph.py:219: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections that page {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['dependency-graph/diff-range', 'dependency-graph/export-sbom'], sections that page ['dependency-graph/diff-range']
+E   assert frozenset({'d...export-sbom'}) == frozenset({'d.../diff-range'})
+E     
+E     Extra items in the left set:
+E     'dependency-graph/export-sbom'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_dependency_graph.py::test_the_records_follow_the_transcription_rules
+========================= 1 failed, 2 passed in 1.36s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/dependency_graph.py sha256 before 4b36b1a75b4682c2c5a99ea20b78151e668136b072c32eb8049a2fcd2c354b4c after 4b36b1a75b4682c2c5a99ea20b78151e668136b072c32eb8049a2fcd2c354b4c IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M20 [WI3] private-registries/list-org-private-registries item_key configurations -> None
+edit: src/payload/scripts/github_api/families/private_registries.py scope=private-registries/list-org-private-registries 'item_key="configurations",' -> 'item_key=None,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_private_registries.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_private_registries.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 3 items
+
+src\payload\test\test_github_api_private_registries.py .FF               [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_private_registries.py:208: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.private_registries: ["private-registries/list-org-private-registries: item_key None, expected 'configurations'"]
+E   assert ["private-reg...figurations'"] == []
+E     
+E     Left contains one more item: "private-registries/list-org-private-registries: item_key None, expected 'configurations'"
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/private-registries/list-org-private-registries] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_private_registries.py:218: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/private-registries/list-org-private-registries: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/orgs/octo-org/private-registries?per_page=1" returned no item list
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_private_registries.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_private_registries.py::test_a_paged_record_prints_every_page[AC-4/exit-0/private-registries/list-org-private-registries]
+========================= 2 failed, 1 passed in 1.43s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/private_registries.py sha256 before bc48c0f4199d4383c005decff5e60b84c30fd4841540a4cb2bb34610518df7ba after bc48c0f4199d4383c005decff5e60b84c30fd4841540a4cb2bb34610518df7ba IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M21 [WI3] code-security/attach-configuration body name scope dropped
+edit: src/payload/scripts/github_api/families/code_security.py scope=code-security/attach-configuration '{"scope", "selected_repository_ids"}' -> '{"selected_repository_ids"}'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers local test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [2 items]
+
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "code-security/attach-configuration": body names: documented and not declared ["scope"]; declared and not documented []
+E   assert not ['"code-security/attach-configuration": body names: documented and not declared ["scope"]; declared and not documented []']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 1250 records:
+E     "code-security/attach-configuration": exit 2, not 0; log ['The GitHub operation "code-security/attach-configuration" documents no body parameter ["scope"]; its path parameters are ["org", "configuration_id"], its query parameters are [], its body parameters are ["selected_repository_ids"]']; stderr ''
+E     "code-security/attach-configuration": 0 requests sent, one expected
+E   assert not ['"code-security/attach-configuration": exit 2, not 0; log [\'The GitHub operation "code-security/attach-configuration...re ["selected_repository_ids"]\']; stderr \'\'', '"code-security/attach-configuration": 0 requests sent, one expected']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:294 The GitHub operation "code-security/attach-configuration" documents no body parameter ["scope"]; its path parameters are ["org", "configuration_id"], its query parameters are [], its body parameters are ["selected_repository_ids"]
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed in 111.56s (0:01:51) ========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/code_security.py sha256 before 6b8e8bc0d9e65bf5b60fb25a447b59b3fea4832cf126487aacd8e93044a7aea0 after 6b8e8bc0d9e65bf5b60fb25a447b59b3fea4832cf126487aacd8e93044a7aea0 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M22 [WI3] oidc/list-oidc-custom-property-inclusions-for-org NONE -> LINK (array, no Link)
+edit: src/payload/scripts/github_api/families/oidc.py scope=oidc/list-oidc-custom-property-inclusions-for-org 'paging=Paging.NONE,' -> 'paging=Paging.LINK,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_oidc.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_oidc.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 2 items
+
+src\payload\test\test_github_api_oidc.py .F                              [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_oidc.py:128: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, no section of the family pages"
+E   AssertionError: Paging.LINK records ['oidc/list-oidc-custom-property-inclusions-for-org'], no section of the family pages
+E   assert frozenset({'o...ons-for-org'}) == frozenset()
+E     
+E     Extra items in the left set:
+E     'oidc/list-oidc-custom-property-inclusions-for-org'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_oidc.py::test_the_records_follow_the_transcription_rules
+========================= 1 failed, 1 passed in 1.88s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/oidc.py sha256 before 3c5ab535818467dcab44ae9ae5409d539e77c953ad647da8ed63188da62b5d64 after 3c5ab535818467dcab44ae9ae5409d539e77c953ad647da8ed63188da62b5d64 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M23 [WI3] security-advisories/list-global-advisories LINK -> NONE
+edit: src/payload/scripts/github_api/families/security_advisories.py scope=security-advisories/list-global-advisories 'paging=Paging.LINK,' -> 'paging=Paging.NONE,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_security_advisories.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_security_advisories.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 6 items
+
+src\payload\test\test_github_api_security_advisories.py .FF...           [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_security_advisories.py:221: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['security-advisories/list-org-repository-advisories', 'security-advisories/list-repository-advisories', 'security-advisories/list-repository-advisory-comments'], sections with a Paging line ['security-advisories/list-global-advisories', 'security-advisories/list-org-repository-advisories', 'security-advisories/list-repository-advisories', 'security-advisories/list-repository-advisory-comments']
+E   assert frozenset({'s...ry-comments'}) == frozenset({'s...ry-comments'})
+E     
+E     Extra items in the right set:
+E     'security-advisories/list-global-advisories'
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/security-advisories/list-global-advisories] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_security_advisories.py:232: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/security-advisories/list-global-advisories: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_security_advisories.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_security_advisories.py::test_a_paged_record_prints_every_page[AC-4/exit-0/security-advisories/list-global-advisories]
+========================= 2 failed, 4 passed in 4.53s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/security_advisories.py sha256 before fb86fa0f1cbd3c6db4f395fcd666df61513c65dcae24ddb4b58d4dfe8ff9d2ce after fb86fa0f1cbd3c6db4f395fcd666df61513c65dcae24ddb4b58d4dfe8ff9d2ce IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M24 [WI4] billing/get-all-budgets-org item_key budgets -> None
+edit: src/payload/scripts/github_api/families/billing.py scope=billing/get-all-budgets-org 'item_key="budgets",' -> 'item_key=None,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_billing.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_billing.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 3 items
+
+src\payload\test\test_github_api_billing.py .FF                          [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_billing.py:213: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.billing: ["billing/get-all-budgets-org: item_key None, expected 'budgets'"]
+E   assert ["billing/get...ed 'budgets'"] == []
+E     
+E     Left contains one more item: "billing/get-all-budgets-org: item_key None, expected 'budgets'"
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/billing/get-all-budgets-org] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_billing.py:223: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/billing/get-all-budgets-org: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/organizations/acme/settings/billing/budgets?per_page=1" returned no item list
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_billing.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_billing.py::test_a_paged_record_prints_every_page[AC-4/exit-0/billing/get-all-budgets-org]
+========================= 2 failed, 1 passed in 2.64s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/billing.py sha256 before 2d6ac028c032fdec9f40b078370eb38a3ea2cc0fd5294a9719235e6c0aa312bd after 2d6ac028c032fdec9f40b078370eb38a3ea2cc0fd5294a9719235e6c0aa312bd IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M25 [WI4] markdown.PENDING emptied (DL-001 residual dropped)
+edit: src/payload/scripts/github_api/families/markdown.py scope=None 'PENDING: FrozenSet[str] = frozenset({"markdown/render-raw"})' -> 'PENDING: FrozenSet[str] = frozenset()'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_markdown.py test/test_github_wrapper_coverage.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_markdown.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 13 items
+
+src\payload\test\test_github_api_markdown.py F.                          [ 15%]
+test\test_github_wrapper_coverage.py .......F...                         [100%]
+
+================================== FAILURES ===================================
+___________________ test_only_the_residual_ids_are_pending ____________________
+src\payload\test\test_github_api_markdown.py:114: in test_only_the_residual_ids_are_pending
+    assert pending == RESIDUAL_PENDING, (
+E   AssertionError: github_api.families.markdown.PENDING holds [], expected ['markdown/render-raw']
+E   assert frozenset() == frozenset({'m.../render-raw'})
+E     
+E     Extra items in the right set:
+E     'markdown/render-raw'
+E     Use -v to get more diff
+_________________ test_every_operation_is_covered_or_pending __________________
+test\test_github_wrapper_coverage.py:580: in test_every_operation_is_covered_or_pending
+    assert not gaps, gap_message(gaps=gaps)
+E   AssertionError: 1 operations and capabilities are neither covered by a record nor pending; declare a record, or put each on its family module's PENDING (a capability on graphql_only.PENDING_CAPABILITIES):
+E       markdown/render-raw
+E   assert not ['markdown/render-raw']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_markdown.py::test_only_the_residual_ids_are_pending
+FAILED test/test_github_wrapper_coverage.py::test_every_operation_is_covered_or_pending
+======================== 2 failed, 11 passed in 1.79s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/markdown.py sha256 before 067dd37a248c70a1727ca75aa3cad5f6e13071bdc011fda3f59e142006586d69 after 067dd37a248c70a1727ca75aa3cad5f6e13071bdc011fda3f59e142006586d69 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M26 [WI4] markdown/render put back on markdown.PENDING
+edit: src/payload/scripts/github_api/families/markdown.py scope=None 'frozenset({"markdown/render-raw"})' -> 'frozenset({"markdown/render-raw", "markdown/render"})'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_markdown.py test/test_github_wrapper_coverage.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_markdown.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 13 items
+
+src\payload\test\test_github_api_markdown.py F.                          [ 15%]
+test\test_github_wrapper_coverage.py .........F.                         [100%]
+
+================================== FAILURES ===================================
+___________________ test_only_the_residual_ids_are_pending ____________________
+src\payload\test\test_github_api_markdown.py:114: in test_only_the_residual_ids_are_pending
+    assert pending == RESIDUAL_PENDING, (
+E   AssertionError: github_api.families.markdown.PENDING holds ['markdown/render', 'markdown/render-raw'], expected ['markdown/render-raw']
+E   assert frozenset({'m.../render-raw'}) == frozenset({'m.../render-raw'})
+E     
+E     Extra items in the left set:
+E     'markdown/render'
+E     Use -v to get more diff
+_____________ test_one_module_per_family_holding_only_its_own_ids _____________
+test\test_github_wrapper_coverage.py:637: in test_one_module_per_family_holding_only_its_own_ids
+    assert not problems, "the family and capability modules break D2's contract:\n" + "\n".join(problems)
+E   AssertionError: the family and capability modules break D2's contract:
+E     github_api.families.markdown: 'markdown/render' is both covered and pending
+E   assert not ["github_api.families.markdown: 'markdown/render' is both covered and pending"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_markdown.py::test_only_the_residual_ids_are_pending
+FAILED test/test_github_wrapper_coverage.py::test_one_module_per_family_holding_only_its_own_ids
+======================== 2 failed, 11 passed in 1.96s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/markdown.py sha256 before 067dd37a248c70a1727ca75aa3cad5f6e13071bdc011fda3f59e142006586d69 after 067dd37a248c70a1727ca75aa3cad5f6e13071bdc011fda3f59e142006586d69 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M27 [WI4/IMPL-5] campaigns/create-campaign removed from GATED_OPERATIONS
+edit: src/payload/scripts/github_api/commands/call.py scope=None '"campaigns/create-campaign": None,' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_campaigns.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_campaigns.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 4 items
+
+src\payload\test\test_github_api_campaigns.py ...F                       [100%]
+
+================================== FAILURES ===================================
+_____ test_a_branch_writing_record_is_refused[campaigns/create-campaign] ______
+the fake GitHub host has no route for POST https://api.github.com/orgs/acme/campaigns
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_campaigns.py::test_a_branch_writing_record_is_refused[campaigns/create-campaign]
+========================= 1 failed, 3 passed in 1.54s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M28 [WI4 (TEST-4 N edit)] N DL-005 edit reverted: step 3 appends the record to every declared one
+edit: test/test_github_wrapper_contract.py scope=None 'value=(*others, record))' -> 'value=(*billing.OPERATIONS, record))'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers local test/test_github_wrapper_contract.py -k test_an_unreachable_call_matches_its_reference_section
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_contract.py -k test_an_unreachable_call_matches_its_reference_section
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [1 item]
+
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_an_unreachable_call_matches_its_reference_section ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\test\test_github_wrapper_contract.py:889: in test_an_unreachable_call_matches_its_reference_section
+    assert exit_code == fx.EXIT_OK, f"exit {exit_code}; log {caplog.messages}; stderr {stderr!r}"
+E   AssertionError: exit 2; log ['The GitHub operation "billing/update-budget-org" is declared 2 times']; stderr ''
+E   assert 2 == 0
+E    +  where 0 = fx.EXIT_OK
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:294 The GitHub operation "billing/update-budget-org" is declared 2 times
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_an_unreachable_call_matches_its_reference_section
+============================== 1 failed in 5.16s ==============================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: test/test_github_wrapper_contract.py sha256 before fa10eccba8f1f226c28517345c195ae6a857bd65761e1e3da80d805250d4595c after fa10eccba8f1f226c28517345c195ae6a857bd65761e1e3da80d805250d4595c IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M29 [WI4] markdown/render body name mode dropped
+edit: src/payload/scripts/github_api/families/markdown.py scope=markdown/render '{"text", "mode", "context"}' -> '{"text", "context"}'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers local test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_contract.py -k test_every_record_matches_its_reference_section or test_every_record_is_sent
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [2 items]
+
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "markdown/render": body names: documented and not declared ["mode"]; declared and not documented []
+E   assert not ['"markdown/render": body names: documented and not declared ["mode"]; declared and not documented []']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 1250 records:
+E     "markdown/render": exit 2, not 0; log ['The GitHub operation "markdown/render" documents no body parameter ["mode"]; its path parameters are [], its query parameters are [], its body parameters are ["context", "text"]']; stderr ''
+E     "markdown/render": 0 requests sent, one expected
+E   assert not ['"markdown/render": exit 2, not 0; log [\'The GitHub operation "markdown/render" documents no body parameter ["mode"]...e [], its body parameters are ["context", "text"]\']; stderr \'\'', '"markdown/render": 0 requests sent, one expected']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:294 The GitHub operation "markdown/render" documents no body parameter ["mode"]; its path parameters are [], its query parameters are [], its body parameters are ["context", "text"]
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed in 94.48s (0:01:34) =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/markdown.py sha256 before 067dd37a248c70a1727ca75aa3cad5f6e13071bdc011fda3f59e142006586d69 after 067dd37a248c70a1727ca75aa3cad5f6e13071bdc011fda3f59e142006586d69 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M30 [WI4] hosted-compute/list-network-configurations-for-org LINK -> NONE
+edit: src/payload/scripts/github_api/families/hosted_compute.py scope=hosted-compute/list-network-configurations-for-org 'paging=Paging.LINK,' -> 'paging=Paging.NONE,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_hosted_compute.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_hosted_compute.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 3 items
+
+src\payload\test\test_github_api_hosted_compute.py .FF                   [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_hosted_compute.py:206: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records [], sections with a Paging line ['hosted-compute/list-network-configurations-for-org']
+E   assert frozenset() == frozenset({'h...ons-for-org'})
+E     
+E     Extra items in the right set:
+E     'hosted-compute/list-network-configurations-for-org'
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/hosted-compute/list-network-configurations-for-org] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_hosted_compute.py:218: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/hosted-compute/list-network-configurations-for-org: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_hosted_compute.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_hosted_compute.py::test_a_paged_record_prints_every_page[AC-4/exit-0/hosted-compute/list-network-configurations-for-org]
+========================= 2 failed, 1 passed in 1.85s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/hosted_compute.py sha256 before 0db7846324172aa13a83430c5d6f6f1668220fa9efd18193906ddd7c514e8fd0 after 0db7846324172aa13a83430c5d6f6f1668220fa9efd18193906ddd7c514e8fd0 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M31 [WI4] api-insights/get-route-stats-by-actor LINK -> NONE
+edit: src/payload/scripts/github_api/families/api_insights.py scope=api-insights/get-route-stats-by-actor 'paging=Paging.LINK,' -> 'paging=Paging.NONE,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_api_insights.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_api_insights.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 5 items
+
+src\payload\test\test_github_api_api_insights.py .FF..                   [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_api_insights.py:216: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['api-insights/get-subject-stats', 'api-insights/get-user-stats'], sections with a Paging line ['api-insights/get-route-stats-by-actor', 'api-insights/get-subject-stats', 'api-insights/get-user-stats']
+E   assert frozenset({'a...-user-stats'}) == frozenset({'a...-user-stats'})
+E     
+E     Extra items in the right set:
+E     'api-insights/get-route-stats-by-actor'
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/api-insights/get-route-stats-by-actor] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_api_insights.py:228: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/api-insights/get-route-stats-by-actor: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_api_insights.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_api_insights.py::test_a_paged_record_prints_every_page[AC-4/exit-0/api-insights/get-route-stats-by-actor]
+========================= 2 failed, 3 passed in 1.59s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/api_insights.py sha256 before 340e1c53d77131d8eb2fe79f35335018c909cae36733ba357ba6c64e7b0ae987 after 340e1c53d77131d8eb2fe79f35335018c909cae36733ba357ba6c64e7b0ae987 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M32 [WI4] pull-request-stacks/list LINK -> NONE
+edit: src/payload/scripts/github_api/families/pull_request_stacks.py scope=pull-request-stacks/list 'paging=Paging.LINK,' -> 'paging=Paging.NONE,'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_pull_request_stacks.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_pull_request_stacks.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 3 items
+
+src\payload\test\test_github_api_pull_request_stacks.py .FF              [100%]
+
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+src\payload\test\test_github_api_pull_request_stacks.py:201: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records [], sections with a Paging line ['pull-request-stacks/list']
+E   assert frozenset() == frozenset({'p...stacks/list'})
+E     
+E     Extra items in the right set:
+E     'pull-request-stacks/list'
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/pull-request-stacks/list] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_pull_request_stacks.py:213: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pull-request-stacks/list: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_pull_request_stacks.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_pull_request_stacks.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pull-request-stacks/list]
+========================= 2 failed, 1 passed in 1.48s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/families/pull_request_stacks.py sha256 before cf9d069e46aa65c203ce6aacaec57962cbf9e96b3a627d47d455de19c04e39b7 after cf9d069e46aa65c203ce6aacaec57962cbf9e96b3a627d47d455de19c04e39b7 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M33 [IMPL-5] refuse_gated None message 'no subcommand sends it' -> 'refused'
+edit: src/payload/scripts/github_api/commands/call.py scope=None 'raise ValueError(f"{refused}: no subcommand sends it")' -> 'raise ValueError(f"{refused}: refused")'
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_tasks.py src/payload/test/test_github_api_campaigns.py src/payload/test/test_github_api_codespaces.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_tasks.py src/payload/test/test_github_api_campaigns.py src/payload/test/test_github_api_codespaces.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 21 items
+
+src\payload\test\test_github_api_agent_tasks.py ....F                    [ 23%]
+src\payload\test\test_github_api_campaigns.py ...F                       [ 42%]
+src\payload\test\test_github_api_codespaces.py ...........F              [100%]
+
+================================== FAILURES ===================================
+__ test_a_branch_writing_record_is_refused[agent-tasks/create-task-in-repo] ___
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_agent_tasks.py:287: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-2/agent-tasks/create-task-in-repo: no log record matches every one of ['"agent\\-tasks/create\\-task\\-in\\-repo"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "agent-tasks/create-task-in-repo": refused']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:294 call refuses the GitHub operation "agent-tasks/create-task-in-repo": refused
+_____ test_a_branch_writing_record_is_refused[campaigns/create-campaign] ______
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_campaigns.py:318: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-2/campaigns/create-campaign: no log record matches every one of ['"campaigns/create\\-campaign"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "campaigns/create-campaign": refused']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:294 call refuses the GitHub operation "campaigns/create-campaign": refused
+_ test_a_branch_writing_record_is_refused[codespaces/export-for-authenticated-user] _
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\test_github_api_codespaces.py:379: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-2/codespaces/export-for-authenticated-user: no log record matches every one of ['"codespaces/export\\-for\\-authenticated\\-user"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "codespaces/export-for-authenticated-user": refused']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:294 call refuses the GitHub operation "codespaces/export-for-authenticated-user": refused
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_tasks.py::test_a_branch_writing_record_is_refused[agent-tasks/create-task-in-repo]
+FAILED src/payload/test/test_github_api_campaigns.py::test_a_branch_writing_record_is_refused[campaigns/create-campaign]
+FAILED src/payload/test/test_github_api_codespaces.py::test_a_branch_writing_record_is_refused[codespaces/export-for-authenticated-user]
+======================== 3 failed, 18 passed in 2.71s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M34 [WI1/IMPL-5] agent-automations/create-repo-automation removed from GATED_OPERATIONS
+edit: src/payload/scripts/github_api/commands/call.py scope=None '"agent-automations/create-repo-automation": None,' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_automations.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_automations.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 9 items
+
+src\payload\test\test_github_api_agent_automations.py ......F..          [100%]
+
+================================== FAILURES ===================================
+_ test_a_branch_writing_record_is_refused[agent-automations/create-repo-automation] _
+the fake GitHub host has no route for POST https://api.github.com/agents/repos/o/r/automations
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_automations.py::test_a_branch_writing_record_is_refused[agent-automations/create-repo-automation]
+========================= 1 failed, 8 passed in 2.28s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
+
+====================================================================================================
+### M35 [WI1/IMPL-5] agent-automations/create-repo-automation-task removed from GATED_OPERATIONS
+edit: src/payload/scripts/github_api/commands/call.py scope=None '"agent-automations/create-repo-automation-task": None,' -> ''
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_agent_automations.py
+--- output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_agent_automations.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-33
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 9 items
+
+src\payload\test\test_github_api_agent_automations.py ........F          [100%]
+
+================================== FAILURES ===================================
+_ test_a_branch_writing_record_is_refused[agent-automations/create-repo-automation-task] _
+the fake GitHub host has no route for POST https://api.github.com/agents/repos/o/r/automations/a7/tasks
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_agent_automations.py::test_a_branch_writing_record_is_refused[agent-automations/create-repo-automation-task]
+========================= 1 failed, 8 passed in 3.06s =========================
+--- end output ---
+exit: 1
+verdict: KILLED
+restore: src/payload/scripts/github_api/commands/call.py sha256 before 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 after 5da5077e7bbb638c2a043e4e708583140eedafd9518a4768144ef62544051c05 IDENTICAL  # pragma: allowlist secret
