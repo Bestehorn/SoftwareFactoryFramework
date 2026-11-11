@@ -1,0 +1,1072 @@
+# tasks: TEST-1 TEST-2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [66 items]
+
+FFFFFFFFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFFFF       [100%]
+================================== FAILURES ===================================
+_______________________ test_only_the_upload_is_pending _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:807: in test_only_the_upload_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 202 IDs, not only repos/upload-release-asset: ['repos/accept-invitation-for-authenticated-user', 'repos/add-app-access-restrictions', 'repos/add-collaborator', 'repos/add-status-check-contexts', 'repos/add-team-access-restrictions', 'repos/add-user-access-restrictions', 'repos/cancel-pages-deployment', 'repos/check-automated-security-fixes', 'repos/check-collaborator', 'repos/check-immutable-releases', 'repos/check-private-vulnerability-reporting', 'repos/check-vulnerability-alerts', 'repos/codeowners-errors', 'repos/compare-commits', 'repos/create-attestation', 'repos/create-autolink', 'repos/create-commit-comment', 'repos/create-commit-signature-protection', 'repos/create-commit-status', 'repos/create-deploy-key', 'repos/create-deployment', 'repos/create-deployment-branch-policy', 'repos/create-deployment-protection-rule', 'repos/create-deployment-status', 'repos/create-dispatch-event', 'repos/create-for-authenticated-user', 'repos/create-fork', 'repos/create-in-org', 'repos/create-or-update-environment', 'repos/create-or-update-file-contents', 'repos/create-org-ruleset', 'repos/create-pages-deployment', 'repos/create-pages-site', 'repos/create-release', 'repos/create-repo-ruleset', 'repos/create-using-template', 'repos/create-webhook', 'repos/custom-properties-for-repos-create-or-update-repository-values', 'repos/custom-properties-for-repos-get-repository-values', 'repos/decline-invitation-for-authenticated-user', 'repos/delete', 'repos/delete-access-restrictions', 'repos/delete-admin-branch-protection', 'repos/delete-an-environment', 'repos/delete-autolink', 'repos/delete-branch-protection', 'repos/delete-commit-comment', 'repos/delete-commit-signature-protection', 'repos/delete-deploy-key', 'repos/delete-deployment', 'repos/delete-deployment-branch-policy', 'repos/delete-file', 'repos/delete-invitation', 'repos/delete-org-ruleset', 'repos/delete-pages-site', 'repos/delete-pull-request-review-protection', 'repos/delete-release', 'repos/delete-release-asset', 'repos/delete-repo-ruleset', 'repos/delete-webhook', 'repos/disable-automated-security-fixes', 'repos/disable-deployment-protection-rule', 'repos/disable-immutable-releases', 'repos/disable-private-vulnerability-reporting', 'repos/disable-vulnerability-alerts', 'repos/download-tarball-archive', 'repos/download-zipball-archive', 'repos/enable-automated-security-fixes', 'repos/enable-immutable-releases', 'repos/enable-private-vulnerability-reporting', 'repos/enable-vulnerability-alerts', 'repos/generate-release-notes', 'repos/get', 'repos/get-access-restrictions', 'repos/get-admin-branch-protection', 'repos/get-all-deployment-protection-rules', 'repos/get-all-environments', 'repos/get-all-status-check-contexts', 'repos/get-all-topics', 'repos/get-apps-with-access-to-protected-branch', 'repos/get-autolink', 'repos/get-branch', 'repos/get-branch-protection', 'repos/get-branch-rules', 'repos/get-clones', 'repos/get-code-frequency-stats', 'repos/get-collaborator-permission-level', 'repos/get-commit', 'repos/get-commit-activity-stats', 'repos/get-commit-comment', 'repos/get-commit-signature-protection', 'repos/get-community-profile-metrics', 'repos/get-content', 'repos/get-contributors-stats', 'repos/get-custom-deployment-protection-rule', 'repos/get-deploy-key', 'repos/get-deployment', 'repos/get-deployment-branch-policy', 'repos/get-deployment-status', 'repos/get-environment', 'repos/get-hash-algorithm', 'repos/get-latest-pages-build', 'repos/get-latest-release', 'repos/get-org-rule-suite', 'repos/get-org-rule-suites', 'repos/get-org-ruleset', 'repos/get-org-rulesets', 'repos/get-pages', 'repos/get-pages-build', 'repos/get-pages-deployment', 'repos/get-pages-health-check', 'repos/get-participation-stats', 'repos/get-pull-request-review-protection', 'repos/get-punch-card-stats', 'repos/get-readme', 'repos/get-readme-in-directory', 'repos/get-release', 'repos/get-release-asset', 'repos/get-release-by-tag', 'repos/get-repo-rule-suite', 'repos/get-repo-rule-suites', 'repos/get-repo-ruleset', 'repos/get-repo-ruleset-history', 'repos/get-repo-ruleset-version', 'repos/get-repo-rulesets', 'repos/get-status-checks-protection', 'repos/get-teams-with-access-to-protected-branch', 'repos/get-top-paths', 'repos/get-top-referrers', 'repos/get-users-with-access-to-protected-branch', 'repos/get-views', 'repos/get-webhook', 'repos/get-webhook-config-for-repo', 'repos/get-webhook-delivery', 'repos/list-activities', 'repos/list-attestations', 'repos/list-autolinks', 'repos/list-branches', 'repos/list-branches-for-head-commit', 'repos/list-collaborators', 'repos/list-comments-for-commit', 'repos/list-commit-comments-for-repo', 'repos/list-commit-statuses-for-ref', 'repos/list-commits', 'repos/list-contributors', 'repos/list-custom-deployment-rule-integrations', 'repos/list-deploy-keys', 'repos/list-deployment-branch-policies', 'repos/list-deployment-statuses', 'repos/list-deployments', 'repos/list-for-authenticated-user', 'repos/list-for-org', 'repos/list-for-user', 'repos/list-forks', 'repos/list-invitations', 'repos/list-invitations-for-authenticated-user', 'repos/list-issue-types', 'repos/list-languages', 'repos/list-pages-builds', 'repos/list-public', 'repos/list-pull-requests-associated-with-commit', 'repos/list-release-assets', 'repos/list-releases', 'repos/list-tags', 'repos/list-teams', 'repos/list-webhook-deliveries', 'repos/list-webhooks', 'repos/merge', 'repos/merge-upstream', 'repos/ping-webhook', 'repos/redeliver-webhook-delivery', 'repos/remove-app-access-restrictions', 'repos/remove-collaborator', 'repos/remove-status-check-contexts', 'repos/remove-status-check-protection', 'repos/remove-team-access-restrictions', 'repos/remove-user-access-restrictions', 'repos/rename-branch', 'repos/replace-all-topics', 'repos/request-pages-build', 'repos/set-admin-branch-protection', 'repos/set-app-access-restrictions', 'repos/set-status-check-contexts', 'repos/set-team-access-restrictions', 'repos/set-user-access-restrictions', 'repos/test-push-webhook', 'repos/transfer', 'repos/update', 'repos/update-branch-protection', 'repos/update-commit-comment', 'repos/update-deployment-branch-policy', 'repos/update-information-about-pages-site', 'repos/update-invitation', 'repos/update-org-ruleset', 'repos/update-pull-request-review-protection', 'repos/update-release', 'repos/update-release-asset', 'repos/update-repo-ruleset', 'repos/update-status-check-protection', 'repos/update-webhook', 'repos/update-webhook-config-for-repo', 'repos/upload-release-asset']
+E     201 IDs have no record: ['repos/accept-invitation-for-authenticated-user', 'repos/add-app-access-restrictions', 'repos/add-collaborator', 'repos/add-status-check-contexts', 'repos/add-team-access-restrictions', 'repos/add-user-access-restrictions', 'repos/cancel-pages-deployment', 'repos/check-automated-security-fixes', 'repos/check-collaborator', 'repos/check-immutable-releases', 'repos/check-private-vulnerability-reporting', 'repos/check-vulnerability-alerts', 'repos/codeowners-errors', 'repos/compare-commits', 'repos/create-attestation', 'repos/create-autolink', 'repos/create-commit-comment', 'repos/create-commit-signature-protection', 'repos/create-commit-status', 'repos/create-deploy-key', 'repos/create-deployment', 'repos/create-deployment-branch-policy', 'repos/create-deployment-protection-rule', 'repos/create-deployment-status', 'repos/create-dispatch-event', 'repos/create-for-authenticated-user', 'repos/create-fork', 'repos/create-in-org', 'repos/create-or-update-environment', 'repos/create-or-update-file-contents', 'repos/create-org-ruleset', 'repos/create-pages-deployment', 'repos/create-pages-site', 'repos/create-release', 'repos/create-repo-ruleset', 'repos/create-using-template', 'repos/create-webhook', 'repos/custom-properties-for-repos-create-or-update-repository-values', 'repos/custom-properties-for-repos-get-repository-values', 'repos/decline-invitation-for-authenticated-user', 'repos/delete', 'repos/delete-access-restrictions', 'repos/delete-admin-branch-protection', 'repos/delete-an-environment', 'repos/delete-autolink', 'repos/delete-branch-protection', 'repos/delete-commit-comment', 'repos/delete-commit-signature-protection', 'repos/delete-deploy-key', 'repos/delete-deployment', 'repos/delete-deployment-branch-policy', 'repos/delete-file', 'repos/delete-invitation', 'repos/delete-org-ruleset', 'repos/delete-pages-site', 'repos/delete-pull-request-review-protection', 'repos/delete-release', 'repos/delete-release-asset', 'repos/delete-repo-ruleset', 'repos/delete-webhook', 'repos/disable-automated-security-fixes', 'repos/disable-deployment-protection-rule', 'repos/disable-immutable-releases', 'repos/disable-private-vulnerability-reporting', 'repos/disable-vulnerability-alerts', 'repos/download-tarball-archive', 'repos/download-zipball-archive', 'repos/enable-automated-security-fixes', 'repos/enable-immutable-releases', 'repos/enable-private-vulnerability-reporting', 'repos/enable-vulnerability-alerts', 'repos/generate-release-notes', 'repos/get', 'repos/get-access-restrictions', 'repos/get-admin-branch-protection', 'repos/get-all-deployment-protection-rules', 'repos/get-all-environments', 'repos/get-all-status-check-contexts', 'repos/get-all-topics', 'repos/get-apps-with-access-to-protected-branch', 'repos/get-autolink', 'repos/get-branch', 'repos/get-branch-protection', 'repos/get-branch-rules', 'repos/get-clones', 'repos/get-code-frequency-stats', 'repos/get-collaborator-permission-level', 'repos/get-commit', 'repos/get-commit-activity-stats', 'repos/get-commit-comment', 'repos/get-commit-signature-protection', 'repos/get-community-profile-metrics', 'repos/get-content', 'repos/get-contributors-stats', 'repos/get-custom-deployment-protection-rule', 'repos/get-deploy-key', 'repos/get-deployment', 'repos/get-deployment-branch-policy', 'repos/get-deployment-status', 'repos/get-environment', 'repos/get-hash-algorithm', 'repos/get-latest-pages-build', 'repos/get-latest-release', 'repos/get-org-rule-suite', 'repos/get-org-rule-suites', 'repos/get-org-ruleset', 'repos/get-org-rulesets', 'repos/get-pages', 'repos/get-pages-build', 'repos/get-pages-deployment', 'repos/get-pages-health-check', 'repos/get-participation-stats', 'repos/get-pull-request-review-protection', 'repos/get-punch-card-stats', 'repos/get-readme', 'repos/get-readme-in-directory', 'repos/get-release', 'repos/get-release-asset', 'repos/get-release-by-tag', 'repos/get-repo-rule-suite', 'repos/get-repo-rule-suites', 'repos/get-repo-ruleset', 'repos/get-repo-ruleset-history', 'repos/get-repo-ruleset-version', 'repos/get-repo-rulesets', 'repos/get-status-checks-protection', 'repos/get-teams-with-access-to-protected-branch', 'repos/get-top-paths', 'repos/get-top-referrers', 'repos/get-users-with-access-to-protected-branch', 'repos/get-views', 'repos/get-webhook', 'repos/get-webhook-config-for-repo', 'repos/get-webhook-delivery', 'repos/list-activities', 'repos/list-attestations', 'repos/list-autolinks', 'repos/list-branches', 'repos/list-branches-for-head-commit', 'repos/list-collaborators', 'repos/list-comments-for-commit', 'repos/list-commit-comments-for-repo', 'repos/list-commit-statuses-for-ref', 'repos/list-commits', 'repos/list-contributors', 'repos/list-custom-deployment-rule-integrations', 'repos/list-deploy-keys', 'repos/list-deployment-branch-policies', 'repos/list-deployment-statuses', 'repos/list-deployments', 'repos/list-for-authenticated-user', 'repos/list-for-org', 'repos/list-for-user', 'repos/list-forks', 'repos/list-invitations', 'repos/list-invitations-for-authenticated-user', 'repos/list-issue-types', 'repos/list-languages', 'repos/list-pages-builds', 'repos/list-public', 'repos/list-pull-requests-associated-with-commit', 'repos/list-release-assets', 'repos/list-releases', 'repos/list-tags', 'repos/list-teams', 'repos/list-webhook-deliveries', 'repos/list-webhooks', 'repos/merge', 'repos/merge-upstream', 'repos/ping-webhook', 'repos/redeliver-webhook-delivery', 'repos/remove-app-access-restrictions', 'repos/remove-collaborator', 'repos/remove-status-check-contexts', 'repos/remove-status-check-protection', 'repos/remove-team-access-restrictions', 'repos/remove-user-access-restrictions', 'repos/rename-branch', 'repos/replace-all-topics', 'repos/request-pages-build', 'repos/set-admin-branch-protection', 'repos/set-app-access-restrictions', 'repos/set-status-check-contexts', 'repos/set-team-access-restrictions', 'repos/set-user-access-restrictions', 'repos/test-push-webhook', 'repos/transfer', 'repos/update', 'repos/update-branch-protection', 'repos/update-commit-comment', 'repos/update-deployment-branch-policy', 'repos/update-information-about-pages-site', 'repos/update-invitation', 'repos/update-org-ruleset', 'repos/update-pull-request-review-protection', 'repos/update-release', 'repos/update-release-asset', 'repos/update-repo-ruleset', 'repos/update-status-check-protection', 'repos/update-webhook', 'repos/update-webhook-config-for-repo']
+E   assert not ["PENDING holds 202 IDs, not only repos/upload-release-asset: ['repos/accept-invitation-for-authenticated-user', 'repo...epo-ruleset', 'repos/update-status-check-protection', 'repos/update-webhook', 'repos/update-webhook-config-for-repo']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:826: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 201 problems:
+E     "repos/accept-invitation-for-authenticated-user": no record
+E     "repos/add-app-access-restrictions": no record
+E     "repos/add-collaborator": no record
+E     "repos/add-status-check-contexts": no record
+E     "repos/add-team-access-restrictions": no record
+E     "repos/add-user-access-restrictions": no record
+E     "repos/cancel-pages-deployment": no record
+E     "repos/check-automated-security-fixes": no record
+E     "repos/check-collaborator": no record
+E     "repos/check-immutable-releases": no record
+E     "repos/check-private-vulnerability-reporting": no record
+E     "repos/check-vulnerability-alerts": no record
+E     "repos/codeowners-errors": no record
+E     "repos/compare-commits": no record
+E     "repos/create-attestation": no record
+E     "repos/create-autolink": no record
+E     "repos/create-commit-comment": no record
+E     "repos/create-commit-signature-protection": no record
+E     "repos/create-commit-status": no record
+E     "repos/create-deploy-key": no record
+E     "repos/create-deployment": no record
+E     "repos/create-deployment-branch-policy": no record
+E     "repos/create-deployment-protection-rule": no record
+E     "repos/create-deployment-status": no record
+E     "repos/create-dispatch-event": no record
+E     "repos/create-for-authenticated-user": no record
+E     "repos/create-fork": no record
+E     "repos/create-in-org": no record
+E     "repos/create-or-update-environment": no record
+E     "repos/create-or-update-file-contents": no record
+E     "repos/create-org-ruleset": no record
+E     "repos/create-pages-deployment": no record
+E     "repos/create-pages-site": no record
+E     "repos/create-release": no record
+E     "repos/create-repo-ruleset": no record
+E     "repos/create-using-template": no record
+E     "repos/create-webhook": no record
+E     "repos/custom-properties-for-repos-create-or-update-repository-values": no record
+E     "repos/custom-properties-for-repos-get-repository-values": no record
+E     "repos/decline-invitation-for-authenticated-user": no record
+E     "repos/delete": no record
+E     "repos/delete-access-restrictions": no record
+E     "repos/delete-admin-branch-protection": no record
+E     "repos/delete-an-environment": no record
+E     "repos/delete-autolink": no record
+E     "repos/delete-branch-protection": no record
+E     "repos/delete-commit-comment": no record
+E     "repos/delete-commit-signature-protection": no record
+E     "repos/delete-deploy-key": no record
+E     "repos/delete-deployment": no record
+E     "repos/delete-deployment-branch-policy": no record
+E     "repos/delete-file": no record
+E     "repos/delete-invitation": no record
+E     "repos/delete-org-ruleset": no record
+E     "repos/delete-pages-site": no record
+E     "repos/delete-pull-request-review-protection": no record
+E     "repos/delete-release": no record
+E     "repos/delete-release-asset": no record
+E     "repos/delete-repo-ruleset": no record
+E     "repos/delete-webhook": no record
+E     "repos/disable-automated-security-fixes": no record
+E     "repos/disable-deployment-protection-rule": no record
+E     "repos/disable-immutable-releases": no record
+E     "repos/disable-private-vulnerability-reporting": no record
+E     "repos/disable-vulnerability-alerts": no record
+E     "repos/download-tarball-archive": no record
+E     "repos/download-zipball-archive": no record
+E     "repos/enable-automated-security-fixes": no record
+E     "repos/enable-immutable-releases": no record
+E     "repos/enable-private-vulnerability-reporting": no record
+E     "repos/enable-vulnerability-alerts": no record
+E     "repos/generate-release-notes": no record
+E     "repos/get": no record
+E     "repos/get-access-restrictions": no record
+E     "repos/get-admin-branch-protection": no record
+E     "repos/get-all-deployment-protection-rules": no record
+E     "repos/get-all-environments": no record
+E     "repos/get-all-status-check-contexts": no record
+E     "repos/get-all-topics": no record
+E     "repos/get-apps-with-access-to-protected-branch": no record
+E     "repos/get-autolink": no record
+E     "repos/get-branch": no record
+E     "repos/get-branch-protection": no record
+E     "repos/get-branch-rules": no record
+E     "repos/get-clones": no record
+E     "repos/get-code-frequency-stats": no record
+E     "repos/get-collaborator-permission-level": no record
+E     "repos/get-commit": no record
+E     "repos/get-commit-activity-stats": no record
+E     "repos/get-commit-comment": no record
+E     "repos/get-commit-signature-protection": no record
+E     "repos/get-community-profile-metrics": no record
+E     "repos/get-content": no record
+E     "repos/get-contributors-stats": no record
+E     "repos/get-custom-deployment-protection-rule": no record
+E     "repos/get-deploy-key": no record
+E     "repos/get-deployment": no record
+E     "repos/get-deployment-branch-policy": no record
+E     "repos/get-deployment-status": no record
+E     "repos/get-environment": no record
+E     "repos/get-hash-algorithm": no record
+E     "repos/get-latest-pages-build": no record
+E     "repos/get-latest-release": no record
+E     "repos/get-org-rule-suite": no record
+E     "repos/get-org-rule-suites": no record
+E     "repos/get-org-ruleset": no record
+E     "repos/get-org-rulesets": no record
+E     "repos/get-pages": no record
+E     "repos/get-pages-build": no record
+E     "repos/get-pages-deployment": no record
+E     "repos/get-pages-health-check": no record
+E     "repos/get-participation-stats": no record
+E     "repos/get-pull-request-review-protection": no record
+E     "repos/get-punch-card-stats": no record
+E     "repos/get-readme": no record
+E     "repos/get-readme-in-directory": no record
+E     "repos/get-release": no record
+E     "repos/get-release-asset": no record
+E     "repos/get-release-by-tag": no record
+E     "repos/get-repo-rule-suite": no record
+E     "repos/get-repo-rule-suites": no record
+E     "repos/get-repo-ruleset": no record
+E     "repos/get-repo-ruleset-history": no record
+E     "repos/get-repo-ruleset-version": no record
+E     "repos/get-repo-rulesets": no record
+E     "repos/get-status-checks-protection": no record
+E     "repos/get-teams-with-access-to-protected-branch": no record
+E     "repos/get-top-paths": no record
+E     "repos/get-top-referrers": no record
+E     "repos/get-users-with-access-to-protected-branch": no record
+E     "repos/get-views": no record
+E     "repos/get-webhook": no record
+E     "repos/get-webhook-config-for-repo": no record
+E     "repos/get-webhook-delivery": no record
+E     "repos/list-activities": no record
+E     "repos/list-attestations": no record
+E     "repos/list-autolinks": no record
+E     "repos/list-branches": no record
+E     "repos/list-branches-for-head-commit": no record
+E     "repos/list-collaborators": no record
+E     "repos/list-comments-for-commit": no record
+E     "repos/list-commit-comments-for-repo": no record
+E     "repos/list-commit-statuses-for-ref": no record
+E     "repos/list-commits": no record
+E     "repos/list-contributors": no record
+E     "repos/list-custom-deployment-rule-integrations": no record
+E     "repos/list-deploy-keys": no record
+E     "repos/list-deployment-branch-policies": no record
+E     "repos/list-deployment-statuses": no record
+E     "repos/list-deployments": no record
+E     "repos/list-for-authenticated-user": no record
+E     "repos/list-for-org": no record
+E     "repos/list-for-user": no record
+E     "repos/list-forks": no record
+E     "repos/list-invitations": no record
+E     "repos/list-invitations-for-authenticated-user": no record
+E     "repos/list-issue-types": no record
+E     "repos/list-languages": no record
+E     "repos/list-pages-builds": no record
+E     "repos/list-public": no record
+E     "repos/list-pull-requests-associated-with-commit": no record
+E     "repos/list-release-assets": no record
+E     "repos/list-releases": no record
+E     "repos/list-tags": no record
+E     "repos/list-teams": no record
+E     "repos/list-webhook-deliveries": no record
+E     "repos/list-webhooks": no record
+E     "repos/merge": no record
+E     "repos/merge-upstream": no record
+E     "repos/ping-webhook": no record
+E     "repos/redeliver-webhook-delivery": no record
+E     "repos/remove-app-access-restrictions": no record
+E     "repos/remove-collaborator": no record
+E     "repos/remove-status-check-contexts": no record
+E     "repos/remove-status-check-protection": no record
+E     "repos/remove-team-access-restrictions": no record
+E     "repos/remove-user-access-restrictions": no record
+E     "repos/rename-branch": no record
+E     "repos/replace-all-topics": no record
+E     "repos/request-pages-build": no record
+E     "repos/set-admin-branch-protection": no record
+E     "repos/set-app-access-restrictions": no record
+E     "repos/set-status-check-contexts": no record
+E     "repos/set-team-access-restrictions": no record
+E     "repos/set-user-access-restrictions": no record
+E     "repos/test-push-webhook": no record
+E     "repos/transfer": no record
+E     "repos/update": no record
+E     "repos/update-branch-protection": no record
+E     "repos/update-commit-comment": no record
+E     "repos/update-deployment-branch-policy": no record
+E     "repos/update-information-about-pages-site": no record
+E     "repos/update-invitation": no record
+E     "repos/update-org-ruleset": no record
+E     "repos/update-pull-request-review-protection": no record
+E     "repos/update-release": no record
+E     "repos/update-release-asset": no record
+E     "repos/update-repo-ruleset": no record
+E     "repos/update-status-check-protection": no record
+E     "repos/update-webhook": no record
+E     "repos/update-webhook-config-for-repo": no record
+E   assert not ['"repos/accept-invitation-for-authenticated-user": no record', '"repos/add-app-access-restrictions": no record', '"re... no record', '"repos/add-team-access-restrictions": no record', '"repos/add-user-access-restrictions": no record', ...]
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:841: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 52 records differ from their sections:
+E     "repos/add-app-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/add-status-check-contexts": declared None, the section documents frozenset({'branch'})
+E     "repos/add-team-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/add-user-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/compare-commits": declared None, the section documents frozenset({'basehead'})
+E     "repos/create-commit-comment": declared None, the section documents frozenset({'commit_sha'})
+E     "repos/create-commit-signature-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/create-commit-status": declared None, the section documents frozenset({'sha'})
+E     "repos/create-or-update-file-contents": declared None, the section documents frozenset({'path'})
+E     "repos/delete-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/delete-admin-branch-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/delete-branch-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/delete-commit-signature-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/delete-file": declared None, the section documents frozenset({'path'})
+E     "repos/delete-pull-request-review-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/download-tarball-archive": declared None, the section documents frozenset({'ref'})
+E     "repos/download-zipball-archive": declared None, the section documents frozenset({'ref'})
+E     "repos/get-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/get-admin-branch-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/get-all-status-check-contexts": declared None, the section documents frozenset({'branch'})
+E     "repos/get-apps-with-access-to-protected-branch": declared None, the section documents frozenset({'branch'})
+E     "repos/get-branch": declared None, the section documents frozenset({'branch'})
+E     "repos/get-branch-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/get-branch-rules": declared None, the section documents frozenset({'branch'})
+E     "repos/get-commit": declared None, the section documents frozenset({'ref'})
+E     "repos/get-commit-signature-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/get-content": declared None, the section documents frozenset({'path'})
+E     "repos/get-pull-request-review-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/get-readme-in-directory": declared None, the section documents frozenset({'dir'})
+E     "repos/get-release-by-tag": declared None, the section documents frozenset({'tag'})
+E     "repos/get-status-checks-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/get-teams-with-access-to-protected-branch": declared None, the section documents frozenset({'branch'})
+E     "repos/get-users-with-access-to-protected-branch": declared None, the section documents frozenset({'branch'})
+E     "repos/list-attestations": declared None, the section documents frozenset({'subject_digest'})
+E     "repos/list-branches-for-head-commit": declared None, the section documents frozenset({'commit_sha'})
+E     "repos/list-comments-for-commit": declared None, the section documents frozenset({'commit_sha'})
+E     "repos/list-commit-statuses-for-ref": declared None, the section documents frozenset({'ref'})
+E     "repos/list-pull-requests-associated-with-commit": declared None, the section documents frozenset({'commit_sha'})
+E     "repos/remove-app-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/remove-status-check-contexts": declared None, the section documents frozenset({'branch'})
+E     "repos/remove-status-check-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/remove-team-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/remove-user-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/rename-branch": declared None, the section documents frozenset({'branch'})
+E     "repos/set-admin-branch-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/set-app-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/set-status-check-contexts": declared None, the section documents frozenset({'branch'})
+E     "repos/set-team-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/set-user-access-restrictions": declared None, the section documents frozenset({'branch'})
+E     "repos/update-branch-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/update-pull-request-review-protection": declared None, the section documents frozenset({'branch'})
+E     "repos/update-status-check-protection": declared None, the section documents frozenset({'branch'})
+E   assert not ['"repos/add-app-access-restrictions": declared None, the section documents frozenset({\'branch\'})', '"repos/add-stat...'basehead\'})', '"repos/create-commit-comment": declared None, the section documents frozenset({\'commit_sha\'})', ...]
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:852: in test_every_list_record_has_a_case
+    assert paged == cased, (
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['repos/get-all-environments', 'repos/get-all-topics', 'repos/get-branch-rules', 'repos/get-org-rule-suites', 'repos/get-org-rulesets', 'repos/get-repo-rule-suites', 'repos/get-repo-ruleset-history', 'repos/get-repo-rulesets', 'repos/list-activities', 'repos/list-attestations', 'repos/list-branches', 'repos/list-collaborators', 'repos/list-comments-for-commit', 'repos/list-commit-comments-for-repo', 'repos/list-commit-statuses-for-ref', 'repos/list-commits', 'repos/list-contributors', 'repos/list-custom-deployment-rule-integrations', 'repos/list-deploy-keys', 'repos/list-deployment-branch-policies', 'repos/list-deployment-statuses', 'repos/list-deployments', 'repos/list-for-authenticated-user', 'repos/list-for-org', 'repos/list-for-user', 'repos/list-forks', 'repos/list-invitations', 'repos/list-invitations-for-authenticated-user', 'repos/list-pages-builds', 'repos/list-public', 'repos/list-pull-requests-associated-with-commit', 'repos/list-release-assets', 'repos/list-releases', 'repos/list-tags', 'repos/list-teams', 'repos/list-webhook-deliveries', 'repos/list-webhooks']
+E   assert {'repos/get-c...atus-for-ref'} == {'repos/get-a...ulesets', ...}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mrepos/list-activities[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mrepos/list-teams[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mrepos/list-invitations[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mrepos/list-webhooks[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mrepos/list-commit-statuses-for-ref[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______ test_a_list_record_prints_every_item[repos/get-org-rule-suites] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-org-rule-suites: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-org-rule-suites"
+______ test_a_list_record_prints_every_item[repos/get-all-environments] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-all-environments: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-all-environments"
+________ test_a_list_record_prints_every_item[repos/get-org-rulesets] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-org-rulesets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-org-rulesets"
+_________ test_a_list_record_prints_every_item[repos/get-all-topics] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-all-topics: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-all-topics"
+______ test_a_list_record_prints_every_item[repos/get-repo-rule-suites] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-repo-rule-suites: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-repo-rule-suites"
+________ test_a_list_record_prints_every_item[repos/get-branch-rules] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-branch-rules: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-branch-rules"
+____ test_a_list_record_prints_every_item[repos/get-repo-ruleset-history] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-repo-ruleset-history: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-repo-ruleset-history"
+_______ test_a_list_record_prints_every_item[repos/list-collaborators] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-collaborators: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-collaborators"
+________ test_a_list_record_prints_every_item[repos/get-repo-rulesets] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/get-repo-rulesets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/get-repo-rulesets"
+____ test_a_list_record_prints_every_item[repos/list-comments-for-commit] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-comments-for-commit: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-comments-for-commit"
+_________ test_a_list_record_prints_every_item[repos/list-activities] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-activities: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-activities"
+__ test_a_list_record_prints_every_item[repos/list-commit-comments-for-repo] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-commit-comments-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-commit-comments-for-repo"
+________ test_a_list_record_prints_every_item[repos/list-attestations] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-attestations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-attestations"
+__ test_a_list_record_prints_every_item[repos/list-commit-statuses-for-ref] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-commit-statuses-for-ref: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-commit-statuses-for-ref"
+__________ test_a_list_record_prints_every_item[repos/list-branches] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-branches: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-branches"
+__________ test_a_list_record_prints_every_item[repos/list-commits] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-commits: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-commits"
+________ test_a_list_record_prints_every_item[repos/list-deploy-keys] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-deploy-keys: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-deploy-keys"
+________ test_a_list_record_prints_every_item[repos/list-contributors] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-contributors: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-contributors"
+_ test_a_list_record_prints_every_item[repos/list-deployment-branch-policies] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-deployment-branch-policies: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-deployment-branch-policies"
+_ test_a_list_record_prints_every_item[repos/list-custom-deployment-rule-integrations] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-custom-deployment-rule-integrations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-custom-deployment-rule-integrations"
+____ test_a_list_record_prints_every_item[repos/list-deployment-statuses] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-deployment-statuses: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-deployment-statuses"
+_ test_a_list_record_prints_every_item[repos/list-invitations-for-authenticated-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-invitations-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-invitations-for-authenticated-user"
+________ test_a_list_record_prints_every_item[repos/list-deployments] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-deployments: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-deployments"
+________ test_a_list_record_prints_every_item[repos/list-pages-builds] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-pages-builds: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-pages-builds"
+___ test_a_list_record_prints_every_item[repos/list-for-authenticated-user] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-for-authenticated-user"
+___________ test_a_list_record_prints_every_item[repos/list-public] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-public: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-public"
+__________ test_a_list_record_prints_every_item[repos/list-for-org] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-for-org"
+_ test_a_list_record_prints_every_item[repos/list-pull-requests-associated-with-commit] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-pull-requests-associated-with-commit: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-pull-requests-associated-with-commit"
+__________ test_a_list_record_prints_every_item[repos/list-for-user] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-for-user"
+_______ test_a_list_record_prints_every_item[repos/list-release-assets] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-release-assets: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-release-assets"
+___________ test_a_list_record_prints_every_item[repos/list-forks] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-forks: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-forks"
+__________ test_a_list_record_prints_every_item[repos/list-releases] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-releases: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-releases"
+________ test_a_list_record_prints_every_item[repos/list-invitations] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-invitations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-invitations"
+___________ test_a_list_record_prints_every_item[repos/list-teams] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-teams: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-teams"
+____________ test_a_list_record_prints_every_item[repos/list-tags] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-tags: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-tags"
+________ test_a_branch_writing_record_is_refused[repos/rename-branch] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:883: in test_a_branch_writing_record_is_refused
+    assert branch_writing.operation_id in records, f"{branch_writing.operation_id} has no record in {FAMILY_FILE.name}"
+E   AssertionError: repos/rename-branch has no record in repos.py
+E   assert 'repos/rename-branch' in {'repos/get-combined-status-for-ref': RestOperation(operation_id='repos/get-combined-status-for-ref', method='GET', pa...}), paging=<Paging.LINK: 'link'>, item_key='statuses', api_version='2022-11-28', accept='application/vnd.github+json')}
+E    +  where 'repos/rename-branch' = BranchWritingCall(operation_id='repos/rename-branch', arguments=('--path', 'branch=issue-17-wrapper', '--raw-field', 'new_name=issue-17-wrapper-renamed')).operation_id
+_ test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:883: in test_a_branch_writing_record_is_refused
+    assert branch_writing.operation_id in records, f"{branch_writing.operation_id} has no record in {FAMILY_FILE.name}"
+E   AssertionError: repos/create-or-update-file-contents has no record in repos.py
+E   assert 'repos/create-or-update-file-contents' in {'repos/get-combined-status-for-ref': RestOperation(operation_id='repos/get-combined-status-for-ref', method='GET', pa...}), paging=<Paging.LINK: 'link'>, item_key='statuses', api_version='2022-11-28', accept='application/vnd.github+json')}
+E    +  where 'repos/create-or-update-file-contents' = BranchWritingCall(operation_id='repos/create-or-update-file-contents', arguments=('--path', 'path=docs/guide/intro.md', '--raw-field', 'message=Add the guide', '--raw-field', 'content=SGVsbG8=')).operation_id
+_________ test_a_branch_writing_record_is_refused[repos/delete-file] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:883: in test_a_branch_writing_record_is_refused
+    assert branch_writing.operation_id in records, f"{branch_writing.operation_id} has no record in {FAMILY_FILE.name}"
+E   AssertionError: repos/delete-file has no record in repos.py
+E   assert 'repos/delete-file' in {'repos/get-combined-status-for-ref': RestOperation(operation_id='repos/get-combined-status-for-ref', method='GET', pa...}), paging=<Paging.LINK: 'link'>, item_key='statuses', api_version='2022-11-28', accept='application/vnd.github+json')}
+E    +  where 'repos/delete-file' = BranchWritingCall(operation_id='repos/delete-file', arguments=('--path', 'path=docs/guide/intro.md', '--raw-field', 'message=Remove the guide', '--raw-field', 'sha=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef')).operation_id
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:257: in test_nothing_is_pending
+    assert family.PENDING == frozenset(), f"families/git.py still has pending IDs: {sorted(family.PENDING)}"
+E   AssertionError: families/git.py still has pending IDs: ['git/create-blob', 'git/create-commit', 'git/create-ref', 'git/create-tag', 'git/create-tree', 'git/get-blob', 'git/get-commit', 'git/get-ref', 'git/get-tag', 'git/get-tree', 'git/list-matching-refs', 'git/update-ref']
+E   assert frozenset({'g...t-blob', ...}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m[33m'[39;49;00m[33mgit/get-tag[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mgit/create-tag[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mgit/get-ref[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mgit/update-ref[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mgit/create-tree[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_every_record_sends_the_default_version_and_media_type[git/create-blob] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/create-blob": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+__ test_every_record_sends_the_default_version_and_media_type[git/get-blob] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/get-blob": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_every_record_sends_the_default_version_and_media_type[git/create-commit] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/create-commit": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_every_record_sends_the_default_version_and_media_type[git/get-commit] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/get-commit": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_every_record_sends_the_default_version_and_media_type[git/list-matching-refs] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/list-matching-refs": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+___ test_every_record_sends_the_default_version_and_media_type[git/get-ref] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/get-ref": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_every_record_sends_the_default_version_and_media_type[git/create-ref] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/create-ref": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_____ test_a_list_record_prints_every_item[repos/list-webhook-deliveries] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-webhook-deliveries: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-webhook-deliveries"
+_ test_every_record_sends_the_default_version_and_media_type[git/update-ref] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/update-ref": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_every_record_sends_the_default_version_and_media_type[git/create-tag] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/create-tag": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+___ test_every_record_sends_the_default_version_and_media_type[git/get-tag] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/get-tag": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_every_record_sends_the_default_version_and_media_type[git/create-tree] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/create-tree": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+__ test_every_record_sends_the_default_version_and_media_type[git/get-tree] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:270: in test_every_record_sends_the_default_version_and_media_type
+    record = _record_of(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/get-tree": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:283: in test_the_multi_segment_parameters_are_the_sections
+    assert declared == MULTI_SEGMENT_PARAMETERS, (
+E   AssertionError: families/git.py declares the multi-segment parameters {'git/delete-ref': frozenset({'ref'})}; rest/git.md documents {'git/get-commit': frozenset({'commit_sha'}), 'git/list-matching-refs': frozenset({'ref'}), 'git/get-ref': frozenset({'ref'}), 'git/update-ref': frozenset({'ref'}), 'git/delete-ref': frozenset({'ref'}), 'git/get-tree': frozenset({'tree_sha'})}
+E   assert {'git/delete-...nset({'ref'})} == {'git/get-com...{'ref'}), ...}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 5 more items:
+E     [0m{[33m'[39;49;00m[33mgit/get-commit[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mcommit_sha[39;49;00m[33m'[39;49;00m}),[90m[39;49;00m
+E      [33m'[39;49;00m[33mgit/get-ref[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mref[39;49;00m[33m'[39;49;00m}),[90m[39;49;00m
+E      [33m'[39;49;00m[33mgit/get-tree[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mtree_sha[39;49;00m[33m'[39;49;00m}),[90m[39;49...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:298: in test_every_list_record_has_a_case
+    assert listed == cased, f"families/git.py pages {sorted(listed)} by Link; rest/git.md pages {sorted(cased)}"
+E   AssertionError: families/git.py pages [] by Link; rest/git.md pages ['git/list-matching-refs']
+E   assert set() == {'git/list-matching-refs'}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mgit/list-matching-refs[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__________ test_a_list_record_prints_every_item[repos/list-webhooks] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_repos.py:865: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/repos/list-webhooks: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "repos/list-webhooks"
+____________ test_a_branch_writing_record_is_refused[repos/merge] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:883: in test_a_branch_writing_record_is_refused
+    assert branch_writing.operation_id in records, f"{branch_writing.operation_id} has no record in {FAMILY_FILE.name}"
+E   AssertionError: repos/merge has no record in repos.py
+E   assert 'repos/merge' in {'repos/get-combined-status-for-ref': RestOperation(operation_id='repos/get-combined-status-for-ref', method='GET', pa...}), paging=<Paging.LINK: 'link'>, item_key='statuses', api_version='2022-11-28', accept='application/vnd.github+json')}
+E    +  where 'repos/merge' = BranchWritingCall(operation_id='repos/merge', arguments=('--raw-field', 'base=main', '--raw-field', 'head=issue-17-wrapper')).operation_id
+________ test_a_branch_writing_record_is_refused[repos/merge-upstream] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_repos.py:883: in test_a_branch_writing_record_is_refused
+    assert branch_writing.operation_id in records, f"{branch_writing.operation_id} has no record in {FAMILY_FILE.name}"
+E   AssertionError: repos/merge-upstream has no record in repos.py
+E   assert 'repos/merge-upstream' in {'repos/get-combined-status-for-ref': RestOperation(operation_id='repos/get-combined-status-for-ref', method='GET', pa...}), paging=<Paging.LINK: 'link'>, item_key='statuses', api_version='2022-11-28', accept='application/vnd.github+json')}
+E    +  where 'repos/merge-upstream' = BranchWritingCall(operation_id='repos/merge-upstream', arguments=('--raw-field', 'branch=main')).operation_id
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:323: in test_a_branch_writing_record_is_refused
+    declared = _record_of(operation_id=operation_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/update-ref": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_a_list_record_prints_every_item[AC-6/exit-0/list-matching-refs-of-a-ref-holding-a-slash] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\test_github_api_git.py:308: in test_a_list_record_prints_every_item
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-27\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-6/exit-0/list-matching-refs-of-a-ref-holding-a-slash: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "git/list-matching-refs"
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_git.py:323: in test_a_branch_writing_record_is_refused
+    declared = _record_of(operation_id=operation_id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_git.py:246: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "git/create-ref": families/git.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_only_the_upload_is_pending
+FAILED src/payload/test/test_github_api_repos.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_repos.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_repos.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-org-rule-suites]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-all-environments]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-org-rulesets]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-all-topics]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-repo-rule-suites]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-branch-rules]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-repo-ruleset-history]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-collaborators]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/get-repo-rulesets]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-comments-for-commit]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-activities]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-commit-comments-for-repo]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-attestations]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-commit-statuses-for-ref]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-branches]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-commits]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-deploy-keys]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-contributors]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-deployment-branch-policies]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-custom-deployment-rule-integrations]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-deployment-statuses]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-invitations-for-authenticated-user]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-deployments]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-pages-builds]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-for-authenticated-user]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-public]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-for-org]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-pull-requests-associated-with-commit]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-for-user]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-release-assets]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-forks]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-releases]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-invitations]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-teams]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-tags]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/rename-branch]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/delete-file]
+FAILED src/payload/test/test_github_api_git.py::test_nothing_is_pending - Ass...
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/create-blob]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/get-blob]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/create-commit]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/get-commit]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/list-matching-refs]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/get-ref]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/create-ref]
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-webhook-deliveries]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/update-ref]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/create-tag]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/get-tag]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/create-tree]
+FAILED src/payload/test/test_github_api_git.py::test_every_record_sends_the_default_version_and_media_type[git/get-tree]
+FAILED src/payload/test/test_github_api_git.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_git.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_repos.py::test_a_list_record_prints_every_item[repos/list-webhooks]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge-upstream]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref]
+FAILED src/payload/test/test_github_api_git.py::test_a_list_record_prints_every_item[AC-6/exit-0/list-matching-refs-of-a-ref-holding-a-slash]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref]
+======================== 64 failed, 2 passed in 8.05s =========================

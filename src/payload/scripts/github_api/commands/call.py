@@ -25,10 +25,12 @@ two body options share one destination, so the members keep their command-line o
 one JSON object, or ``None`` when none was given, which sends no body.
 
 ``cmd_call`` refuses, with exit 2 (``EXIT_REFUSED``) and before any request: an ID in ``GATED_OPERATIONS``, naming
-the compatibility subcommand that sends it; an ID no record declares (``registry.lookup``); and a call that gives a
-path, query or body name the record does not document or leaves a path parameter without a value, in one message
-naming each such name with its kind, each missing path parameter, then the record's documented path, query and body
-parameters (``check_call``). A refusal is logged; every name the caller gave is rendered with ``json.dumps``.
+the compatibility subcommand that sends it, or, for a record whose call commits to, creates, moves or renames a branch
+(issue #28 design D8, its exceptions row), saying that no subcommand sends it; an ID no record declares
+(``registry.lookup``); and a call that gives a path, query or body name the record does not document or leaves a path
+parameter without a value, in one message naming each such name with its kind, each missing path parameter, then the
+record's documented path, query and body parameters (``check_call``). A refusal is logged; every name the caller gave
+is rendered with ``json.dumps``.
 
 What prints (D3):
 
@@ -84,9 +86,23 @@ KIND_QUERY = "query"
 KIND_BODY = "body"
 BODY_ENCODING = "utf-8"
 
-#: The records a gated compatibility subcommand sends, each with that subcommand: ``gate_merge_steward`` and
-#: ``gate_filing`` match the subcommand words, so ``call`` refuses these IDs rather than reach them unjudged.
-GATED_OPERATIONS: Mapping[str, str] = MappingProxyType({"pulls/merge": "merge-pr", "issues/create": "create-issue"})
+#: The records ``call`` refuses. A record a gated compatibility subcommand sends maps to that subcommand:
+#: ``gate_merge_steward`` and ``gate_filing`` match the subcommand words, so ``call`` refuses these IDs rather than
+#: reach them unjudged. A record whose call commits to, creates, moves or renames a branch maps to ``None``: no
+#: subcommand sends it, so ``call`` refuses it with no alternative (issue #28 design D8, its exceptions row).
+GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
+    {
+        "pulls/merge": "merge-pr",
+        "issues/create": "create-issue",
+        "repos/merge": None,
+        "repos/merge-upstream": None,
+        "repos/rename-branch": None,
+        "repos/create-or-update-file-contents": None,
+        "repos/delete-file": None,
+        "git/create-ref": None,
+        "git/update-ref": None,
+    }
+)
 
 logger = logging.getLogger(__name__)
 
@@ -154,13 +170,15 @@ def query_of(*, given: Sequence[Assignment]) -> Dict[str, Any]:
 
 
 def refuse_gated(*, operation_id: str) -> None:
-    """Refuse with ``ValueError`` an ID in ``GATED_OPERATIONS``, naming the subcommand that sends it."""
-    subcommand = GATED_OPERATIONS.get(operation_id)
-    if subcommand is not None:
-        raise ValueError(
-            f"{CMD_CALL} refuses the GitHub operation {json.dumps(obj=operation_id)}: use the {subcommand} "
-            f"subcommand, which sends it"
-        )
+    """Refuse with ``ValueError`` every ID in ``GATED_OPERATIONS``: naming the subcommand that sends it, or, for an ID
+    mapped to ``None``, saying that no subcommand sends it."""
+    if operation_id not in GATED_OPERATIONS:
+        return
+    subcommand = GATED_OPERATIONS[operation_id]
+    refused = f"{CMD_CALL} refuses the GitHub operation {json.dumps(obj=operation_id)}"
+    if subcommand is None:
+        raise ValueError(f"{refused}: no subcommand sends it")
+    raise ValueError(f"{refused}: use the {subcommand} subcommand, which sends it")
 
 
 def path_values(*, operation: RestOperation, given: Sequence[Assignment], owner: str, repo: str) -> Dict[str, Any]:
