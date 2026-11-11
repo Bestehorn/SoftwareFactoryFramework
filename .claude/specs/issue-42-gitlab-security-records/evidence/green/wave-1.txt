@@ -1,0 +1,16 @@
+# tasks: IMPL-1 IMPL-2 IMPL-3 IMPL-4 IMPL-5
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [250 items]
+
+........................................................................ [ 28%]
+........................................................................ [ 57%]
+........................................................................ [ 86%]
+..................................                                       [100%]
+============================ 250 passed in 33.65s =============================
+exit=0
