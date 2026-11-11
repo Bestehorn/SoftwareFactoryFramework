@@ -1,0 +1,31 @@
+# mutant: W4-revert (wave 4)
+# change: gitlab_wrapper.py written as on origin/main (wave 4's docstring removed)
+# files: src/payload/scripts/gitlab_wrapper.py
+# tests: src/payload/test/test_gitlab_wrapper_compat.py
+# expected to fail: test_the_usage_names_the_operation_call
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line src/payload/test/test_gitlab_wrapper_compat.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [85 items]
+
+........................................................................ [ 84%]
+............F                                                            [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\scripts\gitlab_wrapper.py does not name: ['call plan#retrieve-a-project-issue', '--path', '--query', '-f/--raw-field', '-F/--field', '--file', 'variables', 'JSON array', 'indented JSON', 'empty body', 'bytes unchanged', 'exit 2']
+    assert ['call plan#r...'--file', ...] == []
+      
+      Left contains 12 more items, first extra item: [0m[33m'[39;49;00m[33mcall plan#retrieve-a-project-issue[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_wrapper_compat.py:1571: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\scripts\gitlab_wrapper.py does not name: ['call plan#retrieve-a-project-issue', '--path', '--query', '-f/--raw-field', '-F/--field', '--file', 'variables', 'JSON array', 'indented JSON', 'empty body', 'bytes unchanged', 'exit 2']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_the_usage_names_the_operation_call
+======================== 1 failed, 84 passed in 9.94s =========================
+exit=1
+# expected failures seen: 1/1; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_wrapper.py equal to the baseline: yes
+

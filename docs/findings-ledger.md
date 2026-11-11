@@ -18,6 +18,7 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api call gate | git/delete-ref stays callable via call | issue-27 change.md UB-4; #28 Residuals | not AC-7's branch-writing class; no incident | open |
 | 2026-11-11 | github_api copilot | copilot/set-copilot-content-exclusion-for-organization stays pending | issue-33 DL-004 | body is a map of any key; call refuses undocumented names | open |
 | 2026-11-11 | github_api gitignore, licenses | get-template and get-for-repo send ACCEPT_JSON, not their raw/html types | issue-33 change.md Residuals | needs a per-call Accept; no caller needs it | open |
+| 2026-11-11 | hooks gate_filing | blocks any command whose text holds its create phrase (commit message, ledger row) | issue-41 run 2026-11-11, before 94986b0 | scans the whole command; narrowing is a design choice | open |
 | 2026-11-11 | github_api code-scanning | code-scanning/commit-autofix stays pending (commits to target_ref) | issue-31 DL-003 | gating is one None entry now that #27 landed | open |
 | 2026-11-11 | github_api code-scanning | get-analysis SARIF and get-codeql-database zip forms need a per-call Accept | issue-31 DL-005 | records send ACCEPT_JSON; no caller needs the forms | open |
 | 2026-11-11 | github_api dependabot | repository-access-for-org/-enterprise print no default_level | issue-31 change.md Residuals | no other call returns it; no failure seen | open |

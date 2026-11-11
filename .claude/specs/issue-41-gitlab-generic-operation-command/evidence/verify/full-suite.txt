@@ -1,0 +1,47 @@
+# whole-suite verdict: CI run 42961275618, read through scripts/github_wrapper.py from the main checkout
+# (verify job, matrix leg tests = python scripts/run_checks.py --group tests; no local full suite was run)
+
+$ python scripts/github_wrapper.py wait-run 42961275618 --timeout-seconds 540
+{"run_id": 42961275618, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/42961275618"}
+exit=0
+
+$ python scripts/github_wrapper.py get-run 42961275618   (fields of the JSON answer)
+id = 42961275618
+head_branch = issue-41-gitlab-generic-operation-command
+head_sha = ca4e2d7a509cb8422d054b56939fe90f357d89bd  # pragma: allowlist secret
+event = pull_request, PR #49, base main f374b3d4005b010fd4ae5c4bb2d95a9f25f75844  # pragma: allowlist secret
+status = completed
+conclusion = success
+run_attempt = 1
+head_commit.message = Name the GitLab call command in the usage and the project map
+exit=0
+
+$ git -C .claude/worktrees/issue-41 rev-parse HEAD
+ca4e2d7a509cb8422d054b56939fe90f357d89bd  # pragma: allowlist secret
+$ git -C .claude/worktrees/issue-41 merge-base origin/main HEAD
+f374b3d4005b010fd4ae5c4bb2d95a9f25f75844  # pragma: allowlist secret
+# the run's head_sha equals the worktree HEAD; git status --porcelain was empty before verification
+
+$ python scripts/github_wrapper.py get-jobs 42961275618
+130328124687   completed    success      verify (types)
+130328124996   completed    success      verify (security)
+130328125019   completed    success      verify (tests)
+130328125207   completed    success      verify (lint)
+130328861588   completed    success      report
+exit=0
+
+$ python scripts/github_wrapper.py get-job-logs 130328125019   (verify (tests); lines of the saved log)
+390: run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+546: src/payload/scripts/gitlab_api/commands/_common.py                             29      0   100%
+548: src/payload/scripts/gitlab_api/commands/call.py                               179      2    99%   150, 152
+581: src/payload/scripts/gitlab_api/graphql_only.py                                  5      0   100%
+582: src/payload/scripts/gitlab_api/registry.py                                    184      3    98%   209, 391, 395
+583: src/payload/scripts/gitlab_api/transport.py                                   367     23    94%   205-206, 235, 276-277, 318, 335, 403-404, 426, 456-457, 466, 480, 562, 574, 586, 597, 628, 679-684
+596: src/payload/test/test_gitlab_api_call.py                                      595      3    99%   64, 415, 1669
+608: ============================ 2557 passed in 37.11s =============================
+626: 1053 passed in 5.81s
+631: CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+# no line of the log holds "skipped", "xfail" or "deselected" other than line 631's "0 skipped"
+exit=0
+
+verdict = green: 2557 + 1053 passed, 0 failed, at the tree's SHA

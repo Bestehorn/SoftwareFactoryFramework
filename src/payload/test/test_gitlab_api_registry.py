@@ -6,6 +6,11 @@ body is sent in the bracket form ``name[0][key]=value`` (AC-2.3); ``lookup`` ref
 operation id, each naming the id, and ``call`` refuses a value its record does not declare, naming it, before anything
 is sent (AC-1.1).
 
+Issue #41 (``design.md`` D2) adds: ``send`` returns the ``Response`` of a REST record's request and refuses a GraphQL
+record with nothing sent (AC-1.2); ``attribute_name`` drops one trailing ``[]`` (AC-1.3); ``variables`` names each
+``$name`` that a ``:`` follows in a record's document, in order, a connection record's cursor ``after`` left out
+(AC-2.2). Their ``GraphQLOperation`` records carry D2's ``capability``.
+
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
 fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
@@ -54,6 +59,28 @@ UNDECLARED_NAME = "confidental"
 # The `Transport` of design.md D4 built for a test: a fixed clock, a recording sleep, the default opener.
 FIXED_CLOCK_SECONDS = 0.0
 TOKEN_TYPE_PRIVATE = "private"
+
+# The records of the registry additions (issue #41, design.md D2). `send` is tested on a REST record answered `204` (an
+# empty body, whose decoded value is `None`, so only the `Response` itself tells `send` from `call`) and on a GraphQL
+# record, which `send` refuses.
+SEND_OPERATION_ID = "synthetic#delete-a-repository-branch"
+SEND_PATH = "/projects/:id/repository/branches/:branch"
+SEND_VALUES = {"id": "diaspora/diaspora", "branch": "feature/x"}
+SEND_SENT_PATH = "/projects/diaspora%2Fdiaspora/repository/branches/feature%2Fx"
+STATUS_NO_CONTENT = 204
+GRAPHQL_OPERATION_ID = "graphql#syntheticProject"
+SYNTHETIC_CAPABILITY = "Synthetic project lookup"
+# design.md § Correctness Properties AC-2.2: `$fullPath` and `$first` are defined (`$first` with white space before its
+# `:`); `$fullPath` in the selection set is a use, not a definition.
+PROJECT_DOCUMENT = "query Q($fullPath: ID!, $first : Int = 2) { project(fullPath: $fullPath) { id } }"
+# A connection document over several lines: `$after` is the cursor `Transport.graphql_nodes` sets on every page.
+ISSUES_DOCUMENT = (
+    "query Issues($fullPath: ID!,\n"
+    "    $after: String) {\n"
+    "  project(fullPath: $fullPath) { issues(after: $after) { nodes { iid } pageInfo { hasNextPage endCursor } } }\n"
+    "}\n"
+)
+ISSUES_CONNECTION = ("project", "issues")
 
 
 def load_fixtures() -> ModuleType:
@@ -264,3 +291,88 @@ def test_call_refuses_an_undeclared_value(monkeypatch: pytest.MonkeyPatch, fake_
             values={"id": "diaspora/diaspora", "issue_iid": 7, "title": "Renamed", UNDECLARED_NAME: True},
         )
     assert fake_gitlab.requests == [], "a value the record does not declare is refused before any request (AC-1.1)"
+
+
+def test_send_returns_the_response_of_the_record(monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    graphql_only = gitlab_module(name="graphql_only")
+    operation = registry.RestOperation(operation_id=SEND_OPERATION_ID, method="DELETE", path=SEND_PATH)
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[synthetic_family(name="synthetic", operations=[operation])],
+    )
+    sent_url = f"{fixtures.REST_BASE}{SEND_SENT_PATH}"
+    fake_gitlab.script(method="DELETE", url=sent_url, status=STATUS_NO_CONTENT)
+    sleeps: List[float] = []
+    transport = transport_module.Transport(
+        host=fixtures.HOST,
+        token="registry-test-token",
+        token_type=TOKEN_TYPE_PRIVATE,
+        sleep=sleeps.append,
+        clock=lambda: FIXED_CLOCK_SECONDS,
+    )
+
+    response = registry.send(transport=transport, operation_id=SEND_OPERATION_ID, values=SEND_VALUES)
+    assert isinstance(response, transport_module.Response), (
+        f"send returns the Response of the record's request, not its decoded value; got {response!r} (design.md D2)"
+    )
+    assert (response.status, response.body) == (STATUS_NO_CONTENT, b""), "the Response is the 204 the host answered"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("DELETE", sent_url)], (
+        "send sends the record's one request: its method, its path expanded (AC-1.2)"
+    )
+
+    graphql_record = registry.GraphQLOperation(
+        operation_id=GRAPHQL_OPERATION_ID,
+        capability=SYNTHETIC_CAPABILITY,
+        document=PROJECT_DOCUMENT,
+    )
+    monkeypatch.setattr(graphql_only, "OPERATIONS", (graphql_record,))
+    assert registry.lookup(operation_id=GRAPHQL_OPERATION_ID) == graphql_record, (
+        "the GraphQL record is declared, so a refusal below is send's and not lookup's unknown id"
+    )
+    # The request `send` would send if it ran the GraphQL record is scripted, so sending it fails this test on its
+    # oracle below rather than on the fake's unscripted-request error.
+    fake_gitlab.script(method="POST", url=fixtures.GRAPHQL_URL, body={"data": {"project": {"id": "gid://gitlab/1"}}})
+    sent_before = list(fake_gitlab.requests)
+    with pytest.raises(ValueError):
+        registry.send(transport=transport, operation_id=GRAPHQL_OPERATION_ID, values={"fullPath": "g/p"})
+    assert fake_gitlab.requests == sent_before, "send refuses a GraphQL record with no request (design.md D2)"
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [("iids[]", "iids"), ("a[][]", "a[]"), ("not[labels]", "not[labels]")],
+    ids=["array-suffix", "one-pair-only", "hash-key-unchanged"],
+)
+def test_attribute_name_drops_one_trailing_bracket_pair(name: str, expected: str) -> None:
+    registry = gitlab_module(name="registry")
+    assert registry.attribute_name(name=name) == expected, (
+        f"{name!r} names the Param {expected!r}: one trailing [] is dropped, nothing else (design.md D2, AC-1.3)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("document", "connection", "expected"),
+    [
+        (PROJECT_DOCUMENT, (), ("fullPath", "first")),
+        (ISSUES_DOCUMENT, ISSUES_CONNECTION, ("fullPath",)),
+        (ISSUES_DOCUMENT, (), ("fullPath", "after")),
+    ],
+    ids=["definitions-in-order", "connection-drops-after", "no-connection-keeps-after"],
+)
+def test_variables_are_the_documents_definitions(
+    document: str, connection: Tuple[str, ...], expected: Tuple[str, ...]
+) -> None:
+    registry = gitlab_module(name="registry")
+    operation = registry.GraphQLOperation(
+        operation_id=GRAPHQL_OPERATION_ID,
+        capability=SYNTHETIC_CAPABILITY,
+        document=document,
+        connection=connection,
+    )
+    assert registry.variables(operation=operation) == expected, (
+        "each $name followed, after any white space, by `:` is a definition, in order; a connection record leaves "
+        "out its cursor `after` (design.md D2, AC-2.2)"
+    )

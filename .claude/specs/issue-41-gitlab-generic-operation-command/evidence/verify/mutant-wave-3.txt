@@ -1,0 +1,380 @@
+# mutant: W3-revert (wave 3)
+# change: graphql_only.py written as on origin/main (wave 3's implementation removed)
+# files: src/payload/scripts/gitlab_api/graphql_only.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_every_graphql_only_capability_is_served_or_pending
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+..........F..                                                            [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: gitlab_api.graphql_only declares no PENDING_CAPABILITIES; design D6 holds there every capability of the Only in GraphQL table that no record serves
+    assert False
+     +  where False = hasattr(<module 'gitlab_api.graphql_only' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-41\\src\\payload\\scripts\\gitlab_api\\graphql_only.py'>, 'PENDING_CAPABILITIES')
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:780: AssertionError: gitlab_api.graphql_only declares no PENDING_CAPABILITIES; design D6 holds there every capability of the Only in GraphQL table that no record serves
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_graphql_only_capability_is_served_or_pending
+======================== 1 failed, 12 passed in 4.04s =========================
+exit=1
+# expected failures seen: 1/1; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/graphql_only.py equal to the baseline: yes
+
+# mutant: W3-drop-one (wave 3)
+# change: graphql_only.PENDING_CAPABILITIES: 'Design uploads' dropped
+# files: src/payload/scripts/gitlab_api/graphql_only.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_every_graphql_only_capability_is_served_or_pending
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+............F                                                            [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: GraphQL-only capabilities neither served nor pending, or unknown:
+      gitlab_api.graphql_only: the capability 'Design uploads' is neither served by a record nor in PENDING_CAPABILITIES
+    assert not ["gitlab_api.graphql_only: the capability 'Design uploads' is neither served by a record nor in PENDING_CAPABILITIES"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:787: AssertionError: GraphQL-only capabilities neither served nor pending, or unknown:
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_graphql_only_capability_is_served_or_pending
+======================== 1 failed, 12 passed in 4.11s =========================
+exit=1
+# expected failures seen: 1/1; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/graphql_only.py equal to the baseline: yes
+
+# mutant: V-combo (wave 3)
+# change: V (tasks.md wave 3's named mutant): coverage_gaps and only_in_graphql return [], family_problems and capability_problems ['mutant']
+# files: test/test_gitlab_wrapper_coverage.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_a_regenerated_index_names_each_changed_key, test_every_declared_key_is_in_its_family, test_a_route_prefix_key_is_held_to_the_rule, test_a_capability_neither_served_nor_pending_is_named, test_the_only_in_graphql_table_is_read_whole, test_every_graphql_only_capability_is_served_or_pending
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+..FFFFFFFFFFF                                                            [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: assert [] == [IndexRow(met...te-a-gadget')]
+      
+      Right contains 6 more items, first extra item: [0mIndexRow(method=[33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/:id[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#delete-a-widget[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:553: AssertionError: assert [] == [IndexRow(met...te-a-gadget')]
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+    assert ([], ['mutant']) == ([], [])
+      
+      At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:669: AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+    assert ([], ['mutant']) == ([], [])
+      
+      At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:669: AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+    assert ([], ['mutant']) == ([], [])
+      
+      At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:669: AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+    assert ([], ['mutant']) == ([], [])
+      
+      At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:669: AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+    assert ([], ['mutant']) == ([], [])
+      
+      At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:669: AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: coverage_gaps returned []
+    assert [] == [IndexRow(met...mation'), ...]
+      
+      Right contains 7 more items, first extra item: [0mIndexRow(method=[33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/:id[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#delete-a-widget[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:723: AssertionError: coverage_gaps returned []
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the first capability read is not 'Work items': []
+    assert [] == ['Work items']
+      
+      Right contains one more item: [0m[33m'[39;49;00m[33mWork items[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:761: AssertionError: the first capability read is not 'Work items': []
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: GraphQL-only capabilities neither served nor pending, or unknown:
+      mutant
+    assert not ['mutant']
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:791: AssertionError: GraphQL-only capabilities neither served nor pending, or unknown:
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: declarations the operations index does not bear out:
+      mutant
+    assert not ['mutant']
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:698: AssertionError: declarations the operations index does not bear out:
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: ['mutant']
+    assert [] == ['Unlisted ca...d capability']
+      
+      Right contains 3 more items, first extra item: [0m[33m'[39;49;00m[33mUnlisted capability[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:747: AssertionError: ['mutant']
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_checker_names_each_unlisted_row
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[key_added]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[pending_key_removed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_row_removed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_path_changed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_method_changed_same_path]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_route_prefix_key_is_held_to_the_rule
+FAILED test/test_gitlab_wrapper_coverage.py::test_the_only_in_graphql_table_is_read_whole
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_graphql_only_capability_is_served_or_pending
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_declared_key_is_in_its_family
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_capability_neither_served_nor_pending_is_named
+======================== 11 failed, 2 passed in 5.47s =========================
+exit=1
+# expected failures seen: 6/6; not seen: none
+# restored: sha256 of test/test_gitlab_wrapper_coverage.py equal to the baseline: yes
+
+# mutant: V-gaps-empty (wave 3)
+# change: V: coverage_gaps returns [] alone
+# files: test/test_gitlab_wrapper_coverage.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_a_regenerated_index_names_each_changed_key[key_added], test_a_route_prefix_key_is_held_to_the_rule
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+..F.FF.FF....                                                            [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: assert [] == [IndexRow(met...te-a-gadget')]
+      
+      Right contains 6 more items, first extra item: [0mIndexRow(method=[33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/:id[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#delete-a-widget[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:550: AssertionError: assert [] == [IndexRow(met...te-a-gadget')]
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: coverage_gaps returned [] for the regenerated index [IndexRow(method='GET', path='/widgets', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget'), IndexRow(method='DELETE', path='/widgets/:id', reference='rest/alpha-beta.md#delete-a-widget')]
+    assert [] == [IndexRow(met...te-a-widget')]
+      
+      Right contains one more item: [0mIndexRow(method=[33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/:id[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#delete-a-widget[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:674: AssertionError: coverage_gaps returned [] for the regenerated index [IndexRow(method='GET', path='/widgets', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget'), IndexRow(method='DELETE', path='/widgets/:id', reference='rest/alpha-beta.md#delete-a-widget')]
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: coverage_gaps returned [] for the regenerated index [IndexRow(method='GET', path='/widgets/all', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]
+    assert [] == [IndexRow(met...ist-widgets')]
+      
+      Right contains one more item: [0mIndexRow(method=[33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/all[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#list-widgets[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:674: AssertionError: coverage_gaps returned [] for the regenerated index [IndexRow(method='GET', path='/widgets/all', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: coverage_gaps returned [] for the regenerated index [IndexRow(method='HEAD', path='/widgets', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]
+    assert [] == [IndexRow(met...ist-widgets')]
+      
+      Right contains one more item: [0mIndexRow(method=[33m'[39;49;00m[33mHEAD[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#list-widgets[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:674: AssertionError: coverage_gaps returned [] for the regenerated index [IndexRow(method='HEAD', path='/widgets', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: coverage_gaps returned []
+    assert [] == [IndexRow(met...mation'), ...]
+      
+      Right contains 7 more items, first extra item: [0mIndexRow(method=[33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/:id[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#delete-a-widget[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:720: AssertionError: coverage_gaps returned []
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_checker_names_each_unlisted_row
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[key_added]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_path_changed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_method_changed_same_path]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_route_prefix_key_is_held_to_the_rule
+========================= 5 failed, 8 passed in 4.27s =========================
+exit=1
+# expected failures seen: 2/2; not seen: none
+# restored: sha256 of test/test_gitlab_wrapper_coverage.py equal to the baseline: yes
+
+# mutant: V-family-empty (wave 3)
+# change: V: family_problems returns [] alone
+# files: test/test_gitlab_wrapper_coverage.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_a_regenerated_index_names_each_changed_key[pending_key_removed], test_a_regenerated_index_names_each_changed_key[record_row_removed], test_a_regenerated_index_names_each_changed_key[record_path_changed], test_a_regenerated_index_names_each_changed_key[record_method_changed_same_path]
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+...F.FFF.....                                                            [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='GET', path='/widgets', reference='rest/alpha-beta.md#list-widgets')]; expected one problem per [('families/alpha_beta.py', "('POST', '/widgets')")]
+    assert 0 == 1
+     +  where 0 = len([])
+     +  and   1 = len([('families/alpha_beta.py', "('POST', '/widgets')")])
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:675: AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='GET', path='/widgets', reference='rest/alpha-beta.md#list-widgets')]; expected one problem per [('families/alpha_beta.py', "('POST', '/widgets')")]
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]; expected one problem per [('families/alpha_beta.py', "'alpha-beta#list-widgets'")]
+    assert 0 == 1
+     +  where 0 = len([])
+     +  and   1 = len([('families/alpha_beta.py', "'alpha-beta#list-widgets'")])
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:675: AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]; expected one problem per [('families/alpha_beta.py', "'alpha-beta#list-widgets'")]
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='GET', path='/widgets/all', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]; expected one problem per [('families/alpha_beta.py', "'alpha-beta#list-widgets'", "('GET', '/widgets')", "('GET', '/widgets/all')")]
+    assert 0 == 1
+     +  where 0 = len([])
+     +  and   1 = len([('families/alpha_beta.py', "'alpha-beta#list-widgets'", "('GET', '/widgets')", "('GET', '/widgets/all')")])
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:675: AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='GET', path='/widgets/all', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]; expected one problem per [('families/alpha_beta.py', "'alpha-beta#list-widgets'", "('GET', '/widgets')", "('GET', '/widgets/all')")]
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='HEAD', path='/widgets', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]; expected one problem per [('families/alpha_beta.py', "'alpha-beta#list-widgets'", "('GET', '/widgets')", "('HEAD', '/widgets')")]
+    assert 0 == 1
+     +  where 0 = len([])
+     +  and   1 = len([('families/alpha_beta.py', "'alpha-beta#list-widgets'", "('GET', '/widgets')", "('HEAD', '/widgets')")])
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:675: AssertionError: family_problems returned [] for the regenerated index [IndexRow(method='HEAD', path='/widgets', reference='rest/alpha-beta.md#list-widgets'), IndexRow(method='POST', path='/widgets', reference='rest/alpha-beta.md#create-a-widget')]; expected one problem per [('families/alpha_beta.py', "'alpha-beta#list-widgets'", "('GET', '/widgets')", "('HEAD', '/widgets')")]
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[pending_key_removed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_row_removed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_path_changed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_method_changed_same_path]
+========================= 4 failed, 9 passed in 3.98s =========================
+exit=1
+# expected failures seen: 4/4; not seen: none
+# restored: sha256 of test/test_gitlab_wrapper_coverage.py equal to the baseline: yes
+
+# mutant: V-capability-empty (wave 3)
+# change: V: capability_problems returns [] alone
+# files: test/test_gitlab_wrapper_coverage.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_a_capability_neither_served_nor_pending_is_named
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+............F                                                            [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: []
+    assert [] == ['Unlisted ca...d capability']
+      
+      Right contains 3 more items, first extra item: [0m[33m'[39;49;00m[33mUnlisted capability[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:744: AssertionError: []
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_capability_neither_served_nor_pending_is_named
+======================== 1 failed, 12 passed in 3.99s =========================
+exit=1
+# expected failures seen: 1/1; not seen: none
+# restored: sha256 of test/test_gitlab_wrapper_coverage.py equal to the baseline: yes
+
+# mutant: V-only-empty (wave 3)
+# change: V: only_in_graphql returns [] alone
+# files: test/test_gitlab_wrapper_coverage.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_the_only_in_graphql_table_is_read_whole, test_every_graphql_only_capability_is_served_or_pending
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+.........FF..                                                            [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the first capability read is not 'Work items': []
+    assert [] == ['Work items']
+      
+      Right contains one more item: [0m[33m'[39;49;00m[33mWork items[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:758: AssertionError: the first capability read is not 'Work items': []
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: GraphQL-only capabilities neither served nor pending, or unknown:
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Asynchronous pipeline creation', which the Only in GraphQL table lacks
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Branch rules', which the Only in GraphQL table lacks
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Design uploads', which the Only in GraphQL table lacks
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Epics with new features (assignees, health status, links to other item types)', which the Only in GraphQL table lacks
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Group-wide and instance-wide vulnerability lists', which the Only in GraphQL table lacks
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Query cost introspection', which the Only in GraphQL table lacks
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Work item CSV import', which the Only in GraphQL table lacks
+      gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Work items', which the Only in GraphQL table lacks
+    assert not ["gitlab_api.graphql_only: PENDING_CAPABILITIES holds 'Asynchronous pipeline creation', which the Only in GraphQL tabl...b_api.graphql_only: PENDING_CAPABILITIES holds 'Query cost introspection', which the Only in GraphQL table lacks", ...]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:788: AssertionError: GraphQL-only capabilities neither served nor pending, or unknown:
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_the_only_in_graphql_table_is_read_whole
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_graphql_only_capability_is_served_or_pending
+======================== 2 failed, 11 passed in 4.30s =========================
+exit=1
+# expected failures seen: 2/2; not seen: none
+# restored: sha256 of test/test_gitlab_wrapper_coverage.py equal to the baseline: yes
+
+# mutant: FAM-path (wave 3)
+# change: families/plan.py: plan#create-an-issue-note declares the path .../notes as .../note
+# files: src/payload/scripts/gitlab_api/families/plan.py
+# tests: test/test_gitlab_wrapper_coverage.py
+# expected to fail: test_every_declared_key_is_in_its_family
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --tb=line test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [13 items]
+
+...F.......F.                                                            [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: 2 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+      families/plan.py:
+          ('POST', '/projects/:id/issues/:issue_iid/notes'),  # rest/plan.md#create-an-issue-note, rest/plan.md#promote-an-issue-to-an-epic
+    assert not [IndexRow(method='POST', path='/projects/:id/issues/:issue_iid/notes', reference='rest/plan.md#create-an-issue-note'),...Row(method='POST', path='/projects/:id/issues/:issue_iid/notes', reference='rest/plan.md#promote-an-issue-to-an-epic')]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:589: AssertionError: 2 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: declarations the operations index does not bear out:
+      families/plan.py: the record 'plan#create-an-issue-note' declares ('POST', '/projects/:id/issues/:issue_iid/note'); the rows of its Reference carry [('POST', '/projects/:id/issues/:issue_iid/notes')]
+    assert not ["families/plan.py: the record 'plan#create-an-issue-note' declares ('POST', '/projects/:id/issues/:issue_iid/note'); the rows of its Reference carry [('POST', '/projects/:id/issues/:issue_iid/notes')]"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\test\test_gitlab_wrapper_coverage.py:694: AssertionError: declarations the operations index does not bear out:
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_index_row_is_mapped_or_pending
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_declared_key_is_in_its_family
+======================== 2 failed, 11 passed in 4.01s =========================
+exit=1
+# expected failures seen: 1/1; not seen: none
+# restored: sha256 of src/payload/scripts/gitlab_api/families/plan.py equal to the baseline: yes
+

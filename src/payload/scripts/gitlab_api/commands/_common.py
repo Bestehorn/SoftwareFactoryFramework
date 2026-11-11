@@ -2,8 +2,13 @@
 
 Its name starts with ``_``, so the entry script's discovery (``gitlab_wrapper.command_modules``) skips it. It holds:
 
-- ``print_json``, the one way a subcommand writes its result: ``json.dumps(..., indent=2)`` on standard output (the
-  diagnostics go to standard error through ``logging``);
+- the two output forms of a subcommand's result on standard output (the diagnostics go to standard error through
+  ``logging``): ``print_json``, ``json.dumps(..., indent=2)`` and a line end, and ``print_bytes``, a body that is not
+  JSON by its ``Content-Type`` written as its bytes unchanged, with no line end added (issue #41, design.md D3):
+  ``sys.stdout`` is flushed first, so the text already written comes before the bytes, which go to
+  ``sys.stdout.buffer``;
+- ``EXIT_REFUSED``, the exit code of a ``call`` refused before any request is sent: 2, the code of argparse's usage
+  error (issue #41, design.md D4);
 - the argument helpers every module builds its argv group with: ``add_group`` (a group such as ``issue``, whose
   subcommands are required), ``add_command`` (one subcommand and its handler, ``set_defaults(handler=...)`` as the
   entry script reads it) and ``add_iid`` (the ``<iid>`` positional);
@@ -40,6 +45,8 @@ ACTION_DEST = "action"
 IID_ARGUMENT = "iid"
 JSON_INDENT = 2
 LINE_END = "\n"
+# A refusal decided before any request is sent; argparse's usage error exits with the same code.
+EXIT_REFUSED = 2
 
 # A handler as the entry script calls it (design.md D6).
 Handler = Callable[..., Optional[int]]
@@ -51,6 +58,14 @@ if TYPE_CHECKING:
 def print_json(*, value: Any) -> None:
     """Write ``value`` as indented JSON on standard output, the result of a subcommand."""
     sys.stdout.write(json.dumps(obj=value, indent=JSON_INDENT) + LINE_END)
+
+
+def print_bytes(*, data: bytes) -> None:
+    """Write ``data`` on standard output unchanged, with no line end added: ``sys.stdout`` is flushed first, then the
+    bytes go to ``sys.stdout.buffer`` (Python docs, ``sys.stdout``: "to write bytes to stdout, use
+    ``sys.stdout.buffer.write``")."""
+    sys.stdout.flush()
+    sys.stdout.buffer.write(data)  # positional: a binary stream's write takes its bytes positional-only
 
 
 def add_group(*, subparsers: SubParsers, name: str, help_text: str) -> SubParsers:

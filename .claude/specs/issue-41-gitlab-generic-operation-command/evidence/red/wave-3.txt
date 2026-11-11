@@ -1,0 +1,121 @@
+# tasks: 3.1 (red against the named mutant: coverage_gaps and only_in_graphql return [], family_problems and capability_problems return ["mutant"])
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_wrapper_delivery.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [173 items]
+
+..F..F.FF.FF.FFF.FF..................................................... [ 41%]
+........................................................................ [ 83%]
+.............................                                            [100%]
+================================== FAILURES ===================================
+____________________ test_checker_names_each_unlisted_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:553: in test_checker_names_each_unlisted_row
+    assert gaps == sorted(UNLISTED_ROWS)
+E   AssertionError: assert [] == [IndexRow(met...te-a-gadget')]
+E     
+E     Right contains 6 more items, first extra item: [0mIndexRow(method=[33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/:id[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#delete-a-widget[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_________ test_a_regenerated_index_names_each_changed_key[key_added] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:669: in test_a_regenerated_index_names_each_changed_key
+    assert before == ([], []), f"the synthetic package must match the index before the regeneration: {before}"
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+E   assert ([], ['mutant']) == ([], [])
+E     
+E     At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+E     Use -v to get more diff
+____ test_a_regenerated_index_names_each_changed_key[pending_key_removed] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:669: in test_a_regenerated_index_names_each_changed_key
+    assert before == ([], []), f"the synthetic package must match the index before the regeneration: {before}"
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+E   assert ([], ['mutant']) == ([], [])
+E     
+E     At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+E     Use -v to get more diff
+_____ test_a_regenerated_index_names_each_changed_key[record_row_removed] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:669: in test_a_regenerated_index_names_each_changed_key
+    assert before == ([], []), f"the synthetic package must match the index before the regeneration: {before}"
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+E   assert ([], ['mutant']) == ([], [])
+E     
+E     At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+E     Use -v to get more diff
+____ test_a_regenerated_index_names_each_changed_key[record_path_changed] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:669: in test_a_regenerated_index_names_each_changed_key
+    assert before == ([], []), f"the synthetic package must match the index before the regeneration: {before}"
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+E   assert ([], ['mutant']) == ([], [])
+E     
+E     At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_regenerated_index_names_each_changed_key[record_method_changed_same_path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:669: in test_a_regenerated_index_names_each_changed_key
+    assert before == ([], []), f"the synthetic package must match the index before the regeneration: {before}"
+E   AssertionError: the synthetic package must match the index before the regeneration: ([], ['mutant'])
+E   assert ([], ['mutant']) == ([], [])
+E     
+E     At index 1 diff: [0m[[33m'[39;49;00m[33mmutant[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[][90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_declared_key_is_in_its_family ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:698: in test_every_declared_key_is_in_its_family
+    assert not problems, "declarations the operations index does not bear out:\n" + "\n".join(problems)
+E   AssertionError: declarations the operations index does not bear out:
+E     mutant
+E   assert not ['mutant']
+_________________ test_a_route_prefix_key_is_held_to_the_rule _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:723: in test_a_route_prefix_key_is_held_to_the_rule
+    assert gaps == sorted((*UNLISTED_ROWS, RELEASE_FILE)), f"coverage_gaps returned {gaps}"
+E   AssertionError: coverage_gaps returned []
+E   assert [] == [IndexRow(met...mation'), ...]
+E     
+E     Right contains 7 more items, first extra item: [0mIndexRow(method=[33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, path=[33m'[39;49;00m[33m/widgets/:id[39;49;00m[33m'[39;49;00m, reference=[33m'[39;49;00m[33mrest/alpha-beta.md#delete-a-widget[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________ test_a_capability_neither_served_nor_pending_is_named ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:747: in test_a_capability_neither_served_nor_pending_is_named
+    assert named == [UNLISTED_CAPABILITY, RETIRED_PENDING_CAPABILITY, RETIRED_SERVED_CAPABILITY], problems
+E   AssertionError: ['mutant']
+E   assert [] == ['Unlisted ca...d capability']
+E     
+E     Right contains 3 more items, first extra item: [0m[33m'[39;49;00m[33mUnlisted capability[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+________________ test_the_only_in_graphql_table_is_read_whole _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:761: in test_the_only_in_graphql_table_is_read_whole
+    assert capabilities[:1] == [FIRST_CAPABILITY], (
+E   AssertionError: the first capability read is not 'Work items': []
+E   assert [] == ['Work items']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mWork items[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+___________ test_every_graphql_only_capability_is_served_or_pending ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:784: in test_every_graphql_only_capability_is_served_or_pending
+    assert hasattr(graphql_only, ATTRIBUTE_PENDING_CAPABILITIES), (
+E   AssertionError: gitlab_api.graphql_only declares no PENDING_CAPABILITIES; design D6 holds there every capability of the Only in GraphQL table that no record serves
+E   assert False
+E    +  where False = hasattr(<module 'gitlab_api.graphql_only' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-41\\src\\payload\\scripts\\gitlab_api\\graphql_only.py'>, 'PENDING_CAPABILITIES')
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_coverage.py::test_checker_names_each_unlisted_row
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[key_added]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[pending_key_removed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_row_removed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_path_changed]
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_key[record_method_changed_same_path]
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_declared_key_is_in_its_family
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_route_prefix_key_is_held_to_the_rule
+FAILED test/test_gitlab_wrapper_coverage.py::test_a_capability_neither_served_nor_pending_is_named
+FAILED test/test_gitlab_wrapper_coverage.py::test_the_only_in_graphql_table_is_read_whole
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_graphql_only_capability_is_served_or_pending
+======================= 11 failed, 162 passed in 9.59s ========================

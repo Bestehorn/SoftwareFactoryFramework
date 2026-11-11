@@ -1,0 +1,57 @@
+# whole-suite verdict for rework-1: CI run 42966169391, read through scripts/github_wrapper.py from the main checkout
+# (verify job, matrix leg tests = python scripts/run_checks.py --group tests; no local full suite was run)
+
+$ python scripts/github_wrapper.py list-runs --limit 6
+42966474822  in_progress  None         ci
+42966455650  in_progress  None         ci
+42966169391  completed    success      ci
+42966071790  completed    success      ci
+42964842191  completed    success      ci
+42964120783  completed    success      ci
+exit=0
+
+$ python scripts/github_wrapper.py get-run 42966474822 / 42966455650 / 42966169391   (fields of the JSON answers)
+42966474822: head_branch = main, head_sha = 6fd2f6424d21ab78f407aba49a688ce23bccabb7, event = push, in_progress  # pragma: allowlist secret
+42966455650: head_branch = issue-31-actions-checks-scanning-records, PR #51, event = pull_request, in_progress
+42966169391: id = 42966169391
+  head_branch = issue-41-gitlab-generic-operation-command
+  head_sha = 2e96a8d4a8afe5d6c39ba61fea02c9608ad12a74  # pragma: allowlist secret
+  event = pull_request, PR #49, base main f374b3d4005b010fd4ae5c4bb2d95a9f25f75844  # pragma: allowlist secret
+  status = completed
+  conclusion = success
+  run_attempt = 1
+  head_commit.message = Test the empty JSON body and the malformed name-value refusals of GitLab call
+exit=0
+
+$ python scripts/github_wrapper.py wait-run 42966169391 --timeout-seconds 540
+{"run_id": 42966169391, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/42966169391"}
+wait-run exit=0
+
+$ git rev-parse HEAD   (run in .claude/worktrees/issue-41)
+2e96a8d4a8afe5d6c39ba61fea02c9608ad12a74  # pragma: allowlist secret
+# the run's head_sha equals the worktree HEAD; git status --porcelain was empty before verification
+
+$ python scripts/github_wrapper.py get-jobs 42966169391
+130343804914   completed    success      verify (security)
+130343804921   completed    success      verify (tests)
+130343804979   completed    success      verify (types)
+130343804997   completed    success      verify (lint)
+130344571513   completed    success      report
+exit=0
+
+$ python scripts/github_wrapper.py get-job-logs 130343804921   (verify (tests); lines of the saved 686-line log)
+111: [command]/usr/bin/git checkout --progress --force refs/remotes/pull/49/merge
+129: HEAD is now at f4771ae Merge 2e96a8d4a8afe5d6c39ba61fea02c9608ad12a74 into f374b3d4005b010fd4ae5c4bb2d95a9f25f75844  # pragma: allowlist secret
+392: run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+400: 4 workers [2565 items]
+548: src/payload/scripts/gitlab_api/commands/_common.py                             29      0   100%
+550: src/payload/scripts/gitlab_api/commands/call.py                               179      0   100%
+598: src/payload/test/test_gitlab_api_call.py                                      626      3    99%   65, 417, 1786
+610: ============================ 2565 passed in 33.80s =============================
+628: 1053 passed in 5.47s
+633: CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+# no line of the log holds "skipped", "xfail" or "deselected" other than line 633's "0 skipped"
+# 2565 = 2557 at ca4e2d7 (run 42961275618) + the 8 cases rework-1 adds (2 print rows, 6 malformed rows)
+exit=0
+
+verdict = green: 2565 + 1053 passed, 0 failed, at the tree's SHA

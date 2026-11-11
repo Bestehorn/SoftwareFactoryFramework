@@ -1543,3 +1543,29 @@ def test_script_without_config_exits_1(tmp_path: Path) -> None:
     )
     assert config_file in completed.stderr, f"the refusal names {config_file}:\n{completed.stderr}"
     assert TRACEBACK not in completed.stderr, f"a missing config is a refusal, not a crash:\n{completed.stderr}"
+
+
+# AC-4.1 (issue #41): what design.md D7's usage lines give the entry script's docstring for the operation call.
+USAGE_CALL_TEXTS = (
+    "call plan#retrieve-a-project-issue",
+    "--path",
+    "--query",
+    "-f/--raw-field",
+    "-F/--field",
+    "--file",
+    "variables",
+    "JSON array",
+    "indented JSON",
+    "empty body",
+    "bytes unchanged",
+    "exit 2",
+)
+
+
+def test_the_usage_names_the_operation_call() -> None:
+    """AC-4.1: the entry script's ``__doc__`` names ``call`` with an operation ID, its options, a GraphQL record's
+    variables, its print forms and its refusal's exit code (design.md D7)."""
+    usage = load_wrapper().__doc__
+    assert isinstance(usage, str), f"{WRAPPER_FILE} has no module docstring"
+    missing = [text for text in USAGE_CALL_TEXTS if text not in usage]
+    assert missing == [], f"the usage of {WRAPPER_FILE} does not name: {missing}"

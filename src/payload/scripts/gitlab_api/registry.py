@@ -3,7 +3,8 @@
 A ``RestOperation`` is one row of ``docs/api-reference/gitlab/operations-index.md``, transcribed from the attribute
 table of its ``rest/<family>.md`` section: the method, the path verbatim (``/projects/:id/issues/:issue_iid``), and one
 ``Param`` per query or body attribute, the table's Type column as a ``Kind``. A ``GraphQLOperation`` is a GraphQL-only
-capability (``gitlab_api/graphql_only.py``). The REST records live in the endpoint family modules of
+capability (``gitlab_api/graphql_only.py``), named by the first cell of the "Only in GraphQL" row it serves (issue #41,
+design.md D2). The REST records live in the endpoint family modules of
 ``gitlab_api.families``, each holding ``FAMILY`` (its file stem), ``OPERATIONS`` and ``PENDING`` (the
 ``(method, path)`` keys of the family's index rows that no record maps yet); ``discover_families`` finds them by
 scanning the package, so no file lists them.
@@ -12,9 +13,12 @@ scanning the package, so no file lists them.
 - ``expand`` writes the path values into a record's path, each as ONE percent-encoded segment (AC-2.2).
 - ``encode`` turns the other values into the query pairs, form pairs, JSON body and files of a request, arrays and
   hashes in GitLab's bracket form (AC-2.3; ``conventions.md`` "Arrays, hashes and arrays of hashes").
-- ``call`` sends one call of a record through a ``gitlab_api.transport.Transport`` and returns its value; ``pages``
-  returns the items of every page of a REST list record. Both look the record up and encode its values before anything
-  is sent, so a value the record does not declare is refused with nothing sent (AC-1.1).
+- ``attribute_name`` names the ``Param`` of a reference table name (``iids[]`` is ``iids``); ``variables`` names the
+  variables a GraphQL record's document defines (issue #41, design.md D2).
+- ``send`` sends one call of a REST record through a ``gitlab_api.transport.Transport`` and returns its ``Response``;
+  ``call`` sends one call of any record and returns its value; ``pages`` returns the items of every page of a REST list
+  record. Each looks the record up and encodes its values before anything is sent, so a value the record does not
+  declare is refused with nothing sent (AC-1.1).
 
 Standard library only; Python 3.9.
 """
@@ -36,11 +40,14 @@ from gitlab_api.errors import GitLabAPIError
 
 if TYPE_CHECKING:
     # For the annotations only: gitlab_api.transport imports this module, so a run-time import would be a cycle.
-    from gitlab_api.transport import Transport
+    from gitlab_api.transport import Response, Transport
 
 # A path parameter: `:` and an identifier, at a segment start (`/projects/:id`) or inside one (`binary-:architecture`).
 PLACEHOLDER = re.compile(r":(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
 GROUP_NAME = "name"
+# A GraphQL variable definition: `$`, a Name, then `:` after any white space (`VariableDefinition : Variable : Type`).
+# A use of the variable (`fullPath: $fullPath)`) has no `:` after it.
+VARIABLE_DEFINITION = re.compile(r"\$(?P<name>[_A-Za-z][_0-9A-Za-z]*)\s*:")
 # None of these is one segment once a URL's dot segments are resolved (RFC 3986 section 5.2.4).
 REFUSED_SEGMENTS = frozenset({"", ".", ".."})
 ARRAY_SUFFIX = "[]"
@@ -110,9 +117,11 @@ class RestOperation:
 
 @dataclass(frozen=True)
 class GraphQLOperation:
-    """One GraphQL-only capability: its document and, for a paged connection, the key path to it under ``data``."""
+    """One GraphQL-only capability: the first cell of the "Only in GraphQL" row it serves, verbatim, its document and,
+    for a paged connection, the key path to it under ``data``."""
 
     operation_id: str
+    capability: str
     document: str
     connection: Tuple[str, ...] = ()
 
@@ -217,6 +226,30 @@ def expand(*, operation: RestOperation, values: Mapping[str, Any]) -> str:
     return PLACEHOLDER.sub(repl=substitute, string=operation.path)
 
 
+# --- Attribute and variable names -------------------------------------------------------------------------------
+
+
+def attribute_name(*, name: str) -> str:
+    """The ``Param`` name a reference table name stands for: ``name`` without ONE trailing ``[]``, so ``iids[]`` is
+    ``iids`` (``Kind.ARRAY`` writes the suffix itself, ``_pairs``); ``not[labels]`` is unchanged (issue #41, D2)."""
+    return name.removesuffix(ARRAY_SUFFIX)
+
+
+def variables(*, operation: GraphQLOperation) -> Tuple[str, ...]:
+    """The name of every variable the record's document defines — each ``$name`` followed, after any white space, by
+    ``:`` — in document order (issue #41, design.md D2).
+
+    A record with a ``connection`` leaves out the cursor ``transport.FIELD_AFTER``: ``Transport.graphql_nodes`` sets it
+    on every page (#13 AC-4.2)."""
+    # Imported here, not at the top: gitlab_api.transport imports this module.
+    from gitlab_api.transport import FIELD_AFTER
+
+    defined = tuple(match.group(GROUP_NAME) for match in VARIABLE_DEFINITION.finditer(string=operation.document))
+    if not operation.connection:
+        return defined
+    return tuple(name for name in defined if name != FIELD_AFTER)
+
+
 # --- Value encoding ---------------------------------------------------------------------------------------------
 
 
@@ -309,25 +342,19 @@ def encode(*, operation: RestOperation, values: Mapping[str, Any]) -> EncodedReq
 # --- Calls ------------------------------------------------------------------------------------------------------
 
 
-def call(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Any:
-    """One call of the record declared with ``operation_id``, its result decoded (design.md D5).
+def send(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Response:
+    """One call of the REST record declared with ``operation_id``, its ``Response`` returned (issue #41, design.md D2).
 
-    A ``RestOperation`` is encoded and expanded first — a value it does not declare raises ``encode``'s
-    ``ValueError`` before any request — and then sent with ``transport.request``; its ``value`` is returned. A
-    ``GraphQLOperation`` sends its document with ``values`` as the variables, through ``transport.graphql_nodes``
-    when it names a connection and ``transport.graphql`` otherwise. The record is found with this module's ``lookup``.
-    """
+    The record is found with this module's ``lookup``, its values encoded and its path expanded first — a value it does
+    not declare raises ``encode``'s ``ValueError`` before any request — and then sent with ``transport.request``. A
+    GraphQL record raises ``ValueError`` with nothing sent."""
     operation = lookup(operation_id=operation_id)
+    if not isinstance(operation, RestOperation):
+        raise ValueError(f"{operation_id!r} is a GraphQL record; send sends REST records")
     given: Mapping[str, Any] = values or {}
-    if isinstance(operation, GraphQLOperation):
-        if operation.connection:
-            return transport.graphql_nodes(
-                document=operation.document, variables=given, connection=operation.connection
-            )
-        return transport.graphql(document=operation.document, variables=given)
     encoded = encode(operation=operation, values=given)
     path = expand(operation=operation, values=given)
-    response = transport.request(
+    return transport.request(
         method=operation.method,
         path=path,
         query=encoded.query,
@@ -335,7 +362,21 @@ def call(transport: Transport, operation_id: str, *, values: Optional[Mapping[st
         json_body=encoded.json_body,
         files=encoded.files,
     )
-    return response.value
+
+
+def call(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Any:
+    """One call of the record declared with ``operation_id``, its result decoded (design.md D5).
+
+    A ``RestOperation`` is sent with ``send`` and its ``Response.value`` returned. A ``GraphQLOperation`` sends its
+    document with ``values`` as the variables, through ``transport.graphql_nodes`` when it names a connection and
+    ``transport.graphql`` otherwise. The record is found with this module's ``lookup``."""
+    operation = lookup(operation_id=operation_id)
+    if isinstance(operation, RestOperation):
+        return send(transport=transport, operation_id=operation_id, values=values).value
+    given: Mapping[str, Any] = values or {}
+    if operation.connection:
+        return transport.graphql_nodes(document=operation.document, variables=given, connection=operation.connection)
+    return transport.graphql(document=operation.document, variables=given)
 
 
 def pages(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Iterator[Any]:
