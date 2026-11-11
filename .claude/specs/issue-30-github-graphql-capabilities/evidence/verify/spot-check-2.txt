@@ -1,0 +1,149 @@
+# mutant S1a: round-1 1a re-applied: registry.declared_variables keeps after on a record with a connection
+diff --git a/src/payload/scripts/github_api/registry.py b/src/payload/scripts/github_api/registry.py
+index ee24596..9bcb013 100644
+--- a/src/payload/scripts/github_api/registry.py
++++ b/src/payload/scripts/github_api/registry.py
+@@ -139,7 +139,7 @@ def declared_variables(*, operation: GraphQLOperation) -> Tuple[str, ...]:
+     defined = tuple(match.group(1) for match in VARIABLE_DEFINITION_PATTERN.finditer(string=operation.document))
+     if not operation.connection:
+         return defined
+-    return tuple(name for name in defined if name != FIELD_AFTER)
++    return defined
+ 
+ 
+ def _encode_path_value(*, operation: RestOperation, name: str, value: Any) -> str:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_registry.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [81 items]
+
+........F...................................F........................... [ 88%]
+.........                                                                [100%]
+================================== FAILURES ===================================
+_ test_an_undeclared_variable_is_refused[AC-2.5/exit-2/after-of-a-paging-record] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:791: in test_an_undeclared_variable_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:313: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.5/exit-2/after-of-a-paging-record: exit code 1, the golden is 2; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_wrapper:github_wrapper.py:326 GitHub GraphQL response has no connection at ["repository", "discussions"]
+_______ test_variables_are_the_documents_definitions[with-a-connection] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:714: in test_variables_are_the_documents_definitions
+    assert api.registry.declared_variables(operation=operation) == case.variables
+E   AssertionError: assert ('owner', 'name', 'after') == ('owner', 'name')
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mafter[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_an_undeclared_variable_is_refused[AC-2.5/exit-2/after-of-a-paging-record]
+FAILED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[with-a-connection]
+======================== 2 failed, 79 passed in 9.07s =========================
+exit=1
+# restored src/payload/scripts/github_api/registry.py: sha256 f0ca87c18b48b57a13488a430021f24b49bf4d7771d52ee568a9870ba33bd9ef, pre-run f0ca87c18b48b57a13488a430021f24b49bf4d7771d52ee568a9870ba33bd9ef: OK  # pragma: allowlist secret
+# mutant S2f: round-1 2f re-applied: graphql/transferIssue removed from GATED_OPERATIONS
+diff --git a/src/payload/scripts/github_api/commands/call.py b/src/payload/scripts/github_api/commands/call.py
+index b0185ae..858bd49 100644
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -136,7 +136,6 @@ GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
+         "graphql/enablePullRequestAutoMerge": "merge-pr",
+         "graphql/createCommitOnBranch": None,
+         "graphql/revertPullRequest": None,
+-        "graphql/transferIssue": None,
+     }
+ )
+ #: The IDs of ``GATED_OPERATIONS`` their subcommand does not send: ``merge-pr`` merges through ``pulls/merge``, never
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_registry.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [81 items]
+
+............F........................................................... [ 88%]
+.........                                                                [100%]
+================================== FAILURES ===================================
+________ test_a_refused_mutation_sends_nothing[graphql/transferIssue] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:829: in test_a_refused_mutation_sends_nothing
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:313: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3.1/exit-2/graphql/transferIssue: exit code 0, the golden is 2; stdout '{\n  "pinIssue": {\n    "clientMutationId": null,\n    "issue": {\n      "id": "I_1"\n    }\n  }\n}\n'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_refused_mutation_sends_nothing[graphql/transferIssue]
+======================== 1 failed, 80 passed in 7.44s =========================
+exit=1
+# restored src/payload/scripts/github_api/commands/call.py: sha256 3d78087dcea2ba6a798ca115fe46889a6aaf6946269755540cbc1dec61ef963b, pre-run 3d78087dcea2ba6a798ca115fe46889a6aaf6946269755540cbc1dec61ef963b: OK  # pragma: allowlist secret
+# mutant S3a: round-1 3a re-applied: graphql/unpinIssue dropped from the usage docstring
+diff --git a/src/payload/scripts/github_wrapper.py b/src/payload/scripts/github_wrapper.py
+index 9614bce..455cb55 100644
+--- a/src/payload/scripts/github_wrapper.py
++++ b/src/payload/scripts/github_wrapper.py
+@@ -53,7 +53,7 @@ Usage:
+         #     graphql/unresolveReviewThread
+         #   Hide comments: graphql/minimizeComment graphql/unminimizeComment
+         #   Move an issue to another repo: graphql/transferIssue
+-        #   Pin an issue: graphql/pinIssue graphql/unpinIssue
++        #   Pin an issue: graphql/pinIssue
+         #   Revert a PR: graphql/revertPullRequest
+         #   Read a merge queue, remove an entry: graphql/Repository.mergeQueue graphql/dequeuePullRequest
+         #   Sponsors: graphql/createSponsorship graphql/createSponsorsTier
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py test/test_github_graphql_contract.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [45 items]
+
+..................F..........................                            [100%]
+================================== FAILURES ===================================
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_graphql_only.py:926: in test_the_usage_names_every_graphql_record
+    assert not problems, (
+E   AssertionError: the GraphQL usage entry of github_wrapper.py:
+E     "Pin an issue": graphql/unpinIssue is not named before the next capability
+E     The entry reads: python scripts/github_wrapper.py call graphql/pinIssue -F 'input={"issueId": "<node id>"}' # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes one, input, its input object, whose IDs are a REST response's node_id or an id a GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data, both as indented JSON. --path, --query and a variable the document does not declare (after, on a connection) are refused: exit 2. The "Only in GraphQL" capabilities and their records: Repository discussions: graphql/Repository.discussions graphql/Repository.discussionCategories graphql/createDiscussion graphql/addDiscussionComment graphql/markDiscussionCommentAsAnswer Create, update, delete, copy or link a Projects v2 project: graphql/createProjectV2 graphql/copyProjectV2 graphql/updateProjectV2 graphql/deleteProjectV2 graphql/linkProjectV2ToRepository Auto-merge on or off: graphql/enablePullRequestAutoMerge graphql/disablePullRequestAutoMerge Draft to ready and back: graphql/markPullRequestReadyForReview graphql/convertPullRequestToDraft Resolve review threads: graphql/PullRequest.reviewThreads graphql/resolveReviewThread graphql/unresolveReviewThread Hide comments: graphql/minimizeComment graphql/unminimizeComment Move an issue to another repo: graphql/transferIssue Pin an issue: graphql/pinIssue Revert a PR: graphql/revertPullRequest Read a merge queue, remove an entry: graphql/Repository.mergeQueue graphql/dequeuePullRequest Sponsors: graphql/createSponsorship graphql/createSponsorsTier Multi-file commit in one call: graphql/createCommitOnBranch Branch protection with wildcard patterns: graphql/createBranchProtectionRule graphql/enablePullRequestAutoMerge (use merge-pr), graphql/createCommitOnBranch, graphql/revertPullRequest and graphql/transferIssue are refused before any request: exit 2.
+E   assert not ['"Pin an issue": graphql/unpinIssue is not named before the next capability']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_the_usage_names_every_graphql_record
+======================== 1 failed, 44 passed in 6.93s =========================
+exit=1
+# restored src/payload/scripts/github_wrapper.py: sha256 0c3b639a84e57ef508f3690015994bab6d694aeb8b7e461fda5f7de3ed313322, pre-run 0c3b639a84e57ef508f3690015994bab6d694aeb8b7e461fda5f7de3ed313322: OK  # pragma: allowlist secret
+# final: the restored product
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_registry.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [90 items]
+
+........................................................................ [ 80%]
+..................                                                       [100%]
+============================= 90 passed in 8.41s ==============================
+exit=0
+# watched files byte-identical to the pre-run baseline: True []
