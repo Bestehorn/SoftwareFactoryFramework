@@ -71,3 +71,12 @@
 **Evidence:** evidence/verify/refutation-report.md; src/payload/scripts/github_api/registry.py `graphql_call`; graphql_only.py `_mutation`.
 **Supersedes:** none
 **Artifacts touched:** src/payload/test/test_github_api_graphql_only.py, src/payload/test/test_github_api_registry.py
+
+## DL-009 — 2026-11-11T09:18:33Z — issue-work-orchestrator — phase:MERGE
+
+**Decision:** Keep code-merge-reviewer's merge of #46 (5e6ad6f: both sides line by line; usage D6 before D7; the map's closing sentence last) and its follow-up c0b697b: a `graphql/` call refuses `--input` (beside `-f/-F` first, then after `graphql_lookup`), exit 2 and no request, with `test_a_raw_body_is_refused`; then a delta re-verification of the merge.
+**Driver:** after the merge, `call graphql/<member> --input F` sent the mutation and ignored the file; #46 AC-1.3, D1 (only records with a `content_type` take `--input`) and D6 decide it.
+**Alternatives considered:** keep both paths as written (rejected: a silently ignored body, against #46 AC-1.3).
+**Evidence:** .claude/specs/issue-46-github-call-raw-bodies/requirements.md AC-1.3, design.md D1, D6; test_a_raw_body_is_refused red on 5e6ad6f, green on c0b697b.
+**Supersedes:** none
+**Artifacts touched:** src/payload/scripts/github_api/commands/call.py, src/payload/test/test_github_api_graphql_only.py
