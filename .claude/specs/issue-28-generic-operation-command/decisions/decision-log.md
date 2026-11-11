@@ -53,3 +53,12 @@
 **Evidence:** tasks.md waves 2 and 3.
 **Supersedes:** none
 **Artifacts touched:** tasks.md, docs/findings-ledger.md (the F.n task-id row)
+
+## DL-007 — 2026-11-11T02:04:52Z — issue-work-orchestrator — phase:PR
+
+**Decision:** Rebase onto 2eb1c9e (#13 merged) and resolve the docs/forLLMConsumption.md conflict by keeping both sides: the github_api bullet with this change's `call` sentences (closing sentence last), then #13's gitlab_api bullet unchanged; the findings-ledger rows merged automatically.
+**Driver:** rebase conflict on 92319e8; code-merge-reviewer resolution (its DL-001).
+**Alternatives considered:** none (both sides add independent text).
+**Evidence:** 586 passed across both wrappers' suites on the rebased tree; product run_checks lint/types/security 5 passed.
+**Supersedes:** none
+**Artifacts touched:** docs/forLLMConsumption.md
