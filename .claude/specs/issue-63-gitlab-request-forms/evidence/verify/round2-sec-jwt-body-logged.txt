@@ -1,0 +1,157 @@
+# round 2 mutant sec-jwt-body-logged: D4 step 3, UB-2: a refused /jwt/auth answer's body enters no log record (DEBUG record added)
+# edit src/payload/scripts/gitlab_api/transport.py: '        return registry_token\n    raise GitLabAPIError(\n' -> '        return registry_token\n    LOGGER.debug("the /jwt/auth answer: %s", response.text)\n    raise GitLabAPIError(\n'
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\basetemp src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [170 items]
+
+........................................................................ [ 42%]
+......F.F...F.........F....F........F.F.F............................... [ 84%]
+.......................FFF                                               [100%]
+================================== FAILURES ===================================
+_ test_a_registry_token_answer_without_a_token_is_never_quoted[a-json-array] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_token_answer_without_a_token_is_never_quoted
+    assert leaked == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: ["jwt-auth-answer-marker-for-the-transport-test"]  # pragma: allowlist secret
+_ test_a_registry_token_answer_without_a_token_is_never_quoted[an-empty-token] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_token_answer_without_a_token_is_never_quoted
+    assert leaked == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: {"token": "", "note": "jwt-auth-answer-marker-for-the-transport-test"}  # pragma: allowlist secret
+_ test_a_registry_token_answer_without_a_token_is_never_quoted[a-token-that-is-not-a-string] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_token_answer_without_a_token_is_never_quoted
+    assert leaked == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: {"token": ["jwt-auth-answer-marker-for-the-transport-test"]}  # pragma: allowlist secret
+_ test_a_registry_token_answer_without_a_token_is_never_quoted[claims-json-but-is-not-json] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_token_answer_without_a_token_is_never_quoted
+    assert leaked == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: {not JSON: jwt-auth-answer-marker-for-the-transport-test  # pragma: allowlist secret
+__ test_a_registry_token_answer_without_a_token_is_never_quoted[a-text-body] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_token_answer_without_a_token_is_never_quoted
+    assert leaked == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: jwt-auth-answer-marker-for-the-transport-test  # pragma: allowlist secret
+_ test_a_refused_registry_token_answer_is_never_quoted[claims-json-but-is-not-json] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:328: in test_a_refused_registry_token_answer_is_never_quoted
+    assert leaks(reported=reported, withheld=withheld) == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: {not JSON: jwt-auth-answer-marker-for-the-container-registry-test  # pragma: allowlist secret
+_____ test_a_refused_registry_token_answer_is_never_quoted[a-json-array] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:328: in test_a_refused_registry_token_answer_is_never_quoted
+    assert leaks(reported=reported, withheld=withheld) == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: ["jwt-auth-answer-marker-for-the-container-registry-test"]  # pragma: allowlist secret
+____ test_a_refused_registry_token_answer_is_never_quoted[an-empty-token] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:328: in test_a_refused_registry_token_answer_is_never_quoted
+    assert leaks(reported=reported, withheld=withheld) == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["log record ...nswer's body"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mlog record 0 holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: {"token": "", "note": "jwt-auth-answer-marker-for-the-container-registry-test"}  # pragma: allowlist secret
+_ test_a_refused_jwt_auth_answer_is_never_reported[claims-json-but-is-not-json] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants\src\payload\test\test_gitlab_api_package.py:2092: in test_a_refused_jwt_auth_answer_is_never_reported
+    assert reported == [], f"no log record and no standard error holds these (D4 AC-5.3, UB-2): {reported}"
+E   AssertionError: no log record and no standard error holds these (D4 AC-5.3, UB-2): ["the /jwt/auth answer's body"]
+E   assert ["the /jwt/au...nswer's body"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mthe /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: {not JSON: jwt-auth-answer-marker-for-the-package-test  # pragma: allowlist secret
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete answered 200 without a non-empty string 'token': no registry token, so nothing is sent to the registry (the answer is not quoted, for it may hold a credential)
+_______ test_a_refused_jwt_auth_answer_is_never_reported[a-json-array] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants\src\payload\test\test_gitlab_api_package.py:2092: in test_a_refused_jwt_auth_answer_is_never_reported
+    assert reported == [], f"no log record and no standard error holds these (D4 AC-5.3, UB-2): {reported}"
+E   AssertionError: no log record and no standard error holds these (D4 AC-5.3, UB-2): ["the /jwt/auth answer's body"]
+E   assert ["the /jwt/au...nswer's body"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mthe /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: ["jwt-auth-answer-marker-for-the-package-test"]  # pragma: allowlist secret
+[31m[1mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete answered 200 without a non-empty string 'token': no registry token, so nothing is sent to the registry (the answer is not quoted, for it may hold a credential)
+______ test_a_refused_jwt_auth_answer_is_never_reported[an-empty-token] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants\src\payload\test\test_gitlab_api_package.py:2092: in test_a_refused_jwt_auth_answer_is_never_reported
+    assert reported == [], f"no log record and no standard error holds these (D4 AC-5.3, UB-2): {reported}"
+E   AssertionError: no log record and no standard error holds these (D4 AC-5.3, UB-2): ["the /jwt/auth answer's body"]
+E   assert ["the /jwt/au...nswer's body"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mthe /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m gitlab_api.transport:transport.py:295 the /jwt/auth answer: {"token": "", "message": "jwt-auth-answer-marker-for-the-package-test"}  # pragma: allowlist secret
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete answered 200 without a non-empty string 'token': no registry token, so nothing is sent to the registry (the answer is not quoted, for it may hold a credential)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_token_answer_without_a_token_is_never_quoted[a-json-array]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_token_answer_without_a_token_is_never_quoted[an-empty-token]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_token_answer_without_a_token_is_never_quoted[a-token-that-is-not-a-string]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_token_answer_without_a_token_is_never_quoted[claims-json-but-is-not-json]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_token_answer_without_a_token_is_never_quoted[a-text-body]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_refused_registry_token_answer_is_never_quoted[claims-json-but-is-not-json]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_refused_registry_token_answer_is_never_quoted[a-json-array]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_refused_registry_token_answer_is_never_quoted[an-empty-token]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_refused_jwt_auth_answer_is_never_reported[claims-json-but-is-not-json]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_refused_jwt_auth_answer_is_never_reported[a-json-array]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_refused_jwt_auth_answer_is_never_reported[an-empty-token]
+======================= 11 failed, 159 passed in 9.20s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: KILLED (11 failed, 159 passed in 9.20s)

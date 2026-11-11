@@ -89,3 +89,12 @@
 **Evidence:** evidence/green/rework-1.txt (957 passed); each new test failed under its mutant (implementer reports).
 **Supersedes:** none
 **Artifacts touched:** src/payload/test/test_gitlab_api_package.py, test_gitlab_api_transport.py, test_gitlab_api_container_registry.py, test_gitlab_api_registry.py
+
+## DL-011 — 2026-11-11T20:04:11Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Answer round 2's REFUTED (R2-1 tab/LF/CR in the registry host, R2-2 an empty username, both near-variant test gaps) with two cases in G only, keeping F:package untouched for the #15 branch; a delta round 3 verifies just these two.
+**Driver:** evidence/verify/refutation-report-2.md R2-1, R2-2 (15 of 17 near-variants and all nine round-1 survivors killed).
+**Alternatives considered:** none
+**Evidence:** evidence/green/rework-2.txt; each new case failed under its round-2 mutant (implementer report).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_container_registry.py

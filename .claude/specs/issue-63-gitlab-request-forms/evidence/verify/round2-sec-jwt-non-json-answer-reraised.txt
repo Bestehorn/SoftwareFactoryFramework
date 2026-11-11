@@ -1,0 +1,55 @@
+# round 2 mutant sec-jwt-non-json-answer-reraised: D4 step 3: a non-JSON /jwt/auth answer's body does not travel on as details (re-raised)
+# edit src/payload/scripts/gitlab_api/transport.py: 'it goes no further.\n        answer = None\n' -> 'it goes no further.\n        raise\n'
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\basetemp src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [170 items]
+
+........................................................................ [ 42%]
+.........................F........F..................................... [ 84%]
+.......................F..                                               [100%]
+================================== FAILURES ===================================
+_ test_a_registry_token_answer_without_a_token_is_never_quoted[claims-json-but-is-not-json] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_token_answer_without_a_token_is_never_quoted
+    assert leaked == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["the details...nswer's body"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mthe details holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_refused_registry_token_answer_is_never_quoted[claims-json-but-is-not-json] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:328: in test_a_refused_registry_token_answer_is_never_quoted
+    assert leaks(reported=reported, withheld=withheld) == [], (
+E   AssertionError: the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)
+E   assert ["the details...nswer's body"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mthe details holds the /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_refused_jwt_auth_answer_is_never_reported[claims-json-but-is-not-json] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants\src\payload\test\test_gitlab_api_package.py:2092: in test_a_refused_jwt_auth_answer_is_never_reported
+    assert reported == [], f"no log record and no standard error holds these (D4 AC-5.3, UB-2): {reported}"
+E   AssertionError: no log record and no standard error holds these (D4 AC-5.3, UB-2): ["the /jwt/auth answer's body"]
+E   assert ["the /jwt/au...nswer's body"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mthe /jwt/auth answer[39;49;00m[33m'[39;49;00m[33ms body[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 the response claims JSON but its body is not valid JSON
+[31m[1mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:349 {not JSON: jwt-auth-answer-marker-for-the-package-test  # pragma: allowlist secret
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_token_answer_without_a_token_is_never_quoted[claims-json-but-is-not-json]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_refused_registry_token_answer_is_never_quoted[claims-json-but-is-not-json]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_refused_jwt_auth_answer_is_never_reported[claims-json-but-is-not-json]
+======================== 3 failed, 167 passed in 9.14s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: KILLED (3 failed, 167 passed in 9.14s)

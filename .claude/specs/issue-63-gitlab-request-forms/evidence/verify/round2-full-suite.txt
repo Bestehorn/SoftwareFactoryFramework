@@ -1,0 +1,55 @@
+# Round 2 whole-suite verdict for issue #63, PR #66: CI run 43087628208, read through scripts/github_wrapper.py (main checkout).
+# The worktree's HEAD (git rev-parse HEAD) and the run's head_sha are the same commit:
+# 583fbbd3f60987def589b9ffa92762715c286f2d  # pragma: allowlist secret
+# Product files unchanged by the rework: `git diff 43ba0f1 583fbbd --stat -- src/payload/scripts` printed nothing.
+
+$ python scripts/github_wrapper.py list-runs --limit 3
+43087628208  in_progress  None         ci
+43070929100  completed    success      ci
+43053372616  completed    success      ci
+
+$ python scripts/github_wrapper.py wait-run 43087628208 --timeout-seconds 540
+{"run_id": 43087628208, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43087628208"}
+exit=0
+
+$ python scripts/github_wrapper.py get-run 43087628208   (fields of its answer)
+  "head_branch": "issue-63-gitlab-request-forms",
+  "head_sha": "583fbbd3f60987def589b9ffa92762715c286f2d",  # pragma: allowlist secret
+  "event": "pull_request",
+  "run_number": 110,
+  pull_requests[0].number: 66, base.sha "6beeb772a657c5c68bf3b61a180ffd9ca285ea1c"  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py get-jobs 43087628208
+130756084435   completed    success      verify (security)
+130756084967   completed    success      verify (lint)
+130756085075   completed    success      verify (types)
+130756085086   completed    success      verify (tests)
+130757021729   completed    success      report
+
+$ python scripts/github_wrapper.py get-job-logs 130756085086   (verify (tests); lines of the complete log)
+HEAD is now at e8a62d7 Merge 583fbbd3f60987def589b9ffa92762715c286f2d into 6beeb772a657c5c68bf3b61a180ffd9ca285ea1c  # pragma: allowlist secret
+--- RUN  tests/pytest: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python scripts/run_tests.py --workers auto --coverage --junit reports/junit.xml
+4 workers [3694 items]
+src/payload/scripts/gitlab_api/commands/call.py                               277      0   100%
+src/payload/scripts/gitlab_api/container_registry.py                           39      0   100%
+src/payload/scripts/gitlab_api/registry.py                                    398      2    99%   457, 932
+src/payload/scripts/gitlab_api/transport.py                                   425     12    97%   272-273, 327, 427, 518, 534, 569-570, 579, 743, 898-901
+src/payload/scripts/gitlab_wrapper.py                                         120      7    94%   139, 192-194, 198, 363, 386-387
+Required test coverage of 80% reached. Total coverage: 92.35%
+============================ 3694 passed in 53.67s =============================
+--- PASS tests/pytest (54.2s, exit 0)
+1053 passed in 4.39s
+--- PASS tests/hook-suite (4.6s, exit 0)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+  [PASS] tests/pytest  exit 0
+  [PASS] tests/hook-suite  exit 0
+
+# Round 1 (run 43070929100, head 43ba0f1): registry.py missed 457, 484, 499, 774, 779, 805, 932, 935, 945; transport.py
+# missed 289-291 among others; 3663 passed. Round 2: 3694 passed (+31, the rework's new cases; rework-1.txt 926 -> 957).
+# Now executed: registry.py 484, 499, 774, 779 (RF-6), 805 (RF-5), 935, 945 (RF-4); transport.py 289-291 (RF-3).
+# Still unexecuted, not written by this change: git blame 583fbbd registry.py 457 -> 678c076b, 932 -> 140bbe44, both
+# ancestors of the base 6beeb77 (git merge-base --is-ancestor). transport.py 534 (ce555f6, moved from the base's
+# `_rest_url`, unexecuted there too) was graded in round 1 and is outside this delta.
+
+Verdict: GREEN. Every job of run 43087628208 succeeded on head_sha 583fbbd, the worktree's HEAD; 3694 passed, 0 failed;
+hook suite 1053 passed.

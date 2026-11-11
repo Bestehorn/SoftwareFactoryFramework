@@ -6,8 +6,11 @@ What is pinned (issue #63, ``design.md`` D4 and "Correctness Properties" AC-5.2)
   ``GET /user`` (step 1); ``GET /projects/<project>`` carries the configured ``Job-token`` (step 2); the ``/jwt/auth``
   request carries ``Authorization: Basic`` of ``gitlab-ci-token:<token>`` as its only credential header (step 3); the
   registry request carries ``Authorization: Bearer <registry token>`` alone (step 4), and ``send`` returns its answer;
-- under a ``private`` token, a ``GET /user`` answer whose ``username`` is absent or not a string raises
+- under a ``private`` token, a ``GET /user`` answer whose ``username`` is absent, not a string or empty raises
   ``GitLabAPIError`` with nothing sent after it (step 1, AC-5.3);
+- a ``container_registry_image_prefix`` whose registry host holds a space, a tab, a line feed or a carriage return
+  raises ``GitLabAPIError`` with nothing sent after step 2: no ``/jwt/auth`` request and no registry request (step 2,
+  AC-5.3);
 - a ``/jwt/auth`` success answer that is not a JSON object, or whose ``token`` is not a non-empty string, raises
   ``GitLabAPIError`` with nothing sent to the registry; neither its message nor its ``details``, any log record or
   standard error holds that answer's body, the configured token or the Base64 of the login and the token (step 3,
@@ -106,10 +109,21 @@ HEADER_CONTENT_TYPE = "Content-Type"
 CONTENT_TYPE_JSON = "application/json"
 FIELD_NOTE = "note"
 
-# D4 step 1, "AC-5.3": a `GET /user` answer whose `username` is absent, or is not a string, gives no login.
+# D4 step 1, "AC-5.3": a `GET /user` answer whose `username` is absent, is not a string, or is the empty string gives no
+# login.
 USER_ANSWERS_WITHOUT_A_LOGIN = [
     pytest.param({FIELD_ID: 7}, id="no-username"),
     pytest.param({FIELD_ID: 7, FIELD_USERNAME: 7}, id="a-username-that-is-not-a-string"),
+    pytest.param({FIELD_USERNAME: ""}, id="empty-username"),
+]
+
+# D4 step 2, "AC-5.3": a `container_registry_image_prefix` whose registry host, the text before its first `/`, holds
+# white space gives no registry origin: a space, a tab, a line feed and a carriage return.
+IMAGE_PREFIXES_WITH_WHITE_SPACE_IN_THE_HOST = [
+    pytest.param("registry example.com/group/project", id="a-space"),
+    pytest.param("registry\texample.com/group/project", id="a-tab"),
+    pytest.param("registry\nexample.com/group/project", id="a-line-feed"),
+    pytest.param("registry\rexample.com/group/project", id="a-carriage-return"),
 ]
 
 # D4 step 3, "AC-5.3": a `/jwt/auth` success answer that is not a JSON object, or whose `token` is not a non-empty
@@ -269,6 +283,44 @@ def test_a_user_answer_without_a_username_sends_nothing_further(fake_gitlab: Any
 
     assert sent(fake=fake_gitlab) == [("GET", USER_URL)], (
         "a GET /user answer without a string username raises before step 2, nothing sent after it (D4 step 1, AC-5.3)"
+    )
+
+
+# --- AC-5.3 a registry host that cannot be used ---------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames="image_prefix", argvalues=IMAGE_PREFIXES_WITH_WHITE_SPACE_IN_THE_HOST)
+def test_a_registry_host_holding_white_space_is_refused(fake_gitlab: Any, image_prefix: str) -> None:
+    container_registry = gitlab_module(name="container_registry")
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = transport.Transport(
+        host=HOST,
+        token=PRIVATE_TOKEN,
+        token_type=transport.TokenType(TOKEN_TYPE_PRIVATE),
+        sleep=refuse_sleep,
+        clock=fixed_clock,
+    )
+    fake_gitlab.script(method="GET", url=USER_URL, body={FIELD_USERNAME: "the-user-of-the-token"})
+    fake_gitlab.script(method="GET", url=PROJECT_URL, body={FIELD_ID: 1, FIELD_IMAGE_PREFIX: image_prefix})
+    # The later steps are answered: /jwt/auth with a registry token, and any request after it with a 404, so an origin
+    # taken from this prefix shows as a /jwt/auth request and a registry request after GET /projects/<project>.
+    fake_gitlab.script(method="GET", url=JWT_URL, body={FIELD_TOKEN: REGISTRY_TOKEN})
+    fake_gitlab.script_next(status=404)
+
+    with pytest.raises(errors.GitLabAPIError):
+        container_registry.send(
+            transport=client,
+            method=METHOD_DELETE,
+            path=REGISTRY_PATH,
+            query=(),
+            scope=SCOPE,
+            project=PROJECT,
+        )
+
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+        "a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry "
+        "(D4 step 2, AC-5.3)"
     )
 
 

@@ -1,0 +1,50 @@
+# round 2 mutant ac53-username-unchecked: D4 step 1: a GET /user answer without a non-empty string username raises before step 2
+# edit src/payload/scripts/gitlab_api/container_registry.py: '        return _answer_text(answer=answer, field=FIELD_USERNAME, operation_id=OP_CURRENT_USER)\n' -> '        return str(answer.get(FIELD_USERNAME) if isinstance(answer, Mapping) else answer)\n'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\basetemp src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [71 items]
+
+......F.F..............................................F..F............  [100%]
+================================== FAILURES ===================================
+__ test_a_user_answer_without_a_username_sends_nothing_further[no-username] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:260: in test_a_user_answer_without_a_username_sends_nothing_further
+    with pytest.raises(errors.GitLabAPIError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+_ test_a_user_answer_without_a_username_sends_nothing_further[a-username-that-is-not-a-string] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:260: in test_a_user_answer_without_a_username_sends_nothing_further
+    with pytest.raises(errors.GitLabAPIError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+_ test_no_registry_token_sends_nothing_to_the_registry[user-answer-without-a-username] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants\src\payload\test\test_gitlab_api_package.py:2053: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 0 (AC-5.3); stderr:
+E     
+E   assert 0 == 1
+_ test_no_registry_token_sends_nothing_to_the_registry[user-answer-with-a-username-that-is-not-a-string] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants\src\payload\test\test_gitlab_api_package.py:2053: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 0 (AC-5.3); stderr:
+E     
+E   assert 0 == 1
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_user_answer_without_a_username_sends_nothing_further[no-username]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_user_answer_without_a_username_sends_nothing_further[a-username-that-is-not-a-string]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[user-answer-without-a-username]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[user-answer-with-a-username-that-is-not-a-string]
+======================== 4 failed, 67 passed in 7.27s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# verdict: KILLED (4 failed, 67 passed in 7.27s)

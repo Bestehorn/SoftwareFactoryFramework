@@ -1,0 +1,34 @@
+# round 2 mutant rf6-described-no-value-changed: D2: a positional name given no value is refused saying 'no value' (registry.py _described)
+# edit src/payload/scripts/gitlab_api/registry.py: '        return "no value"\n' -> '        return "nothing"\n'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\basetemp src/payload/test/test_gitlab_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [67 items]
+
+..............................................................F.F..      [100%]
+================================== FAILURES ===================================
+__________ test_a_positional_name_given_no_value_is_refused[absent] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1454: in test_a_positional_name_given_no_value_is_refused
+    assert POSITIONAL_NAME_WRITTEN in message and POSITIONAL_NO_VALUE_TEXT in message, (
+E   AssertionError: the refusal of the positional name given no value names :id and says it was given 'no value'; got "'synthetic#delete-a-group-ssh-certificate': the path parameter :id is written at 2 places, so it takes a list of 2 values, one per place in path order; it was given nothing" (design.md D2, AC-3.3)
+E   assert (':id' in "'synthetic#delete-a-group-ssh-certificate': the path parameter :id is written at 2 places, so it takes a list of 2 values, one per place in path order; it was given nothing" and 'no value' in "'synthetic#delete-a-group-ssh-certificate': the path parameter :id is written at 2 places, so it takes a list of 2 values, one per place in path order; it was given nothing")
+___________ test_a_positional_name_given_no_value_is_refused[none] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1454: in test_a_positional_name_given_no_value_is_refused
+    assert POSITIONAL_NAME_WRITTEN in message and POSITIONAL_NO_VALUE_TEXT in message, (
+E   AssertionError: the refusal of the positional name given no value names :id and says it was given 'no value'; got "'synthetic#delete-a-group-ssh-certificate': the path parameter :id is written at 2 places, so it takes a list of 2 values, one per place in path order; it was given nothing" (design.md D2, AC-3.3)
+E   assert (':id' in "'synthetic#delete-a-group-ssh-certificate': the path parameter :id is written at 2 places, so it takes a list of 2 values, one per place in path order; it was given nothing" and 'no value' in "'synthetic#delete-a-group-ssh-certificate': the path parameter :id is written at 2 places, so it takes a list of 2 values, one per place in path order; it was given nothing")
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_positional_name_given_no_value_is_refused[absent]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_positional_name_given_no_value_is_refused[none]
+======================== 2 failed, 65 passed in 4.30s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (2 failed, 65 passed in 4.30s)
