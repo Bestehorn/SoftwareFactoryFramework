@@ -1,0 +1,44 @@
+# Whole-suite verdict (delta re-verification 2), read through scripts/github_wrapper.py from the main checkout, 2026-11-11
+
+$ python scripts/github_wrapper.py get-run 42990143891   (fields quoted)
+"id": 42990143891, "name": "ci", "event": "pull_request", "run_number": 76, "run_attempt": 1
+"status": "completed", "conclusion": "success"
+"head_branch": "issue-42-gitlab-security-records"
+"head_sha": "041980e063a312f64d7fcf3b31e1fea88f082b22"  # pragma: allowlist secret
+pull_requests[0].number: 55, base.sha "25c91d3f7851b18ef15a9d89d34ef4ae27169059"  # pragma: allowlist secret
+"created_at": "2026-11-11T08:49:54Z", "updated_at": "2026-11-11T08:52:05Z"
+exit=0
+
+$ git -C .claude/worktrees/issue-42 rev-parse HEAD
+041980e063a312f64d7fcf3b31e1fea88f082b22  # pragma: allowlist secret
+(matches head_sha; `git diff --quiet HEAD` exit 0 and `git status --porcelain` empty before verification)
+
+$ python scripts/github_wrapper.py get-jobs 42990143891
+130420733717   completed    success      verify (types)
+130420733980   completed    success      verify (tests)
+130420734054   completed    success      verify (security)
+130420734148   completed    success      verify (lint)
+130421600326   completed    success      report
+exit=0
+
+$ python scripts/github_wrapper.py get-job-logs 130420733980   (lines quoted)
+HEAD is now at eff7426 Merge 041980e063a312f64d7fcf3b31e1fea88f082b22 into 25c91d3f7851b18ef15a9d89d34ef4ae27169059  # pragma: allowlist secret
+run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+4 workers [3073 items]
+src/payload/scripts/gitlab_api/families/security_factory.py                     6      0   100%
+src/payload/scripts/gitlab_api/families/security_governance.py                  6      0   100%
+src/payload/scripts/gitlab_api/families/security_platform.py                    6      0   100%
+src/payload/scripts/gitlab_api/families/security_risk_management.py             6      0   100%
+src/payload/scripts/gitlab_api/families/software_supply_chain_security.py       6      0   100%
+src/payload/test/test_gitlab_api_security_factory.py                          161     17    89%   58, 66-71, 180-183, 188-190, 195-201
+src/payload/test/test_gitlab_api_security_governance.py                        92     17    82%   49, 57-62, 113-116, 121-123, 128-134
+src/payload/test/test_gitlab_api_security_platform.py                         159     17    89%   57, 65-70, 256-259, 264-266, 271-277
+src/payload/test/test_gitlab_api_security_risk_management.py                  160     17    89%   59, 67-72, 345-348, 353-355, 360-366
+src/payload/test/test_gitlab_api_software_supply_chain_security.py            164     17    90%   66, 74-79, 556-559, 570-572, 577-583
+Required test coverage of 80% reached. Total coverage: 91.30%
+======================= 3073 passed in 77.36s (0:01:17) ========================
+1053 passed in 6.90s   (hook suite)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+exit=0
+
+Verdict: GREEN on 041980e, the worktree HEAD. No missed line of the five F files lies in test_every_body_is_json_and_unfixed.
