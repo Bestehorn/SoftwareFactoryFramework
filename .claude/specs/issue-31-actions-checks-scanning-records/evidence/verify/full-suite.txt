@@ -1,0 +1,24 @@
+# Whole-suite verdict, issue #31, PR #51. Read through scripts/github_wrapper.py (main checkout).
+# Worktree HEAD: 85f9f8fec4960c5edf23ebf348e7e8532e2e4d85  # pragma: allowlist secret
+
+$ github_wrapper.py get-run 42964120783 (fields: id, event, status, conclusion, head_branch, head_sha, pull_requests)
+id: 42964120783
+event: pull_request
+status: completed
+conclusion: success
+head_branch: issue-31-actions-checks-scanning-records
+head_sha: 85f9f8fec4960c5edf23ebf348e7e8532e2e4d85  # pragma: allowlist secret
+pull_requests: [51]
+run_attempt: 1
+
+$ github_wrapper.py wait-run 42964120783 --timeout-seconds 540
+{"run_id": 42964120783, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/42964120783"}
+exit=0
+
+$ github_wrapper.py get-jobs 42964120783
+130337251936   completed    success      verify (security)
+130337252159   completed    success      verify (lint)
+130337252233   completed    success      verify (types)
+130337252366   completed    success      verify (tests)
+130337789556   completed    success      report
+exit=0
