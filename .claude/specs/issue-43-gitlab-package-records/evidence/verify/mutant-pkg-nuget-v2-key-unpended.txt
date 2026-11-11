@@ -1,0 +1,53 @@
+# mutant pkg-nuget-v2-key-unpended: one replacement in src/payload/scripts/gitlab_api/families/package.py
+# old:
+#           ("PUT", "/projects/:id/packages/nuget/v2"),
+# new:
+#   (removed)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [214 items]
+
+FF...................................................................... [ 33%]
+........................................................................ [ 67%]
+.........................................................F............   [100%]
+================================== FAILURES ===================================
+__________________ test_nothing_is_pending_but_the_kept_keys __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1412: in test_nothing_is_pending_but_the_kept_keys
+    assert pending == KEPT, (
+E   AssertionError: PENDING holds 21 key(s), the kept keys are 22 (AC-1.2, AC-1.3, AC-1.7):
+E     missing: ('PUT', '/projects/:id/packages/nuget/v2')
+E   assert frozenset({('...rence'), ...}) == frozenset({('...rence'), ...})
+E     
+E     Extra items in the right set:
+E     [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/nuget/v2[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_a_two_endpoint_entry_maps_its_first_endpoint ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1449: in test_a_two_endpoint_entry_maps_its_first_endpoint
+    assert unkept == [], f"the other endpoint of a two-endpoint entry stays in PENDING (AC-1.2): {unkept}"
+E   AssertionError: the other endpoint of a two-endpoint entry stays in PENDING (AC-1.2): [('PUT', '/projects/:id/packages/nuget/v2')]
+E   assert [('PUT', '/pr...es/nuget/v2')] == []
+E     
+E     Left contains one more item: [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/nuget/v2[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_index_row_is_mapped_or_pending __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:589: in test_every_index_row_is_mapped_or_pending
+    assert not gaps, gap_report(gaps=gaps)
+E   AssertionError: 1 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+E     families/package.py:
+E         ('PUT', '/projects/:id/packages/nuget/v2'),  # rest/package.md#upload-a-package-file-5
+E   assert not [IndexRow(method='PUT', path='/projects/:id/packages/nuget/v2', reference='rest/package.md#upload-a-package-file-5')]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_nothing_is_pending_but_the_kept_keys
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_two_endpoint_entry_maps_its_first_endpoint
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_index_row_is_mapped_or_pending
+================== 3 failed, 211 passed in 131.06s (0:02:11) ==================
+exit=1
+# restored src/payload/scripts/gitlab_api/families/package.py sha256 89c70ed9b1c5181aeab2cdadc2082d8678d5e569643ca5599e22e5c58d77455d  # pragma: allowlist secret

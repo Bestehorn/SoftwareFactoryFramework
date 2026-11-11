@@ -9,12 +9,20 @@ Issue #41, design.md D5. The reference is `docs/api-reference/gitlab/rest/<stem>
 - the CALL half: `sent_call` reads a request the fake host recorded (method, path after `/api/v4`, the names of its
   query pairs and body members), and `call_problems` names every difference between it and the section.
 
-A path parameter is a `:name`, or a `*name` glob whose value keeps its `/` (issue #40, design.md D3). The call half
+A path parameter is a `:name`, or a `*name` glob whose value keeps its `/` (issue #40, design.md D3); a name continues
+past a `-` that a name character follows, so `:module-name` is one parameter (issue #43, design.md D4). The call half
 writes a section's path as a call sends it: each optional `(...)` group's parentheses dropped, each backslash-escaped
 parenthesis written as the parenthesis alone, each `:name` and `*name` replaced by its value. The reference half reads
-a `query`, `body` or `form` row naming a `*name` of the record's path as that path parameter, never as a row the record
-lacks. Both halves read a raw-body record, one with a `content_type`, against its section without the `file` row, the
-request body, and with every other `body` row a `query` row (issue #40, design.md D5).
+a `query`, `body` or `form` row naming a path parameter of the record's path, of either sigil, as that path parameter,
+never as a row the record lacks. Both halves read a raw-body record, one with a `content_type`, against its section
+without the `file` row, the request body, and with every other `body` row a `query` row (issue #40, design.md D5).
+
+A path that starts with `/<route-prefix>/` is a protocol route (issue #43, design.md D4). The reference half gives every
+section of a page the values of the page's `` `<route-prefix>` on this page is one of: `` line, in order, as
+`Section.route_prefixes`, and `prefix_problems` names a record whose `route_prefixes` differ from them, or from `()` on
+a path that does not start so. The call half sends such a record with `--route-prefix` and the page's first value, and
+judges the sent path against the section with `/<route-prefix>` replaced by that value (`routed_section`); it writes the
+value with its own replacement and never calls `registry.route`.
 
 `is_unreachable` states D5's rule: an operation no `sff-test-*` project on GitLab.com can reach, by its index row's
 path (`/admin/`, `/geo/`, `/hooks/`) or by an effective `Offering:` that does not name `GitLab.com`. For such an
@@ -111,14 +119,21 @@ RAW_BODY_ROW = "file"
 PARENT_KEY = re.compile(pattern=r"[A-Za-z_][A-Za-z0-9_]*\[[A-Za-z0-9_]+\]")
 BRACKET = "["
 # A path parameter: `:name`, one segment, or `*name`, a glob whose value keeps its `/` (`/packages/npm/*package_name`).
-PATH_PLACEHOLDER = re.compile(pattern=r"(?P<sigil>[:*])(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
-GROUP_SIGIL = "sigil"
-GLOB_SIGIL = "*"
+# A name continues past a `-` that a name character follows (`:module-name`); `:name-/` still ends before its `-`.
+PATH_PLACEHOLDER = re.compile(pattern=r"(?P<sigil>[:*])(?P<name>[A-Za-z_][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)")
 # A parenthesis of an optional group, `(` or `)` with no backslash before it (`(*path/)`), dropped from a written path.
 UNESCAPED_PARENTHESIS = re.compile(pattern=r"(?<!\\)[()]")
 # A parenthesis the path writes escaped, `\(` or `\)` (`Packages\(\)`), written without its backslash.
 ESCAPED_PARENTHESIS = re.compile(pattern=r"\\(?P<parenthesis>[()])")
 GROUP_PARENTHESIS = "parenthesis"
+# A protocol route's path starts `/<route-prefix>/`; its page's line under the `##` heading names the prefix values,
+# each backticked after the colon (issue #43, design.md D4).
+ROUTE_PREFIX = "/<route-prefix>"
+ROUTE_PREFIX_PATH_START = ROUTE_PREFIX + "/"
+PREFIX_LINE_START = "`<route-prefix>` on this page is one of:"
+PREFIX_VALUE = re.compile(pattern=r"`(?P<value>[^`]+)`")
+GROUP_VALUE = "value"
+NO_ROUTE_PREFIXES: Tuple[str, ...] = ()
 
 # conventions.md "Offset-based" and "Keyset-based": the query names a paged record may send or not, by the value of
 # its `registry.Paging` member.
@@ -162,6 +177,7 @@ OPTION_QUERY = "--query"
 OPTION_RAW_FIELD = "-f"
 OPTION_FIELD = "-F"
 OPTION_FILE = "--file"
+OPTION_ROUTE_PREFIX = "--route-prefix"
 ASSIGNED = "="
 TEST_VALUE = "v1"
 TYPED_VALUES: Dict[str, Any] = {
@@ -261,12 +277,14 @@ NO_ROW = Row(location="")
 
 @dataclass(frozen=True)
 class Section:
-    """One `###` section of a `rest/<stem>.md` page, keyed `<stem>#<anchor>`."""
+    """One `###` section of a `rest/<stem>.md` page, keyed `<stem>#<anchor>`, with the prefix values of its page's
+    `<route-prefix>` line, in the line's order (none for a page without one)."""
 
     operation_id: str
     endpoints: Tuple[Tuple[str, str], ...]
     rows: Mapping[str, Row]
     offering: Optional[str]
+    route_prefixes: Tuple[str, ...] = NO_ROUTE_PREFIXES
 
     @property
     def attributes(self) -> Dict[str, str]:
@@ -312,6 +330,16 @@ def line_offering(*, lines: Iterable[str], start: str) -> Optional[str]:
             match = OFFERING.search(string=line)
             return match.group(GROUP_OFFERING).strip() if match else None
     return None
+
+
+def line_route_prefixes(*, lines: Iterable[str]) -> Tuple[str, ...]:
+    """The backticked values after the colon of the first line beginning with `PREFIX_LINE_START`, in order; none when
+    no line begins so."""
+    for line in lines:
+        if line.startswith(PREFIX_LINE_START):
+            values = line[len(PREFIX_LINE_START) :]
+            return tuple(match.group(GROUP_VALUE) for match in PREFIX_VALUE.finditer(string=values))
+    return NO_ROUTE_PREFIXES
 
 
 def section_endpoints(*, lines: Iterable[str]) -> Tuple[Tuple[str, str], ...]:
@@ -360,22 +388,25 @@ def table_rows(*, lines: Iterable[str], attribute_name: Callable[..., str]) -> D
 
 
 def page_sections(*, stem: str, text: str, attribute_name: Callable[..., str]) -> Iterator[Section]:
-    """The `###` sections of one page; a section runs from its heading to the next heading, and a page's offering is
-    the one on the `Docs page:` line under its `##` heading."""
+    """The `###` sections of one page; a section runs from its heading to the next heading, and a page's offering and
+    prefix values are the ones on the `Docs page:` and `<route-prefix>` lines under its `##` heading."""
     lines = text.splitlines()
     headings = list(page_headings(lines=lines))
     page_offering: Optional[str] = None
+    page_prefixes = NO_ROUTE_PREFIXES
     for position, (number, level, anchor) in enumerate(headings):
         end = headings[position + 1][0] if position + 1 < len(headings) else len(lines)
         body = lines[number + 1 : end]
         if level == PAGE_LEVEL:
             page_offering = line_offering(lines=body, start=PAGE_LINE_START)
+            page_prefixes = line_route_prefixes(lines=body)
         elif level == SECTION_LEVEL:
             yield Section(
                 operation_id=f"{stem}{ID_SEPARATOR}{anchor}",
                 endpoints=section_endpoints(lines=body),
                 rows=table_rows(lines=body, attribute_name=attribute_name),
                 offering=line_offering(lines=body, start=SECTION_LINE_START) or page_offering,
+                route_prefixes=page_prefixes,
             )
 
 
@@ -422,13 +453,23 @@ def paging_parameters(*, record: Any) -> FrozenSet[str]:
     return PAGING_PARAMETERS.get(record.paging.value, NO_PAGING_PARAMETERS)
 
 
-def glob_names(*, path: str) -> FrozenSet[str]:
-    """The `*name` path parameters of a path, without the sigil: the names `PATH_PLACEHOLDER` matches with `*`."""
-    return frozenset(
-        match.group(GROUP_NAME)
-        for match in PATH_PLACEHOLDER.finditer(string=path)
-        if match.group(GROUP_SIGIL) == GLOB_SIGIL
-    )
+def path_names(*, path: str) -> FrozenSet[str]:
+    """The path parameters of a path, without the sigil: every name `PATH_PLACEHOLDER` matches, `:name` and `*name`
+    alike (issue #43 AC-1.5: a row naming one is that path parameter, whatever its `In`)."""
+    return frozenset(match.group(GROUP_NAME) for match in PATH_PLACEHOLDER.finditer(string=path))
+
+
+def prefix_problems(*, record: Any, section: Section) -> List[str]:
+    """A record whose `route_prefixes` differ from the section's on a path that starts with `/<route-prefix>/`, or from
+    `()` on any other path, naming both tuples (issue #43, design.md D4)."""
+    if record.path.startswith(ROUTE_PREFIX_PATH_START):
+        expected, source = section.route_prefixes, "the values of its page's <route-prefix> line"
+    else:
+        expected, source = NO_ROUTE_PREFIXES, f"none, as its path does not start with {ROUTE_PREFIX_PATH_START}"
+    declared = tuple(record.route_prefixes)
+    if declared == expected:
+        return []
+    return [f"the route_prefixes {declared!r} are not {expected!r}, {source}"]
 
 
 def endpoint_problems(*, record: Any, section: Section, registry: ModuleType) -> List[str]:
@@ -481,19 +522,20 @@ def record_problems(*, record: Any, section: Optional[Section]) -> List[str]:
     section = documented_raw_body(section=section, record=record)
     declared = {param.name for param in record.params}
     optional = paging_parameters(record=record)
-    globs = glob_names(path=record.path)
+    parameters = path_names(path=record.path)
     problems = endpoint_problems(record=record, section=section, registry=registry)
     problems.extend(param_problems(record=record, section=section, registry=registry))
     problems.extend(
         f"the {location} row {name!r} is not declared by the record"
         for name, location in section.attributes.items()
-        if location in SENT_PLACES and name not in declared and name not in optional and name not in globs
+        if location in SENT_PLACES and name not in declared and name not in optional and name not in parameters
     )
     problems.extend(
         f"the fixed name {name!r} is not a query row"
         for name, _ in record.fixed
         if section.rows.get(name, NO_ROW).location != IN_QUERY
     )
+    problems.extend(prefix_problems(record=record, section=section))
     return [f"{record.operation_id}: {problem}" for problem in problems]
 
 
@@ -627,6 +669,23 @@ def documented_raw_body(*, section: Section, record: Any) -> Section:
     return replace(section, rows=rows)
 
 
+def routed_path(*, path: str, prefix: str) -> str:
+    """``path`` with its leading `/<route-prefix>` replaced by ``prefix``; a path that does not start with
+    `/<route-prefix>/` unchanged. N's own replacement: it never calls `registry.route` (issue #43, design.md D4)."""
+    if not path.startswith(ROUTE_PREFIX_PATH_START):
+        return path
+    return prefix + path[len(ROUTE_PREFIX) :]
+
+
+def routed_section(*, section: Section, prefix: Optional[str]) -> Section:
+    """The section as a call under ``prefix`` sends it: each endpoint path's `/<route-prefix>` replaced by ``prefix``
+    (`routed_path`); for ``None``, the section unchanged (issue #43, design.md D4)."""
+    if prefix is None:
+        return section
+    endpoints = tuple((method, routed_path(path=path, prefix=prefix)) for method, path in section.endpoints)
+    return replace(section, endpoints=endpoints)
+
+
 # --- Records and calls the tests build ----------------------------------------------------------------------------
 
 
@@ -646,17 +705,32 @@ def typed_argument(*, param: Any, registry: ModuleType, upload: Path) -> Tuple[s
     return OPTION_FIELD, json.dumps(obj=value), value
 
 
-def record_call(*, record: Any, registry: ModuleType, upload: Path) -> Tuple[List[str], Dict[str, Any]]:
-    """The `call` argv that gives every path parameter and `Param` of ``record`` a typed value, and those values."""
+def call_prefix(*, record: Any, section: Section) -> Optional[str]:
+    """The prefix a call of ``record`` names: for a record whose path starts with `/<route-prefix>/`, the first prefix
+    value of its section's page; for any other record, or a page with none, ``None`` (issue #43, design.md D4)."""
+    if record.path.startswith(ROUTE_PREFIX_PATH_START) and section.route_prefixes:
+        return section.route_prefixes[0]
+    return None
+
+
+def record_call(
+    *, record: Any, registry: ModuleType, upload: Path, prefix: Optional[str] = None
+) -> Tuple[List[str], Dict[str, Any]]:
+    """The `call` argv that gives every path parameter and `Param` of ``record`` a typed value, and those values. Given
+    a ``prefix``, the argv ends with `--route-prefix <prefix>`, and the path parameters are those of the record's path
+    with `/<route-prefix>` replaced by it (`routed_path`; issue #43, design.md D4)."""
     argv = [CALL_COMMAND, record.operation_id]
     values: Dict[str, Any] = {}
-    for name in dict.fromkeys(registry.placeholders(path=record.path)):
+    path = record.path if prefix is None else routed_path(path=record.path, prefix=prefix)
+    for name in dict.fromkeys(registry.placeholders(path=path)):
         argv.extend([OPTION_PATH, f"{name}{ASSIGNED}{TEST_VALUE}"])
         values[name] = TEST_VALUE
     for param in record.params:
         option, text, value = typed_argument(param=param, registry=registry, upload=upload)
         argv.extend([option, f"{param.name}{ASSIGNED}{text}"])
         values[param.name] = value
+    if prefix is not None:
+        argv.extend([OPTION_ROUTE_PREFIX, prefix])
     return argv, values
 
 
@@ -975,6 +1049,146 @@ def test_a_path_form_is_read_and_sent_as_written() -> None:
     ]
 
 
+# --- Issue #43 AC-1.5, AC-2.1, AC-3.1, AC-4.3, UB-4: the route prefix and the hyphenated name (design.md D4) -------
+
+# The prefix values of the npm, Debian and NuGet pages of `rest/package.md`, as each page's `<route-prefix>` line writes
+# them, in its order; a section of each page on a path that starts with `/<route-prefix>/`.
+NPM_PREFIXES = ("/packages/npm", "/projects/:id/packages/npm", "/groups/:id/-/packages/npm")
+DEBIAN_PREFIXES = ("/projects/:id/packages/debian", "/groups/:id/-/packages/debian")
+NUGET_PREFIXES = ("/groups/:id/-/packages/nuget", "/projects/:id/packages/nuget")
+DIST_TAGS_ID = "package#list-all-dist-tags"
+DIST_TAGS_PATH = "/<route-prefix>/-/package/:package_name/dist-tags"
+RELEASE_FILE_ID = "package#download-a-distribution-release-file"
+SEARCH_ID = "package#search-for-packages"
+# npm "Upload a package file", a path of the npm page that does not start with `/<route-prefix>/`; a raw-body record,
+# its `versions` row a query `Param` (design.md D5, D6).
+NPM_UPLOAD_ID = "package#upload-a-package-file-4"
+NPM_UPLOAD_PATH = "/projects/:id/packages/npm/:package_name"
+NPM_UPLOAD_DECLARED = "versions"
+# `package#list-all-dist-tags` under the npm group value, every value TEST_VALUE: the routed endpoint, the path a call
+# sends, and two it does not (the template unrouted, another prefix value).
+GROUP_PREFIX = "/groups/:id/-/packages/npm"
+DIST_TAGS_ROUTED_PATH = "/groups/:id/-/packages/npm/-/package/:package_name/dist-tags"
+DIST_TAGS_VALUES: Dict[str, Any] = {name: TEST_VALUE for name in ("id", "package_name")}
+DIST_TAGS_SENT_PATH = "/groups/v1/-/packages/npm/-/package/v1/dist-tags"
+DIST_TAGS_UNROUTED_PATH = "/<route-prefix>/-/package/v1/dist-tags"
+DIST_TAGS_OTHER_PREFIX_PATH = "/projects/v1/packages/npm/-/package/v1/dist-tags"
+# Terraform "Upload module": the one index path holding a hyphenated name; its entry has the three as `body` rows.
+UPLOAD_MODULE_ID = "package#upload-module"
+UPLOAD_MODULE_PATH = "/projects/:id/packages/terraform/modules/:module-name/:module-system/:module-version/file"
+UPLOAD_MODULE_NAMES = ("id", "module-name", "module-system", "module-version")
+UPLOAD_MODULE_SENT_PATH = "/projects/v1/packages/terraform/modules/v1/v1/v1/file"
+# #40's `registry.PLACEHOLDER` name, copied: the path parameters every index path but the upload-module key holds.
+BASE_PLACEHOLDER = re.compile(pattern=r"[:*](?P<name>[A-Za-z_][A-Za-z0-9_]*)")
+
+
+def test_a_route_prefix_and_a_hyphenated_name_are_read_as_written() -> None:
+    """The reader gives a section of the npm, Debian and NuGet pages its page's prefix values in line order;
+    `record_problems` passes `package#list-all-dist-tags` built with the npm values and `package#upload-module` built
+    with no `Param` beside its three hyphenated `body` rows, and names, through `prefix_problems`, the dist-tags record
+    built without `/packages/npm` and the npm upload built with the npm values. The call half passes the upload-module
+    path sent with every value written in, and, on the dist-tags section routed under the npm group value, the path that
+    value writes; it names the template unrouted and another value's path. `call_prefix` and `record_call` give a
+    prefix record the page's first value and `--route-prefix` (issue #43, design.md D4)."""
+    registry = gitlab_module(name="registry")
+    transport = gitlab_module(name="transport")
+    dist_tags = registry.RestOperation(
+        operation_id=DIST_TAGS_ID, method="GET", path=DIST_TAGS_PATH, route_prefixes=NPM_PREFIXES
+    )
+    dist_tags_without_instance = registry.RestOperation(
+        operation_id=DIST_TAGS_ID, method="GET", path=DIST_TAGS_PATH, route_prefixes=NPM_PREFIXES[1:]
+    )
+    npm_upload = registry.RestOperation(
+        operation_id=NPM_UPLOAD_ID,
+        method="PUT",
+        path=NPM_UPLOAD_PATH,
+        params=(registry.Param(name=NPM_UPLOAD_DECLARED, location=registry.Location.QUERY, required=True),),
+        content_type=transport.CONTENT_TYPE_JSON,
+        route_prefixes=NPM_PREFIXES,
+    )
+    upload_module = registry.RestOperation(
+        operation_id=UPLOAD_MODULE_ID,
+        method="PUT",
+        path=UPLOAD_MODULE_PATH,
+        content_type=transport.CONTENT_TYPE_OCTET_STREAM,
+    )
+    sections = reference_sections(rest_dir=REST_DIR)
+    dist_tags_section, module_section = sections[DIST_TAGS_ID], sections[UPLOAD_MODULE_ID]
+
+    page_prefixes = {
+        DIST_TAGS_ID: NPM_PREFIXES,
+        RELEASE_FILE_ID: DEBIAN_PREFIXES,
+        SEARCH_ID: NUGET_PREFIXES,
+        NPM_UPLOAD_ID: NPM_PREFIXES,
+        UPLOAD_MODULE_ID: NO_ROUTE_PREFIXES,
+    }
+    assert {operation_id: sections[operation_id].route_prefixes for operation_id in page_prefixes} == page_prefixes
+    assert record_problems(record=dist_tags, section=dist_tags_section) == []
+    for record, expected in ((dist_tags_without_instance, NPM_PREFIXES), (npm_upload, NO_ROUTE_PREFIXES)):
+        section = sections[record.operation_id]
+        problems = prefix_problems(record=record, section=section)
+        assert len(problems) == 1, (record.operation_id, problems)
+        assert repr(tuple(record.route_prefixes)) in problems[0] and repr(expected) in problems[0], problems
+        assert record_problems(record=record, section=section) == [f"{record.operation_id}: {problems[0]}"]
+
+    assert path_names(path=UPLOAD_MODULE_PATH) == frozenset(UPLOAD_MODULE_NAMES)
+    assert {name: module_section.attributes.get(name) for name in UPLOAD_MODULE_NAMES} == {
+        "id": IN_PATH,
+        "module-name": IN_BODY,
+        "module-system": IN_BODY,
+        "module-version": IN_BODY,
+    }
+    assert record_problems(record=upload_module, section=module_section) == []
+    module_values = {name: TEST_VALUE for name in UPLOAD_MODULE_NAMES}
+    sent = SentCall(method="PUT", path=UPLOAD_MODULE_SENT_PATH)
+    assert call_problems(section=module_section, values=module_values, sent=sent) == []
+
+    assert routed_section(section=dist_tags_section, prefix=None) == dist_tags_section
+    routed = routed_section(section=dist_tags_section, prefix=GROUP_PREFIX)
+    assert routed.endpoints == (("GET", DIST_TAGS_ROUTED_PATH),)
+    sent = SentCall(method="GET", path=DIST_TAGS_SENT_PATH)
+    assert call_problems(section=routed, values=DIST_TAGS_VALUES, sent=sent) == []
+    for path in (DIST_TAGS_UNROUTED_PATH, DIST_TAGS_OTHER_PREFIX_PATH):
+        problems = call_problems(section=routed, values=DIST_TAGS_VALUES, sent=SentCall(method="GET", path=path))
+        assert any(repr(path) in problem for problem in problems), (path, problems)
+
+    assert call_prefix(record=dist_tags, section=dist_tags_section) == NPM_PREFIXES[0]
+    assert call_prefix(record=upload_module, section=module_section) is None
+    argv, values = record_call(record=dist_tags, registry=registry, upload=Path(UPLOAD_NAME), prefix=GROUP_PREFIX)
+    assert argv == [
+        CALL_COMMAND,
+        DIST_TAGS_ID,
+        OPTION_PATH,
+        f"id{ASSIGNED}{TEST_VALUE}",
+        OPTION_PATH,
+        f"package_name{ASSIGNED}{TEST_VALUE}",
+        OPTION_ROUTE_PREFIX,
+        GROUP_PREFIX,
+    ]
+    assert values == DIST_TAGS_VALUES
+
+
+def test_only_the_upload_module_path_holds_a_hyphenated_name() -> None:
+    """For every row of `operations-index.md`, `registry.placeholders` gives the names the literal copy of #40's
+    pattern finds in its path; the one row of `package#upload-module` gives its four names, three of them hyphenated,
+    instead (UB-4; issue #43, design.md D1)."""
+    registry = gitlab_module(name="registry")
+    rows = index_rows(path=INDEX)
+    assert [row.path for row in rows if row.operation_id == UPLOAD_MODULE_ID] == [UPLOAD_MODULE_PATH]
+
+    differing: Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...]]] = {}
+    for row in rows:
+        expected: Tuple[str, ...]
+        if row.operation_id == UPLOAD_MODULE_ID:
+            expected = UPLOAD_MODULE_NAMES
+        else:
+            expected = tuple(match.group(GROUP_NAME) for match in BASE_PLACEHOLDER.finditer(string=row.path))
+        given = registry.placeholders(path=row.path)
+        if given != expected:
+            differing[f"{row.method} {row.path} -> {row.operation_id}"] = (given, expected)
+    assert not differing, differing
+
+
 # --- AC-3.1, AC-1.1: every declared record ------------------------------------------------------------------------
 
 
@@ -1029,7 +1243,8 @@ def test_every_record_is_sent_as_its_section_documents(
         if section is None:
             problems.append(f"{record.operation_id}: no section of rest/*.md has this id")
             continue
-        argv, values = record_call(record=record, registry=registry, upload=upload)
+        prefix = call_prefix(record=record, section=section)
+        argv, values = record_call(record=record, registry=registry, upload=upload, prefix=prefix)
         fake.script_next(body=EMPTY_OBJECT if record.paging is registry.Paging.NONE else EMPTY_PAGE)
         sent_before, logged_before = len(fake.requests), len(caplog.records)
         code = fixtures.run_main(wrapper=wrapper, argv=argv)
@@ -1037,7 +1252,12 @@ def test_every_record_is_sent_as_its_section_documents(
         logged = [entry.getMessage() for entry in caplog.records[logged_before:]]
         problems.extend(
             sent_record_problems(
-                record=record, section=section, values=values, code=code, requests=requests, logged=logged
+                record=record,
+                section=routed_section(section=section, prefix=prefix),
+                values=values,
+                code=code,
+                requests=requests,
+                logged=logged,
             )
         )
         if not requests:

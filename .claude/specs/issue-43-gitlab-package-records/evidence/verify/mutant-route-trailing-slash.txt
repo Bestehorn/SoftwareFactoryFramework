@@ -1,0 +1,48 @@
+# mutant route-trailing-slash: one replacement in src/payload/scripts/gitlab_api/registry.py
+# old:
+#               if value == prefix:
+# new:
+#               if prefix is not None and value == prefix.rstrip("/"):
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [214 items]
+
+........................................................................ [ 33%]
+........................................................................ [ 67%]
+............................F...............F.........................   [100%]
+================================== FAILURES ===================================
+_ test_a_route_prefix_the_record_does_not_list_is_refused[listed-value-and-a-slash] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:347: in refused_messages
+    assert code == EXIT_USAGE, f"a refused call exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a refused call exits 2, got 0; stderr:
+E     
+E   assert 0 == 2
+________________ test_route_accepts_only_the_records_prefixes _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:242: in test_route_accepts_only_the_records_prefixes
+    @given(prefix=st.text() | st.sampled_from(elements=NPM_ROUTE_PREFIXES))
+                   ^^^
+..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:263: in test_route_accepts_only_the_records_prefixes
+    with pytest.raises(expected_exception=ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+E   Failing explicit example: test_route_accepts_only_the_records_prefixes(
+E       prefix='/packages/npm/',
+E   )
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[listed-value-and-a-slash]
+FAILED test/test_gitlab_api_properties.py::test_route_accepts_only_the_records_prefixes
+================== 2 failed, 212 passed in 132.29s (0:02:12) ==================
+exit=1
+# restored src/payload/scripts/gitlab_api/registry.py sha256 9f1656b155c155aaef8d6de2ec605be07ec27049ac49b456f1065619b8220154  # pragma: allowlist secret

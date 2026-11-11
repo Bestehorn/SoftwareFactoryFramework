@@ -1,0 +1,15 @@
+# mutant wave 3: gitlab_wrapper.py, docs/forLLMConsumption.md, docs/findings-ledger.md written from origin/main (70c4dba); wave-3 Run line
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [189 items]
+
+........................................................................ [ 38%]
+........................................................................ [ 76%]
+.............................................                            [100%]
+============================ 189 passed in 12.80s =============================
+exit=0

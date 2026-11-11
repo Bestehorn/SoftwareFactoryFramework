@@ -1,0 +1,33 @@
+# Whole-suite verdict, read through scripts/github_wrapper.py (main checkout), 2026-11-11
+# get-run 43041025640 (fields quoted verbatim)
+"head_branch": "issue-43-gitlab-package-records",
+"head_sha": "7d20ead21f4c6dae02b63e6cf633d3044d968363",  # pragma: allowlist secret
+"event": "pull_request",
+"head_commit": {"id": "7d20ead21f4c6dae02b63e6cf633d3044d968363", "tree_id": "4e28bc4ee4be5969a5f916f0f3f0e3518ff3d521", ...}  # pragma: allowlist secret
+"pull_requests": [{"number": 65, "base": {"ref": "main", "sha": "70c4dba4b479dc4b58f8a06ec4515bcb45fd0de6"}}]  # pragma: allowlist secret
+# local worktree: git rev-parse HEAD; git rev-parse "7d20ead^{tree}"
+7d20ead21f4c6dae02b63e6cf633d3044d968363  # pragma: allowlist secret
+4e28bc4ee4be5969a5f916f0f3f0e3518ff3d521  # pragma: allowlist secret
+# wait-run 43041025640 --timeout-seconds 540 (exit 0)
+{"run_id": 43041025640, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43041025640"}
+# get-jobs 43041025640
+130592516968   completed    success      verify (tests)
+130592517429   completed    success      verify (lint)
+130592517679   completed    success      verify (types)
+130592517681   completed    success      verify (security)
+130593594299   completed    success      report
+# get-job-logs 130592516968 (verify (tests)), lines found by search of the complete log
+HEAD is now at 2ea94d9 Merge 7d20ead21f4c6dae02b63e6cf633d3044d968363 into 70c4dba4b479dc4b58f8a06ec4515bcb45fd0de6  # pragma: allowlist secret
+Run python scripts/run_checks.py --group tests
+run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+src/payload/scripts/gitlab_api/commands/call.py                               227      0   100%
+src/payload/scripts/gitlab_api/families/package.py                             10      0   100%
+src/payload/scripts/gitlab_api/registry.py                                    273      3    99%   315, 617, 621
+src/payload/scripts/gitlab_wrapper.py                                         120      7    94%   120, 173-175, 179, 344, 367-368
+src/payload/test/test_wrapper_delivery.py                                      53      0   100%
+======================= 3577 passed in 80.62s (0:01:20) ========================
+1053 passed in 5.72s
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+# No line of the log matches FAILED, ERROR, skipped or xfail.
+# git blame of registry.py 315, 617, 621: 678c076b and 140bbe44 (2026-11-10), base commits, not this change.
+Verdict: GREEN on the pushed SHA

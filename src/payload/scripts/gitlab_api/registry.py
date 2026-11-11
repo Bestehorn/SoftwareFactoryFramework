@@ -11,10 +11,16 @@ The REST records live in the endpoint family modules of
 scanning the package, so no file lists them.
 
 - ``lookup`` returns the record declared with an id (``plan#update-an-issue``), over every family and ``graphql_only``.
+- ``route`` writes the route prefix a call names into a record whose path starts with ``/<route-prefix>/``: the one of
+  the record's ``route_prefixes`` equal to it, the text the record holds, in place of ``/<route-prefix>``. Any other
+  text, or none, is refused for such a record, and any prefix for another record, which ``route`` returns itself when
+  given none (issue #43, design.md D2).
 - ``expand`` writes the path values into a record's path: a ``:name`` as ONE percent-encoded segment (AC-2.2), a
   ``*name`` glob with each ``/`` kept and each part between them such a segment; an optional ``(...)`` group is written
   only when its parameters have values, and a parenthesis the path escapes with a backslash is sent without it (issue
-  #40, design.md D1).
+  #40, design.md D1). A name continues past a ``-`` that a name character follows (``:module-name``). A path that
+  starts with ``/<route-prefix>/`` is refused before anything is written: it is expanded only once ``route`` has
+  written its prefix (issue #43, design.md D1, D2).
 - ``encode`` turns the other values into the query pairs, form pairs, JSON body and files of a request, arrays and
   hashes in GitLab's bracket form (AC-2.3; ``conventions.md`` "Arrays, hashes and arrays of hashes").
 - ``attribute_name`` names the ``Param`` of a reference table name (``iids[]`` is ``iids``); ``variables`` names the
@@ -22,9 +28,10 @@ scanning the package, so no file lists them.
   whose type is ``Upload`` or a list of ``Upload``, each mapped to whether it is a list (issue #44, design.md D4).
 - ``split_uploads`` takes the files out of a GraphQL call's variables, leaving ``None`` where each one goes, and pairs
   each file with the operations path it fills, for ``Transport.graphql``'s multipart request (issue #44, design.md D4).
-- ``send`` sends one call of a REST record through a ``gitlab_api.transport.Transport`` and returns its ``Response``:
-  a record with a ``content_type`` through ``Transport.request_raw``, the bytes it is given as the body, any other
-  through ``Transport.request`` (issue #40, design.md D5); ``call`` sends one call of any record and returns its
+- ``send`` sends one call of a REST record through a ``gitlab_api.transport.Transport`` and returns its ``Response``,
+  the record first routed by ``route`` with the ``prefix`` it is given (issue #43, design.md D2): a record with a
+  ``content_type`` through ``Transport.request_raw``, the bytes it is given as the body, any other through
+  ``Transport.request`` (issue #40, design.md D5); ``call`` sends one call of any record and returns its
   value; ``pages`` returns the items of every page of a REST list record. Each looks the record up and encodes its
   values before anything is sent, so a value the record does not declare is refused with nothing sent (AC-1.1).
 
@@ -34,13 +41,14 @@ Standard library only; Python 3.9.
 from __future__ import annotations
 
 import importlib
+import json
 import pkgutil
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 from pathlib import Path
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterator, List, Mapping, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterator, List, Mapping, Optional, Tuple, Union, overload
 from urllib.parse import quote
 
 import gitlab_api.families
@@ -51,12 +59,21 @@ if TYPE_CHECKING:
     from gitlab_api.transport import Response, Transport
 
 # A path parameter: `:name`, sent as ONE segment, at a segment start (`/projects/:id`) or inside one
-# (`binary-:architecture`); or `*name`, a glob whose value keeps its `/` (`/packages/npm/*package_name`).
-PLACEHOLDER = re.compile(pattern=r"(?P<sigil>[:*])(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
+# (`binary-:architecture`); or `*name`, a glob whose value keeps its `/` (#40 D1). A name continues past a `-` that a
+# name character follows (`:module-name`); `:name-/` still ends before its `-`.
+PLACEHOLDER = re.compile(pattern=r"(?P<sigil>[:*])(?P<name>[A-Za-z_][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)")
 GROUP_SIGIL = "sigil"
 GROUP_NAME = "name"
 GLOB_SIGIL = "*"
 GLOB_SEPARATOR = "/"
+# The template text a protocol route's path starts with, followed by SEGMENT_SEPARATOR, where its page lists the
+# values it stands for (`rest/package.md`: "`<route-prefix>` on this page is one of: ..."); `route` writes one of the
+# record's `route_prefixes` in its place (issue #43, design.md D2).
+ROUTE_PREFIX = "/<route-prefix>"
+SEGMENT_SEPARATOR = "/"
+# How `route`'s refusal lists the record's route prefixes, and what it lists when the record holds none.
+LIST_SEPARATOR = ", "
+NOTHING_LISTED = "none"
 # An optional group: an unescaped `(`, text with no parenthesis, an unescaped `)` — `(*path/)`.
 OPTIONAL_GROUP = re.compile(pattern=r"(?<!\\)\((?P<inner>[^()]*)(?<!\\)\)")
 GROUP_INNER = "inner"
@@ -142,6 +159,7 @@ class RestOperation:
     paging: Paging = Paging.NONE
     fixed: Tuple[Pair, ...] = ()  # query values the endpoint requires on every call
     content_type: Optional[str] = None  # the media type of a body that is the bytes `call --input` gives
+    route_prefixes: Tuple[str, ...] = ()  # on a path starting `/<route-prefix>/`, its page's values, in line order
 
 
 @dataclass(frozen=True)
@@ -224,12 +242,63 @@ def lookup(*, operation_id: str) -> Operation:
     return declarations[0][1]
 
 
+# --- Route prefixes ---------------------------------------------------------------------------------------------
+
+
+def takes_route_prefix(*, path: str) -> bool:
+    """Whether ``path`` starts with ``ROUTE_PREFIX`` followed by ``/`` (issue #43, design.md D2)."""
+    return path.startswith(ROUTE_PREFIX + SEGMENT_SEPARATOR)
+
+
+@overload
+def route(*, operation: RestOperation, prefix: Optional[str]) -> RestOperation: ...
+
+
+@overload
+def route(*, operation: GraphQLOperation, prefix: Optional[str]) -> GraphQLOperation: ...
+
+
+def route(*, operation: Operation, prefix: Optional[str]) -> Operation:
+    """The record a call of ``operation`` under the route prefix ``prefix`` sends (issue #43, design.md D2).
+
+    A REST record whose path ``takes_route_prefix`` gives, for a ``prefix`` equal as text to one of its
+    ``route_prefixes``, a ``dataclasses.replace`` copy whose path is that value followed by the path after
+    ``ROUTE_PREFIX``: the text written is the value the record holds, and the caller's text only selects it. ``None``
+    or any other text raises ``ValueError`` naming the ID, the text given rendered with ``json.dumps``, and each of
+    the record's ``route_prefixes``. Any other record, a GraphQL record included, is returned itself for ``None``, and
+    any text raises ``ValueError`` naming the ID and saying it takes no route prefix. The routed record is a value of
+    the call; no family declares it."""
+    if isinstance(operation, RestOperation) and takes_route_prefix(path=operation.path):
+        for value in operation.route_prefixes:
+            if value == prefix:
+                # positional: replace takes its object positional-only
+                return replace(operation, path=value + operation.path[len(ROUTE_PREFIX) :])
+        listed = LIST_SEPARATOR.join(json.dumps(obj=value) for value in operation.route_prefixes) or NOTHING_LISTED
+        if prefix is None:
+            raise ValueError(
+                f"{operation.operation_id!r} is sent under one of its route prefixes, {listed}, in place of "
+                f"{ROUTE_PREFIX}; none was given"
+            )
+        raise ValueError(
+            f"{operation.operation_id!r}: the route prefix {json.dumps(obj=prefix)} is none of its route prefixes, "
+            f"{listed}"
+        )
+    if prefix is None:
+        return operation
+    raise ValueError(
+        f"{operation.operation_id!r} takes no route prefix: its path does not start with "
+        f"{ROUTE_PREFIX}{SEGMENT_SEPARATOR}"
+    )
+
+
 # --- Path expansion ---------------------------------------------------------------------------------------------
 
 
 def placeholders(*, path: str) -> Tuple[str, ...]:
     """The path parameters of a path template, in order, without the sigil: every ``:name`` and every ``*name`` glob,
-    inside an optional ``(...)`` group or not (issue #40, design.md D1)."""
+    inside an optional ``(...)`` group or not (issue #40, design.md D1). A name continues past a ``-`` that a name
+    character follows, so ``:module-name`` is the one parameter ``module-name``, and ``:name-/`` is ``name`` (issue
+    #43, design.md D1)."""
     return tuple(match.group(GROUP_NAME) for match in PLACEHOLDER.finditer(string=path))
 
 
@@ -279,7 +348,16 @@ def expand(*, operation: RestOperation, values: Mapping[str, Any]) -> str:
     a group, an escape or a parameter. ``quote(str(value), safe="")`` encodes ``/`` as well, so ``group/project``
     becomes ``group%2Fproject`` (``conventions.md`` "URL-encoding path parameters": the default ``safe="/"`` is
     wrong). An empty value, ``.`` and ``..``, and a glob part that is one of them, raise ``GitLabAPIError``; a path
-    parameter without a value outside an optional group raises ``ValueError``."""
+    parameter without a value outside an optional group raises ``ValueError``.
+
+    A path that ``takes_route_prefix`` raises ``ValueError`` before anything is written: a prefix record is expanded
+    only once ``route`` has written its prefix, so ``pages``, which takes no prefix, sends no prefix path unrouted
+    (issue #43, design.md D2)."""
+    if takes_route_prefix(path=operation.path):
+        raise ValueError(
+            f"{operation.operation_id!r}: its path starts with {ROUTE_PREFIX}{SEGMENT_SEPARATOR}, so it is expanded "
+            "only once route has written one of its route prefixes"
+        )
 
     def group(match: re.Match[str]) -> str:
         inner = match.group(GROUP_INNER)
@@ -469,17 +547,23 @@ def send(
     *,
     values: Optional[Mapping[str, Any]] = None,
     data: Optional[bytes] = None,
+    prefix: Optional[str] = None,
 ) -> Response:
     """One call of the REST record declared with ``operation_id``, its ``Response`` returned (issue #41, design.md D2).
 
-    The record is found with this module's ``lookup``, its values encoded and its path expanded first — a value it does
-    not declare raises ``encode``'s ``ValueError`` before any request. A record whose ``content_type`` is ``None`` is
-    then sent with ``transport.request``; any other with ``transport.request_raw``, ``data`` unchanged as its body under
-    the record's ``content_type`` and its query pairs as its query (issue #40, design.md D5). A GraphQL record, and a
+    The record is found with this module's ``lookup`` and, a GraphQL record refused, routed with ``route`` under
+    ``prefix`` (issue #43, design.md D2): a record whose path starts with ``/<route-prefix>/`` is sent under the one of
+    its ``route_prefixes`` that ``prefix`` equals, and a ``prefix`` for any other record, or a missing or unlisted one
+    for such a record, raises ``route``'s ``ValueError`` before any request. The ``data`` check, ``encode``, ``expand``
+    and the transport read the routed record. Its values are encoded and its path expanded first — a value it does not
+    declare raises ``encode``'s ``ValueError`` before any request. A record whose ``content_type`` is ``None`` is then
+    sent with ``transport.request``; any other with ``transport.request_raw``, ``data`` unchanged as its body under the
+    record's ``content_type`` and its query pairs as its query (issue #40, design.md D5). A GraphQL record, and a
     ``data`` value for a record whose ``content_type`` is ``None``, raise ``ValueError`` with nothing sent."""
     operation = lookup(operation_id=operation_id)
     if not isinstance(operation, RestOperation):
         raise ValueError(f"{operation_id!r} is a GraphQL record; send sends REST records")
+    operation = route(operation=operation, prefix=prefix)
     if operation.content_type is None and data is not None:
         raise ValueError(f"{operation_id!r} declares no content_type, so send sends no raw body for it")
     given: Mapping[str, Any] = values or {}

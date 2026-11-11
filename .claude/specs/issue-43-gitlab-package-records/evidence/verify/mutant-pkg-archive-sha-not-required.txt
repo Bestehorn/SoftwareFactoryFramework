@@ -1,0 +1,35 @@
+# mutant pkg-archive-sha-not-required: one replacement in src/payload/scripts/gitlab_api/families/package.py
+# old:
+#           params=(Param(name="sha", location=Location.QUERY, required=True),),
+# new:
+#           params=(Param(name="sha", location=Location.QUERY),),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [214 items]
+
+..F..................................................................... [ 33%]
+........................................................................ [ 67%]
+......................................................................   [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1469: in test_every_param_is_typed_as_its_row
+    assert required == expected_required, "required=True is not exactly where Required reads `yes` (AC-1.4):\n" + (
+E   AssertionError: required=True is not exactly where Required reads `yes` (AC-1.4):
+E     missing: 'package#download-a-package-archive'
+E   assert {'package#sea...elete'}), ...} == {'package#dow...rsion'}), ...}
+E     
+E     Omitting 30 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mpackage#download-a-package-archive[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33msha[39;49;00m[33m'[39;49;00m})}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_every_param_is_typed_as_its_row
+================== 1 failed, 213 passed in 129.54s (0:02:09) ==================
+exit=1
+# restored src/payload/scripts/gitlab_api/families/package.py sha256 89c70ed9b1c5181aeab2cdadc2082d8678d5e569643ca5599e22e5c58d77455d  # pragma: allowlist secret

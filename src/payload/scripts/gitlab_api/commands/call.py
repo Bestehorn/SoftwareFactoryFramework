@@ -1,10 +1,11 @@
 """The GitLab wrapper's operation call, ``call <operation-id>`` (issue #41, design.md D1 to D4): any record that a
 family module of ``gitlab_api/families/`` or ``gitlab_api/graphql_only.py`` declares, sent by its operation ID.
 
-The grammar (D2, and issue #40 design.md D5 for ``--input``)::
+The grammar (D2, issue #40 design.md D5 for ``--input``, and issue #43 design.md D3 for ``--route-prefix``)::
 
     python scripts/gitlab_wrapper.py call <operation-id> [--path NAME=VALUE]... [--query NAME=VALUE]...
         [-f|--raw-field NAME=TEXT]... [-F|--field NAME=JSON]... [--file NAME=PATH]... [--input FILE]
+        [--route-prefix PREFIX]
 
 - ``<operation-id>``: a record's ID, ``<stem>#<anchor>`` for a REST record (``plan#retrieve-a-project-issue``) and
   ``graphql#<field>`` for a GraphQL record.
@@ -29,6 +30,13 @@ The grammar (D2, and issue #40 design.md D5 for ``--input``)::
   body. The option's ``type``, ``read_input``, reads the bytes whole when the arguments are parsed; a file that cannot
   be read is an argparse usage error (exit 2) for ``--input``, before the config is read, whose message names only the
   path, rendered with ``json.dumps``.
+- ``--route-prefix PREFIX``: the ``<route-prefix>`` of a protocol route (issue #43, design.md D3), for a REST record
+  whose path starts with ``/<route-prefix>/``: one of the record's prefix values, its ``route_prefixes``, verbatim
+  (``/groups/:id/-/packages/npm``). The option takes one value, stored as given; a repeated option keeps its last.
+  ``registry.route`` writes the record's value in place of ``/<route-prefix>``, and every later step reads the routed
+  record: each ``:name`` of the value is a path parameter of the call, given with ``--path`` (``--path id=7``), and a
+  value starting ``/projects/:id`` takes the configured project as its ``id`` when the call gives none. The text goes
+  to ``registry.send`` as its ``prefix``.
 - A GraphQL record takes its variables with ``-f`` and ``-F``, and with ``--file`` a variable its document declares of
   type ``Upload`` or a list of them (``registry.upload_variables``; issue #44, design.md D4): each ``--file`` of a
   list's name is one item, in command-line order, a single one included, and one ``Upload`` keeps the last file given;
@@ -50,11 +58,14 @@ in ``GATED_OPERATIONS``, naming the compatibility subcommand that sends it, or, 
 (``graphql#workItemCreate``, ``graphql#workItemsCsvImport``), saying that no subcommand sends it (issue #44,
 design.md D6); an ID no record declares, or one declared twice (``registry.lookup``); a raw body for any record but a
 REST record with a ``content_type`` (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that
-its body is given with ``-f``, ``-F`` or ``--file``; a name the record does not document or a path parameter outside
-an optional group left without a value, in one message naming each such name with its option, each missing path
-parameter, then the record's documented parameters (``check_parameters``); a value of a shape its ``Kind`` does not
-take (``registry.encode``); and a paged record given body values (``registry.pages``). Each refusal is a
-``ValueError``, logged; every name the caller supplied is rendered with ``json.dumps``, and no byte of a raw body is.
+its body is given with ``-f``, ``-F`` or ``--file``; a route prefix that none of the record's values equals, none for a
+record whose path starts with ``/<route-prefix>/``, or one for any other record (``registry.route``; issue #43,
+design.md D3), in a message naming the ID and, for a record whose path starts with ``/<route-prefix>/``, each of its
+values; a name the record does not document or a path parameter outside an optional group left without a value, in one
+message naming each such name with its option, each missing path parameter, then the record's documented parameters
+(``check_parameters``); a value of a shape its ``Kind`` does not take (``registry.encode``); and a paged record given
+body values (``registry.pages``). Each refusal is a ``ValueError``, logged; every name the caller supplied is rendered
+with ``json.dumps``, and no byte of a raw body is.
 
 What prints (D3):
 
@@ -101,6 +112,7 @@ OPTION_FIELD_SHORT = "-F"
 OPTION_FIELD = "--field"
 OPTION_FILE = "--file"
 OPTION_INPUT = "--input"
+OPTION_ROUTE_PREFIX = "--route-prefix"
 # How D4's message names the option of a name given with `-f` or `-F`, which share one destination.
 OPTION_FIELDS = f"{OPTION_RAW_FIELD_SHORT}/{OPTION_FIELD_SHORT}"
 # The `argparse.Namespace` attributes the options are stored under; `-f` and `-F` share one.
@@ -109,12 +121,15 @@ ARG_QUERY = "query"
 ARG_FIELDS = "fields"
 ARG_FILES = "files"
 ARG_RAW_BODY = "raw_body"
+ARG_ROUTE_PREFIX = "route_prefix"
 ACTION_APPEND = "append"
+ACTION_STORE = "store"
 METAVAR_VALUE = "NAME=VALUE"
 METAVAR_TEXT = "NAME=TEXT"
 METAVAR_JSON = "NAME=JSON"
 METAVAR_PATH = "NAME=PATH"
 METAVAR_FILE = "FILE"
+METAVAR_PREFIX = "PREFIX"
 ASSIGNMENT_SEPARATOR = "="
 # The `--input` text that reads the raw body from standard input rather than from a file, as `gh api` spells it.
 STDIN_INPUT = "-"
@@ -165,12 +180,14 @@ class Assignment(NamedTuple):
 @dataclass(frozen=True)
 class PreparedCall:
     """A call that steps 1 to 5 accepted: its record, its values, for a paged record the generator of its items, which
-    sends nothing until it is read, and the raw body ``--input`` read, ``None`` when none was given."""
+    sends nothing until it is read, the raw body ``--input`` read, ``None`` when none was given, and the
+    ``--route-prefix`` text given, ``None`` when none was (issue #43, design.md D3)."""
 
     operation: Operation
     values: Dict[str, Any]
     items: Optional[Iterator[Any]] = None
     raw_body: Optional[bytes] = None
+    prefix: Optional[str] = None
 
 
 # --- The argparse types (D2) ----------------------------------------------------------------------------------------
@@ -426,20 +443,24 @@ def refuse_raw_body(*, operation: Operation, raw_body: Optional[bytes]) -> None:
 def prepare_call(*, transport: Transport, project: str, operation_id: str, args: argparse.Namespace) -> PreparedCall:
     """Steps 1 to 5, each refusal a ``ValueError`` and nothing sent: a raw body beside ``-f`` or ``-F``
     (``refuse_both_bodies``), the gate, ``registry.lookup``, a raw body for a record that takes none
-    (``refuse_raw_body``), the values, D4's check, and the shape check — ``registry.encode`` for a ``Paging.NONE``
-    REST record, ``registry.pages`` (its own look-up, encoding, ``GET``-only check and ``expand``) for a paged one."""
+    (``refuse_raw_body``), the route prefix (``registry.route``; issue #43, design.md D3), whose routed record every
+    later step reads, the values, D4's check, and the shape check — ``registry.encode`` for a ``Paging.NONE`` REST
+    record, ``registry.pages`` (its own look-up, encoding, ``GET``-only check and ``expand``) for a paged one. The
+    ``PreparedCall`` of a ``Paging.NONE`` REST record carries the ``--route-prefix`` text for ``registry.send``."""
     raw_body: Optional[bytes] = getattr(args, ARG_RAW_BODY, None)
+    prefix: Optional[str] = getattr(args, ARG_ROUTE_PREFIX, None)
     refuse_both_bodies(raw_body=raw_body, args=args)
     refuse_gated(operation_id=operation_id)
     operation = registry.lookup(operation_id=operation_id)
     refuse_raw_body(operation=operation, raw_body=raw_body)
+    operation = registry.route(operation=operation, prefix=prefix)
     values = call_values(operation=operation, project=project, args=args)
     check_parameters(operation=operation, project=project, args=args)
     if isinstance(operation, GraphQLOperation):
         return PreparedCall(operation=operation, values=values)
     if operation.paging is Paging.NONE:
         registry.encode(operation=operation, values=values)
-        return PreparedCall(operation=operation, values=values, raw_body=raw_body)
+        return PreparedCall(operation=operation, values=values, raw_body=raw_body, prefix=prefix)
     items = registry.pages(transport=transport, operation_id=operation_id, values=values)
     return PreparedCall(operation=operation, values=values, items=items)
 
@@ -458,7 +479,7 @@ def print_response(*, response: Response) -> None:
 def send_call(*, transport: Transport, prepared: PreparedCall) -> None:
     """Step 6 and D3: a paged record's items read and printed as one array once the last page has arrived; a GraphQL
     record through ``registry.call``; a ``Paging.NONE`` record through ``registry.send``, the raw body as its
-    ``data``."""
+    ``data`` and the ``--route-prefix`` text as its ``prefix`` (issue #43, design.md D3)."""
     operation_id = prepared.operation.operation_id
     if prepared.items is not None:
         print_json(value=list(prepared.items))
@@ -467,7 +488,11 @@ def send_call(*, transport: Transport, prepared: PreparedCall) -> None:
         print_json(value=registry.call(transport=transport, operation_id=operation_id, values=prepared.values))
         return
     response = registry.send(
-        transport=transport, operation_id=operation_id, values=prepared.values, data=prepared.raw_body
+        transport=transport,
+        operation_id=operation_id,
+        values=prepared.values,
+        data=prepared.raw_body,
+        prefix=prepared.prefix,
     )
     print_response(response=response)
 
@@ -555,4 +580,14 @@ def register(*, subparsers: SubParsers) -> None:
         type=read_input,
         metavar=METAVAR_FILE,
         help="the request body, its bytes sent unchanged (- reads standard input); only for a raw-body record",
+    )
+    parser.add_argument(
+        OPTION_ROUTE_PREFIX,
+        dest=ARG_ROUTE_PREFIX,
+        action=ACTION_STORE,
+        default=None,
+        metavar=METAVAR_PREFIX,
+        help=(
+            "the <route-prefix> of a protocol route: one of the values its page lists, e.g. /projects/:id/packages/npm"
+        ),
     )
