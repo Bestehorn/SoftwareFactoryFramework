@@ -46,10 +46,13 @@ parameter given with ``--path``, and each record holds the ``token_scope`` its r
 docs.gitlab.com ``container_registry``'s: ``repository:${CI_REGISTRY_IMAGE}:delete`` and ``registry:catalog:*``.
 Neither section has an attribute table, so neither declares a ``Param``.
 
-``PENDING`` holds the one key kept without a record, ``PUT /projects/:id/``: the project update "Change the visibility
-of the container registry" names, which can also configure a pull mirror. A secret attribute (an upstream registry's
-``password``) is given as text like any other value; the configured token travels only in its header, and the
-registry token only to the registry.
+``PENDING`` is empty. "Change the visibility of the container registry"
+(``OP_CHANGE_THE_VISIBILITY_OF_THE_CONTAINER_REGISTRY``), ``PUT /projects/:id/``, has its record since issue #15: it is
+the project update, whose rows can also configure a pull mirror (``mirror``, ``import_url``), so it writes into an
+existing project and no subcommand sends it; ``commands/call.py``'s ``GATED_OPERATIONS`` maps it to ``None`` and
+``call`` refuses it, ": no subcommand sends it", before any request is sent (issue #15 AC-3). A secret attribute (an
+upstream registry's ``password``) is given as text like any other value; the configured token travels only in its
+header, and the registry token only to the registry.
 
 Standard library only; Python 3.9.
 """
@@ -73,6 +76,10 @@ NUGET_ROUTE_PREFIXES: Tuple[str, ...] = ("/groups/:id/-/packages/nuget", "/proje
 # container repositories", docs.gitlab.com `container_registry`'s, `${CI_REGISTRY_IMAGE}` the call's value (D4).
 REGISTRY_DELETE_SCOPE = "repository:${CI_REGISTRY_IMAGE}:delete"
 REGISTRY_CATALOG_SCOPE = "registry:catalog:*"
+
+# "Change the visibility of the container registry": `commands/call.py`'s `GATED_OPERATIONS` maps it to `None`
+# (issue #15 AC-3).
+OP_CHANGE_THE_VISIBILITY_OF_THE_CONTAINER_REGISTRY = "package#change-the-visibility-of-the-container-registry"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # "Composer API: Retrieve repository URL templates".
@@ -448,6 +455,135 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="package#retrieve-package-references-metadata-by-recipe-revision",
         method="GET",
         path="/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/search",
+    ),
+    # "Container registry API: Change the visibility of the container registry"; the project update, whose rows can
+    # also configure a pull mirror (`mirror`, `import_url`), so `call` refuses it (issue #15 AC-3).
+    RestOperation(
+        operation_id=OP_CHANGE_THE_VISIBILITY_OF_THE_CONTAINER_REGISTRY,
+        method="PUT",
+        path="/projects/:id/",
+        params=(
+            Param(name="container_registry_access_level", location=Location.BODY),
+            Param(name="name", location=Location.BODY),
+            Param(name="default_branch", location=Location.BODY),
+            Param(name="path", location=Location.BODY),
+            Param(name="description", location=Location.BODY),
+            Param(name="build_git_strategy", location=Location.BODY),
+            Param(name="build_timeout", location=Location.BODY),
+            Param(name="auto_cancel_pending_pipelines", location=Location.BODY),
+            Param(name="ci_config_path", location=Location.BODY),
+            Param(name="service_desk_enabled", location=Location.BODY),
+            Param(name="issues_enabled", location=Location.BODY),
+            Param(name="merge_requests_enabled", location=Location.BODY),
+            Param(name="wiki_enabled", location=Location.BODY),
+            Param(name="jobs_enabled", location=Location.BODY),
+            Param(name="snippets_enabled", location=Location.BODY),
+            Param(name="issues_access_level", location=Location.BODY),
+            Param(name="repository_access_level", location=Location.BODY),
+            Param(name="merge_requests_access_level", location=Location.BODY),
+            Param(name="forking_access_level", location=Location.BODY),
+            Param(name="wiki_access_level", location=Location.BODY),
+            Param(name="builds_access_level", location=Location.BODY),
+            Param(name="snippets_access_level", location=Location.BODY),
+            Param(name="package_registry_access_level", location=Location.BODY),
+            Param(name="pages_access_level", location=Location.BODY),
+            Param(name="analytics_access_level", location=Location.BODY),
+            Param(name="security_and_compliance_access_level", location=Location.BODY),
+            Param(name="releases_access_level", location=Location.BODY),
+            Param(name="environments_access_level", location=Location.BODY),
+            Param(name="feature_flags_access_level", location=Location.BODY),
+            Param(name="infrastructure_access_level", location=Location.BODY),
+            Param(name="monitor_access_level", location=Location.BODY),
+            Param(name="model_experiments_access_level", location=Location.BODY),
+            Param(name="model_registry_access_level", location=Location.BODY),
+            Param(name="emails_disabled", location=Location.BODY),
+            Param(name="emails_enabled", location=Location.BODY),
+            Param(name="show_default_award_emojis", location=Location.BODY),
+            Param(name="show_diff_preview_in_email", location=Location.BODY),
+            Param(name="warn_about_potentially_unwanted_characters", location=Location.BODY),
+            Param(name="enforce_auth_checks_on_uploads", location=Location.BODY),
+            Param(name="shared_runners_enabled", location=Location.BODY),
+            Param(name="group_runners_enabled", location=Location.BODY),
+            Param(name="resource_group_default_process_mode", location=Location.BODY),
+            Param(name="resolve_outdated_diff_discussions", location=Location.BODY),
+            Param(name="remove_source_branch_after_merge", location=Location.BODY),
+            Param(name="packages_enabled", location=Location.BODY),
+            Param(name="container_registry_enabled", location=Location.BODY),
+            Param(name="container_expiration_policy_attributes", location=Location.BODY, kind=Kind.HASH),
+            Param(name="lfs_enabled", location=Location.BODY),
+            Param(name="visibility", location=Location.BODY),
+            Param(name="public_builds", location=Location.BODY),
+            Param(name="public_jobs", location=Location.BODY),
+            Param(name="request_access_enabled", location=Location.BODY),
+            Param(name="only_allow_merge_if_pipeline_succeeds", location=Location.BODY),
+            Param(name="allow_merge_on_skipped_pipeline", location=Location.BODY),
+            Param(name="only_allow_merge_if_all_discussions_are_resolved", location=Location.BODY),
+            Param(name="tag_list", location=Location.BODY, kind=Kind.ARRAY),
+            Param(name="topics", location=Location.BODY, kind=Kind.ARRAY),
+            Param(name="avatar", location=Location.BODY, kind=Kind.FILE),
+            Param(name="printing_merge_request_link_enabled", location=Location.BODY),
+            Param(name="merge_method", location=Location.BODY),
+            Param(name="suggestion_commit_message", location=Location.BODY),
+            Param(name="merge_commit_template", location=Location.BODY),
+            Param(name="squash_commit_template", location=Location.BODY),
+            Param(name="issue_branch_template", location=Location.BODY),
+            Param(name="auto_devops_enabled", location=Location.BODY),
+            Param(name="auto_devops_deploy_strategy", location=Location.BODY),
+            Param(name="autoclose_referenced_issues", location=Location.BODY),
+            Param(name="repository_storage", location=Location.BODY),
+            Param(name="squash_option", location=Location.BODY),
+            Param(name="mr_default_target_self", location=Location.BODY),
+            Param(name="mr_default_title_template", location=Location.BODY),
+            Param(name="cicd_catalog_enabled", location=Location.BODY),
+            Param(name="only_allow_merge_if_all_status_checks_passed", location=Location.BODY),
+            Param(name="approvals_before_merge", location=Location.BODY),
+            Param(name="mirror", location=Location.BODY),
+            Param(name="mirror_trigger_builds", location=Location.BODY),
+            Param(name="external_authorization_classification_label", location=Location.BODY),
+            Param(name="requirements_access_level", location=Location.BODY),
+            Param(name="prevent_merge_without_jira_issue", location=Location.BODY),
+            Param(name="auto_duo_code_review_enabled", location=Location.BODY),
+            Param(name="duo_remote_flows_enabled", location=Location.BODY),
+            Param(name="duo_sast_fp_detection_enabled", location=Location.BODY),
+            Param(name="duo_secret_detection_fp_enabled", location=Location.BODY),
+            Param(name="duo_dependency_bump_breaking_changes_enabled", location=Location.BODY),
+            Param(name="duo_sast_vr_workflow_enabled", location=Location.BODY),
+            Param(name="spp_repository_pipeline_access", location=Location.BODY),
+            Param(name="merge_request_title_regex", location=Location.BODY),
+            Param(name="merge_request_title_regex_description", location=Location.BODY),
+            Param(name="ci_default_git_depth", location=Location.BODY),
+            Param(name="keep_latest_artifact", location=Location.BODY),
+            Param(name="ci_forward_deployment_enabled", location=Location.BODY),
+            Param(name="ci_forward_deployment_rollback_allowed", location=Location.BODY),
+            Param(name="ci_allow_fork_pipelines_to_run_in_parent_project", location=Location.BODY),
+            Param(name="ci_separated_caches", location=Location.BODY),
+            Param(name="restrict_user_defined_variables", location=Location.BODY),
+            Param(name="ci_pipeline_variables_minimum_override_role", location=Location.BODY),
+            Param(name="ci_push_repository_for_job_token_allowed", location=Location.BODY),
+            Param(name="ci_id_token_sub_claim_components", location=Location.BODY, kind=Kind.ARRAY),
+            Param(name="ci_delete_pipelines_in_seconds", location=Location.BODY),
+            Param(name="max_artifacts_size", location=Location.BODY),
+            Param(name="protect_merge_request_pipelines", location=Location.BODY),
+            Param(name="ci_display_pipeline_variables", location=Location.BODY),
+            Param(name="allow_pipeline_trigger_approve_deployment", location=Location.BODY),
+            Param(name="mirror_user_id", location=Location.BODY),
+            Param(name="only_mirror_protected_branches", location=Location.BODY),
+            Param(name="mirror_branch_regex", location=Location.BODY),
+            Param(name="mirror_overwrites_diverged_branches", location=Location.BODY),
+            Param(name="import_url", location=Location.BODY),
+            Param(name="fallback_approvals_required", location=Location.BODY),
+            Param(name="issues_template", location=Location.BODY),
+            Param(name="merge_requests_template", location=Location.BODY),
+            Param(name="merge_pipelines_enabled", location=Location.BODY),
+            Param(name="merge_trains_enabled", location=Location.BODY),
+            Param(name="merge_trains_skip_train_allowed", location=Location.BODY),
+            Param(name="merge_train_enforcement", location=Location.BODY),
+            Param(name="max_pipelines_per_merge_train", location=Location.BODY),
+            Param(name="ci_restrict_pipeline_cancellation_role", location=Location.BODY),
+            Param(name="web_based_commit_signing_enabled", location=Location.BODY),
+            Param(name="security_policy_pipeline_must_succeed", location=Location.BODY),
+            Param(name="reviewer_assignment_strategy", location=Location.BODY),
+        ),
     ),
     # "Container registry API: Within a project".
     RestOperation(
@@ -1776,10 +1912,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        # "Container registry API: Change the visibility of the container registry": the project update, which can
-        # also configure a pull mirror (AC-1.3).
-        ("PUT", "/projects/:id/"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

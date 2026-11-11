@@ -1,15 +1,15 @@
 """Tests for ``gitlab_api/families/create.py``, the ``create`` endpoint family of the GitLab wrapper (issue #35, the
-create slice of the wrapper rewrite; ``change.md`` AC-1 to AC-4, AC-6 and AC-7).
+create slice of the wrapper rewrite; ``change.md`` AC-1 to AC-4, AC-6 and AC-7; issue #15, ``change.md`` AC-1 to AC-3).
 
 Every expected value is a literal table transcribed from the reference, never read from the records:
 ``docs/api-reference/gitlab/operations-index.md`` (the rows whose Reference is ``rest/create.md``) and
 ``docs/api-reference/gitlab/rest/create.md`` (each section's endpoints, its heading, and the ``In``, ``Type`` and
 ``Required`` columns of its ``| Attribute | In | Type |`` table). What is pinned:
 
-- AC-1 (as issue #63 design.md D9 restates it): ``PENDING`` is exactly the keys of the IDs kept pending;
-  ``OPERATIONS`` declares every Reference of the family but the kept IDs (both References of ``GET /keys`` included),
-  each key of an ID once; "Generate changelog data" has a record per endpoint, its base record (the first) first
-  (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
+- AC-1 (as issue #63 design.md D9 and issue #15 AC-1, AC-2 restate it): ``PENDING`` is empty; ``OPERATIONS`` declares
+  every Reference of the family (both References of ``GET /keys`` included), each key of an ID once; "Generate
+  changelog data" has a record per endpoint, its base record (the first) first (issue #63 AC-1.1, AC-1.3, design.md D1,
+  D8);
 - AC-2, AC-3: the ``Kind`` of every ``Param`` that is not ``SCALAR`` or is a query member row (``range[end]``):
   ``ARRAY_OF_HASHES`` for an ``array of hashes`` row and the ``files`` of "Retrieve multiple blobs in a single
   request", ``ARRAY`` for any other Type holding ``array``, ``HASH`` for ``hash``; the ``required`` ``Param`` names,
@@ -25,9 +25,14 @@ Every expected value is a literal table transcribed from the reference, never re
   ``DELETE`` to ``/groups/7/ssh_certificates/12345``;
 - issue #63 AC-4.1, AC-8.3: "Retrieve file archive from a repository" with ``--path format=<format>`` sends one ``GET``
   to ``archive.<format>`` for each format the docs page lists, and without ``--path format`` to ``archive``; no URL
-  holds ``[``.
+  holds ``[``;
+- issue #15 AC-1, AC-3: each of the twelve IDs that commit to, create or rewrite a branch is one record of
+  ``OPERATIONS``, at its index row's method and path, that ``registry.lookup`` returns; its call through
+  ``main(argv=["call", ...])`` with a value for each path parameter and each required ``Param`` exits 2 before any
+  request although one would be answered, printing nothing and logging an ERROR record that names the ID and says that
+  no subcommand sends it.
 
-The names and ``In`` of every ``Param`` (AC-2) and one call of every record (AC-5) are proven by
+The names and ``In`` of every ``Param`` (AC-2) and one call of every record but the refused ones (AC-5) are proven by
 ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; the
@@ -42,6 +47,7 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import logging
 import re
 import sys
 from pathlib import Path
@@ -92,10 +98,15 @@ TOKEN = "glpat-gitlab-api-create-test"  # pragma: allowlist secret
 PROJECT_ID = 4242
 
 EXIT_OK = 0
+EXIT_REFUSED = 2  # a refused `call`, before any request (#41 design.md D4)
 METHOD_GET = "GET"
 METHOD_DELETE = "DELETE"
 STATUS_NO_CONTENT = 204
+# The options of `call` (#41 design.md D2): a path value, a query value, a text value and a JSON value.
 OPTION_PATH = "--path"
+OPTION_QUERY = "--query"
+OPTION_RAW_FIELD = "-f"
+OPTION_FIELD = "-F"
 ASSIGNED = "="
 ID_SEPARATOR = "#"
 TEXT_ENCODING = "utf-8"
@@ -335,9 +346,9 @@ INDEX_REFERENCES: Tuple[str, ...] = (
     "create#update-snippet",
 )
 
-# AC-1: the IDs kept pending — the twelve that commit to, create or rewrite a branch — each with the one index row it
-# has. Issue #63 declares the `archive[.format]` path and the group SSH certificate path with two `:id`.
-KEPT_PENDING: Dict[str, Tuple[str, str]] = {
+# Issue #15 AC-1, AC-3: the writing IDs — the twelve that commit to, create or rewrite a branch — each with the one
+# index row it has; `call` refuses each, as no subcommand sends it.
+WRITING_ENDPOINTS: Dict[str, Tuple[str, str]] = {
     "create#create-repository-branch": ("POST", "/projects/:id/repository/branches"),
     "create#create-a-commit": ("POST", "/projects/:id/repository/commits"),
     "create#cherry-pick-a-commit": ("POST", "/projects/:id/repository/commits/:sha/cherry_pick"),
@@ -351,6 +362,85 @@ KEPT_PENDING: Dict[str, Tuple[str, str]] = {
     "create#apply-multiple-suggestions": ("PUT", "/suggestions/batch_apply"),
     "create#start-the-pull-mirroring-process-for-a-project": ("POST", "/projects/:id/mirror/pull"),
 }
+# Issue #15 AC-3: the arguments of each writing ID's call — a `--path` value for each placeholder of its index path,
+# `:id` included, and a value for each row of its section that is no path row and whose Required reads `yes`: `-f` for
+# a body row (the `form` row `file` among them), `--query` for a query row, `-F` for the `integer array` `ids`.
+WRITING_CALLS: Dict[str, Tuple[str, ...]] = {
+    "create#add-changelog-data-to-file": (OPTION_PATH, "id=101", OPTION_RAW_FIELD, "version=1.0.0"),
+    "create#apply-a-suggestion": (OPTION_PATH, "id=101"),
+    "create#apply-multiple-suggestions": (OPTION_FIELD, "ids=[101,102]"),
+    "create#cherry-pick-a-commit": (OPTION_PATH, "id=101", OPTION_PATH, "sha=7d70e02", OPTION_RAW_FIELD, "branch=main"),
+    "create#create-a-commit": (
+        OPTION_PATH,
+        "id=101",
+        OPTION_RAW_FIELD,
+        "branch=main",
+        OPTION_RAW_FIELD,
+        "commit_message=Add the notes",
+        OPTION_RAW_FIELD,
+        "file=notes.md",
+    ),
+    "create#create-a-file-in-a-repository": (
+        OPTION_PATH,
+        "id=101",
+        OPTION_PATH,
+        "file_path=notes.md",
+        OPTION_RAW_FIELD,
+        "branch=main",
+        OPTION_RAW_FIELD,
+        "commit_message=Add the notes",
+        OPTION_RAW_FIELD,
+        "content=The notes",
+        OPTION_RAW_FIELD,
+        "file=notes.md",
+    ),
+    "create#create-repository-branch": (
+        OPTION_PATH,
+        "id=101",
+        OPTION_RAW_FIELD,
+        "branch=feature",
+        OPTION_RAW_FIELD,
+        "ref=main",
+    ),
+    "create#delete-a-file-in-a-repository": (
+        OPTION_PATH,
+        "id=101",
+        OPTION_PATH,
+        "file_path=notes.md",
+        OPTION_QUERY,
+        "branch=main",
+        OPTION_QUERY,
+        "commit_message=Delete the notes",
+    ),
+    "create#revert-a-commit": (OPTION_PATH, "id=101", OPTION_PATH, "sha=7d70e02", OPTION_RAW_FIELD, "branch=main"),
+    "create#start-the-pull-mirroring-process-for-a-project": (OPTION_PATH, "id=101"),
+    "create#update-a-file-in-a-repository": (
+        OPTION_PATH,
+        "id=101",
+        OPTION_PATH,
+        "file_path=notes.md",
+        OPTION_RAW_FIELD,
+        "branch=main",
+        OPTION_RAW_FIELD,
+        "commit_message=Update the notes",
+        OPTION_RAW_FIELD,
+        "content=The new notes",
+        OPTION_RAW_FIELD,
+        "file=notes.md",
+    ),
+    "create#update-a-submodule-reference": (
+        OPTION_PATH,
+        "id=101",
+        OPTION_PATH,
+        "submodule=vendor",
+        OPTION_RAW_FIELD,
+        "branch=main",
+        OPTION_RAW_FIELD,
+        "commit_sha=7d70e02",
+    ),
+}
+# What the refusal of an ID no subcommand sends says (issue #44 design.md D6).
+NO_SUBCOMMAND_SENDS_IT = "no subcommand sends it"
 # "Generate changelog data" lists `GET .../changelog` first and `GET .../changelog.txt` second; its base record takes
 # the first, and the record after it the second (issue #63, design.md D1, D8).
 BASE_ENDPOINTS: Dict[str, Tuple[str, str]] = {
@@ -359,13 +449,17 @@ BASE_ENDPOINTS: Dict[str, Tuple[str, str]] = {
 OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
     "create#generate-changelog-data": (("GET", "/projects/:id/repository/changelog.txt"),),
 }
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(KEPT_PENDING.values())
 
 # rest/create.md: every query or body row of a declared record whose Kind is not SCALAR, and every query member row
 # (`range[end]`, its own QUERY Param, AC-2), by record. A body member row (`position[base_sha]`, `files:content`,
-# `files[].path`) is no Param. Every other row's Type is `string`, `integer`, `integer (int32)`, `integer or string`,
-# `boolean`, `float` or `datetime`, a SCALAR; the `form` rows are the kept records'.
+# `files[].path`, `actions[].action`) is no Param. "Create a commit" names its `array` row `actions[]`, the attribute
+# `actions`, and "Apply multiple suggestions" types `ids` `integer array`: each an ARRAY (issue #15 AC-1). Every other
+# row's Type is `string`, `integer`, `integer (int32)`, `integer or string`, `boolean`, `float` or `datetime`, or, for
+# the `form` row `file` of "Create a commit", "Create a file in a repository" and "Update a file in a repository",
+# `file`: a SCALAR.
 NON_SCALAR_PARAMS: Dict[str, Dict[str, str]] = {
+    "create#apply-multiple-suggestions": {"ids": KIND_ARRAY},
+    "create#create-a-commit": {"actions": KIND_ARRAY},
     "create#create-a-commit-thread": {"position": KIND_HASH},
     "create#create-a-merge-request-thread": {"position": KIND_HASH},
     "create#create-a-push-mirror": {"host_keys": KIND_ARRAY},
@@ -406,19 +500,27 @@ NON_SCALAR_PARAMS: Dict[str, Dict[str, str]] = {
 }
 
 # rest/create.md: the non-path rows of a declared record whose Required reads `yes`, by record, in table order; a
-# record with none is not listed. `conditional` ("Update snippet" `files`) is not `yes`; a body member row
-# (`files:content`, `position[base_sha]`) is no Param; the `name or context` row of "Set commit pipeline status" is
-# no attribute (N skips a name holding ` or `).
+# record with none ("Apply a suggestion", "Start the pull mirroring process for a project") is not listed.
+# `conditional` ("Update snippet" `files`) is not `yes`; a body member row (`files:content`, `position[base_sha]`,
+# `actions[].action`) is no Param; the `form` row `file` is a body row (N reads `form` as `body`); the footnoted
+# `version[^version-attribute-include]` of "Add changelog data to file" is `version`, and its second `version` row the
+# same attribute; the `name or context` row of "Set commit pipeline status" is no attribute (N skips a name holding
+# ` or `).
 REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "create#add-a-group-ssh-certificate": ("key", "title"),
     "create#add-a-note-to-a-snippet-thread": ("body",),
     "create#add-a-note-to-an-epic-thread": ("body",),
     "create#add-a-note-to-an-issue-thread": ("body",),
     "create#add-an-instance-ssh-certificate": ("key", "title"),
+    "create#add-changelog-data-to-file": ("version",),
     "create#add-note-to-a-commit-thread": ("body",),
     "create#add-note-to-a-merge-request-thread": ("body",),
+    "create#apply-multiple-suggestions": ("ids",),
+    "create#cherry-pick-a-commit": ("branch",),
     "create#compare-branches-tags-or-commits": ("from", "to"),
+    "create#create-a-commit": ("branch", "commit_message", "file"),
     "create#create-a-commit-thread": ("body",),
+    "create#create-a-file-in-a-repository": ("branch", "commit_message", "content", "file"),
     "create#create-a-merge-request-thread": ("body",),
     "create#create-a-new-tag": ("ref", "tag_name"),
     "create#create-a-project-alias": ("name", "project_id"),
@@ -429,6 +531,8 @@ REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "create#create-an-epic-thread": ("body",),
     "create#create-an-issue-thread": ("body",),
     "create#create-group-repository-storage-moves-for-a-storage-shard": ("source_storage_name",),
+    "create#create-repository-branch": ("branch", "ref"),
+    "create#delete-a-file-in-a-repository": ("branch", "commit_message"),
     "create#generate-changelog-data": ("version",),
     "create#get-file-blame-metadata-only": ("ref",),
     "create#get-file-metadata-only": ("ref",),
@@ -446,9 +550,12 @@ REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "create#retrieve-multiple-blobs-in-a-single-request": ("files",),
     "create#retrieve-user-by-deploy-key-fingerprint": ("fingerprint",),
     "create#retrieve-user-by-ssh-key-fingerprint": ("fingerprint",),
+    "create#revert-a-commit": ("branch",),
     "create#schedule-repository-storage-moves-for-all-snippets-on-a-storage-shard": ("source_storage_name",),
     "create#set-commit-pipeline-status": ("state",),
+    "create#update-a-file-in-a-repository": ("branch", "commit_message", "content", "file"),
     "create#update-a-snippet-thread-note": ("body",),
+    "create#update-a-submodule-reference": ("branch", "commit_sha"),
     "create#update-an-epic-thread-note": ("body",),
     "create#update-an-issue-thread-note": ("body",),
 }
@@ -648,22 +755,52 @@ def list_params() -> List[Any]:
     ]
 
 
-# --- AC-1: what stays pending ---------------------------------------------------------------------------------------
+def writing_params() -> List[Any]:
+    """One case per writing ID of ``WRITING_CALLS``, with its arguments, named by its anchor."""
+    return [
+        pytest.param(operation_id, arguments, id=operation_id.partition(ID_SEPARATOR)[2])
+        for operation_id, arguments in sorted(WRITING_CALLS.items())
+    ]
 
 
-def test_only_the_kept_keys_are_pending() -> None:
-    """AC-1, UB-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is the kept IDs' keys, and ``OPERATIONS``
-    declares every index Reference of the family but the kept IDs, each key of an ID once; the changelog's ID has its
+def error_messages(*, caplog: pytest.LogCaptureFixture) -> List[str]:
+    """The text of every log record at ERROR or above, in order: what the entry script writes to standard error."""
+    return [record.getMessage() for record in caplog.records if record.levelno >= logging.ERROR]
+
+
+def answer_anything(*, fake: Any) -> None:
+    """Answer the next request, whatever it is, with ``{}``: a refusal that sends one is then judged by its oracle,
+    not by the fake host's unscripted-request error."""
+    fake.script_next(body={})
+
+
+def lookup_problems(*, registry: ModuleType, record: Any) -> List[str]:
+    """Why ``registry.lookup`` does not return ``record`` itself for its ID: its refusal, or another record."""
+    try:
+        found = registry.lookup(operation_id=record.operation_id)
+    except ValueError as refusal:
+        return [f"{record.operation_id}: lookup refuses it: {refusal}"]
+    if found is not record:
+        return [f"{record.operation_id}: lookup returns {found!r}, not the create record"]
+    return []
+
+
+# --- AC-1; issue #15 AC-1, AC-2: nothing is pending -------------------------------------------------------------------
+
+
+def test_nothing_is_pending() -> None:
+    """AC-1, UB-2, issue #63 AC-1.1, AC-1.3 (design.md D9), issue #15 AC-1, AC-2: ``PENDING`` is empty, and
+    ``OPERATIONS`` declares every index Reference of the family, each key of an ID once; the changelog's ID has its
     base record first and then its second endpoint."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
-    assert pending == PENDING_KEYS, "create.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
-        declared=pending, expected=PENDING_KEYS
+    assert pending == frozenset(), "create.PENDING is not empty (issue #15 AC-2):\n" + set_difference(
+        declared=pending, expected=frozenset()
     )
     endpoints = endpoints_by_id(records=family.OPERATIONS)
     repeated = repeated_keys(endpoints=endpoints)
     assert not repeated, f"create.OPERATIONS declares these keys of one ID more than once: {repeated}"
-    expected = frozenset(INDEX_REFERENCES) - frozenset(KEPT_PENDING)
+    expected = frozenset(INDEX_REFERENCES)
     assert frozenset(endpoints) == expected, "create.OPERATIONS does not declare the family's References (AC-1):\n" + (
         set_difference(declared=frozenset(endpoints), expected=expected)
     )
@@ -821,4 +958,47 @@ def test_the_archive_format_is_sent_as_its_suffix(
     assert unexpanded == [], f"no URL holds the [.format] template (AC-4.1): {unexpanded}"
     assert fake_gitlab.requests[0].header(name=HEADER_PRIVATE_TOKEN) == TOKEN, (
         "the configured token travels in its one header"
+    )
+
+
+# --- Issue #15 AC-3: a writing record is refused ----------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames=("operation_id", "arguments"), argvalues=writing_params())
+def test_a_writing_record_is_refused(
+    operation_id: str,
+    arguments: Tuple[str, ...],
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #15 AC-1, AC-3: each ID of ``WRITING_CALLS`` is one record of ``OPERATIONS``, at its index row's method and
+    path, that ``registry.lookup`` returns; ``call <id>`` with a value for each path parameter and each required
+    ``Param`` exits 2 with no request although one would be answered, prints nothing and logs an ERROR record naming
+    the ID and saying that no subcommand sends it."""
+    family = gitlab_module(name=FAMILY_MODULE)
+    registry = gitlab_module(name=REGISTRY)
+    declared = [record for record in family.OPERATIONS if record.operation_id == operation_id]
+    keys = [(record.method, record.path) for record in declared]
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+        f"families/create.py OPERATIONS declares {keys} for {operation_id}; one record at its index row's method and "
+        f"path {WRITING_ENDPOINTS[operation_id]} is expected, or its refusal proves nothing (issue #15 AC-1)"
+    )
+    problems = lookup_problems(registry=registry, record=declared[0])
+    assert problems == [], f"registry.lookup does not return the record (issue #15 AC-3): {problems}"
+    answer_anything(fake=fake_gitlab)
+    argv = [operation_id, *arguments]
+
+    code = run_call(root=project, argv=argv)
+
+    captured = capsys.readouterr()
+    messages = error_messages(caplog=caplog)
+    assert code == EXIT_REFUSED, f"call {argv} exits {EXIT_REFUSED}, got {code}; logged: {messages!r}"
+    assert sent(fake=fake_gitlab) == [], f"a refused call sends no request (issue #15 AC-3): {sent(fake=fake_gitlab)}"
+    assert captured.out == "", f"a refusal prints nothing on standard output:\n{captured.out}"
+    naming = [message for message in messages if operation_id in message and NO_SUBCOMMAND_SENDS_IT in message]
+    assert naming, (
+        f"an ERROR record names {operation_id} and says {NO_SUBCOMMAND_SENDS_IT!r} (issue #15 AC-3); logged: "
+        f"{messages!r}"
     )

@@ -23,11 +23,12 @@ The four emoji resource sections have the issue endpoint's base record and then 
 endpoints' (the combined row names none of their path parameters, so each copy keeps it); the two notification
 settings sections have the project endpoint's base record and then the group endpoint's.
 
-``PENDING`` holds the keys of ``plan#clone-an-issue``, which creates an issue, and ``plan#create-a-merge-request-note``,
-whose ``/merge`` quick action merges: no subcommand sends either, and ``call`` refuses only an ID that names its
-subcommand (issue #39, DL-003). ``plan#promote-an-issue-to-an-epic`` has no record of its own: its key is the one
-``plan#create-an-issue-note`` declares, sent with ``/promote`` as its ``body``. No other family links any of these
-keys.
+``plan#clone-an-issue`` (``OP_CLONE_AN_ISSUE``), which creates an issue, and ``plan#create-a-merge-request-note``
+(``OP_CREATE_A_MERGE_REQUEST_NOTE``), whose ``/merge`` quick action merges, have their records since issue #15: no
+subcommand sends either, so ``commands/call.py``'s ``GATED_OPERATIONS`` maps each to ``None``, and ``call`` refuses it,
+": no subcommand sends it", before any request is sent (issue #15 AC-3). ``plan#promote-an-issue-to-an-epic`` has no
+record of its own: its key is the one ``plan#create-an-issue-note`` declares, sent with ``/promote`` as its ``body``.
+``PENDING`` is empty: every Reference of the page but that one has its record.
 
 Standard library only; Python 3.9.
 """
@@ -39,6 +40,11 @@ from typing import FrozenSet, Tuple
 from gitlab_api.registry import Kind, Location, Paging, Param, RestOperation
 
 FAMILY = "plan"
+
+# The records that write and that no subcommand sends: `commands/call.py`'s `GATED_OPERATIONS` maps each to `None`
+# (issue #15 AC-3).
+OP_CLONE_AN_ISSUE = "plan#clone-an-issue"
+OP_CREATE_A_MERGE_REQUEST_NOTE = "plan#create-a-merge-request-note"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # "Issues API: List all project issues"; offset paging (keyset is offered as well, so not KEYSET).
@@ -1083,6 +1089,16 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/projects/:id/issues/:issue_iid/move",
         params=(Param(name="to_project_id", location=Location.BODY, required=True),),
     ),
+    # "Issues API: Clone an issue".
+    RestOperation(
+        operation_id=OP_CLONE_AN_ISSUE,
+        method="POST",
+        path="/projects/:id/issues/:issue_iid/clone",
+        params=(
+            Param(name="to_project_id", location=Location.BODY, required=True),
+            Param(name="with_notes", location=Location.BODY),
+        ),
+    ),
     # "Issues API: Subscribe to an issue".
     RestOperation(
         operation_id="plan#subscribe-to-an-issue",
@@ -1523,6 +1539,18 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="plan#retrieve-a-merge-request-note",
         method="GET",
         path="/projects/:id/merge_requests/:merge_request_iid/notes/:note_id",
+    ),
+    # "Notes API: Create a merge request note".
+    RestOperation(
+        operation_id=OP_CREATE_A_MERGE_REQUEST_NOTE,
+        method="POST",
+        path="/projects/:id/merge_requests/:merge_request_iid/notes",
+        params=(
+            Param(name="body", location=Location.BODY, required=True),
+            Param(name="created_at", location=Location.BODY),
+            Param(name="internal", location=Location.BODY),
+            Param(name="merge_request_diff_head_sha", location=Location.BODY),
+        ),
     ),
     # "Notes API: Update a merge request note".
     RestOperation(
@@ -2283,9 +2311,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("POST", "/projects/:id/issues/:issue_iid/clone"),
-        ("POST", "/projects/:id/merge_requests/:merge_request_iid/notes"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

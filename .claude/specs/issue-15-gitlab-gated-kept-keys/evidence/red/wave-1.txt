@@ -1,0 +1,613 @@
+# tasks: TEST-1 TEST-2 TEST-3 TEST-4 TEST-5 TEST-6 TEST-7 TEST-8
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [402 items]
+
+FFFFFF....F....................................F.FF.................FF.F [ 17%]
+FFF.FF.FFFFF.FFF................................FF.FFFFF.F..FF.F.F.F.... [ 35%]
+.............................................FF.F....................... [ 53%]
+................................F..FFF.................................. [ 71%]
+....F.F.F............................................................... [ 89%]
+..........................................                               [100%]
+================================== FAILURES ===================================
+_____________________ test_every_reference_has_its_record _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_agent_foundations.py:236: in test_every_reference_has_its_record
+    assert declared == RECORD_ENDPOINTS, f"{FAMILY}.OPERATIONS is not the family's References (AC-1):\n" + (
+E   AssertionError: agent_foundations.OPERATIONS is not the family's References (AC-1):
+E     missing: 'agent-foundations#restart-a-flow'
+E     missing: 'agent-foundations#trigger-a-flow'
+E   assert {'agent-found..._privileges')} == {'agent-found...agents'), ...}
+E     
+E     Omitting 3 identical items, use -vv to show
+E     Right contains 2 more items:
+E     [0m{[33m'[39;49;00m[33magent-foundations#restart-a-flow[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                           [33m'[39;49;00m[33m/ai/duo_workflows/workflows/:workflow_id/restart[39;49;00m[33m'[39;49;00m),[90m[39;49;00m
+E      [33m'[39;49;00m[33magent-foundations#trigger-a-flow[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/ai/duo_workflows/workflow...
+E     
+E     ...Full output truncated, use '-vv' to show
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_agent_foundations.py:246: in test_nothing_is_pending
+    assert pending == [], f"{FAMILY}.PENDING holds {len(pending)} key(s); each has its record (#15 AC-2): {pending}"
+E   AssertionError: agent_foundations.PENDING holds 2 key(s); each has its record (#15 AC-2): [('POST', '/ai/duo_workflows/workflows'), ('POST', '/ai/duo_workflows/workflows/:workflow_id/restart')]
+E   assert [('POST', '/a..._id/restart')] == []
+E     
+E     Left contains 2 more items, first extra item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/ai/duo_workflows/workflows[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_____ test_a_writing_record_is_refused[agent-foundations#restart-a-flow] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_agent_foundations.py:266: in test_a_writing_record_is_refused
+    assert operation_id in records, (
+E   AssertionError: agent-foundations#restart-a-flow has no record in agent_foundations.OPERATIONS, so its refusal proves nothing (#15 AC-1, AC-3): ['agent-foundations#get-workflow-trace-as-jsonl', 'agent-foundations#list-all-agent-privileges', 'agent-foundations#seed-gitlab-managed-external-agents']
+E   assert 'agent-foundations#restart-a-flow' in {'agent-foundations#seed-gitlab-managed-external-agents': RestOperation(operation_id='agent-foundations#seed-gitlab-ma...ONE: 'none'>, fixed=(), content_type=None, route_prefixes=(), positional_names=(), suffix_values=(), token_scope=None)}
+_____ test_a_writing_record_is_refused[agent-foundations#trigger-a-flow] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_agent_foundations.py:266: in test_a_writing_record_is_refused
+    assert operation_id in records, (
+E   AssertionError: agent-foundations#trigger-a-flow has no record in agent_foundations.OPERATIONS, so its refusal proves nothing (#15 AC-1, AC-3): ['agent-foundations#get-workflow-trace-as-jsonl', 'agent-foundations#list-all-agent-privileges', 'agent-foundations#seed-gitlab-managed-external-agents']
+E   assert 'agent-foundations#trigger-a-flow' in {'agent-foundations#seed-gitlab-managed-external-agents': RestOperation(operation_id='agent-foundations#seed-gitlab-ma...ONE: 'none'>, fixed=(), content_type=None, route_prefixes=(), positional_names=(), suffix_values=(), token_scope=None)}
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_agent_foundations.py:305: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the Params that are not Kind.SCALAR are not the sections' (AC-4):\n" + (
+E   AssertionError: the Params that are not Kind.SCALAR are not the sections' (AC-4):
+E     missing: ('agent-foundations#trigger-a-flow', 'additional_context')
+E     missing: ('agent-foundations#trigger-a-flow', 'agent_privileges')
+E     missing: ('agent-foundations#trigger-a-flow', 'pre_approved_agent_privileges')
+E   assert {} == {('agent-foun...es'): 'ARRAY'}
+E     
+E     Right contains 3 more items:
+E     [0m{([33m'[39;49;00m[33magent-foundations#trigger-a-flow[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33madditional_context[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mARRAY_OF_HASHES[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      ([33m'[39;49;00m[33magent-foundations#trigger-a-flow[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33magent_privileges[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      ([33m'[39;49;00m[33magent-foundations#trigger-a-flow[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[3...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_agent_foundations.py:332: in test_only_the_list_records_are_paged
+    assert paged == expected, "a record's Paging is not its section's (AC-5):\n" + mapping_difference(
+E   AssertionError: a record's Paging is not its section's (AC-5):
+E     missing: 'agent-foundations#restart-a-flow'
+E     missing: 'agent-foundations#trigger-a-flow'
+E   assert {'agent-found...eges': 'NONE'} == {'agent-found...: 'NONE', ...}
+E     
+E     Omitting 3 identical items, use -vv to show
+E     Right contains 2 more items:
+E     [0m{[33m'[39;49;00m[33magent-foundations#restart-a-flow[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33magent-foundations#trigger-a-flow[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_ai_coding.py:594: in test_nothing_is_pending
+    assert pending == frozenset(), "PENDING is not empty (issue #15 AC-2):\n" + set_difference(
+E   AssertionError: PENDING is not empty (issue #15 AC-2):
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/rebase')
+E   assert frozenset({('...iid/rebase')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/merge_requests/:merge_request_iid/rebase[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+__________ test_a_writing_record_is_refused[rebase-a-merge-request] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_ai_coding.py:707: in test_a_writing_record_is_refused
+    assert operation_id in records, (
+E   AssertionError: ai-coding#rebase-a-merge-request has no record in families/ai_coding.py OPERATIONS, so its refusal proves nothing (issue #15 AC-1)
+E   assert 'ai-coding#rebase-a-merge-request' in {'ai-coding#create-a-merge-request': RestOperation(operation_id='ai-coding#create-a-merge-request', method='POST', pat...'none'>, fixed=(), content_type=None, route_prefixes=(), positional_names=(), suffix_values=(), token_scope=None), ...}
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:797: in test_nothing_is_pending
+    assert pending == frozenset(), "create.PENDING is not empty (issue #15 AC-2):\n" + set_difference(
+E   AssertionError: create.PENDING is not empty (issue #15 AC-2):
+E     not expected: ('DELETE', '/projects/:id/repository/files/:file_path')
+E     not expected: ('POST', '/projects/:id/mirror/pull')
+E     not expected: ('POST', '/projects/:id/repository/branches')
+E     not expected: ('POST', '/projects/:id/repository/changelog')
+E     not expected: ('POST', '/projects/:id/repository/commits')
+E     not expected: ('POST', '/projects/:id/repository/commits/:sha/cherry_pick')
+E     not expected: ('POST', '/projects/:id/repository/commits/:sha/revert')
+E     not expected: ('POST', '/projects/:id/repository/files/:file_path')
+E     not expected: ('PUT', '/projects/:id/repository/files/:file_path')
+E     not expected: ('PUT', '/projects/:id/repository/submodules/:submodule')
+E     not expected: ('PUT', '/suggestions/:id/apply')
+E     not expected: ('PUT', '/suggestions/batch_apply')
+E   assert frozenset({('..._pick'), ...}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/suggestions/:id/apply[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/branches[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/files/:file_path[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/pro...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:828: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the non-SCALAR and member Params are not the sections' (AC-2, AC-3):\n" + (
+E   AssertionError: the non-SCALAR and member Params are not the sections' (AC-2, AC-3):
+E     missing: 'create#apply-multiple-suggestions'
+E     missing: 'create#create-a-commit'
+E   assert {'create#crea...'ARRAY'}, ...} == {'create#appl... 'HASH'}, ...}
+E     
+E     Omitting 16 identical items, use -vv to show
+E     Right contains 2 more items:
+E     [0m{[33m'[39;49;00m[33mcreate#apply-multiple-suggestions[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mids[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m},[90m[39;49;00m
+E      [33m'[39;49;00m[33mcreate#create-a-commit[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mactions[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     Use -v to get more diff
+________ test_a_writing_record_is_refused[add-changelog-data-to-file] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#add-changelog-data-to-file; one record at its index row's method and path ('POST', '/projects/:id/repository/changelog') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('POST', '/p...y/changelog')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/changelog[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________ test_a_writing_record_is_refused[apply-a-suggestion] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#apply-a-suggestion; one record at its index row's method and path ('PUT', '/suggestions/:id/apply') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('PUT', '/su...s/:id/apply')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/suggestions/:id/apply[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+________ test_a_writing_record_is_refused[apply-multiple-suggestions] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#apply-multiple-suggestions; one record at its index row's method and path ('PUT', '/suggestions/batch_apply') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('PUT', '/su...batch_apply')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/suggestions/batch_apply[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+___________ test_a_writing_record_is_refused[cherry-pick-a-commit] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#cherry-pick-a-commit; one record at its index row's method and path ('POST', '/projects/:id/repository/commits/:sha/cherry_pick') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('POST', '/p...cherry_pick')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/commits/:sha/cherry_pick[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_a_writing_record_is_refused[create-a-commit] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#create-a-commit; one record at its index row's method and path ('POST', '/projects/:id/repository/commits') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('POST', '/p...ory/commits')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/commits[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_a_writing_record_is_refused[create-a-file-in-a-repository] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#create-a-file-in-a-repository; one record at its index row's method and path ('POST', '/projects/:id/repository/files/:file_path') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('POST', '/p.../:file_path')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/files/:file_path[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_________ test_a_writing_record_is_refused[create-repository-branch] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#create-repository-branch; one record at its index row's method and path ('POST', '/projects/:id/repository/branches') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('POST', '/p...ry/branches')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/branches[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_a_writing_record_is_refused[delete-a-file-in-a-repository] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#delete-a-file-in-a-repository; one record at its index row's method and path ('DELETE', '/projects/:id/repository/files/:file_path') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('DELETE', '.../:file_path')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/files/:file_path[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_a_writing_record_is_refused[revert-a-commit] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#revert-a-commit; one record at its index row's method and path ('POST', '/projects/:id/repository/commits/:sha/revert') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('POST', '/p...:sha/revert')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/commits/:sha/revert[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_writing_record_is_refused[start-the-pull-mirroring-process-for-a-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#start-the-pull-mirroring-process-for-a-project; one record at its index row's method and path ('POST', '/projects/:id/mirror/pull') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('POST', '/p...mirror/pull')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/mirror/pull[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_a_writing_record_is_refused[update-a-file-in-a-repository] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#update-a-file-in-a-repository; one record at its index row's method and path ('PUT', '/projects/:id/repository/files/:file_path') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('PUT', '/pr.../:file_path')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/files/:file_path[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_a_writing_record_is_refused[update-a-submodule-reference] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_create.py:984: in test_a_writing_record_is_refused
+    assert keys == [WRITING_ENDPOINTS[operation_id]], (
+E   AssertionError: families/create.py OPERATIONS declares [] for create#update-a-submodule-reference; one record at its index row's method and path ('PUT', '/projects/:id/repository/submodules/:submodule') is expected, or its refusal proves nothing (issue #15 AC-1)
+E   assert [] == [('PUT', '/pr.../:submodule')]
+E     
+E     Right contains one more item: [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/submodules/:submodule[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_____________________ test_every_reference_has_its_record _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:716: in test_every_reference_has_its_record
+    assert endpoints == RECORD_ENDPOINTS, "gitlab_dedicated.OPERATIONS is not the family's index rows (AC-1):\n" + (
+E   AssertionError: gitlab_dedicated.OPERATIONS is not the family's index rows (AC-1):
+E     missing: 'gitlab-dedicated#import-a-project-from-a-local-archive'
+E     missing: 'gitlab-dedicated#import-a-project-from-a-remote-archive'
+E     missing: 'gitlab-dedicated#import-project-resources'
+E   assert {'gitlab-dedi...ecksum'), ...} == {'gitlab-dedi...l_name'), ...}
+E     
+E     Omitting 80 identical items, use -vv to show
+E     Right contains 3 more items:
+E     [0m{[33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-a-local-archive[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                 [33m'[39;49;00m[33m/projects/import[39;49;00m[33m'[39;49;00m),[90m[39;49;00m
+E      [33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-a-remote-archive[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m,[90m[39;49;...
+E     
+E     ...Full output truncated, use '-vv' to show
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:728: in test_nothing_is_pending
+    assert pending == frozenset(), "gitlab_dedicated.PENDING is not empty (#15 AC-2):\n" + set_difference(
+E   AssertionError: gitlab_dedicated.PENDING is not empty (#15 AC-2):
+E     not expected: ('POST', '/projects/import')
+E     not expected: ('POST', '/projects/import-relation')
+E     not expected: ('POST', '/projects/remote-import')
+E   assert frozenset({('...ote-import')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/import[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/remote-import[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/import-relation[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:744: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the Params that are not Kind.SCALAR are not the sections' (AC-4):\n" + (
+E   AssertionError: the Params that are not Kind.SCALAR are not the sections' (AC-4):
+E     missing: ('gitlab-dedicated#import-a-project-from-a-local-archive', 'file')
+E     missing: ('gitlab-dedicated#import-a-project-from-a-local-archive', 'override_params')
+E     missing: ('gitlab-dedicated#import-a-project-from-a-remote-archive', 'override_params')
+E     missing: ('gitlab-dedicated#import-project-resources', 'file')
+E   assert {('gitlab-ded... 'ARRAY', ...} == {('gitlab-ded... 'ARRAY', ...}
+E     
+E     Omitting 30 identical items, use -vv to show
+E     Right contains 4 more items:
+E     [0m{([33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-a-local-archive[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mFILE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      ([33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-a-local-archive[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33moverride_params[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mHASH[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      ([33m'[39;49;0...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_only_the_list_records_are_paged _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:773: in test_only_the_list_records_are_paged
+    assert paging == expected, "the records' Paging is not the sections' (AC-5):\n" + mapping_difference(
+E   AssertionError: the records' Paging is not the sections' (AC-5):
+E     missing: 'gitlab-dedicated#import-a-project-from-a-local-archive'
+E     missing: 'gitlab-dedicated#import-a-project-from-a-remote-archive'
+E     missing: 'gitlab-dedicated#import-project-resources'
+E   assert {'gitlab-dedi...: 'NONE', ...} == {'gitlab-dedi...: 'NONE', ...}
+E     
+E     Omitting 80 identical items, use -vv to show
+E     Right contains 3 more items:
+E     [0m{[33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-a-local-archive[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-a-remote-archive[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33mgitlab-dedicated#import-project-resources[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_________ test_a_writing_record_is_refused[import-project-resources] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_gitlab_dedicated.py:898: in test_a_writing_record_is_refused
+    assert case.operation_id in declared, (
+E   AssertionError: gitlab_dedicated.OPERATIONS declares no record of gitlab-dedicated#import-project-resources (#15 AC-1), so its refusal proves nothing
+E   assert 'gitlab-dedicated#import-project-resources' in ['gitlab-dedicated#retrieve-model-information', 'gitlab-dedicated#recalculate-checksums-for-model-records', 'gitlab-de...late-the-checksum-of-a-model-record', 'gitlab-dedicated#create-a-geo-node', 'gitlab-dedicated#list-all-geo-nodes', ...]
+E    +  where 'gitlab-dedicated#import-project-resources' = WritingCase(operation_id='gitlab-dedicated#import-project-resources', method='POST', path='/projects/import-relation', arguments=('--file', 'file=<archive-file>', '-f', 'path=imported-project', '-f', 'relation=issues')).operation_id
+___ test_a_writing_record_is_refused[import-a-project-from-a-local-archive] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_gitlab_dedicated.py:898: in test_a_writing_record_is_refused
+    assert case.operation_id in declared, (
+E   AssertionError: gitlab_dedicated.OPERATIONS declares no record of gitlab-dedicated#import-a-project-from-a-local-archive (#15 AC-1), so its refusal proves nothing
+E   assert 'gitlab-dedicated#import-a-project-from-a-local-archive' in ['gitlab-dedicated#retrieve-model-information', 'gitlab-dedicated#recalculate-checksums-for-model-records', 'gitlab-de...late-the-checksum-of-a-model-record', 'gitlab-dedicated#create-a-geo-node', 'gitlab-dedicated#list-all-geo-nodes', ...]
+E    +  where 'gitlab-dedicated#import-a-project-from-a-local-archive' = WritingCase(operation_id='gitlab-dedicated#import-a-project-from-a-local-archive', method='POST', path='/projects/import', arguments=('--file', 'file=<archive-file>', '-f', 'path=imported-project')).operation_id
+__ test_a_writing_record_is_refused[import-a-project-from-a-remote-archive] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_gitlab_dedicated.py:898: in test_a_writing_record_is_refused
+    assert case.operation_id in declared, (
+E   AssertionError: gitlab_dedicated.OPERATIONS declares no record of gitlab-dedicated#import-a-project-from-a-remote-archive (#15 AC-1), so its refusal proves nothing
+E   assert 'gitlab-dedicated#import-a-project-from-a-remote-archive' in ['gitlab-dedicated#retrieve-model-information', 'gitlab-dedicated#recalculate-checksums-for-model-records', 'gitlab-de...late-the-checksum-of-a-model-record', 'gitlab-dedicated#create-a-geo-node', 'gitlab-dedicated#list-all-geo-nodes', ...]
+E    +  where 'gitlab-dedicated#import-a-project-from-a-remote-archive' = WritingCase(operation_id='gitlab-dedicated#import-a-project-from-a-remote-archive', method='POST', path='/projects/rem...rt', arguments=('-f', 'path=imported-project', '-f', 'url=https://archives.example.com/exports/project-export.tar.gz')).operation_id
+_____________________ test_every_reference_has_its_record _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_orbit.py:268: in test_every_reference_has_its_record
+    assert declared == RECORD_ENDPOINTS, f"{FAMILY}.OPERATIONS is not the family's References (AC-1):\n" + (
+E   AssertionError: orbit.OPERATIONS is not the family's References (AC-1):
+E     missing: 'orbit#retrieve-a-deployed-skill-file'
+E   assert {'orbit#list-.../:name'), ...} == {'orbit#check.../:name'), ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33morbit#retrieve-a-deployed-skill-file[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/orbit/skills/:name/*path[39;49;00m[33m'[39;49;00m)}[90m[39;49;00m
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_orbit.py:278: in test_nothing_is_pending
+    assert pending == [], f"{FAMILY}.PENDING holds {len(pending)} key(s); each has its record (#15 AC-2): {pending}"
+E   AssertionError: orbit.PENDING holds 1 key(s); each has its record (#15 AC-2): [('GET', '/orbit/skills/:name/*path')]
+E   assert [('GET', '/or...:name/*path')] == []
+E     
+E     Left contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/orbit/skills/:name/*path[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_orbit.py:306: in test_every_param_is_typed_as_its_row
+    assert required == expected_required, "required=True is not exactly where Required reads `yes` (AC-4):\n" + (
+E   AssertionError: required=True is not exactly where Required reads `yes` (AC-4):
+E     missing: 'orbit#retrieve-a-deployed-skill-file'
+E   assert {'orbit#list-...zenset(), ...} == {'orbit#check...zenset(), ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33morbit#retrieve-a-deployed-skill-file[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m()}[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_orbit.py:324: in test_only_the_list_records_are_paged
+    assert paged == expected, "a record's Paging is not its section's (AC-5):\n" + mapping_difference(
+E   AssertionError: a record's Paging is not its section's (AC-5):
+E     missing: 'orbit#retrieve-a-deployed-skill-file'
+E   assert {'orbit#list-...: 'NONE', ...} == {'orbit#check...: 'NONE', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33morbit#retrieve-a-deployed-skill-file[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+______ test_a_glob_record_is_sent_with_its_slashes[glob-holding-a-slash] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references/usage.md'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+E    +  where 0 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references/usage.md'), code=0, sent=(('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage.md'),), logged=None).code
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 unknown operation id 'orbit#retrieve-a-deployed-skill-file': no family module and no graphql_only record declares it
+_______ test_a_glob_record_is_sent_with_its_slashes[glob-part-encoded] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references/usage notes.md'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+E    +  where 0 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references/usage notes.md'), code=0, sent=(('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage%20notes.md'),), logged=None).code
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 unknown operation id 'orbit#retrieve-a-deployed-skill-file': no family module and no graphql_only record declares it
+____ test_a_glob_record_is_sent_with_its_slashes[glob-part-empty-refused] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references//usage.md'] exits 1, got 2; stderr:
+E     
+E   assert 2 == 1
+E    +  where 1 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references//usage.md'), code=1, sent=(), logged='*path').code
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 unknown operation id 'orbit#retrieve-a-deployed-skill-file': no family module and no graphql_only record declares it
+___ test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references/../usage.md'] exits 1, got 2; stderr:
+E     
+E   assert 2 == 1
+E    +  where 1 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references/../usage.md'), code=1, sent=(), logged='*path').code
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 unknown operation id 'orbit#retrieve-a-deployed-skill-file': no family module and no graphql_only record declares it
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1650: in test_nothing_is_pending
+    assert pending == [], f"PENDING holds {len(pending)} key(s); each has its record (issue #15 AC-2): {pending}"
+E   AssertionError: PENDING holds 1 key(s); each has its record (issue #15 AC-2): [('PUT', '/projects/:id/')]
+E   assert [('PUT', '/projects/:id/')] == []
+E     
+E     Left contains one more item: [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1717: in test_every_param_is_typed_as_its_row
+    assert typed == KINDS, "the Params that are not Kind.SCALAR are not the rows' (AC-1.4):\n" + mapping_difference(
+E   AssertionError: the Params that are not Kind.SCALAR are not the rows' (AC-1.4):
+E     missing: 'package#change-the-visibility-of-the-container-registry'
+E   assert {'package#lis...'ARRAY'}, ...} == {'package#cha...'ARRAY'}, ...}
+E     
+E     Omitting 13 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mpackage#change-the-visibility-of-the-container-registry[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mavatar[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mFILE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                  [33m'[39;49;00m[33mci_id_token_sub_claim_components[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                   ...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_a_writing_record_is_refused _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_package.py:2058: in test_a_writing_record_is_refused
+    assert declared == PROJECT_UPDATE_RECORDS, (
+E   AssertionError: package.OPERATIONS declares package#change-the-visibility-of-the-container-registry at its index row's key (issue #15 AC-1): {}
+E   assert {} == {'package#cha...ojects/:id/')}
+E     
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mpackage#change-the-visibility-of-the-container-registry[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                  [33m'[39;49;00m[33m/projects/:id/[39;49;00m[33m'[39;49;00m)}[90m[39;49;00m
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:788: in test_nothing_is_pending
+    assert pending == [], f"plan.PENDING is not empty (issue #15 AC-2): {pending}"
+E   AssertionError: plan.PENDING is not empty (issue #15 AC-2): [('POST', '/projects/:id/issues/:issue_iid/clone'), ('POST', '/projects/:id/merge_requests/:merge_request_iid/notes')]
+E   assert [('POST', '/p...t_iid/notes')] == []
+E     
+E     Left contains 2 more items, first extra item: [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/issues/:issue_iid/clone[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+________________ test_the_required_attributes_are_the_sections ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:830: in test_the_required_attributes_are_the_sections
+    assert declared == REQUIRED_ATTRIBUTES, "the required Params are not the sections' (AC-3):\n" + set_difference(
+E   AssertionError: the required Params are not the sections' (AC-3):
+E     missing: ('plan#clone-an-issue', 'to_project_id')
+E     missing: ('plan#create-a-merge-request-note', 'body')
+E   assert {('plan#add-a...'title'), ...} == frozenset({('...'name'), ...})
+E     
+E     Extra items in the right set:
+E     [0m([33m'[39;49;00m[33mplan#clone-an-issue[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mto_project_id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mplan#create-a-merge-request-note[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mbody[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_a_writing_record_is_refused[clone-an-issue] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_plan.py:773: in looked_up
+    return registry.lookup(operation_id=operation_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\scripts\gitlab_api\registry.py:323: in lookup
+    raise ValueError(
+E   ValueError: unknown operation id 'plan#clone-an-issue': no family module and no graphql_only record declares it
+
+The above exception was the direct cause of the following exception:
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_plan.py:950: in test_a_writing_record_is_refused
+    record = looked_up(registry=registry, operation_id=case.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_plan.py:775: in looked_up
+    raise AssertionError(f"registry.lookup refuses {operation_id!r}: {refusal}") from refusal
+E   AssertionError: registry.lookup refuses 'plan#clone-an-issue': unknown operation id 'plan#clone-an-issue': no family module and no graphql_only record declares it
+________ test_a_writing_record_is_refused[create-a-merge-request-note] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_plan.py:773: in looked_up
+    return registry.lookup(operation_id=operation_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\scripts\gitlab_api\registry.py:323: in lookup
+    raise ValueError(
+E   ValueError: unknown operation id 'plan#create-a-merge-request-note': no family module and no graphql_only record declares it
+
+The above exception was the direct cause of the following exception:
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_plan.py:950: in test_a_writing_record_is_refused
+    record = looked_up(registry=registry, operation_id=case.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_plan.py:775: in looked_up
+    raise AssertionError(f"registry.lookup refuses {operation_id!r}: {refusal}") from refusal
+E   AssertionError: registry.lookup refuses 'plan#create-a-merge-request-note': unknown operation id 'plan#create-a-merge-request-note': no family module and no graphql_only record declares it
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:940: in test_nothing_is_pending
+    assert pending == [], f"verify.PENDING holds {len(pending)} key(s); each has its record (#15 AC-2): {pending}"
+E   AssertionError: verify.PENDING holds 3 key(s); each has its record (#15 AC-2): [('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path'), ('GET', '/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path'), ('POST', '/projects/:id/merge_trains/merge_requests/:merge_request_iid')]
+E   assert [('GET', '/pr...request_iid')] == []
+E     
+E     Left contains 3 more items, first extra item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/jobs/:job_id/artifacts/*artifact_path[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:988: in test_every_param_is_typed_as_its_row
+    assert required == expected_required, "required=True is not exactly where Required reads `yes` (AC-3):\n" + (
+E   AssertionError: required=True is not exactly where Required reads `yes` (AC-3):
+E     missing: 'verify#download-a-single-artifact-file-by-reference-name'
+E   assert {'verify#vali...title'}), ...} == {'verify#add-...tatus'}), ...}
+E     
+E     Omitting 50 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mverify#download-a-single-artifact-file-by-reference-name[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mjob[39;49;00m[33m'[39;49;00m})}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-job-id] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_verify.py:1063: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['verify#download-a-single-artifact-file-by-job-id', '--path', 'job_id=8', '--path', 'artifact_path=reports/unit tests/junit.xml'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 unknown operation id 'verify#download-a-single-artifact-file-by-job-id': no family module and no graphql_only record declares it
+_ test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-reference-name] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_verify.py:1063: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['verify#download-a-single-artifact-file-by-reference-name', '--path', 'ref_name=main', '--path', 'artifact_path=reports/unit tests/junit.xml', '--query', 'job=test'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 unknown operation id 'verify#download-a-single-artifact-file-by-reference-name': no family module and no graphql_only record declares it
+___ test_a_writing_record_is_refused[add-a-merge-request-to-a-merge-train] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_verify.py:1090: in test_a_writing_record_is_refused
+    record = registry.lookup(operation_id=operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\scripts\gitlab_api\registry.py:323: in lookup
+    raise ValueError(
+E   ValueError: unknown operation id 'verify#add-a-merge-request-to-a-merge-train': no family module and no graphql_only record declares it
+
+During handling of the above exception, another exception occurred:
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\src\payload\test\test_gitlab_api_verify.py:1092: in test_a_writing_record_is_refused
+    pytest.fail(
+E   Failed: registry.lookup finds no record of 'verify#add-a-merge-request-to-a-merge-train', so call refuses it as unknown, not as a writer no subcommand sends (#15 AC-1, AC-3): unknown operation id 'verify#add-a-merge-request-to-a-merge-train': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_a_writing_record_is_refused[agent-foundations#restart-a-flow]
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_a_writing_record_is_refused[agent-foundations#trigger-a-flow]
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_writing_record_is_refused[rebase-a-merge-request]
+FAILED src/payload/test/test_gitlab_api_create.py::test_nothing_is_pending - ...
+FAILED src/payload/test/test_gitlab_api_create.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[add-changelog-data-to-file]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[apply-a-suggestion]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[apply-multiple-suggestions]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[cherry-pick-a-commit]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[create-a-commit]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[create-a-file-in-a-repository]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[create-repository-branch]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[delete-a-file-in-a-repository]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[revert-a-commit]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[start-the-pull-mirroring-process-for-a-project]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[update-a-file-in-a-repository]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[update-a-submodule-reference]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_a_writing_record_is_refused[import-project-resources]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_a_writing_record_is_refused[import-a-project-from-a-local-archive]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_a_writing_record_is_refused[import-a-project-from-a-remote-archive]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_nothing_is_pending - A...
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-holding-a-slash]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-encoded]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-empty-refused]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused]
+FAILED src/payload/test/test_gitlab_api_package.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_package.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_writing_record_is_refused
+FAILED src/payload/test/test_gitlab_api_plan.py::test_nothing_is_pending - As...
+FAILED src/payload/test/test_gitlab_api_plan.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_writing_record_is_refused[clone-an-issue]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_writing_record_is_refused[create-a-merge-request-note]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_nothing_is_pending - ...
+FAILED src/payload/test/test_gitlab_api_verify.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-job-id]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-reference-name]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_writing_record_is_refused[add-a-merge-request-to-a-merge-train]
+======================= 49 failed, 353 passed in 19.37s =======================

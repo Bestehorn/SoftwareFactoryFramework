@@ -1,16 +1,16 @@
 """Tests for ``gitlab_api/families/plan.py``, the ``plan`` endpoint family of the GitLab wrapper (issue #39, the plan
-slice of the wrapper rewrite; ``change.md`` AC-1, AC-3, AC-4 and AC-6).
+slice of the wrapper rewrite; ``change.md`` AC-1, AC-3, AC-4 and AC-6; issue #15's kept keys, its AC-1 to AC-3).
 
-Every expected value is a literal table transcribed from the reference, never read from the records:
-``docs/api-reference/gitlab/operations-index.md`` (the rows whose Reference is ``rest/plan.md``) and
-``docs/api-reference/gitlab/rest/plan.md`` (each section's endpoints, its heading, and the ``In``, ``Type`` and
+Every expected value is a literal table transcribed from the reference, never read from the records or from
+``commands/call.py``: ``docs/api-reference/gitlab/operations-index.md`` (the rows whose Reference is ``rest/plan.md``)
+and ``docs/api-reference/gitlab/rest/plan.md`` (each section's endpoints, its heading, and the ``In``, ``Type`` and
 ``Required`` columns of its ``| Attribute | In | Type | Required |`` table). What is pinned:
 
-- AC-1 (as issue #63 design.md D9 restates it): ``PENDING`` is exactly the keys of the two IDs kept pending (DL-003);
-  ``OPERATIONS`` declares every Reference of the family but those two IDs and ``plan#promote-an-issue-to-an-epic``,
-  whose key is the one ``plan#create-an-issue-note`` declares, each key of an ID once; a section with several endpoints
-  has one record per endpoint, its base record (the first under ``/projects/:id/``) first and the others in the order
-  its endpoint line lists them (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
+- AC-1 (as issue #63 design.md D9 and issue #15 AC-1, AC-2 restate it): ``PENDING`` is empty; ``OPERATIONS`` declares
+  every Reference of the family but ``plan#promote-an-issue-to-an-epic``, whose key is the one
+  ``plan#create-an-issue-note`` declares, each key of an ID once; a section with several endpoints has one record per
+  endpoint, its base record (the first under ``/projects/:id/``) first and the others in the order its endpoint line
+  lists them (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
 - AC-3: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``FILE`` for an ``In`` ``form`` row, ``ARRAY`` for a
   Type holding ``array``, ``HASH`` for ``Hash`` or ``object``); the ``required`` ``Param``s, exactly the Required
   ``yes`` rows that are not path rows; a JSON body and no ``fixed`` pairs on every record;
@@ -21,7 +21,11 @@ Every expected value is a literal table transcribed from the reference, never re
   exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``);
 - issue #63 AC-2.1, AC-2.2, AC-8.3: "Add an emoji reaction to a resource" called with ``--endpoint`` naming its
   merge-request endpoint sends one ``POST`` to that endpoint, and called without it sends its base endpoint, the issue
-  one.
+  one;
+- issue #15 AC-3: each record that writes, "Clone an issue" (it creates an issue) and "Create a merge request note"
+  (its ``/merge`` quick action merges), is the plan record ``registry.lookup`` returns for its ID, on its index row's
+  key, and its call with a value for each path parameter and each required attribute exits 2 with no request
+  although one would be answered, an ERROR record naming the ID and ending ": no subcommand sends it".
 
 AC-2 and AC-5 are proven by ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
 
@@ -37,11 +41,12 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import logging
 import re
 import sys
 from pathlib import Path
 from types import ModuleType
-from typing import AbstractSet, Any, Dict, FrozenSet, List, Mapping, Sequence, Tuple
+from typing import AbstractSet, Any, Dict, FrozenSet, List, Mapping, NamedTuple, Sequence, Tuple
 
 import pytest
 
@@ -83,6 +88,9 @@ PROJECT_ID = 4242
 
 CALL = "call"
 EXIT_OK = 0
+EXIT_USAGE = 2  # a refused `call` (issue #41 design.md D4)
+# The end of the refusal of an ID `commands/call.py`'s `GATED_OPERATIONS` maps to `None` (issue #44 design.md D6).
+NO_SUBCOMMAND_SENDS_IT = ": no subcommand sends it"
 OPTION_PATH = "--path"
 OPTION_RAW_FIELD = "-f"
 # `call --endpoint 'METHOD path'` names one endpoint of a Reference with several (issue #63, design.md D1).
@@ -359,15 +367,6 @@ INDEX_REFERENCES: Tuple[str, ...] = (
     "plan#verify-pages-domain",
 )
 
-# DL-003: the two IDs kept pending, and the keys of their rows (rest/plan.md "Clone an issue", "Create a merge request
-# note"; one endpoint each).
-KEPT_PENDING_IDS: FrozenSet[str] = frozenset({"plan#clone-an-issue", "plan#create-a-merge-request-note"})
-KEPT_PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("POST", "/projects/:id/issues/:issue_iid/clone"),
-        ("POST", "/projects/:id/merge_requests/:merge_request_iid/notes"),
-    }
-)
 # The index's other Reference on the key `plan#create-an-issue-note` declares (`POST .../issues/:issue_iid/notes`):
 # no record of its own.
 SHARED_KEY_ID = "plan#promote-an-issue-to-an-epic"
@@ -407,11 +406,36 @@ OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
     "plan#retrieve-notification-settings": (("GET", "/groups/:id/notification_settings"),),
     "plan#update-group-or-project-notification-settings": (("PUT", "/groups/:id/notification_settings"),),
 }
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = KEPT_PENDING_KEYS
+
+
+class WritingCase(NamedTuple):
+    """A plan record that writes (issue #15 AC-3): its ID, its index row's key, and a call giving a value for each path
+    parameter of its section, ``id`` the configured project, and for each required attribute of its table."""
+
+    operation_id: str
+    key: Tuple[str, str]
+    argv: Tuple[str, ...]
+
+
+# operations-index.md and rest/plan.md: "Clone an issue" creates an issue (its required `to_project_id` is the project
+# it creates the issue in), and "Create a merge request note" takes a `body` whose `/merge` quick action merges.
+WRITING_CASES: Tuple[WritingCase, ...] = (
+    WritingCase(
+        operation_id="plan#clone-an-issue",
+        key=("POST", "/projects/:id/issues/:issue_iid/clone"),
+        argv=("plan#clone-an-issue", OPTION_PATH, "issue_iid=4", OPTION_RAW_FIELD, "to_project_id=4343"),
+    ),
+    WritingCase(
+        operation_id="plan#create-a-merge-request-note",
+        key=("POST", "/projects/:id/merge_requests/:merge_request_iid/notes"),
+        argv=("plan#create-a-merge-request-note", OPTION_PATH, "merge_request_iid=5", OPTION_RAW_FIELD, "body=/merge"),
+    ),
+)
 
 # rest/plan.md: every query, body and form row whose Kind is not SCALAR, by (record ID, attribute name) — FILE for an
 # `In` `form` row, ARRAY for a Type holding `array`, HASH for `Hash` or `object` (AC-3). A name is the table's, `[]`
-# dropped (`iids[]` is `iids`); a member row (`not[labels]`) is its own attribute (AC-2).
+# dropped (`iids[]` is `iids`); a member row (`not[labels]`) is its own attribute (AC-2). "Clone an issue" (`integer`,
+# `boolean`) and "Create a merge request note" (`string`, `boolean`) have none (issue #15 AC-1).
 TYPED_ATTRIBUTES: Dict[Tuple[str, str], str] = {
     ("plan#create-a-wiki-page", "front_matter"): KIND_HASH,
     ("plan#create-a-wiki-page-1", "front_matter"): KIND_HASH,
@@ -471,14 +495,17 @@ TYPED_ATTRIBUTES: Dict[Tuple[str, str], str] = {
 }
 
 # rest/plan.md: every row whose Required reads `yes` and whose `In` is not `path`, by (record ID, attribute name); the
-# emoji sections' combined row is named as written (AC-2).
+# emoji sections' combined row is named as written (AC-2); "Clone an issue" and "Create a merge request note" give one
+# each (issue #15 AC-1).
 REQUIRED_ATTRIBUTES: FrozenSet[Tuple[str, str]] = frozenset(
     {
         ("plan#add-an-emoji-reaction-to-a-comment", "name"),
         ("plan#add-an-emoji-reaction-to-a-resource", "issue_iid/merge_request_iid/snippet_id"),
         ("plan#add-an-emoji-reaction-to-a-resource", "name"),
         ("plan#add-spent-time-for-an-issue", "duration"),
+        ("plan#clone-an-issue", "to_project_id"),
         ("plan#create-a-group-issue-board", "name"),
+        ("plan#create-a-merge-request-note", "body"),
         ("plan#create-a-milestone", "title"),
         ("plan#create-a-new-group-label", "color"),
         ("plan#create-a-new-group-label", "name"),
@@ -724,23 +751,45 @@ def list_params() -> List[Any]:
     ]
 
 
-# --- AC-1: what stays pending ---------------------------------------------------------------------------------------
+def writing_params() -> List[Any]:
+    """One case per entry of ``WRITING_CASES``, named by its anchor."""
+    return [pytest.param(case, id=case.operation_id.partition(ID_SEPARATOR)[2]) for case in WRITING_CASES]
 
 
-def test_only_the_kept_keys_are_pending() -> None:
-    """AC-1, UB-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is the kept IDs' keys, and ``OPERATIONS``
-    declares every index Reference of the family but the kept IDs and the one whose key another record declares, each
+def answer_anything(*, fake: Any) -> None:
+    """Answer the next request, whatever it is, with ``{}``: a refusal that sends one is then judged by its oracle,
+    not by the fake host's unscripted-request error."""
+    fake.script_next(headers=((HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON),), body=b"{}")
+
+
+def error_messages(*, caplog: pytest.LogCaptureFixture) -> List[str]:
+    """The text of every log record at ERROR or above, in order: what the entry script writes to standard error."""
+    return [record.getMessage() for record in caplog.records if record.levelno >= logging.ERROR]
+
+
+def looked_up(*, registry: ModuleType, operation_id: str) -> Any:
+    """``registry.lookup(operation_id=...)``'s record; its refusal fails the test on this assertion."""
+    try:
+        return registry.lookup(operation_id=operation_id)
+    except ValueError as refusal:
+        raise AssertionError(f"registry.lookup refuses {operation_id!r}: {refusal}") from refusal
+
+
+# --- AC-1: nothing stays pending ------------------------------------------------------------------------------------
+
+
+def test_nothing_is_pending() -> None:
+    """AC-1, UB-2, issue #63 AC-1.1, AC-1.3 (design.md D9), issue #15 AC-1, AC-2: ``PENDING`` is empty, and
+    ``OPERATIONS`` declares every index Reference of the family but the one whose key another record declares, each
     key of an ID once; an ID of several records is a section's, its base record first and then its other endpoints in
     the section's order."""
     plan = gitlab_module(name=PLAN)
-    pending = frozenset(plan.PENDING)
-    assert pending == PENDING_KEYS, "plan.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
-        declared=pending, expected=PENDING_KEYS
-    )
+    pending = sorted(plan.PENDING)
+    assert pending == [], f"plan.PENDING is not empty (issue #15 AC-2): {pending}"
     endpoints = endpoints_by_id(records=plan.OPERATIONS)
     repeated = repeated_keys(endpoints=endpoints)
     assert not repeated, f"plan.OPERATIONS declares these keys of one ID more than once: {repeated}"
-    expected = set(INDEX_REFERENCES) - KEPT_PENDING_IDS - {SHARED_KEY_ID}
+    expected = set(INDEX_REFERENCES) - {SHARED_KEY_ID}
     assert set(endpoints) == expected, "plan.OPERATIONS does not declare the family's References (AC-1):\n" + (
         set_difference(declared=set(endpoints), expected=expected)
     )
@@ -880,3 +929,39 @@ def test_an_other_endpoint_is_sent_when_named(
     )
     assert fake_gitlab.requests[1].json() == EMOJI_BODY, "the base endpoint's JSON body names the -f attribute"
     assert fake_gitlab.remaining() == [], "both scripted answers were served"
+
+
+# --- Issue #15 AC-3: a writing record is refused --------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=writing_params())
+def test_a_writing_record_is_refused(
+    case: WritingCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #15 AC-3, UB-2: ``registry.lookup`` returns the plan record of the ID, on its index row's key; ``call``
+    with a value for each path parameter and each required attribute exits 2 with no request although one would be
+    answered, prints nothing, and one ERROR record names the ID and ends ": no subcommand sends it"."""
+    registry = gitlab_module(name=REGISTRY)
+    plan = gitlab_module(name=PLAN)
+    record = looked_up(registry=registry, operation_id=case.operation_id)
+    assert any(declared is record for declared in plan.OPERATIONS), (
+        f"registry.lookup returns {record!r} for {case.operation_id!r}, not a record of plan.OPERATIONS (AC-1)"
+    )
+    assert (record.method, record.path) == case.key, (
+        f"{case.operation_id} is declared on {(record.method, record.path)}, not its index row's {case.key} (AC-1)"
+    )
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=case.argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_USAGE, f"call {list(case.argv)} exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [], "a refused call sends no request (issue #41 design.md D4)"
+    assert captured.out == "", f"a refusal prints nothing on standard output:\n{captured.out}"
+    messages = error_messages(caplog=caplog)
+    assert any(case.operation_id in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+        f"one ERROR record names {case.operation_id!r} and ends {NO_SUBCOMMAND_SENDS_IT!r}: the gate refuses a record "
+        f"that writes, which no subcommand sends (issue #15 AC-3); logged: {messages!r}"
+    )

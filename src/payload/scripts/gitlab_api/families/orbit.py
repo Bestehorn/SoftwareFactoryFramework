@@ -2,16 +2,18 @@
 deployed skills.
 
 Each record is transcribed from the attribute table of its section of ``docs/api-reference/gitlab/rest/orbit.md``
-(issue #13, design.md D1 and D5; issue #38, change.md AC-1 to AC-5), in page order under a comment naming its section:
-the method, the path as ``operations-index.md`` writes it, and one ``Param`` per query or body row, in table order:
+(issue #13, design.md D1 and D5; issue #38, change.md AC-1 to AC-5; issue #15, change.md AC-1), in page order under a
+comment naming its section: the method, the path as ``operations-index.md`` writes it, and one ``Param`` per query or
+body row, in table order:
 
 - a ``string array`` row (``scopes``, ``tokens``) is ``Kind.ARRAY``, a ``hash`` row (``parameters``) ``HASH``, every
   other row ``SCALAR``; ``required`` is the Required column's ``yes`` (the ``conditional`` rows of the search are
   not); every body is JSON and no record has ``fixed`` values;
 - every record is ``Paging.NONE``: the Orbit "List" sections answer one object (AC-5).
 
-``PENDING`` holds the key of "Retrieve a deployed skill file", ``GET /orbit/skills/:name/*path``: its ``*path`` glob
-segment is a form ``registry.expand`` does not write, which issue #40 owns.
+``PENDING`` is empty. "Retrieve a deployed skill file", ``GET /orbit/skills/:name/*path``, has its record since issue
+#15: its two rows, ``name`` and ``path``, are path rows, so it declares no ``Param``, and ``call`` sends it with each
+``/`` of the ``*path`` value kept, each part one encoded segment (issue #40, design.md D1; issue #15 AC-4).
 
 Standard library only; Python 3.9.
 """
@@ -92,10 +94,12 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="HEAD",
         path="/orbit/skills/:name",
     ),
+    # "Orbit API: Retrieve a deployed skill file"; its `name` and `path` rows are path rows, so it has no Param.
+    RestOperation(
+        operation_id="orbit#retrieve-a-deployed-skill-file",
+        method="GET",
+        path="/orbit/skills/:name/*path",
+    ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("GET", "/orbit/skills/:name/*path"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

@@ -25,11 +25,15 @@ Three sections take a request form of issue #63 (its design.md D1 to D3, D8):
   docs.gitlab.com ``repositories`` "Available options" lists, one given as ``--path format=``; without it the path ends
   at ``archive``.
 
-``PENDING`` holds the ``(method, path)`` keys no record maps: those of the twelve IDs that commit to, create or rewrite
-a branch (creating a branch, a commit, a cherry-pick or a revert; adding changelog data; creating, updating or deleting
-a file; updating a submodule; applying one suggestion or several; starting a pull mirror), kept for issue #35's reason:
-``call`` would send them ungated, since ``GATED_OPERATIONS`` refuses an ID only by naming the subcommand that sends it,
-and no subcommand sends these. No other family links any of them.
+The twelve IDs that commit to, create or rewrite a branch (creating a branch, a commit, a cherry-pick or a revert;
+adding changelog data; creating, updating or deleting a file; updating a submodule; applying one suggestion or several;
+starting a pull mirror) have their records since issue #15, each named by a constant, ``OP_`` and its anchor in upper
+snake case: no subcommand sends any of them, so ``commands/call.py``'s ``GATED_OPERATIONS`` maps each to ``None``, and
+``call`` refuses it, ": no subcommand sends it", before any request is sent (issue #15 AC-3). In their sections a
+footnoted name (``version[^version-attribute-include]``) is the name before the footnote, and a name read twice one
+``Param``; ``actions[]`` is the ``ARRAY`` ``actions``, its ``actions[].action`` rows members of it; the ``form`` row
+``file`` is a body ``Param``, its Type ``file`` a ``SCALAR``. ``PENDING`` is empty: every Reference of the page has its
+record.
 
 Standard library only; Python 3.9.
 """
@@ -41,6 +45,21 @@ from typing import FrozenSet, Tuple
 from gitlab_api.registry import Kind, Location, Paging, Param, RestOperation
 
 FAMILY = "create"
+
+# The IDs that commit to, create or rewrite a branch: `commands/call.py`'s `GATED_OPERATIONS` maps each to `None`
+# (issue #15 AC-3).
+OP_CREATE_REPOSITORY_BRANCH = "create#create-repository-branch"
+OP_CREATE_A_COMMIT = "create#create-a-commit"
+OP_CHERRY_PICK_A_COMMIT = "create#cherry-pick-a-commit"
+OP_REVERT_A_COMMIT = "create#revert-a-commit"
+OP_ADD_CHANGELOG_DATA_TO_FILE = "create#add-changelog-data-to-file"
+OP_CREATE_A_FILE_IN_A_REPOSITORY = "create#create-a-file-in-a-repository"
+OP_UPDATE_A_FILE_IN_A_REPOSITORY = "create#update-a-file-in-a-repository"
+OP_DELETE_A_FILE_IN_A_REPOSITORY = "create#delete-a-file-in-a-repository"
+OP_UPDATE_A_SUBMODULE_REFERENCE = "create#update-a-submodule-reference"
+OP_APPLY_A_SUGGESTION = "create#apply-a-suggestion"
+OP_APPLY_MULTIPLE_SUGGESTIONS = "create#apply-multiple-suggestions"
+OP_START_THE_PULL_MIRRORING_PROCESS_FOR_A_PROJECT = "create#start-the-pull-mirroring-process-for-a-project"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # ".gitignore API: List all `.gitignore` templates".
@@ -76,6 +95,16 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="create#retrieve-a-repository-branch",
         method="GET",
         path="/projects/:id/repository/branches/:branch",
+    ),
+    # "Branches API: Create repository branch".
+    RestOperation(
+        operation_id=OP_CREATE_REPOSITORY_BRANCH,
+        method="POST",
+        path="/projects/:id/repository/branches",
+        params=(
+            Param(name="branch", location=Location.BODY, required=True),
+            Param(name="ref", location=Location.BODY, required=True),
+        ),
     ),
     # "Branches API: Delete repository branch": `id` and `branch` are path attributes, so the record has no Param.
     RestOperation(
@@ -113,6 +142,27 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         ),
         paging=Paging.OFFSET,
     ),
+    # "Commits API: Create a commit"; the `array` row `actions[]` is `actions`, and each `actions[].action` row a member
+    # of it; the `form` row `file` is a body Param.
+    RestOperation(
+        operation_id=OP_CREATE_A_COMMIT,
+        method="POST",
+        path="/projects/:id/repository/commits",
+        params=(
+            Param(name="branch", location=Location.BODY, required=True),
+            Param(name="commit_message", location=Location.BODY, required=True),
+            Param(name="actions", location=Location.BODY, kind=Kind.ARRAY),
+            Param(name="allow_empty", location=Location.BODY),
+            Param(name="author_email", location=Location.BODY),
+            Param(name="author_name", location=Location.BODY),
+            Param(name="force", location=Location.BODY),
+            Param(name="start_branch", location=Location.BODY),
+            Param(name="start_project", location=Location.BODY),
+            Param(name="start_sha", location=Location.BODY),
+            Param(name="stats", location=Location.BODY),
+            Param(name="file", location=Location.BODY, required=True),
+        ),
+    ),
     # "Commits API: Retrieve a commit".
     RestOperation(
         operation_id="create#retrieve-a-commit",
@@ -138,6 +188,27 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/projects/:id/repository/commits/:sha/sequence",
         params=(Param(name="first_parent", location=Location.QUERY),),
+    ),
+    # "Commits API: Cherry-pick a commit".
+    RestOperation(
+        operation_id=OP_CHERRY_PICK_A_COMMIT,
+        method="POST",
+        path="/projects/:id/repository/commits/:sha/cherry_pick",
+        params=(
+            Param(name="branch", location=Location.BODY, required=True),
+            Param(name="dry_run", location=Location.BODY),
+            Param(name="message", location=Location.BODY),
+        ),
+    ),
+    # "Commits API: Revert a commit".
+    RestOperation(
+        operation_id=OP_REVERT_A_COMMIT,
+        method="POST",
+        path="/projects/:id/repository/commits/:sha/revert",
+        params=(
+            Param(name="branch", location=Location.BODY, required=True),
+            Param(name="dry_run", location=Location.BODY),
+        ),
     ),
     # "Commits API: Retrieve commit diff".
     RestOperation(
@@ -1106,6 +1177,13 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="url", location=Location.BODY),
         ),
     ),
+    # "Pull mirroring API: Start the pull mirroring process for a project".
+    RestOperation(
+        operation_id=OP_START_THE_PULL_MIRRORING_PROCESS_FOR_A_PROJECT,
+        method="POST",
+        path="/projects/:id/mirror/pull",
+        params=(Param(name="force", location=Location.BODY),),
+    ),
     # "Repositories API: List all repository trees in a project".
     RestOperation(
         operation_id="create#list-all-repository-trees-in-a-project",
@@ -1260,6 +1338,25 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="trailer", location=Location.QUERY),
         ),
     ),
+    # "Repositories API: Add changelog data to file"; `version[^version-attribute-include]` and `from[^...]` are
+    # `version` and `from`, and the rows that name them again the same attributes.
+    RestOperation(
+        operation_id=OP_ADD_CHANGELOG_DATA_TO_FILE,
+        method="POST",
+        path="/projects/:id/repository/changelog",
+        params=(
+            Param(name="version", location=Location.BODY, required=True),
+            Param(name="branch", location=Location.BODY),
+            Param(name="config_file", location=Location.BODY),
+            Param(name="config_file_ref", location=Location.BODY),
+            Param(name="date", location=Location.BODY),
+            Param(name="file", location=Location.BODY),
+            Param(name="from", location=Location.BODY),
+            Param(name="message", location=Location.BODY),
+            Param(name="to", location=Location.BODY),
+            Param(name="trailer", location=Location.BODY),
+        ),
+    ),
     # "Repositories API: Health".
     RestOperation(
         operation_id="create#health",
@@ -1309,6 +1406,66 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         params=(
             Param(name="lfs", location=Location.QUERY),
             Param(name="ref", location=Location.QUERY),
+        ),
+    ),
+    # "Repository files API: Create a file in a repository"; the `form` row `file` is a body Param.
+    RestOperation(
+        operation_id=OP_CREATE_A_FILE_IN_A_REPOSITORY,
+        method="POST",
+        path="/projects/:id/repository/files/:file_path",
+        params=(
+            Param(name="branch", location=Location.BODY, required=True),
+            Param(name="commit_message", location=Location.BODY, required=True),
+            Param(name="content", location=Location.BODY, required=True),
+            Param(name="author_email", location=Location.BODY),
+            Param(name="author_name", location=Location.BODY),
+            Param(name="encoding", location=Location.BODY),
+            Param(name="execute_filemode", location=Location.BODY),
+            Param(name="start_branch", location=Location.BODY),
+            Param(name="file", location=Location.BODY, required=True),
+        ),
+    ),
+    # "Repository files API: Update a file in a repository"; the `form` row `file` is a body Param.
+    RestOperation(
+        operation_id=OP_UPDATE_A_FILE_IN_A_REPOSITORY,
+        method="PUT",
+        path="/projects/:id/repository/files/:file_path",
+        params=(
+            Param(name="branch", location=Location.BODY, required=True),
+            Param(name="commit_message", location=Location.BODY, required=True),
+            Param(name="content", location=Location.BODY, required=True),
+            Param(name="author_email", location=Location.BODY),
+            Param(name="author_name", location=Location.BODY),
+            Param(name="encoding", location=Location.BODY),
+            Param(name="execute_filemode", location=Location.BODY),
+            Param(name="last_commit_id", location=Location.BODY),
+            Param(name="start_branch", location=Location.BODY),
+            Param(name="file", location=Location.BODY, required=True),
+        ),
+    ),
+    # "Repository files API: Delete a file in a repository".
+    RestOperation(
+        operation_id=OP_DELETE_A_FILE_IN_A_REPOSITORY,
+        method="DELETE",
+        path="/projects/:id/repository/files/:file_path",
+        params=(
+            Param(name="branch", location=Location.QUERY, required=True),
+            Param(name="commit_message", location=Location.QUERY, required=True),
+            Param(name="author_email", location=Location.QUERY),
+            Param(name="author_name", location=Location.QUERY),
+            Param(name="last_commit_id", location=Location.QUERY),
+            Param(name="start_branch", location=Location.QUERY),
+        ),
+    ),
+    # "Repository submodules API: Update a submodule reference".
+    RestOperation(
+        operation_id=OP_UPDATE_A_SUBMODULE_REFERENCE,
+        method="PUT",
+        path="/projects/:id/repository/submodules/:submodule",
+        params=(
+            Param(name="branch", location=Location.BODY, required=True),
+            Param(name="commit_sha", location=Location.BODY, required=True),
+            Param(name="commit_message", location=Location.BODY),
         ),
     ),
     # "Snippet repository storage moves API: List all snippet repository storage moves".
@@ -1452,6 +1609,23 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/snippets/:id/user_agent_detail",
     ),
+    # "Suggest Changes API: Apply a suggestion".
+    RestOperation(
+        operation_id=OP_APPLY_A_SUGGESTION,
+        method="PUT",
+        path="/suggestions/:id/apply",
+        params=(Param(name="commit_message", location=Location.BODY),),
+    ),
+    # "Suggest Changes API: Apply multiple suggestions"; `ids` is an `integer array`.
+    RestOperation(
+        operation_id=OP_APPLY_MULTIPLE_SUGGESTIONS,
+        method="PUT",
+        path="/suggestions/batch_apply",
+        params=(
+            Param(name="ids", location=Location.BODY, kind=Kind.ARRAY, required=True),
+            Param(name="commit_message", location=Location.BODY),
+        ),
+    ),
     # "Tags API: List all project repository tags".
     RestOperation(
         operation_id="create#list-all-project-repository-tags",
@@ -1504,19 +1678,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("POST", "/projects/:id/mirror/pull"),
-        ("POST", "/projects/:id/repository/branches"),
-        ("POST", "/projects/:id/repository/changelog"),
-        ("POST", "/projects/:id/repository/commits"),
-        ("POST", "/projects/:id/repository/commits/:sha/cherry_pick"),
-        ("POST", "/projects/:id/repository/commits/:sha/revert"),
-        ("DELETE", "/projects/:id/repository/files/:file_path"),
-        ("POST", "/projects/:id/repository/files/:file_path"),
-        ("PUT", "/projects/:id/repository/files/:file_path"),
-        ("PUT", "/projects/:id/repository/submodules/:submodule"),
-        ("PUT", "/suggestions/:id/apply"),
-        ("PUT", "/suggestions/batch_apply"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

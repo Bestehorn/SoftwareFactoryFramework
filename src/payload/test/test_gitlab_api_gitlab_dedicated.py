@@ -1,6 +1,6 @@
 """Tests for ``gitlab_api/families/gitlab_dedicated.py``, the ``gitlab-dedicated`` endpoint family of the GitLab
 wrapper (issue #38, the remaining stage groups of the wrapper rewrite; ``change.md`` AC-1, AC-2, AC-4, AC-5, AC-7 and
-AC-8; issue #63, design.md D6 and D9, AC-1.1 to AC-1.4, AC-7.1 and AC-8.3).
+AC-8; issue #63, design.md D6 and D9, AC-1.1 to AC-1.4, AC-7.1 and AC-8.3; issue #15, ``change.md`` AC-1 to AC-3).
 
 Every expected value is a literal table transcribed from the reference, never read from the records:
 ``docs/api-reference/gitlab/operations-index.md`` (the rows whose Reference is ``rest/gitlab-dedicated.md``) and
@@ -8,17 +8,17 @@ Every expected value is a literal table transcribed from the reference, never re
 ``Required`` and ``Notes`` columns of its ``| Attribute | In | Type |`` table). Every section of the page has one
 endpoint, the one its index row carries. What is pinned:
 
-- AC-1: ``OPERATIONS`` as ``{operation_id: (method, path)}``, each ID once, is every index row of the family but the
-  three AC-2 keeps;
-- AC-2: ``PENDING`` is exactly the keys of the three imports kept pending (DL-005: "Import project resources" and the
-  local and remote archive imports write into an existing project), and no record declares their IDs; the import from
-  an AWS S3 bucket has its record since issue #63 (design.md D6);
+- AC-1, #15 AC-1: ``OPERATIONS`` as ``{operation_id: (method, path)}``, each ID once, is every index row of the family:
+  the import from an AWS S3 bucket has its record since issue #63 (design.md D6), and "Import project resources" and
+  the imports from a local and from a remote archive since issue #15;
+- AC-2, #15 AC-2: ``PENDING`` is empty;
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``FILE`` for a row whose Notes begin "file upload",
   ``ARRAY_OF_HASHES`` for ``array of object`` and the ``entities`` of "Start a group or project migration", ``HASH``
   for ``hash``, ``Hash`` or ``object``, ``ARRAY`` for any other Type holding ``array`` or ``Array``); the ``required``
-  names, exactly the non-path rows whose Required reads ``yes`` (a member row, ``configuration[url]`` or
-  ``upload[url]``, is carried by its parent and is no ``Param``, but every row of the S3 import is a ``Param`` under its
-  full name, #63 D6); a JSON body on every record but the S3 import's, a form body, and no ``fixed`` pairs on any;
+  names, exactly the non-path rows whose Required reads ``yes`` (a member row, ``configuration[url]``, ``upload[url]``
+  or an ``override_params[...]`` row of the local and remote archive imports at one level or two, is carried by its
+  parent and is no ``Param``, but every row of the S3 import, which has no ``override_params`` row, is a ``Param`` under
+  its full name, #63 D6); a JSON body on every record but the S3 import's, a form body, and no ``fixed`` pairs on any;
 - AC-5: the ``Paging.OFFSET`` records are exactly the ``GET`` sections headed "List" (every ``GET`` section with a
   ``page`` row is among them), every other record ``Paging.NONE``;
 - AC-7: each ``Paging.OFFSET`` record, called through the product's ``main(argv=["call", ...])`` with ``--path`` for
@@ -29,7 +29,11 @@ endpoint, the one its index row carries. What is pinned:
 - #63 AC-7.1: the S3 import, called through ``main`` with ``commands/call.py``'s ``GATED_OPERATIONS`` replaced, for that
   test alone, by the mapping without its ID (D6), exits 0 and sends one ``POST`` whose form body, or multipart body
   when ``--file`` gives the avatar, carries each member at its full bracketed name: the two-level ``cadence`` as
-  written, an ``array of string`` as one ``name[]`` per item, the avatar as a file part.
+  written, an ``array of string`` as one ``name[]`` per item, the avatar as a file part;
+- #15 AC-3: "Import project resources" and the imports from a local and from a remote archive write into an existing
+  project: ``registry.lookup`` returns each record, yet its ``call`` with a value for each path parameter and each
+  required row exits 2 with no request although one would be answered, an ERROR record naming the ID and that no
+  subcommand sends it.
 
 The names and ``In`` of every ``Param`` (AC-3) and one call of every record (AC-6) are proven by
 ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
@@ -46,6 +50,7 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import logging
 import re
 import sys
 import urllib.parse
@@ -224,11 +229,79 @@ S3_IMPORT_CASES = (
     pytest.param(S3ImportCase(media_type=CONTENT_TYPE_MULTIPART, avatar=True), id="multipart-body-with-avatar"),
 )
 
+# Issue #15 AC-3: a refused call exits 2 (`commands/call.py` `EXIT_REFUSED`), and the refusal of an ID
+# `GATED_OPERATIONS` maps to `None` says that no subcommand sends it (issue #44 design.md D6).
+EXIT_REFUSED = 2
+NO_SUBCOMMAND_SENDS_IT = "no subcommand sends it"
+# The mark a refused call's arguments hold where the path of the archive file the test writes goes; the archive starts
+# as a gzip archive does.
+ARCHIVE_MARK = "<archive-file>"
+ARCHIVE_FILE_NAME = "project-export.tar.gz"
+ARCHIVE_BYTES = b"\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x03"
+
+
+class WritingCase(NamedTuple):
+    """One record issue #15 AC-3 refuses: its ID, its index row's method and path, and the arguments of its call after
+    the ID and the ``--path`` values: a value for each required row of its section, ``--file`` for a ``file upload``
+    row, ``-f`` for every other."""
+
+    operation_id: str
+    method: str
+    path: str
+    arguments: Tuple[str, ...]
+
+
+# rest/gitlab-dedicated.md: the three imports that write into an existing project ("Import project resources" imports
+# issues, milestones, merge requests or pipelines into it; the archive imports take `overwrite`), each with its index
+# row and its section's required rows. None of the three paths has a path parameter.
+WRITING_CASES = (
+    pytest.param(
+        WritingCase(
+            operation_id="gitlab-dedicated#import-project-resources",
+            method="POST",
+            path="/projects/import-relation",
+            arguments=(
+                OPTION_FILE,
+                f"file={ARCHIVE_MARK}",
+                OPTION_RAW_FIELD,
+                "path=imported-project",
+                OPTION_RAW_FIELD,
+                "relation=issues",
+            ),
+        ),
+        id="import-project-resources",
+    ),
+    pytest.param(
+        WritingCase(
+            operation_id="gitlab-dedicated#import-a-project-from-a-local-archive",
+            method="POST",
+            path="/projects/import",
+            arguments=(OPTION_FILE, f"file={ARCHIVE_MARK}", OPTION_RAW_FIELD, "path=imported-project"),
+        ),
+        id="import-a-project-from-a-local-archive",
+    ),
+    pytest.param(
+        WritingCase(
+            operation_id="gitlab-dedicated#import-a-project-from-a-remote-archive",
+            method="POST",
+            path="/projects/remote-import",
+            arguments=(
+                OPTION_RAW_FIELD,
+                "path=imported-project",
+                OPTION_RAW_FIELD,
+                "url=https://archives.example.com/exports/project-export.tar.gz",
+            ),
+        ),
+        id="import-a-project-from-a-remote-archive",
+    ),
+)
+
 # --- The tables, transcribed from docs/api-reference/gitlab ----------------------------------------------------------
 
-# operations-index.md: every row linking rest/gitlab-dedicated.md but AC-2's three, as `gitlab-dedicated#<anchor>` and
-# its method and path, in index order. Each Reference carries one row, and its section that one endpoint (AC-1). The
-# S3 import's row is mapped since issue #63 (design.md D6, D9).
+# operations-index.md: every row linking rest/gitlab-dedicated.md, as `gitlab-dedicated#<anchor>` and its method and
+# path, in index order. Each Reference carries one row, and its section that one endpoint (AC-1). The S3 import's row
+# is mapped since issue #63 (design.md D6, D9), the rows of "Import project resources" and of the imports from a local
+# and from a remote archive since issue #15 (AC-1).
 RECORD_ENDPOINTS: Dict[str, Tuple[str, str]] = {
     "gitlab-dedicated#retrieve-information-about-a-model-record": ("GET", "/admin/data_management/:model_name/:id"),
     "gitlab-dedicated#recalculate-the-checksum-of-a-model-record": (
@@ -318,27 +391,23 @@ RECORD_ENDPOINTS: Dict[str, Tuple[str, str]] = {
     "gitlab-dedicated#add-a-webhook-to-a-project": ("POST", "/projects/:id/hooks"),
     "gitlab-dedicated#retrieve-the-status-of-a-project-import": ("GET", "/projects/:id/import"),
     "gitlab-dedicated#retrieve-the-status-of-a-project-resource-import": ("GET", "/projects/:id/relation-imports"),
-    "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket": ("POST", "/projects/remote-import-s3"),
-}
-
-# AC-2, DL-005: the three imports kept pending, each with the one index row it has — "Import project resources" and the
-# imports from a local and a remote archive (they write into an existing project). No section of the page has a
-# second endpoint. The import from an AWS S3 bucket is no longer kept (issue #63, design.md D6).
-KEPT_PENDING: Dict[str, Tuple[str, str]] = {
     "gitlab-dedicated#import-project-resources": ("POST", "/projects/import-relation"),
     "gitlab-dedicated#import-a-project-from-a-local-archive": ("POST", "/projects/import"),
+    "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket": ("POST", "/projects/remote-import-s3"),
     "gitlab-dedicated#import-a-project-from-a-remote-archive": ("POST", "/projects/remote-import"),
 }
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(KEPT_PENDING.values())
 
 # rest/gitlab-dedicated.md: every query, body or form row of a record whose Kind is not SCALAR, by (record ID, name)
 # (AC-4). `array` and `Array` rows are ARRAY, but `entities` of "Start a group or project migration" (its members
 # `entities[source_type]`, ...); `array of strings` is ARRAY; `array of object` is ARRAY_OF_HASHES; `hash`, `Hash` and
-# `object` are HASH; a `file upload` row is FILE whatever its Type (`String`, `file`). A member row
+# `object` are HASH; a `file upload` row is FILE whatever its Type (`String`, `string`, `file`). A member row
 # (`configuration[url]`, `upload[http_method]`) is no Param, but each row of the S3 import, which has no parent row, is
-# one under its full name (issue #63, design.md D6). Every other row's Type is `string`, `String`, `integer`,
-# `Integer`, `integer (int32)`, `integer or string`, `Integer or string`, `string or integer`, `boolean` or `Boolean`,
-# a SCALAR.
+# one under its full name (issue #63, design.md D6). The local and remote archive imports have an `override_params` row
+# (`hash`), so each of their `override_params[...]` rows, one level deep or two, is its member and no Param: neither
+# `override_params[avatar]` (a `file upload`) nor `override_params[tag_list]` of theirs is typed (issue #15). Every
+# other row's Type is `string`, `String`, `integer`, `Integer`, `integer (int32)`, `integer or string`,
+# `Integer or string`, `string or integer`, `boolean` or `Boolean`, a SCALAR (the `file.path` to `file.remote_url`
+# rows of "Import project resources" and of the local archive import among them).
 NON_SCALAR_PARAMS: Dict[Tuple[str, str], str] = {
     ("gitlab-dedicated#retrieve-model-information", "identifiers"): KIND_ARRAY,
     ("gitlab-dedicated#recalculate-checksums-for-model-records", "identifiers"): KIND_ARRAY,
@@ -367,15 +436,19 @@ NON_SCALAR_PARAMS: Dict[Tuple[str, str], str] = {
     ("gitlab-dedicated#add-new-system-hook", "custom_headers"): KIND_ARRAY_OF_HASHES,
     ("gitlab-dedicated#update-system-hook", "url_variables"): KIND_ARRAY_OF_HASHES,
     ("gitlab-dedicated#update-system-hook", "custom_headers"): KIND_ARRAY_OF_HASHES,
+    ("gitlab-dedicated#import-project-resources", "file"): KIND_FILE,
+    ("gitlab-dedicated#import-a-project-from-a-local-archive", "file"): KIND_FILE,
+    ("gitlab-dedicated#import-a-project-from-a-local-archive", "override_params"): KIND_HASH,
     ("gitlab-dedicated#import-a-project-from-an-aws-s3-bucket", "override_params[tag_list]"): KIND_ARRAY,
     ("gitlab-dedicated#import-a-project-from-an-aws-s3-bucket", "override_params[topics]"): KIND_ARRAY,
     ("gitlab-dedicated#import-a-project-from-an-aws-s3-bucket", "override_params[avatar]"): KIND_FILE,
+    ("gitlab-dedicated#import-a-project-from-a-remote-archive", "override_params"): KIND_HASH,
 }
 
 # rest/gitlab-dedicated.md: the non-path rows of a record whose Required reads `yes`, by record, in table order; a
 # record with none is not listed (AC-4). A member row whose Required reads `yes` (`configuration[url]`,
 # `entities[source_type]`, `upload[url]`) is carried by its parent, so `upload` of "Export a project", whose own row
-# is not required, is not required either.
+# is not required, is not required either. No `override_params[...]` row of the archive imports is required.
 REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "gitlab-dedicated#retrieve-information-about-a-model-record": ("record_identifier",),
     "gitlab-dedicated#create-a-geo-node": ("name", "url"),
@@ -411,6 +484,9 @@ REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "gitlab-dedicated#set-a-url-variable": ("value",),
     "gitlab-dedicated#add-new-system-hook": ("url",),
     "gitlab-dedicated#set-a-url-variable-1": ("value",),
+    "gitlab-dedicated#import-project-resources": ("file", "path", "relation"),
+    "gitlab-dedicated#import-a-project-from-a-local-archive": ("file", "path"),
+    "gitlab-dedicated#import-a-project-from-a-remote-archive": ("path", "url"),
     "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket": (
         "access_key_id",
         "bucket_name",
@@ -422,6 +498,7 @@ REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
 }
 
 # The records whose body is not BodyFormat.JSON: the S3 import's rows are `form` members (issue #63, design.md D6).
+# "Import project resources" and the archive imports are JSON, their `file` a FILE that sends as multipart (issue #15).
 FORM_BODIES: Dict[str, str] = {
     "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket": BODY_FORM,
 }
@@ -628,8 +705,8 @@ def lift_the_gate(*, monkeypatch: pytest.MonkeyPatch, operation_id: str) -> None
 
 
 def test_every_reference_has_its_record() -> None:
-    """AC-1, UB-2, #63 AC-1.1: ``OPERATIONS`` as ``{operation_id: (method, path)}``, each ID once, is
-    ``RECORD_ENDPOINTS``: every index row of the family but AC-2's three, the S3 import's included."""
+    """AC-1, UB-2, #63 AC-1.1, #15 AC-1: ``OPERATIONS`` as ``{operation_id: (method, path)}``, each ID once, is
+    ``RECORD_ENDPOINTS``: every index row of the family, the S3 import's and issue #15's three imports included."""
     family = gitlab_module(name=FAMILY_MODULE)
     declared = [(record.operation_id, (record.method, record.path)) for record in family.OPERATIONS]
     identifiers = [operation_id for operation_id, _ in declared]
@@ -641,19 +718,16 @@ def test_every_reference_has_its_record() -> None:
     )
 
 
-# --- AC-2: what stays pending ---------------------------------------------------------------------------------------
+# --- AC-2: nothing stays pending ------------------------------------------------------------------------------------
 
 
-def test_only_the_kept_keys_are_pending() -> None:
-    """AC-2, UB-2, #63 AC-1.3: ``PENDING`` is exactly the keys of the three imports kept pending, and no record
-    declares their IDs."""
+def test_nothing_is_pending() -> None:
+    """AC-2, UB-2, #63 AC-1.3, #15 AC-2: ``PENDING`` is empty, every index row of the family having its record."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
-    assert pending == PENDING_KEYS, "gitlab_dedicated.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(
-        declared=pending, expected=PENDING_KEYS
+    assert pending == frozenset(), "gitlab_dedicated.PENDING is not empty (#15 AC-2):\n" + set_difference(
+        declared=pending, expected=frozenset()
     )
-    declared_kept = sorted(record.operation_id for record in family.OPERATIONS if record.operation_id in KEPT_PENDING)
-    assert declared_kept == [], f"the IDs kept pending have no record (AC-2): {declared_kept}"
 
 
 # --- AC-4: kinds, required attributes, bodies -----------------------------------------------------------------------
@@ -801,3 +875,54 @@ def test_the_s3_import_sends_every_member_at_its_name(
     files = [(member.name, member.filename, member.content) for member in members if member.filename is not None]
     expected_files = [(AVATAR_MEMBER, AVATAR_FILE_NAME, AVATAR_BYTES)] if case.avatar else []
     assert files == expected_files, f"the avatar is the one file part, its bytes unchanged (#63 AC-7.1): {files}"
+
+
+# --- Issue #15 AC-3: a record that writes into an existing project is refused -----------------------------------------
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=WRITING_CASES)
+def test_a_writing_record_is_refused(
+    case: WritingCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """#15 AC-1, AC-3: ``gitlab_dedicated.OPERATIONS`` declares the case's ID and ``registry.lookup`` returns its record
+    on its index row's method and path; yet ``call <id>`` with a value for each path parameter and each required row,
+    the archive a file the test writes, exits 2 with no request although one would be answered, prints nothing, and
+    logs an ERROR record naming the ID and that no subcommand sends it."""
+    family = gitlab_module(name=FAMILY_MODULE)
+    registry = gitlab_module(name=REGISTRY)
+    declared = [record.operation_id for record in family.OPERATIONS]
+    assert case.operation_id in declared, (
+        f"gitlab_dedicated.OPERATIONS declares no record of {case.operation_id} (#15 AC-1), so its refusal proves "
+        "nothing"
+    )
+    record = registry.lookup(operation_id=case.operation_id)
+    assert (record.operation_id, record.method, record.path) == (case.operation_id, case.method, case.path), (
+        f"registry.lookup returns the record of {case.operation_id} on {case.method} {case.path} (#15 AC-1): "
+        f"{record.operation_id} {record.method} {record.path}"
+    )
+    archive = project / ARCHIVE_FILE_NAME
+    archive.write_bytes(data=ARCHIVE_BYTES)
+    values = path_values(path=case.path)
+    argv = [
+        case.operation_id,
+        *(part for name, value in values.items() for part in (OPTION_PATH, f"{name}{ASSIGNED}{value}")),
+        *(argument.replace(ARCHIVE_MARK, str(archive)) for argument in case.arguments),
+    ]
+    fake_gitlab.script_next(status=STATUS_CREATED, body=IMPORT_ANSWER)
+
+    code = run_call(root=project, argv=argv)
+
+    captured = capsys.readouterr()
+    assert code == EXIT_REFUSED, f"call {argv} exits {EXIT_REFUSED}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [], f"the refused {case.operation_id} sends no request (#15 AC-3)"
+    assert captured.out == "", f"a refusal prints nothing on standard output:\n{captured.out}"
+    messages = [log_record.getMessage() for log_record in caplog.records if log_record.levelno >= logging.ERROR]
+    naming = [message for message in messages if case.operation_id in message and NO_SUBCOMMAND_SENDS_IT in message]
+    assert naming, (
+        f"one ERROR record names {case.operation_id!r} and says {NO_SUBCOMMAND_SENDS_IT!r}: GATED_OPERATIONS maps it "
+        f"to None, as it writes into an existing project (#15 AC-3); logged: {messages!r}"
+    )

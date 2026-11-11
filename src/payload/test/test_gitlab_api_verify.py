@@ -1,16 +1,25 @@
 """Tests for ``gitlab_api/families/verify.py``, the ``verify`` endpoint family of the GitLab wrapper (issue #37, the
-verify slice of the wrapper rewrite; ``change.md`` AC-1, AC-3, AC-4 and AC-6).
+verify slice of the wrapper rewrite; ``change.md`` AC-1, AC-3, AC-4 and AC-6; issue #15, the kept keys, ``change.md``
+AC-1 to AC-4).
 
 Every expected value is a literal table transcribed from the reference, never read from the records:
 ``docs/api-reference/gitlab/operations-index.md`` (the rows whose Reference is ``rest/verify.md``) and
 ``docs/api-reference/gitlab/rest/verify.md`` (each section's endpoints, its heading, and the ``In``, ``Type`` and
 ``Required`` columns of its ``| Attribute | In | Type | Required |`` table). What is pinned:
 
-- AC-1 (as issue #63 design.md D9 restates it): ``PENDING`` is exactly the keys of the three IDs kept pending (DL-003:
-  the two ``*artifact_path`` downloads and the merge-train add); ``OPERATIONS`` declares every Reference of the family
-  but those three IDs and ``verify#runners-api-1``, whose endpoints each have a section of their own, each key of an
-  ID once; a section with several endpoints has one record per endpoint, its base record (the section's first) first
-  and the others in the section's order (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
+- AC-1 (as issue #63 design.md D9 restates it), #15 AC-1, AC-2: ``PENDING`` is empty; ``OPERATIONS`` declares every
+  Reference of the family but ``verify#runners-api-1``, whose endpoints each have a section of their own, each key of
+  an ID once; the two ``*artifact_path`` downloads and "Add a merge request to a merge train" each on its section's
+  one endpoint, with one ``Param`` per query or body row of its table, in table order; a section with several
+  endpoints has one record per endpoint, its base record (the section's first) first and the others in the section's
+  order (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
+- #15 AC-3: ``verify#add-a-merge-request-to-a-merge-train`` merges: ``registry.lookup`` returns its record, yet its
+  ``call`` with a value for each path parameter exits 2 with no request, an ERROR record naming the ID and ending
+  ": no subcommand sends it";
+- #15 AC-4: each ``*artifact_path`` download, called with a value for each path parameter and required row, its glob
+  value holding ``/``, exits 0 and sends one ``GET`` at the URL that keeps each ``/`` of the value, each part between
+  them one percent-encoded segment (#40 D1), and writes the answer's bytes unchanged, no line end added (read with
+  ``capsysbinary``);
 - AC-3: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``ARRAY_OF_HASHES`` for a Type ``array of hashes``,
   ``array of hash`` or ``array of strategy JSON objects``, ``ARRAY`` for any other Type holding ``array``, ``HASH`` for
   ``hash`` or ``object``); the ``required`` ``Param``s, exactly the Required ``yes`` rows that are query or body
@@ -41,6 +50,7 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import logging
 import re
 import sys
 from pathlib import Path
@@ -91,9 +101,15 @@ TOKEN = "glpat-gitlab-api-verify-test"  # pragma: allowlist secret
 PROJECT_ID = 4242
 
 EXIT_OK = 0
+EXIT_USAGE = 2  # argparse's usage error and a refused `call` (issue #13 design.md D4)
 METHOD_GET = "GET"
 OPTION_PATH = "--path"
+OPTION_QUERY = "--query"
 ASSIGNED = "="
+TEXT_ENCODING = "utf-8"
+DECODE_ERRORS = "replace"
+HEADER_CONTENT_TYPE = "Content-Type"
+CONTENT_TYPE_OCTET_STREAM = "application/octet-stream"
 ID_SEPARATOR = "#"
 HEADER_NEXT_PAGE = "x-next-page"
 HEADER_LINK = "Link"
@@ -359,23 +375,36 @@ INDEX_REFERENCES: Tuple[str, ...] = (
     "verify#verify-authentication-for-a-registered-runner",
 )
 
-# DL-003: the three IDs kept pending, and the keys of their rows (rest/verify.md "Download a single artifact file by
-# job ID", "Download a single artifact file by reference name", "Add a merge request to a merge train"; one endpoint
-# each).
-KEPT_PENDING_IDS: FrozenSet[str] = frozenset(
-    {
-        "verify#download-a-single-artifact-file-by-job-id",
-        "verify#download-a-single-artifact-file-by-reference-name",
-        "verify#add-a-merge-request-to-a-merge-train",
-    }
-)
-KEPT_PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("GET", "/projects/:id/jobs/:job_id/artifacts/*artifact_path"),
-        ("GET", "/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path"),
-        ("POST", "/projects/:id/merge_trains/merge_requests/:merge_request_iid"),
-    }
-)
+# Issue #15 AC-1: operations-index.md and rest/verify.md "Download a single artifact file by job ID", "Download a
+# single artifact file by reference name" and "Add a merge request to a merge train": each ID's one record, on its
+# section's one endpoint ...
+RECORD_ENDPOINTS: Dict[str, Tuple[str, str]] = {
+    "verify#add-a-merge-request-to-a-merge-train": (
+        "POST",
+        "/projects/:id/merge_trains/merge_requests/:merge_request_iid",
+    ),
+    "verify#download-a-single-artifact-file-by-job-id": ("GET", "/projects/:id/jobs/:job_id/artifacts/*artifact_path"),
+    "verify#download-a-single-artifact-file-by-reference-name": (
+        "GET",
+        "/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path",
+    ),
+}
+# ... with one `Param` per query or body row of its table, in table order, by name and `registry.Location` member name;
+# a path row is no Param.
+RECORD_PARAMS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "verify#add-a-merge-request-to-a-merge-train": (
+        ("auto_merge", "BODY"),
+        ("sha", "BODY"),
+        ("squash", "BODY"),
+        ("when_pipeline_succeeds", "BODY"),
+    ),
+    "verify#download-a-single-artifact-file-by-job-id": (("job_token", "QUERY"),),
+    "verify#download-a-single-artifact-file-by-reference-name": (
+        ("job", "QUERY"),
+        ("job_token", "QUERY"),
+        ("search_recent_successful_pipelines", "QUERY"),
+    ),
+}
 # The section "Runners API" (`verify#runners-api-1`) lists five endpoints, each the endpoint of a section of its own
 # ("List all available runners", "List all runners", "List all jobs processed by a runner", "List all of a project's
 # runners", "List all of a group's runners"): no record.
@@ -396,11 +425,10 @@ OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
     ),
     "verify#list-all-of-a-groups-runners": (("GET", "/groups/:id/runners/all"),),
 }
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = KEPT_PENDING_KEYS
 
 # rest/verify.md: every query and body attribute whose Kind is not SCALAR, by record (AC-3). Every other attribute's
 # Type is a scalar one (`string`, `integer`, `boolean`, `datetime`, `JSON`, `integer or string`, ...). A record with
-# none is not listed.
+# none is not listed: the three of `RECORD_ENDPOINTS` among them, whose rows are `string` and `boolean` (#15 AC-1).
 NON_SCALAR_PARAMS: Dict[str, Dict[str, str]] = {
     "verify#add-a-cluster-to-a-project": {"platform_kubernetes_attributes": KIND_HASH},
     "verify#create-a-feature-flag": {"strategies": KIND_ARRAY_OF_HASHES},
@@ -448,9 +476,9 @@ NON_SCALAR_PARAMS: Dict[str, Dict[str, str]] = {
     "verify#update-runners-details": {"tag_list": KIND_ARRAY},
 }
 
-# rest/verify.md: the query and body attributes whose Required reads `yes`, by record, in table order (AC-3). A record
-# with none is not listed; a path row is no Param, and a member row (`platform_kubernetes_attributes[api_url]`,
-# `test_splits[].path`) is part of its parent.
+# rest/verify.md: the query and body attributes whose Required reads `yes`, by record, in table order (AC-3, #15
+# AC-1). A record with none is not listed; a path row is no Param, and a member row
+# (`platform_kubernetes_attributes[api_url]`, `test_splits[].path`) is part of its parent.
 REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "verify#add-a-cluster-to-a-project": ("name", "platform_kubernetes_attributes"),
     "verify#add-a-deploy-key-for-a-project": ("key", "title"),
@@ -482,6 +510,7 @@ REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "verify#create-instance-variable": ("key", "value"),
     "verify#create-or-update-a-feature-flag": ("value",),
     "verify#delete-a-runner-by-authentication-token": ("token",),
+    "verify#download-a-single-artifact-file-by-reference-name": ("job",),
     "verify#download-job-artifacts-by-reference-name": ("job",),
     "verify#get-the-latest-release": ("suffix_path",),
     "verify#initialize-test-balancing-for-a-parallel-job": ("test_splits",),
@@ -680,6 +709,56 @@ PAGED_RECORDS: Dict[str, PagedRecord] = {
 }
 
 
+class GlobCase(NamedTuple):
+    """A call of a ``*artifact_path`` download: its ID, the arguments after it, and the one URL it is sent to."""
+
+    operation_id: str
+    arguments: Tuple[str, ...]
+    url: str
+
+
+# Issue #15 AC-4 (#40 D1): each download called with a value for each path parameter and required row, `id` the
+# configured project; the glob value `reports/unit tests/junit.xml` keeps its two `/`, and each part between them is
+# one percent-encoded segment, so the space is written `%20`.
+GLOB_CASES = (
+    pytest.param(
+        GlobCase(
+            operation_id="verify#download-a-single-artifact-file-by-job-id",
+            arguments=(OPTION_PATH, "job_id=8", OPTION_PATH, "artifact_path=reports/unit tests/junit.xml"),
+            url=f"{REST_BASE}/projects/{PROJECT_ID}/jobs/8/artifacts/reports/unit%20tests/junit.xml",
+        ),
+        id="download-a-single-artifact-file-by-job-id",
+    ),
+    pytest.param(
+        GlobCase(
+            operation_id="verify#download-a-single-artifact-file-by-reference-name",
+            arguments=(
+                OPTION_PATH,
+                "ref_name=main",
+                OPTION_PATH,
+                "artifact_path=reports/unit tests/junit.xml",
+                OPTION_QUERY,
+                "job=test",
+            ),
+            url=f"{REST_BASE}/projects/{PROJECT_ID}/jobs/artifacts/main/raw/reports/unit%20tests/junit.xml?job=test",
+        ),
+        id="download-a-single-artifact-file-by-reference-name",
+    ),
+)
+# The artifact file the host answers with, as `application/octet-stream`: bytes a text-layer write would translate
+# (`\r\n`) or fail to encode (`\xff`).
+ARTIFACT_BYTES = b'<?xml version="1.0"?>\r\n<testsuites/>\xff\xfe\x00'
+
+# Issue #15 AC-3: the writer (operations-index.md, rest/verify.md "Add a merge request to a merge train"), which
+# merges, with the arguments of its complete call: a value for its path parameter `merge_request_iid`, `id` the
+# configured project; its table has no required row.
+WRITING_CALLS: Dict[str, Tuple[str, ...]] = {
+    "verify#add-a-merge-request-to-a-merge-train": (OPTION_PATH, "merge_request_iid=5"),
+}
+# The end of the refusal of an ID `GATED_OPERATIONS` maps to `None` (issue #44 design.md D6).
+NO_SUBCOMMAND_SENDS_IT = ": no subcommand sends it"
+
+
 # --- Fixtures and helpers ---------------------------------------------------------------------------------------
 
 
@@ -835,26 +914,50 @@ def list_params() -> List[Any]:
     ]
 
 
-# --- AC-1: what stays pending ---------------------------------------------------------------------------------------
+def writing_params() -> List[Any]:
+    """One case per entry of ``WRITING_CALLS``, named by its anchor."""
+    return [
+        pytest.param(operation_id, arguments, id=operation_id.partition(ID_SEPARATOR)[2])
+        for operation_id, arguments in WRITING_CALLS.items()
+    ]
 
 
-def test_only_the_kept_keys_are_pending() -> None:
-    """AC-1, UB-3, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is the kept IDs' keys, and ``OPERATIONS``
-    declares every index Reference of the family but the kept IDs and ``verify#runners-api-1``, each key of an ID
-    once; an ID of several records is a section's, its base record first and then its other endpoints in the section's
-    order."""
+def error_messages(*, caplog: pytest.LogCaptureFixture) -> List[str]:
+    """The text of every log record at ERROR or above, in order: what the entry script writes to standard error."""
+    return [record.getMessage() for record in caplog.records if record.levelno >= logging.ERROR]
+
+
+# --- AC-1, #15 AC-1, AC-2: nothing is pending -----------------------------------------------------------------------
+
+
+def test_nothing_is_pending() -> None:
+    """AC-1, UB-3, issue #63 AC-1.1, AC-1.3 (design.md D9), issue #15 AC-1, AC-2: ``PENDING`` is empty, and
+    ``OPERATIONS`` declares every index Reference of the family but ``verify#runners-api-1``, each key of an ID once;
+    each ID of ``RECORD_ENDPOINTS`` is one record on its section's endpoint with its table's query and body rows; an ID
+    of several records is a section's, its base record first and then its other endpoints in the section's order."""
     family = gitlab_module(name=FAMILY_MODULE)
-    pending = frozenset(family.PENDING)
-    assert pending == PENDING_KEYS, "verify.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
-        declared=pending, expected=PENDING_KEYS
-    )
+    pending = sorted(family.PENDING)
+    assert pending == [], f"verify.PENDING holds {len(pending)} key(s); each has its record (#15 AC-2): {pending}"
     endpoints = endpoints_by_id(records=family.OPERATIONS)
     repeated = repeated_keys(endpoints=endpoints)
     assert not repeated, f"verify.OPERATIONS declares these keys of one ID more than once: {repeated}"
-    expected = frozenset(INDEX_REFERENCES) - KEPT_PENDING_IDS - {NO_RECORD_ID}
+    expected = frozenset(INDEX_REFERENCES) - {NO_RECORD_ID}
     assert frozenset(endpoints) == expected, (
         f"verify.OPERATIONS declares {len(endpoints)} ID(s), AC-1 expects {len(expected)}:\n"
         + set_difference(declared=set(endpoints), expected=set(expected))
+    )
+    singles = {operation_id: keys for operation_id, keys in endpoints.items() if operation_id in RECORD_ENDPOINTS}
+    expected_singles = {operation_id: (key,) for operation_id, key in RECORD_ENDPOINTS.items()}
+    assert singles == expected_singles, "these IDs are not each one record on its section's endpoint (#15 AC-1):\n" + (
+        mapping_difference(declared=singles, expected=expected_singles)
+    )
+    params = {
+        record.operation_id: tuple((param.name, param.location.name) for param in record.params)
+        for record in family.OPERATIONS
+        if record.operation_id in RECORD_PARAMS
+    }
+    assert params == RECORD_PARAMS, "these records' Params are not their tables' query and body rows (#15 AC-1):\n" + (
+        mapping_difference(declared=params, expected=RECORD_PARAMS)
     )
     bases = {operation_id: keys[0] for operation_id, keys in endpoints.items() if operation_id in BASE_ENDPOINTS}
     assert bases == BASE_ENDPOINTS, "each section's first record is not its base record (issue #63 D1):\n" + (
@@ -933,4 +1036,76 @@ def test_a_list_record_prints_every_page(
     assert fake_gitlab.remaining() == [], "every scripted page was served"
     assert captured.out == printed_json(value=list(PAGE_ITEMS)), (
         f"one JSON array of both items, in page order, as print_json writes it (AC-6):\n{captured.out}"
+    )
+
+
+# --- #15 AC-4: the artifact-file downloads --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=GLOB_CASES)
+def test_a_glob_record_is_sent_with_its_slashes(
+    case: GlobCase, project: Path, fake_gitlab: Any, capsysbinary: pytest.CaptureFixture[bytes]
+) -> None:
+    """Issue #15 AC-4: ``call <download> --path ... --path 'artifact_path=reports/unit tests/junit.xml'``, the
+    reference-name download's required ``job`` given with ``--query``, answered with the artifact's bytes as
+    ``application/octet-stream``, exits 0, sends one ``GET`` at the URL that keeps each ``/`` of the glob value with
+    each part one percent-encoded segment (#40 D1), and writes the bytes unchanged, no line end added."""
+    fake_gitlab.script(
+        method=METHOD_GET,
+        url=case.url,
+        headers=((HEADER_CONTENT_TYPE, CONTENT_TYPE_OCTET_STREAM),),
+        body=ARTIFACT_BYTES,
+    )
+    argv = (case.operation_id, *case.arguments)
+    code = run_call(root=project, argv=argv)
+    captured = capsysbinary.readouterr()
+    stderr = captured.err.decode(encoding=TEXT_ENCODING, errors=DECODE_ERRORS)
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+    assert sent(fake=fake_gitlab) == [(METHOD_GET, case.url)], (
+        "one GET, each / of the glob value kept and each part one percent-encoded segment (#15 AC-4, #40 D1)"
+    )
+    assert fake_gitlab.remaining() == [], "the scripted answer was served"
+    assert captured.out == ARTIFACT_BYTES, (
+        f"the artifact's bytes unchanged, no line end added (print_bytes); standard output: {captured.out!r}"
+    )
+
+
+# --- #15 AC-3: the merge-train add is refused -----------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames=("operation_id", "arguments"), argvalues=writing_params())
+def test_a_writing_record_is_refused(
+    operation_id: str,
+    arguments: Tuple[str, ...],
+    project: Path,
+    fake_gitlab: Any,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Issue #15 AC-3: ``registry.lookup`` returns the writer's record, on its section's endpoint; its ``call`` with a
+    value for each path parameter and required row exits 2 with no request and nothing printed, one ERROR record
+    naming the ID and ending ": no subcommand sends it"."""
+    registry = gitlab_module(name=REGISTRY)
+    try:
+        record = registry.lookup(operation_id=operation_id)
+    except ValueError as unknown:
+        pytest.fail(
+            f"registry.lookup finds no record of {operation_id!r}, so call refuses it as unknown, not as a writer no "
+            f"subcommand sends (#15 AC-1, AC-3): {unknown}"
+        )
+    assert (record.method, record.path) == RECORD_ENDPOINTS[operation_id], (
+        f"registry.lookup returns {operation_id!r} on {record.method} {record.path}, not its section's endpoint"
+    )
+    # Any request the call sends is answered, so it is judged by the assertion below, not by the fake host.
+    fake_gitlab.script_next(body={})
+    argv = (operation_id, *arguments)
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_USAGE, f"call {list(argv)} exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [], "a refused call sends no request (#15 AC-3)"
+    assert captured.out == "", f"a refusal prints nothing on standard output:\n{captured.out}"
+    messages = error_messages(caplog=caplog)
+    assert any(operation_id in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+        f"one ERROR record names {operation_id!r} and ends {NO_SUBCOMMAND_SENDS_IT!r}: GATED_OPERATIONS maps the "
+        f"writer to None (#15 AC-3, issue #44 design.md D6); logged: {messages!r}"
     )
