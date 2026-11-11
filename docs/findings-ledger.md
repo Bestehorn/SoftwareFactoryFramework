@@ -16,3 +16,5 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | hooklib task ids | CHECKED_TASK_RE parses 2.1 and F1 but not the F.n ids spec-phase-tasks.md prescribes | src/hooks/hooklib.py CHECKED_TASK_RE; issue-28 tasks review SR-C2 | no incident: specs leave F tasks unticked | open |
 | 2026-11-11 | github_api repos | get-commit, compare-commits print one page (two item keys) | issue-27 change.md Residuals | needs a record field; no failure seen | open |
 | 2026-11-11 | github_api call gate | git/delete-ref stays callable via call | issue-27 change.md UB-4; #28 Residuals | not AC-7's branch-writing class; no incident | open |
+| 2026-11-11 | github_api copilot | copilot/set-copilot-content-exclusion-for-organization stays pending | issue-33 DL-004 | body is a map of any key; call refuses undocumented names | open |
+| 2026-11-11 | github_api gitignore, licenses | get-template and get-for-repo send ACCEPT_JSON, not their raw/html types | issue-33 change.md Residuals | needs a per-call Accept; no caller needs it | open |

@@ -26,11 +26,11 @@ one JSON object, or ``None`` when none was given, which sends no body.
 
 ``cmd_call`` refuses, with exit 2 (``EXIT_REFUSED``) and before any request: an ID in ``GATED_OPERATIONS``, naming
 the compatibility subcommand that sends it, or, for a record whose call commits to, creates, moves or renames a branch
-(issue #28 design D8, its exceptions row), saying that no subcommand sends it; an ID no record declares
-(``registry.lookup``); and a call that gives a path, query or body name the record does not document or leaves a path
-parameter without a value, in one message naming each such name with its kind, each missing path parameter, then the
-record's documented path, query and body parameters (``check_call``). A refusal is logged; every name the caller gave
-is rendered with ``json.dumps``.
+or creates issues (issue #28 design D8, its exceptions row), saying that no subcommand sends it; an ID no record
+declares (``registry.lookup``); and a call that gives a path, query or body name the record does not document or leaves
+a path parameter without a value, in one message naming each such name with its kind, each missing path parameter, then
+the record's documented path, query and body parameters (``check_call``). A refusal is logged; every name the caller
+gave is rendered with ``json.dumps``.
 
 What prints (D3):
 
@@ -88,8 +88,9 @@ BODY_ENCODING = "utf-8"
 
 #: The records ``call`` refuses. A record a gated compatibility subcommand sends maps to that subcommand:
 #: ``gate_merge_steward`` and ``gate_filing`` match the subcommand words, so ``call`` refuses these IDs rather than
-#: reach them unjudged. A record whose call commits to, creates, moves or renames a branch maps to ``None``: no
-#: subcommand sends it, so ``call`` refuses it with no alternative (issue #28 design D8, its exceptions row).
+#: reach them unjudged. A record whose call commits to, creates, moves or renames a branch, or creates issues
+#: (``campaigns/create-campaign``), maps to ``None``: no subcommand sends it, so ``call`` refuses it with no
+#: alternative (issue #28 design D8, its exceptions row).
 GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
     {
         "pulls/merge": "merge-pr",
@@ -101,6 +102,13 @@ GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
         "repos/delete-file": None,
         "git/create-ref": None,
         "git/update-ref": None,
+        "agent-tasks/create-task-in-repo": None,
+        "agent-merge/put-agent-merge-enrollment": None,
+        "agent-automations/create-repo-automation": None,
+        "agent-automations/edit-repo-automation": None,
+        "agent-automations/create-repo-automation-task": None,
+        "codespaces/export-for-authenticated-user": None,
+        "campaigns/create-campaign": None,
     }
 )
 
