@@ -1,5 +1,6 @@
-"""The GitHub wrapper's operation call, ``call <operation-id>`` (issue #28 design D2 to D4): any record a family module
-of ``github_api/families/`` declares, sent by its operation ID.
+"""The GitHub wrapper's operation call, ``call <operation-id>`` (issue #28 design D2 to D4, issue #30 design D3 and
+D5): any record a family module of ``github_api/families/`` or ``github_api/graphql_only.py`` declares, sent by its
+operation ID.
 
 The grammar (D2)::
 
@@ -24,24 +25,44 @@ there is none) rendered with ``json.dumps``, never a value. A path or body name 
 two body options share one destination, so the members keep their command-line order; ``body_of`` joins them into
 one JSON object, or ``None`` when none was given, which sends no body.
 
+A GraphQL record, whose operation ID starts with ``graphql/`` (``registry.GRAPHQL_ID_PREFIX``; issue #30 design D3)::
+
+    python scripts/github_wrapper.py call graphql/<member> [-f|--raw-field NAME=TEXT]... [-F|--field NAME=JSON]...
+
+- ``graphql/<member>``: a record of ``github_api/graphql_only.py``, named by its mutation (``graphql/pinIssue``) or,
+  for a query, by ``<Type>.<field>`` (``graphql/Repository.mergeQueue``).
+- ``-f`` and ``-F`` give the document's variables, parsed as the body members above; the variables are ``body_of``'s
+  object, or ``{}`` when none was given. A mutation takes one variable, ``input``, its whole input object
+  (``-F input=<JSON object>``). The ``origin`` repository is no default: the variables are exactly those given.
+- ``--path``, ``--query`` and a variable the document does not declare (``registry.declared_variables``; ``after`` on
+  a record that pages a connection, which the transport sets on every page) are refused.
+
 ``cmd_call`` refuses, with exit 2 (``EXIT_REFUSED``) and before any request: an ID in ``GATED_OPERATIONS``, naming
-the compatibility subcommand to use, or, for a record whose call commits to, creates, moves or renames a branch or
-creates issues (issue #28 design D8, its exceptions row), saying that no subcommand sends it; an ID no record declares
+the compatibility subcommand to use, or, for a record whose call commits to, creates, moves or renames a branch,
+creates issues (issue #28 design D8, its exceptions row) or moves an issue into another repository
+(issue #30 design D5), saying that no subcommand sends it. Then, for a REST record: an ID no record declares
 (``registry.lookup``); and a call that gives a path, query or body name the record does not document or leaves a path
 parameter without a value, in one message naming each such name with its kind, each missing path parameter, then the
-record's documented path, query and body parameters (``check_call``). A refusal is logged; every name the caller gave
+record's documented path, query and body parameters (``check_call``). For a GraphQL record: an ID no record of
+``graphql_only.py`` declares, or one declared twice (``registry.graphql_lookup``); and a call that gives a ``--path``
+or ``--query`` name or a variable the document does not declare, in one message naming each such name with its kind,
+then the variables the document declares (``check_graphql_call``). A refusal is logged; every name the caller gave
 is rendered with ``json.dumps``.
 
 What prints (D3):
 
 - a ``Paging.LINK`` record: every item of every page, in page order, as one JSON array (``print_json``), written once
   the last page has arrived;
-- any other record, by its response body: nothing for an empty body; the parsed body as indented JSON
+- any other REST record, by its response body: nothing for an empty body; the parsed body as indented JSON
   (``print_json``) for a body that decodes as UTF-8 and parses with ``json.loads``; any other body as its bytes
-  unchanged (``print_bytes``), with no line end added.
+  unchanged (``print_bytes``), with no line end added;
+- a GraphQL record with a ``connection``: every node of every page, in page order, as one JSON array (``print_json``),
+  written once the last page has arrived;
+- any other GraphQL record: the response's ``data`` as indented JSON (``print_json``).
 
-A ``GitHubAPIError`` (an HTTP error, a spent rate limit, no response, a ``.`` or ``..`` path segment) reaches the entry
-script, which logs its message and details and exits 1.
+A ``GitHubAPIError`` (an HTTP error, a spent rate limit, no response, a ``.`` or ``..`` path segment, a GraphQL
+response with ``errors``, a page without its connection) reaches the entry script, which logs its message and details
+and exits 1.
 """
 
 from __future__ import annotations
@@ -55,7 +76,7 @@ from typing import Any, Collection, Dict, Iterable, List, Mapping, Optional, Seq
 
 from github_api import registry
 from github_api.commands._common import EXIT_REFUSED, print_bytes, print_json
-from github_api.registry import Paging, RestOperation
+from github_api.registry import GraphQLOperation, Paging, RestOperation
 from github_api.transport import Transport
 
 CMD_CALL = "call"
@@ -84,6 +105,7 @@ PATH_REPO = "repo"
 KIND_PATH = "path"
 KIND_QUERY = "query"
 KIND_BODY = "body"
+KIND_VARIABLE = "variable"
 BODY_ENCODING = "utf-8"
 
 #: The records ``call`` refuses. A record with a gated compatibility subcommand to use maps to that subcommand:
@@ -91,7 +113,7 @@ BODY_ENCODING = "utf-8"
 #: reach them unjudged; the subcommand sends the record itself, but for an ID of ``GATED_NOT_SENT``. A record whose
 #: call commits to, creates, moves or renames a branch, or creates issues (``campaigns/create-campaign``), maps to
 #: ``None``: no subcommand sends it, so ``call`` refuses it with no alternative (issue #28 design D8, its exceptions
-#: row).
+#: row); so does a record that moves an issue into another repository (``graphql/transferIssue``, issue #30 design D5).
 GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
     {
         "pulls/merge": "merge-pr",
@@ -111,11 +133,16 @@ GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
         "agent-automations/create-repo-automation-task": None,
         "codespaces/export-for-authenticated-user": None,
         "campaigns/create-campaign": None,
+        "graphql/enablePullRequestAutoMerge": "merge-pr",
+        "graphql/createCommitOnBranch": None,
+        "graphql/revertPullRequest": None,
+        "graphql/transferIssue": None,
     }
 )
 #: The IDs of ``GATED_OPERATIONS`` their subcommand does not send: ``merge-pr`` merges through ``pulls/merge``, never
-#: through ``pulls/merge-async``, whose body can merge directly and bypass the rules (issue #32 DL-003).
-GATED_NOT_SENT = frozenset({"pulls/merge-async"})
+#: through ``pulls/merge-async``, whose body can merge directly and bypass the rules (issue #32 DL-003), and never
+#: turns auto-merge on, so it never sends ``graphql/enablePullRequestAutoMerge`` (issue #30 design D5).
+GATED_NOT_SENT = frozenset({"pulls/merge-async", "graphql/enablePullRequestAutoMerge"})
 #: The end of a refusal whose subcommand sends the refused record itself.
 SENDS_IT = ", which sends it"
 
@@ -251,6 +278,32 @@ def check_call(
     )
 
 
+def check_graphql_call(
+    *,
+    operation: GraphQLOperation,
+    path_names: Iterable[str],
+    query_names: Iterable[str],
+    variable_names: Iterable[str],
+) -> None:
+    """Issue #30 D3's check: refuse with ``ValueError``, in one message, every ``--path`` and ``--query`` name given (a
+    GraphQL record documents none, #28 D4's undocumented-parameter rule), then every variable outside
+    ``registry.declared_variables``, each sorted with its kind; the message then names the variables the document
+    declares, in document order."""
+    declared = registry.declared_variables(operation=operation)
+    refused = (
+        (f"{KIND_PATH} parameter", sorted(set(path_names))),
+        (f"{KIND_QUERY} parameter", sorted(set(query_names))),
+        (KIND_VARIABLE, sorted({name for name in variable_names if name not in declared})),
+    )
+    named = [f"no {kind} {json.dumps(obj=names)}" for kind, names in refused if names]
+    if not named:
+        return
+    raise ValueError(
+        f"The GitHub GraphQL record {json.dumps(obj=operation.operation_id)} takes {', '.join(named)}; "
+        f"its variables are {json.dumps(obj=list(declared))}"
+    )
+
+
 def _given(*, args: argparse.Namespace, dest: str) -> List[Assignment]:
     """The assignments stored under ``dest``, in command-line order; none when the option was not given."""
     return list(getattr(args, dest, None) or ())
@@ -269,15 +322,43 @@ def print_body(*, body: bytes) -> None:
     print_json(value=parsed)
 
 
+def _call_graphql(*, transport: Transport, operation_id: str, args: argparse.Namespace) -> Optional[int]:
+    """Issue #30 D3's GraphQL call: a gated ID, an ID no record of ``graphql_only.py`` declares once, then
+    ``check_graphql_call``, each a ``ValueError`` logged and returned as ``EXIT_REFUSED`` before any request; then the
+    record sent through ``registry.graphql_call`` with the ``-f``/``-F`` members as its variables, and its result
+    printed by ``print_json``."""
+    members = _given(args=args, dest=ARG_MEMBERS)
+    try:
+        refuse_gated(operation_id=operation_id)
+        operation = registry.graphql_lookup(operation_id=operation_id)
+        check_graphql_call(
+            operation=operation,
+            path_names=[each.name for each in _given(args=args, dest=ARG_PATH)],
+            query_names=[each.name for each in _given(args=args, dest=ARG_QUERY)],
+            variable_names=[each.name for each in members],
+        )
+    except ValueError as refusal:
+        logger.error("%s", refusal)
+        return EXIT_REFUSED
+    result = registry.graphql_call(
+        transport=transport, operation_id=operation_id, variables=body_of(members=members) or {}
+    )
+    print_json(value=result)
+    return None
+
+
 def cmd_call(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> Optional[int]:
     """Send the record ``args.operation_id`` names and print its response (D2 steps 1 to 7, D3).
 
-    Steps 1 to 4 decide every refusal before anything is sent: a gated ID, an ID no record declares, then the path
-    values (``owner`` and ``repo`` defaulted) and D4's check. Each refusal is a ``ValueError``, logged, and the call
-    returns ``EXIT_REFUSED``. Then the query and the body are built, and a ``Paging.LINK`` record goes through
-    ``registry.pages``, any other through ``registry.send``.
+    An ID starting with ``registry.GRAPHQL_ID_PREFIX`` is a GraphQL record, sent by ``_call_graphql`` (issue #30 D3),
+    which takes no default from ``owner`` and ``repo``. For any other ID, steps 1 to 4 decide every refusal before
+    anything is sent: a gated ID, an ID no record declares, then the path values (``owner`` and ``repo`` defaulted) and
+    D4's check. Each refusal is a ``ValueError``, logged, and the call returns ``EXIT_REFUSED``. Then the query and the
+    body are built, and a ``Paging.LINK`` record goes through ``registry.pages``, any other through ``registry.send``.
     """
     operation_id = str(getattr(args, ARG_OPERATION_ID))
+    if operation_id.startswith(registry.GRAPHQL_ID_PREFIX):
+        return _call_graphql(transport=transport, operation_id=operation_id, args=args)
     query_given = _given(args=args, dest=ARG_QUERY)
     members = _given(args=args, dest=ARG_MEMBERS)
     try:

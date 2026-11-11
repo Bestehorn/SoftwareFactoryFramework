@@ -261,3 +261,23 @@ def pages(
         api_version=operation.api_version,
         accept=operation.accept,
     )
+
+
+def graphql_call(transport: Transport, operation_id: str, *, variables: Mapping[str, Any]) -> Any:
+    """Send the GraphQL record ``operation_id`` with ``variables``: for a record with a ``connection``, the nodes of
+    every page in page order, collected before they are returned; for any other record, the response's ``data``. A
+    variable the record does not declare (``declared_variables``) is refused with ``ValueError`` before anything is
+    sent, as ``_check_names`` refuses an undocumented name."""
+    operation = graphql_lookup(operation_id=operation_id)
+    declared = declared_variables(operation=operation)
+    undeclared = sorted(name for name in variables if name not in declared)
+    if undeclared:
+        raise ValueError(
+            f"The GitHub GraphQL record {json.dumps(obj=operation.operation_id)} declares no variable "
+            f"{json.dumps(obj=undeclared)}; its variables are {json.dumps(obj=list(declared))}"
+        )
+    if operation.connection:
+        return list(
+            transport.graphql_nodes(document=operation.document, variables=variables, connection=operation.connection)
+        )
+    return transport.graphql(document=operation.document, variables=variables)
