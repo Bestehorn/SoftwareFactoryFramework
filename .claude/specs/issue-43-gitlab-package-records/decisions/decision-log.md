@@ -62,3 +62,12 @@
 **Evidence:** the lane files' Verdict lines.
 **Supersedes:** none
 **Artifacts touched:** design.md
+
+## DL-008 — 2026-11-11T11:57:07Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** Approve tasks.md after tasks review iteration 01 (both lanes READY, 0 A, 0 B; C1, C2, D1 applied, 14,793 B); implementation starts after #40's PR merges and this branch rebases onto origin/main (DL-001).
+**Driver:** review/test-architect/tasks-iteration-01.md; review/spec-review-agent/tasks-iteration-01.md.
+**Alternatives considered:** none
+**Evidence:** both tasks-iteration-01.md Verdict lines.
+**Supersedes:** none
+**Artifacts touched:** tasks.md
