@@ -13,7 +13,8 @@ What is pinned, each case through the product's ``main(argv=["call", ...])`` aga
 - a ``GitLabAPIError`` exits 1, its message and then its details logged (AC-1.7);
 - the refusals, exit 2 with no request (AC-1.1, AC-2.1 to AC-2.4): a gated ID names the subcommand to use; an unknown
   ID, an undocumented parameter, a missing path parameter and a value of the wrong shape are named in a log record;
-  ``-F`` text that is not JSON is argparse's usage error; ``call`` has no token option (UB-2.1).
+  a ``NAME=VALUE`` with no ``=`` or an empty name, and ``-F`` text that is not JSON, are argparse's usage error, which
+  names no value (design.md D2, D4); ``call`` has no token option (UB-2.1).
 
 A refusal is judged by its ``logging`` record (``caplog``) and argparse's by standard error (``capsys``), each with no
 request recorded; output that is not JSON is read as bytes (``capsysbinary``). A synthetic record (design.md "Testing
@@ -151,6 +152,7 @@ OPTION_FIELD = "-F"
 OPTION_FILE = "--file"
 OPTION_FIELDS = "-f/-F"
 FIELD_OPTION_NAME = "-F/--field"  # argparse's name of the `-F` option in its usage error
+RAW_FIELD_OPTION_NAME = "-f/--raw-field"  # and of the `-f` option
 # The `:id` path parameter, which defaults to the configured project on a `/projects/:id` path (AC-1.8).
 PATH_ID = "id"
 # A word inside a message: not part of a longer name (`id` is not found in `issue_iid`).
@@ -1055,6 +1057,23 @@ class PrintCase(NamedTuple):
             ),
             id="empty-204",
         ),
+        # An empty body under a JSON Content-Type: nothing, not print_json of the empty body's None (AC-1.5).
+        pytest.param(
+            PrintCase(
+                argv=(OP_DELETE_BRANCH, OPTION_PATH, f"branch={BRANCH}"),
+                answer=Answer(method=METHOD_DELETE, url=BRANCH_URL, status=STATUS_NO_CONTENT, headers=JSON_HEADERS),
+                printed="",
+            ),
+            id="empty-204-json-content-type",
+        ),
+        pytest.param(
+            PrintCase(
+                argv=(OP_RETRIEVE_ISSUE, OPTION_PATH, f"issue_iid={ISSUE_IID}"),
+                answer=Answer(method=METHOD_GET, url=ISSUE_URL, headers=JSON_HEADERS),
+                printed="",
+            ),
+            id="empty-200-json-content-type",
+        ),
     ],
 )
 def test_a_json_or_empty_body_prints_as_documented(
@@ -1656,6 +1675,104 @@ def test_a_value_of_the_wrong_shape_is_refused(
         f"one log record names the attribute {case.attribute!r} and its Kind {kind.value!r} (AC-2.4); logged: "
         f"{messages!r}"
     )
+
+
+class MalformedCase(NamedTuple):
+    """A call holding a ``NAME=VALUE`` argparse refuses (design.md D2 "Parsing", D4): the option as argparse's usage
+    error names it, the name its message renders with ``json.dumps`` (the text before the first ``=``, all of it when
+    there is none), and each value text standard error must not hold."""
+
+    argv: Tuple[str, ...]
+    option: str
+    name: str
+    withheld: Tuple[str, ...] = ()
+
+
+PATH_ISSUE_IID = "issue_iid"
+QUERY_STATE = "state"
+EMPTY_NAME = ""
+# The text after the first `=` of an empty name: a value, which no message holds (design.md D2).
+WITHHELD_PATH_VALUE = "withheld-path-value"
+WITHHELD_QUERY_VALUE = "withheld-query-value"
+WITHHELD_FIELD_VALUE = "withheld-field-value"
+
+
+def argument_named(*, option: str) -> str:
+    """The start of argparse's usage error for ``option``: ``error: argument <option>: `` and then the message."""
+    return f"error: argument {option}: "
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(
+            MalformedCase(
+                argv=(OP_UPDATE_ISSUE, *ISSUE_PATH, OPTION_RAW_FIELD, FIELD_TITLE),
+                option=RAW_FIELD_OPTION_NAME,
+                name=FIELD_TITLE,
+            ),
+            id="raw-field-without-an-equals-sign",
+        ),
+        pytest.param(
+            MalformedCase(
+                argv=(OP_UPDATE_ISSUE, *ISSUE_PATH, OPTION_RAW_FIELD, f"={WITHHELD_FIELD_VALUE}"),
+                option=RAW_FIELD_OPTION_NAME,
+                name=EMPTY_NAME,
+                withheld=(WITHHELD_FIELD_VALUE,),
+            ),
+            id="raw-field-with-an-empty-name",
+        ),
+        pytest.param(
+            MalformedCase(argv=(OP_UPDATE_ISSUE, OPTION_PATH, PATH_ISSUE_IID), option=OPTION_PATH, name=PATH_ISSUE_IID),
+            id="path-without-an-equals-sign",
+        ),
+        pytest.param(
+            MalformedCase(
+                argv=(OP_UPDATE_ISSUE, *ISSUE_PATH, OPTION_PATH, f"={WITHHELD_PATH_VALUE}"),
+                option=OPTION_PATH,
+                name=EMPTY_NAME,
+                withheld=(WITHHELD_PATH_VALUE,),
+            ),
+            id="path-with-an-empty-name",
+        ),
+        pytest.param(
+            MalformedCase(argv=(OP_LIST_ISSUES, OPTION_QUERY, QUERY_STATE), option=OPTION_QUERY, name=QUERY_STATE),
+            id="query-without-an-equals-sign",
+        ),
+        pytest.param(
+            MalformedCase(
+                argv=(OP_LIST_ISSUES, OPTION_QUERY, f"={WITHHELD_QUERY_VALUE}"),
+                option=OPTION_QUERY,
+                name=EMPTY_NAME,
+                withheld=(WITHHELD_QUERY_VALUE,),
+            ),
+            id="query-with-an-empty-name",
+        ),
+    ],
+)
+def test_a_malformed_argument_is_refused_without_its_value(
+    case: MalformedCase, project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Requirement 2, design.md D4 (a malformed ``NAME=VALUE``): exit 2 before any request, nothing on standard output,
+    and standard error is argparse's usage message, whose error names the option and then the name as ``json.dumps``
+    renders it, and holds no value (D2)."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=case.argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_USAGE, f"a malformed NAME=VALUE exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [], "argparse refuses the argument before the config is read: no request"
+    assert captured.out == "", f"a usage error prints nothing on standard output:\n{captured.out}"
+    lines = captured.err.splitlines()
+    assert any(line.startswith(USAGE_PREFIX) for line in lines), f"standard error holds no usage:\n{captured.err}"
+    named_option = argument_named(option=case.option)
+    messages = [line.split(sep=named_option, maxsplit=1)[1] for line in lines if named_option in line]
+    assert messages, f"no usage error names the option {case.option} (design.md D2); stderr:\n{captured.err}"
+    rendered = json.dumps(obj=case.name)
+    assert any(rendered in message for message in messages), (
+        f"the usage error names {rendered}, the name as json.dumps renders it (design.md D2): {messages}"
+    )
+    leaking = [value for value in case.withheld if value in captured.err]
+    assert leaking == [], f"standard error holds the value {leaking} (design.md D2); stderr:\n{captured.err}"
 
 
 # --- UB-2.1: no token option --------------------------------------------------------------------------------------

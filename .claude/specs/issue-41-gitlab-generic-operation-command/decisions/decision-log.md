@@ -35,3 +35,12 @@
 **Evidence:** tasks.md (14,887 bytes).
 **Supersedes:** none
 **Artifacts touched:** tasks.md
+
+## DL-005 — 2026-11-11T05:29:53Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Rework after the verifier REFUTED AC-1.5 (empty body under a JSON Content-Type) and Requirement 2 / D4 row 1 (`_split`'s two refusals unexercised): K gains two empty-body rows and `test_a_malformed_argument_is_refused_without_its_value` (six cases); mutants M1-M3 now fail K; one push, then a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md "Refutations".
+**Alternatives considered:** none
+**Evidence:** evidence/green/rework-1.txt; call.py 100% line coverage under K.
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_call.py, tasks.md (checkboxes)

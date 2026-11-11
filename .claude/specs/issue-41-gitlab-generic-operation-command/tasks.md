@@ -44,7 +44,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_api_registry.py s
 
 Run: `python scripts/run_tests.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_call_properties.py test/test_gitlab_wrapper_contract.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py`
 
-- [ ] 2.1 TEST: K — loads fx by path as R does; each test writes `config/gitlab.json` into `tmp_path` with
+- [x] 2.1 TEST: K — loads fx by path as R does; each test writes `config/gitlab.json` into `tmp_path` with
   `fx.write_config` (`hostname` `fx.HOST`) and runs the product's `main(argv=["call", …])` with `fx.load_wrapper` and
   `fx.run_main`. Requests are judged by the fake host's records; refusals by a `caplog` record (argparse's by `capsys`)
   plus no request recorded; non-JSON output by `capsysbinary`; design's synthetic records are set into a family
@@ -59,12 +59,12 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_api_call.py test/
   `test_call_takes_no_token_option` (a missing `call` subparser fails it). — Files:
   src/payload/test/test_gitlab_api_call.py — Validates: AC-1.1, AC-1.2, AC-1.3, AC-1.4, AC-1.5, AC-1.6, AC-1.7, AC-1.8,
   AC-1.9, AC-2.1, AC-2.2, AC-2.3, AC-2.4, UB-2.1
-- [ ] 2.2 TEST: H — puts `src/payload/scripts` on `sys.path` and carries `@settings(deadline=None)`, as P does;
+- [x] 2.2 TEST: H — puts `src/payload/scripts` on `sys.path` and carries `@settings(deadline=None)`, as P does;
   `test_any_json_value_becomes_the_attribute_value`, AC-1.3's property over design's `kind_values` and a name from
   `[a-z_][a-z0-9_]*`: `json_member` returns `(name, value)`, and `registry.encode` on a JSON record whose BODY `Param`
   of that `Kind` is given the value yields `json_body == {name: value}`. It imports `gitlab_api.commands.call` inside
   the test after asserting the file exists. — Files: test/test_gitlab_api_call_properties.py — Validates: AC-1.3
-- [ ] 2.3 TEST: N per D5 — `is_unreachable(*, path, section)`; the reference half, `reference_sections(*, rest_dir)`
+- [x] 2.3 TEST: N per D5 — `is_unreachable(*, path, section)`; the reference half, `reference_sections(*, rest_dir)`
   (D5's anchor rule restated, importing neither `verify.py` nor `common.Slugger`), D5's section, attribute and offering
   rules, `PAGING_PARAMETERS` and `record_problems(*, record, section)`; the call half, `sent_call(*, request)` and
   `call_problems(*, section, values, sent)`. Tests of N's own helpers, green before 2.4 by design, whose mutant for the
@@ -77,7 +77,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_api_call.py test/
   (`gitlab-dedicated#update-a-geo-site`, D5's five steps). It imports `GATED_OPERATIONS` inside the test after
   asserting `commands/call.py` exists, and runs `call` with wave 1's fx helpers. — Files:
   test/test_gitlab_wrapper_contract.py — Validates: AC-1.1, AC-3.1, AC-3.2
-- [ ] 2.4 IMPL: `commands/_common.py` — `EXIT_REFUSED` and `print_bytes(*, data)` (flush `sys.stdout`, then
+- [x] 2.4 IMPL: `commands/_common.py` — `EXIT_REFUSED` and `print_bytes(*, data)` (flush `sys.stdout`, then
   `sys.stdout.buffer.write`, no line end added), its module docstring naming both output forms and `EXIT_REFUSED`;
   `commands/call.py` per D1–D4 and D7 — the module docstring (D2's grammar, D3's print forms), `register(*,
   subparsers)` adding `call` with D2's options (`action="append"`, default `None`, `-f` and `-F` sharing one `dest`, no
@@ -89,7 +89,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_api_call.py test/
   with nothing sent. No text `os.environ` or `getenv`; standard library only. — Files:
   src/payload/scripts/gitlab_api/commands/_common.py, src/payload/scripts/gitlab_api/commands/call.py — Validates:
   AC-1.1, AC-1.2, AC-1.3, AC-1.4, AC-1.5, AC-1.6, AC-1.7, AC-1.8, AC-1.9, AC-2.1, AC-2.2, AC-2.3, AC-2.4, UB-2.1, UB-2.2
-- [ ] 2.5 IMPL: each part-1 record that N `test_every_record_matches_its_reference_section` names in this wave's red
+- [x] 2.5 IMPL: each part-1 record that N `test_every_record_matches_its_reference_section` names in this wave's red
   run, corrected to its section (D8), C staying green unedited; a module with no named record is left unedited. —
   Files: src/payload/scripts/gitlab_api/families/ (`ai_coding.py`, `create.py`, `plan.py`,
   `software_supply_chain_security.py`, `verify.py`) — Validates: AC-1.1, UB-1.1
@@ -103,7 +103,7 @@ return `[]`, `family_problems` and `capability_problems` return `["mutant"]` —
 its assertion. The mutant is undone by its exact inverse edit, never by `git checkout` or `git stash`; then 3.2 runs,
 and the green capture runs the Run line.
 
-- [ ] 3.1 TEST: V per D6 — `family_problems(*, rows, families)`, `only_in_graphql(*, path)` and
+- [x] 3.1 TEST: V per D6 — `family_problems(*, rows, families)`, `only_in_graphql(*, path)` and
   `capability_problems(*, capabilities, module)`. Tests: `test_a_regenerated_index_names_each_changed_key` (AC-5.3's
   five cases on a synthetic index and a `write_package` package of `SyntheticFamily`s),
   `test_every_declared_key_is_in_its_family`, `test_a_route_prefix_key_is_held_to_the_rule` (the synthetic `gamma`
@@ -111,7 +111,7 @@ and the green capture runs the Run line.
   `test_the_only_in_graphql_table_is_read_whole`, `test_every_graphql_only_capability_is_served_or_pending` (importing
   `gitlab_api.graphql_only` inside the test, as `registry_module` imports the registry). Existing V tests unedited. —
   Files: test/test_gitlab_wrapper_coverage.py — Validates: AC-5.3, AC-6.1, AC-6.2, AC-6.3
-- [ ] 3.2 IMPL: `graphql_only.py` — `PENDING_CAPABILITIES`, every first cell of the table under `### Only in GraphQL`
+- [x] 3.2 IMPL: `graphql_only.py` — `PENDING_CAPABILITIES`, every first cell of the table under `### Only in GraphQL`
   in `docs/api-reference/gitlab/graphql/conventions.md`, verbatim, experimental or not; the module docstring stating
   D6's rule and that a record of a `Status: Experiment` query or mutation says so in its comment. No text `os.environ`
   or `getenv`. — Files: src/payload/scripts/gitlab_api/graphql_only.py — Validates: AC-6.2, AC-6.3, UB-2.2
@@ -120,32 +120,32 @@ and the green capture runs the Run line.
 
 Run: `python scripts/run_tests.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py`
 
-- [ ] 4.1 TEST: C — `test_the_usage_names_the_operation_call`: the entry script's `__doc__` holds
+- [x] 4.1 TEST: C — `test_the_usage_names_the_operation_call`: the entry script's `__doc__` holds
   `call plan#retrieve-a-project-issue`, `--path`, `--query`, `-f/--raw-field`, `-F/--field`, `--file`, `variables`,
   `JSON array`, `indented JSON`, `empty body`, `bytes unchanged` and `exit 2`. — Files:
   src/payload/test/test_gitlab_wrapper_compat.py — Validates: AC-4.1
-- [ ] 4.2 IMPL: the entry script's module docstring only, per D7 — the usage lines after `check-landed`, "2 a usage
+- [x] 4.2 IMPL: the entry script's module docstring only, per D7 — the usage lines after `check-landed`, "2 a usage
   error or a refused `call`" in the "Exit codes" paragraph, and "(`commands/call.py` calls any record by its id)" in
   the last paragraph. — Files: src/payload/scripts/gitlab_wrapper.py — Validates: AC-4.1
-- [ ] 4.3 IMPL: the map's `src/payload/scripts/gitlab_api/` bullet per D7 — D7's sentences before its closing
+- [x] 4.3 IMPL: the map's `src/payload/scripts/gitlab_api/` bullet per D7 — D7's sentences before its closing
   sentence, which stays last; the map under its cap. — Files: docs/forLLMConsumption.md — Validates: AC-4.2
 
 ## Final
 
-- [ ] F.1 E2E: the real-forge check is #11's real-instance run on an ephemeral `sff-test-*` project (requirements
+- [x] F.1 E2E: the real-forge check is #11's real-instance run on an ephemeral `sff-test-*` project (requirements
   § Residuals). Until it exists, `call` runs through `main`'s argv up to the API boundary in K and N, and C
   `test_script_usage_error_exits_2` (unchanged) runs the script by path, so its parser holds `call.py`; these suites run
   in the `verify` job of `.github/workflows/ci.yml`, matrix leg `tests` (`python scripts/run_checks.py --group tests`).
   — Files: none
-- [ ] F.2 VERIFY: the branch's diff from its merge base with `origin/main` (`git diff --name-only origin/main...HEAD`)
+- [x] F.2 VERIFY: the branch's diff from its merge base with `origin/main` (`git diff --name-only origin/main...HEAD`)
   names neither `src/payload/scripts/github_wrapper.py`, a file under `src/payload/scripts/github_api/`, a
   `src/payload/test/*github*.py` or `test/*github*.py` file, nor `src/payload/test/test_wrapper_delivery.py`, and
   `test_wrapper_delivery.py` passes in the run of every wave. — Files: none (read-only) — Validates: UB-3.1
-- [ ] F.3 VERIFY: that diff (`git diff origin/main...HEAD`) changes no existing line of C, of P, or of an existing test
+- [x] F.3 VERIFY: that diff (`git diff origin/main...HEAD`) changes no existing line of C, of P, or of an existing test
   of R, T or V; C gains only `test_the_usage_names_the_operation_call`. The unchanged C `test_load_config_refusals` and
   `test_environment_token_ignored` and P `test_standard_library_only` pass in the run of every wave. — Files: none
   (read-only) — Validates: UB-1.1, UB-2.1, UB-2.2
-- [ ] F.4 VERIFY: the map's `gitlab_api/` bullet holds D7's sentences with its closing sentence last, and
+- [x] F.4 VERIFY: the map's `gitlab_api/` bullet holds D7's sentences with its closing sentence last, and
   `test/test_instruction_corpus_budget.py` `test_llm_map_within_cap` passes in the run of wave 4. — Files: none
   (read-only) — Validates: AC-4.2
 
