@@ -24,6 +24,7 @@ import re
 import socket
 import sys
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
 from typing import AbstractSet, Any, Mapping, Sequence
@@ -95,6 +96,24 @@ SYNTHETIC_COVERED_CAPABILITY = "Covered capability"
 SYNTHETIC_PENDING_CAPABILITY = "Pending capability"
 SYNTHETIC_GAP_CAPABILITY = "Uncovered capability"
 SYNTHETIC_CAPABILITIES = (SYNTHETIC_COVERED_CAPABILITY, SYNTHETIC_PENDING_CAPABILITY, SYNTHETIC_GAP_CAPABILITY)
+
+# AC-5.3's synthetic regeneration: a family module with one record and one pending ID, the index it matches before the
+# regeneration, and the rows a regenerated index adds or changes.
+REGENERATION_FAMILY = "gamma"
+REGENERATION_MODULE = f"{FAMILIES_PACKAGE}{MODULE_SEPARATOR}{REGENERATION_FAMILY}"
+REGENERATION_RECORD_ID = "gamma/get-widget"
+REGENERATION_RECORD_ROW = ("GET", "/widgets/{widget_id}")
+REGENERATION_PENDING_ID = "gamma/list-widgets"
+REGENERATION_PENDING_ROW = ("GET", "/widgets")
+REGENERATION_ADDED_ID = "gamma/delete-widget"
+REGENERATION_ADDED_ROW = ("DELETE", "/widgets/{widget_id}")
+REGENERATION_OTHER_PATH_ROW = (REGENERATION_RECORD_ROW[0], "/widgets/{widget_number}")
+REGENERATION_OTHER_METHOD_ROW = ("PUT", REGENERATION_RECORD_ROW[1])
+BEFORE_REGENERATION = {
+    REGENERATION_RECORD_ID: REGENERATION_RECORD_ROW,
+    REGENERATION_PENDING_ID: REGENERATION_PENDING_ROW,
+}
+NO_CAPABILITIES: tuple[str, ...] = ()
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -388,6 +407,43 @@ def _loaded_package_files() -> set[Path]:
 
 
 # ---------------------------------------------------------------------------------------------------------------------
+# A synthetic regeneration (AC-5.3)
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class SyntheticRecord:
+    """The fields of a REST record that ``_family_problems`` reads: its ``operation_id``, ``method`` and ``path``."""
+
+    operation_id: str
+    method: str
+    path: str
+
+
+def _regeneration_family() -> ModuleType:
+    """A family module of D2's contract with one record, whose row is ``REGENERATION_RECORD_ROW``, and one pending
+    ID; it matches ``BEFORE_REGENERATION``."""
+    method, path = REGENERATION_RECORD_ROW
+    module = ModuleType(name=REGENERATION_MODULE)
+    setattr(module, ATTRIBUTE_FAMILY, REGENERATION_FAMILY)
+    setattr(
+        module,
+        ATTRIBUTE_OPERATIONS,
+        (SyntheticRecord(operation_id=REGENERATION_RECORD_ID, method=method, path=path),),
+    )
+    setattr(module, ATTRIBUTE_PENDING, frozenset({REGENERATION_PENDING_ID}))
+    return module
+
+
+def _regenerated(
+    *, changes: Mapping[str, tuple[str, str]], removed: AbstractSet[str] = frozenset()
+) -> dict[str, tuple[str, str]]:
+    """``BEFORE_REGENERATION`` with the rows of ``changes`` added or replaced and the IDs of ``removed`` gone."""
+    rows = {**BEFORE_REGENERATION, **changes}
+    return {operation_id: row for operation_id, row in rows.items() if operation_id not in removed}
+
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -431,6 +487,79 @@ def test_a_gap_is_named() -> None:
         coverage_gaps(index=SYNTHETIC_INDEX, capabilities=SYNTHETIC_CAPABILITIES, covered=covered, pending=accounted)
         == []
     )
+
+
+@pytest.mark.parametrize(
+    argnames=("regenerated", "expected_gaps", "expected_problems"),
+    argvalues=[
+        pytest.param(
+            _regenerated(changes={REGENERATION_ADDED_ID: REGENERATION_ADDED_ROW}),
+            [REGENERATION_ADDED_ID],
+            [],
+            id="added_id",
+        ),
+        pytest.param(
+            _regenerated(changes={}, removed=frozenset({REGENERATION_PENDING_ID})),
+            [],
+            [(repr(REGENERATION_PENDING_ID),)],
+            id="pending_id_removed",
+        ),
+        pytest.param(
+            _regenerated(changes={}, removed=frozenset({REGENERATION_RECORD_ID})),
+            [],
+            [(repr(REGENERATION_RECORD_ID),)],
+            id="record_id_removed",
+        ),
+        pytest.param(
+            _regenerated(changes={REGENERATION_RECORD_ID: REGENERATION_OTHER_PATH_ROW}),
+            [],
+            [(repr(REGENERATION_RECORD_ID), str(REGENERATION_RECORD_ROW), str(REGENERATION_OTHER_PATH_ROW))],
+            id="record_path_changed",
+        ),
+        pytest.param(
+            _regenerated(changes={REGENERATION_RECORD_ID: REGENERATION_OTHER_METHOD_ROW}),
+            [],
+            [(repr(REGENERATION_RECORD_ID), str(REGENERATION_RECORD_ROW), str(REGENERATION_OTHER_METHOD_ROW))],
+            id="record_method_changed_same_path",
+        ),
+    ],
+)
+def test_a_regenerated_index_names_each_changed_id(
+    regenerated: Mapping[str, tuple[str, str]],
+    expected_gaps: list[str],
+    expected_problems: Sequence[tuple[str, ...]],
+) -> None:
+    """AC-5.3: a regenerated index that adds an ID no record or pending list holds makes ``coverage_gaps`` return
+    it; one that lacks a pending ID or a record ID, or gives a record's ID another path, or another method with the
+    same path, makes ``_family_problems`` name that ID (a changed row shown beside the record's). The synthetic family
+    module matches the index before the regeneration, so each gap and each problem is the regeneration's."""
+    module = _regeneration_family()
+    covered = {record.operation_id for record in module.OPERATIONS}
+    before = (
+        coverage_gaps(index=BEFORE_REGENERATION, capabilities=NO_CAPABILITIES, covered=covered, pending=module.PENDING),
+        _family_problems(
+            module=module, index=BEFORE_REGENERATION, capabilities=NO_CAPABILITIES, record_type=SyntheticRecord
+        ),
+    )
+    assert before == ([], []), f"the synthetic family module must match the index before the regeneration: {before}"
+
+    gaps = coverage_gaps(index=regenerated, capabilities=NO_CAPABILITIES, covered=covered, pending=module.PENDING)
+    problems = _family_problems(
+        module=module, index=regenerated, capabilities=NO_CAPABILITIES, record_type=SyntheticRecord
+    )
+
+    assert gaps == expected_gaps, f"coverage_gaps returned {gaps} for the regenerated index {regenerated}"
+    assert len(problems) == len(expected_problems), (
+        f"_family_problems returned {problems} for the regenerated index {regenerated}; expected one problem per "
+        f"{expected_problems}"
+    )
+    unshown = [
+        f"{problem!r} does not show {fragment}"
+        for problem, fragments in zip(problems, expected_problems)
+        for fragment in fragments
+        if fragment not in problem
+    ]
+    assert not unshown, "\n".join(unshown)
 
 
 @pytest.mark.usefixtures("scripts_on_path")

@@ -89,7 +89,7 @@ line with mutant M3 applied — `coverage_gaps` and `_family_problems` in V retu
 and M3 is undone by its exact inverse edit, never by `git checkout` or `git stash`, which would discard the uncommitted
 3.1 test; its green capture runs the Run line on the restored file.
 
-- [ ] 3.1 TEST: V — `test_a_regenerated_index_names_each_changed_id`, parametrized on a synthetic index and a synthetic
+- [x] 3.1 TEST: V — `test_a_regenerated_index_names_each_changed_id`, parametrized on a synthetic index and a synthetic
   family module (a `types.ModuleType` with `FAMILY`, `OPERATIONS` and `PENDING`) over AC-5.3's cases: an added ID
   returned by `coverage_gaps`; a pending ID and a record ID the index lacks, a record whose row has another path, and
   one whose row has another method and the same path, each named by `_family_problems`. Existing V tests unedited. —
