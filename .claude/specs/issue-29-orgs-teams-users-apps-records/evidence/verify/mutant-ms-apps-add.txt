@@ -1,0 +1,33 @@
+# mutant: ms-apps-add
+# purpose: add plan_id to multi_segment of apps/list-accounts-for-plan (empty-table non-vacuity)
+# sha256 before apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197  # pragma: allowlist secret
+# sha256 mutant apps.py: d919cdf13c919beaf6dbced0babbe9ce6268b269e57e4e8ba4836dce113bcff9  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197 MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_apps.py::test_the_multi_segment_parameters_are_the_sections
+# ======================== 1 failed, 28 passed in 46.69s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [29 items]
+
+....F........................                                            [100%]
+================================== FAILURES ===================================
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_apps.py:381: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 records differ from their sections:
+E     "apps/list-accounts-for-plan": declared frozenset({'plan_id'}), the section documents None
+E   assert not ['"apps/list-accounts-for-plan": declared frozenset({\'plan_id\'}), the section documents None']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_apps.py::test_the_multi_segment_parameters_are_the_sections
+======================== 1 failed, 28 passed in 46.69s ========================
