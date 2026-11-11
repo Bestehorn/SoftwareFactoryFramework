@@ -1,0 +1,44 @@
+# round 4 mutant guard-non-white-space-added: the guard fails when an entry Python does not count as white space (U+180E) is added
+# edit src/payload/test/test_gitlab_api_container_registry.py: '    ("\\u3000", "an-ideographic-space"),  # U+3000 IDEOGRAPHIC SPACE\r\n' -> '    ("\\u3000", "an-ideographic-space"),  # U+3000 IDEOGRAPHIC SPACE\r\n    ("\\u180e", "a-mongolian-vowel-separator"),  # U+180E MONGOLIAN VOWEL SEPARATOR\r\n'
+# sha256 before src/payload/test/test_gitlab_api_container_registry.py: a3ccfa68b4816c11e0695d0a25b99da5bbee619ce9d0fe90bbd008d5e61d21f9  # pragma: allowlist secret
+# tests (G): src/payload/test/test_gitlab_api_container_registry.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_container_registry.py --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify4\basetemp -p no:cacheprovider --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify4\mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [38 items]
+
+F..................................F..                                   [100%]
+================================== FAILURES ===================================
+_ test_the_white_space_cases_are_every_character_python_counts_as_white_space _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:328: in test_the_white_space_cases_are_every_character_python_counts_as_white_space
+    assert sorted(character for character, _ in WHITE_SPACE_CHARACTERS) == sorted(
+E   AssertionError: WHITE_SPACE_CHARACTERS holds each character `\s` matches in a str pattern, the str.isspace() ones, once
+E   assert ['\t', '\n', ..., '\x1c', ...] == ['\t', '\n', ..., '\x1c', ...]
+E     
+E     At index 13 diff: '\u180e' != '\u2000'
+E     Left contains one more item: '\u3000'
+E     Use -v to get more diff
+_ test_a_registry_host_holding_white_space_is_refused[a-mongolian-vowel-separator] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:362: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_the_white_space_cases_are_every_character_python_counts_as_white_space
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-mongolian-vowel-separator]
+======================== 2 failed, 36 passed in 4.42s =========================
+exit=1
+# sha256 after restore src/payload/test/test_gitlab_api_container_registry.py: a3ccfa68b4816c11e0695d0a25b99da5bbee619ce9d0fe90bbd008d5e61d21f9 match=True  # pragma: allowlist secret
+# failed (2): test_the_white_space_cases_are_every_character_python_counts_as_white_space, test_a_registry_host_holding_white_space_is_refused[a-mongolian-vowel-separator]
+# expected failed (2): test_the_white_space_cases_are_every_character_python_counts_as_white_space, test_a_registry_host_holding_white_space_is_refused[a-mongolian-vowel-separator] match=True
+# traceback exception kinds: {'AssertionError': 2}; ERROR lines: 0
+# verdict: KILLED (2 failed, 36 passed in 4.42s)

@@ -1,0 +1,18 @@
+# round 4 restored tree: G and F after every mutant
+# tests: src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify4\basetemp -p no:cacheprovider --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify4\mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [102 items]
+
+........................................................................ [ 70%]
+..............................                                           [100%]
+============================= 102 passed in 6.77s =============================
+exit=0
+# sha256 src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# sha256 src/payload/test/test_gitlab_api_container_registry.py: a3ccfa68b4816c11e0695d0a25b99da5bbee619ce9d0fe90bbd008d5e61d21f9  # pragma: allowlist secret
+# git status --porcelain of the mutant tree: (empty)
