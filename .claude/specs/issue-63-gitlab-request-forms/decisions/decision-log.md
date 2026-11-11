@@ -44,3 +44,12 @@
 **Evidence:** review/<lane>/iteration-01.md; issue #10 Ask ("GitHub first"), issue #11 work item "Real-GitLab integration tests".
 **Supersedes:** none
 **Artifacts touched:** requirements.md, design.md, prompt.md
+
+## DL-006 — 2026-11-11T14:42:25Z — issue-work-orchestrator — phase:DESIGN_REVIEW
+
+**Decision:** Apply iteration 02's findings (spec B1 = test B3 the map test's spellings; the C/D items) in one author pass; standards and devops are READY at iteration 02, so iteration 03 goes to spec-review-agent and test-architect only.
+**Driver:** review/<lane>/iteration-02.md (spec 1 B, test 1 B, standards READY, devops READY).
+**Alternatives considered:** none
+**Evidence:** review/spec-review-agent/iteration-02.md B1; review/test-architect/iteration-02.md B3.
+**Supersedes:** none
+**Artifacts touched:** design.md

@@ -181,8 +181,9 @@ without it raises `ValueError` before any request. Its steps, each before the ne
 
 `test/test_gitlab_wrapper_contract.py`. N restates each form with its own patterns and never calls `lookup`, `expand`
 or `base_of`, so the oracle does not share the code it judges (#40 D3). N reads a field the base lacks with its
-default (`getattr(record, "positional_names", ())`) and recognises a header `Param` by `location.value == "header"`,
-so that on the base its existing tests fail only through `header_problems`.
+default (`getattr(record, "positional_names", ())`) and recognises a header `Param` by `location.value == IN_HEADER`
+(a new N constant, `"header"`, beside `IN_PATH`), so that on the base its existing tests fail only through
+`header_problems` and #43's `test_only_the_upload_module_path_holds_a_hyphenated_name` as D9 restates it.
 
 | Reading | The edit |
 |---|---|
@@ -283,8 +284,8 @@ They also say that an F1 Reference without `--endpoint` sends its first declared
 refused, and that a container-registry record obtains its registry token from the configured instance. The
 `commands/call.py` sentence "A path name … given twice keeps its last value" gains "but a name of the record's
 `positional_names`, whose values fill its places in command-line order (D2)". The `src/payload/scripts/gitlab_api/`
-bullet of `docs/forLLMConsumption.md` names `--endpoint`, the repeated `--path`, `--path format=`, `--header` and the
-full-name member in one sentence, under its cap.
+bullet of `docs/forLLMConsumption.md` names `--endpoint`, the repeated `--path` (two `--path id=`), `--path format=`,
+`--header` and the two-level member's full name in one sentence, under its cap.
 
 ### D12 — Files
 
@@ -301,7 +302,7 @@ reading (D7). Every other row of #41 D8 still holds.
 | D1–D6 | `src/payload/scripts/gitlab_api/commands/call.py` | `--endpoint`, `endpoint_key`, `--header`, `DESTINATION_OPTIONS`, `documented_names`, `path_values`, `missing_path_parameters`, `check_parameters`, `documented_text`, `undocumented`, `_compared_name`, `call_values`, `attribute_values`, `prepare_call`, `PreparedCall.endpoint`, `send_call`'s `project`; `GATED_OPERATIONS` gains the S3 import; the docstring |
 | D11 | `src/payload/scripts/gitlab_wrapper.py` | the module docstring |
 | D8 | `families/create.py`, `developer_experience.py`, `fulfillment.py`, `plan.py`, `security_risk_management.py`, `software_supply_chain_security.py`, `tenant_scale.py`, `verify.py`, `package.py`, `gitlab_dedicated.py` (and `OP_IMPORT_FROM_S3`), `openapi_only.py` | D8's records; `PENDING`; the docstrings |
-| D7 | `test/test_gitlab_wrapper_contract.py` | D7's readings, its tests, the docstring |
+| D7, D9 | `test/test_gitlab_wrapper_contract.py` | D7's readings, its tests, D9's `test_only_the_upload_module_path_holds_a_hyphenated_name` rule, the docstring |
 | D9, D10 | R, T, K, C, P, the new G and the family test modules D9 and D10 name | D10's tests; D9's literals |
 | D11 | `docs/forLLMConsumption.md` | the `gitlab_api/` bullet |
 | — | `docs/findings-ledger.md` | the Residuals' rows, with `python scripts/memory_compile.py ledger add` |
@@ -371,7 +372,8 @@ scripted `container_registry_image_prefix` holds (`registry.example.com`).
   S3 records included; D9's typing tests, their literals holding the new records' kinds and required rows; N
   `test_each_record_of_an_id_copies_its_base_record`: for every ID that several REST records of one family declare,
   each record after the first declares the first's `Param`s (name, location, kind, required) less those naming a
-  placeholder of its own path, and the first's `body`, `paging` and `fixed` (D8 Rules).
+  placeholder of its own path, and the first's `body`, `paging` and `fixed` (D8 Rules); the IDs it judges include
+  `plan#add-an-emoji-reaction-to-a-resource` and `verify#get-the-latest-release`, so it is red on the base.
 - **AC-2.1**
   - Example, F:plan `test_an_other_endpoint_is_sent_when_named`: `call plan#add-an-emoji-reaction-to-a-resource
     --endpoint 'POST /projects/:id/merge_requests/:merge_request_iid/award_emoji' --path merge_request_iid=5
@@ -444,14 +446,17 @@ scripted `container_registry_image_prefix` holds (`registry.example.com`).
   - Example, T `test_the_registry_token_is_asked_for_with_basic_credentials` and
     `test_a_registry_request_carries_only_the_registry_token`: those URLs and headers; a request to an origin other
     than `destination` raises `GitLabAPIError`, nothing recorded.
-  - Example, G `test_a_job_token_logs_in_as_gitlab_ci_token`: a job token sends no `GET /user` and the login
-    `gitlab-ci-token`. R `test_send_fetches_the_registry_token_before_the_registry`: a container-registry record sent
-    without `project` raises `ValueError`, nothing recorded.
+  - Example, G `test_a_job_token_logs_in_as_gitlab_ci_token`: a job token sends no `GET /user`, and the `/jwt/auth`
+    request's `Authorization: Basic` decodes to `gitlab-ci-token:<token>`. R
+    `test_send_fetches_the_registry_token_before_the_registry`: a container-registry record sent without `project`
+    raises `ValueError`, nothing recorded.
 - **AC-5.3** — Parametrized example, F:package `test_no_registry_token_sends_nothing_to_the_registry`: `GET /user`
   answering 401; a project answer without `container_registry_image_prefix`, or with `""`, `/group/project`,
   `registry.example.com#/x` or `user@registry.example.com/x`; `/jwt/auth` answering 401, or `{}`; a `bearer` token.
-  Oracle: exit 1; no recorded request on the registry's origin; none of the configured token, the base64 of
-  `<login>:<token>` and the scripted registry token in any log record.
+  Oracle: exit 1; the recorded requests are exactly those of the steps up to the failing one, its own included (none
+  for `bearer`, step 1 for `GET /user`'s 401, steps 1 and 2 for a project answer, steps 1 to 3 for a `/jwt/auth`
+  answer); none of the configured token, the base64 of `<login>:<token>` and the scripted registry token in any log
+  record.
 - **AC-6.1** — Structural: N `test_every_record_matches_its_reference_section` through `header_problems`.
 - **AC-6.2**
   - Example, F:software_supply_chain_security `test_the_external_control_status_carries_its_headers`: AC-6.2's call
@@ -500,9 +505,9 @@ scripted `container_registry_image_prefix` holds (`registry.example.com`).
   `test_the_call_docstring_names_the_request_forms`: each docstring holds `--endpoint`, two `--path id=` in one line,
   `--path format=`, `--header` and `override_params[container_expiration_policy_attributes]`.
 - **AC-9.2** — Example, N `test_the_map_names_the_request_forms`: the `src/payload/scripts/gitlab_api/` bullet of
-  `docs/forLLMConsumption.md` holds `--endpoint`, `--path format=`, `--header` and `override_params[`, as
-  `test/test_gitlab_graphql_contract.py` pins the GraphQL bullet (#44 AC-5.2);
-  `test/test_instruction_corpus_budget.py` `test_llm_map_within_cap` passes.
+  `docs/forLLMConsumption.md` holds AC-9.1's spellings: `--endpoint`, two `--path id=`, `--path format=`, `--header`
+  and `override_params[container_expiration_policy_attributes]`, as `test/test_gitlab_graphql_contract.py` pins the
+  GraphQL bullet (#44 AC-5.2); `test/test_instruction_corpus_budget.py` `test_llm_map_within_cap` passes.
 - **UB-1** — C and every existing test but D9's pass unedited; R's positional example holds the NuGet repeat; K's
   existing tests hold every base option and exit code.
 - **UB-2** — P `test_standard_library_only` scans `container_registry.py` too; K `test_call_takes_no_token_option` reads
@@ -528,10 +533,10 @@ scripted `container_registry_image_prefix` holds (`registry.example.com`).
 - **Paths.** An endpoint is chosen by equality with a declared key, a format from a fixed list; positional and
   `${NAME}` values are written by `_segment` and `_glob`, so no value adds `?`, `#` or a dot segment, and none changes
   the host (#40 Security).
-- **What stays callable**: every record of D8, none gated (#41 Security "Destructive operations"): the F1 `DELETE`
-  keys (access-request deny, custom-attribute deletes, invitation delete, the LDAP link delete, the Conan v1
-  recipe-and-package delete), the F2 revoke and rotate records and the SSH-certificate delete; the registry tag delete;
-  `_catalog`, which GitLab answers for an administrator.
+- **What stays callable**: every record of D8 but the S3 import (Gates), none gated (#41 Security "Destructive
+  operations"): the F1 `DELETE` keys (access-request deny, custom-attribute deletes, invitation delete, the LDAP link
+  delete, the Conan v1 recipe-and-package delete), the F2 revoke and rotate records and the SSH-certificate delete;
+  the registry tag delete; `_catalog`, which GitLab answers for an administrator.
 - **Gates.** `GATED_OPERATIONS` gains the S3 import, which takes `overwrite` (D6); the other kept imports stay pending.
 - **Dependencies.** None added; standard library only, no subprocess.
 
