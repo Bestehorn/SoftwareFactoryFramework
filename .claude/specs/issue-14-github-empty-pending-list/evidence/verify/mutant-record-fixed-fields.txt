@@ -1,0 +1,129 @@
+# mutant record-fixed-fields (AC-1): pulls/update-branch paging LINK; code-scanning/commit-autofix multi_segment {alert_number} and accept sarif; copilot content exclusion item_key repositories and content_type octet-stream
+Wed Nov 11 14:34:48 WEST 2026
+ M src/payload/scripts/github_api/families/code_scanning.py
+ M src/payload/scripts/github_api/families/copilot.py
+ M src/payload/scripts/github_api/families/pulls.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/
+diff --git a/src/payload/scripts/github_api/families/code_scanning.py b/src/payload/scripts/github_api/families/code_scanning.py
+index 77df86d..e81010a 100644
+--- a/src/payload/scripts/github_api/families/code_scanning.py
++++ b/src/payload/scripts/github_api/families/code_scanning.py
+@@ -205,11 +205,11 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         path="/repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix/commits",
+         query_params=frozenset(),
+         body_params=frozenset({"target_ref", "message"}),
+-        multi_segment=frozenset(),
++        multi_segment=frozenset({"alert_number"}),
+         paging=Paging.NONE,
+         item_key=None,
+         api_version=API_VERSION_DEFAULT,
+-        accept=ACCEPT_JSON,
++        accept="application/sarif+json",
+     ),
+     # rest/code-scanning.md "List instances of a code scanning alert": 200 with an array, so it pages by ``link`` with
+     # no item key.
+diff --git a/src/payload/scripts/github_api/families/copilot.py b/src/payload/scripts/github_api/families/copilot.py
+index a10d2c2..b776249 100644
+--- a/src/payload/scripts/github_api/families/copilot.py
++++ b/src/payload/scripts/github_api/families/copilot.py
+@@ -289,9 +289,10 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         body_params=frozenset({"*"}),
+         multi_segment=frozenset(),
+         paging=Paging.NONE,
+-        item_key=None,
++        item_key="repositories",
+         api_version=API_VERSION_DEFAULT,
+         accept=ACCEPT_JSON,
++        content_type="application/octet-stream",
+     ),
+     # rest/copilot.md "copilot-team-customizations"
+     RestOperation(
+diff --git a/src/payload/scripts/github_api/families/pulls.py b/src/payload/scripts/github_api/families/pulls.py
+index 4c91dfd..3712eb1 100644
+--- a/src/payload/scripts/github_api/families/pulls.py
++++ b/src/payload/scripts/github_api/families/pulls.py
+@@ -301,7 +301,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         query_params=frozenset(),
+         body_params=frozenset({"expected_head_sha"}),
+         multi_segment=frozenset(),
+-        paging=Paging.NONE,
++        paging=Paging.LINK,
+         item_key=None,
+         api_version=API_VERSION_DEFAULT,
+         accept=ACCEPT_JSON,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+.F.......F......F...FF.................................................. [ 54%]
+...........................................................F.            [100%]
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:273: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"families/{FAMILY_NAME}.py breaks AC-3: {problems}"
+E   AssertionError: families/pulls.py breaks AC-3: ["Paging.LINK records missing [] and unexpected ['pulls/update-branch']; rest/pulls.md pages ['pulls/list', 'pulls/list-comments-for-review', 'pulls/list-commits', 'pulls/list-files', 'pulls/list-review-comments', 'pulls/list-review-comments-for-repo', 'pulls/list-reviews']"]
+E   assert ["Paging.LINK...st-reviews']"] == []
+E     
+E     Left contains one more item: "Paging.LINK records missing [] and unexpected ['pulls/update-branch']; rest/pulls.md pages ['pulls/list', 'pulls/list...mmits', 'pulls/list-files', 'pulls/list-review-comments', 'pulls/list-review-comments-for-repo', 'pulls/list-reviews']"
+E     Use -v to get more diff
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_copilot.py:295: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.copilot: ["copilot/set-copilot-content-exclusion-for-organization: item_key 'repositories', expected None"]
+E   assert ['copilot/set...xpected None'] == []
+E     
+E     Left contains one more item: "copilot/set-copilot-content-exclusion-for-organization: item_key 'repositories', expected None"
+E     Use -v to get more diff
+_______________ test_the_content_exclusion_map_is_sent_as_given _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\test_github_api_copilot.py:338: in test_the_content_exclusion_map_is_sent_as_given
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2810: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2718: in assert_outcome
+    assert writes == list(case.writes), f"{case.name}: the requests other than GET differ from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-14-AC-4/exit-0/copilot/set-copilot-content-exclusion-for-organization: the requests other than GET differ from the golden
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:358: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 1 problems:
+E     "code-scanning/commit-autofix": accept 'application/sarif+json'
+E   assert not ['"code-scanning/commit-autofix": accept \'application/sarif+json\'']
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:371: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 records differ from their sections:
+E     "code-scanning/commit-autofix": declared frozenset({'alert_number'}), the section documents frozenset()
+E   assert not ['"code-scanning/commit-autofix": declared frozenset({\'alert_number\'}), the section documents frozenset()']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\test\test_github_wrapper_contract.py:859: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 1 problems calling 1253 records:
+E     "copilot/set-copilot-content-exclusion-for-organization": body names: documented and not sent ["*"]; sent and not documented []
+E   assert not ['"copilot/set-copilot-content-exclusion-for-organization": body names: documented and not sent ["*"]; sent and not documented []']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_pulls.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_copilot.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_map_is_sent_as_given
+FAILED src/payload/test/test_github_api_code_scanning.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_code_scanning.py::test_the_multi_segment_parameters_are_the_sections
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+================== 6 failed, 127 passed in 168.63s (0:02:48) ==================
+exit=1
+Wed Nov 11 14:37:40 WEST 2026
+ M src/payload/scripts/github_api/families/code_scanning.py
+ M src/payload/scripts/github_api/families/copilot.py
+ M src/payload/scripts/github_api/families/pulls.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/

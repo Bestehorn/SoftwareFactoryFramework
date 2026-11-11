@@ -1,0 +1,62 @@
+# mutant registry-any-body-for-every-record (UB-3): registry._check_names accepts every body name of every record
+Wed Nov 11 14:44:16 WEST 2026
+ M src/payload/scripts/github_api/registry.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/
+diff --git a/src/payload/scripts/github_api/registry.py b/src/payload/scripts/github_api/registry.py
+index 606bd75..26ed69a 100644
+--- a/src/payload/scripts/github_api/registry.py
++++ b/src/payload/scripts/github_api/registry.py
+@@ -208,7 +208,7 @@ def _check_names(
+     """Refuse with ``ValueError`` every ``given`` name that ``documented`` lacks, before anything is sent; a query
+     name is compared through ``query_name`` and named in the message as given. A body whose ``documented`` names hold
+     ``ANY_BODY_NAME`` accepts every name; a query's ``documented`` names never do."""
+-    if kind == KIND_BODY and ANY_BODY_NAME in documented:
++    if kind == KIND_BODY:
+         return
+     undocumented = sorted(name for name in (given or {}) if _documented_name(kind=kind, name=name) not in documented)
+     if undocumented:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+...................................................................F.... [ 54%]
+E..........F.............E.....................................          [100%]
+=================================== ERRORS ====================================
+_ ERROR at teardown of test_call_refuses_an_undocumented_parameter[query-name-sent-as-body] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:239: in fake
+    host.assert_every_request_routed()
+src\payload\test\github_wrapper_fixtures.py:451: in assert_every_request_routed
+    assert not unrouted, f"the fake GitHub host received requests no route answers: {unrouted}"
+           ^^^^^^^^^^^^
+E   AssertionError: the fake GitHub host received requests no route answers: ['GET https://api.github.com/repos/o/r/contents/docs/guide.md']
+_ ERROR at teardown of test_call_refuses_an_undocumented_parameter[undocumented-body-name] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:239: in fake
+    host.assert_every_request_routed()
+src\payload\test\github_wrapper_fixtures.py:451: in assert_every_request_routed
+    assert not unrouted, f"the fake GitHub host received requests no route answers: {unrouted}"
+           ^^^^^^^^^^^^
+E   AssertionError: the fake GitHub host received requests no route answers: ['PATCH https://api.github.com/repos/o/r/issues/7']
+================================== FAILURES ===================================
+____ test_call_refuses_an_undocumented_parameter[query-name-sent-as-body] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/contents/docs/guide.md
+_____ test_call_refuses_an_undocumented_parameter[undocumented-body-name] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/issues/7
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[query-name-sent-as-body]
+ERROR src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-body-name]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[query-name-sent-as-body]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-body-name]
+============= 2 failed, 131 passed, 2 errors in 124.98s (0:02:04) =============
+exit=1
+Wed Nov 11 14:46:24 WEST 2026
+ M src/payload/scripts/github_api/registry.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/

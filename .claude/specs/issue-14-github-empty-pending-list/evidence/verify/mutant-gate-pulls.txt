@@ -1,0 +1,32 @@
+# mutant gate-pulls (AC-3): the pulls/update-branch entry removed from commands/call.py GATED_OPERATIONS
+diff --git a/src/payload/scripts/github_api/commands/call.py b/src/payload/scripts/github_api/commands/call.py
+index 8bf8102..fe20de3 100644
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -146,7 +146,6 @@ GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
+         "repos/delete-file": None,
+         "git/create-ref": None,
+         "git/update-ref": None,
+-        "pulls/update-branch": None,
+         "code-scanning/commit-autofix": None,
+         "agent-tasks/create-task-in-repo": None,
+         "agent-merge/put-agent-merge-enrollment": None,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+..................F..................................................... [ 54%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+___________________ test_a_branch_writing_record_is_refused ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PUT https://api.github.com/repos/o/r/pulls/77/update-branch
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_pulls.py::test_a_branch_writing_record_is_refused
+================== 1 failed, 132 passed in 115.35s (0:01:55) ==================
+exit=1

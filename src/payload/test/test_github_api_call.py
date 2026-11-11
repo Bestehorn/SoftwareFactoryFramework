@@ -121,7 +121,6 @@ OP_ISSUES_CREATE = "issues/create"
 OP_PULLS_GET = "pulls/get"
 OP_PULLS_MERGE = "pulls/merge"
 OP_PULLS_MERGE_ASYNC = "pulls/merge-async"  # gated to ``merge-pr``: its body can merge directly (issue #32 AC-6)
-OP_PULLS_UPDATE_BRANCH = "pulls/update-branch"  # on the PENDING of ``families/pulls.py``: indexed, no record
 OP_NOT_IN_THE_INDEX = "issues/levitate"  # in no row of ``operations-index.md``
 OP_GET_WORKFLOW_RUN = "actions/get-workflow-run"
 OP_LIST_WORKFLOW_RUNS_FOR_REPO = "actions/list-workflow-runs-for-repo"
@@ -647,14 +646,8 @@ def _api_error_cases() -> Tuple[Any, ...]:
 
 
 def _unknown_cases() -> Tuple[Any, ...]:
-    """AC-2.1: an ID no record declares, pending or not in the index, is refused, naming the ID."""
+    """AC-2.1: an ID in no row of the index, so one no record declares, is refused, naming the ID."""
     return (
-        _refusal(
-            criterion=AC_2_1,
-            slug="pending-id",
-            argv=(CALL, OP_PULLS_UPDATE_BRANCH),
-            patterns=(named(name=OP_PULLS_UPDATE_BRANCH),),
-        ),
         _refusal(
             criterion=AC_2_1,
             slug="id-not-in-the-index",
@@ -998,8 +991,7 @@ def test_an_unknown_operation_is_refused(
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """AC-2.1: an ID only on a pending list, or not in the index, exits 2 with no request, and a log record names
-    it."""
+    """AC-2.1: an ID in no row of the index exits 2 with no request, and a log record names it."""
     _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
 
 

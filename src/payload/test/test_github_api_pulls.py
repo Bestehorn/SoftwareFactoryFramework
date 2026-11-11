@@ -1,22 +1,26 @@
-"""Tests of the ``pulls`` family's records (``github_api/families/pulls.py``; issue #32 AC-2, AC-3, AC-4).
+"""Tests of the ``pulls`` family's records (``github_api/families/pulls.py``; issue #32 AC-3, AC-4; issue #14 AC-1,
+AC-2, AC-3).
 
 Installed from ``src/payload/test/test_github_api_pulls.py`` to ``test/test_github_api_pulls.py``, beside
 ``scripts/github_wrapper.py`` and ``scripts/github_api/``. Every expected value here is transcribed from
-``docs/api-reference/github/rest/pulls.md`` and ``conventions.md``, never read from the records. The family is the
-operation IDs of ``rest/pulls.md`` that start with ``pulls/``; its ``agent-merge/`` and ``pull-request-stacks/``
-sections belong to other families.
+``docs/api-reference/github/rest/pulls.md`` and ``conventions.md``, never read from the records or from
+``commands/call.py``. The family is the operation IDs of ``rest/pulls.md`` that start with ``pulls/``; its
+``agent-merge/`` and ``pull-request-stacks/`` sections belong to other families.
 
-- ``RESIDUAL_IDS``: the IDs of the family left on ``PENDING`` once every other record is declared:
-  ``pulls/update-branch``, which writes the pull request's head branch (AC-2, #32 DL-002);
 - ``PAGED_OPERATIONS``: each operation of the family whose section has a ``Paging:`` line, with its path as the
   section's index row writes it and a value for each of its path parameters but ``owner`` and ``repo``. Each of these
   sections reads "items: the response body is the array", and ``conventions.md`` "Lists wrapped in an object" names
-  none of them, so none has an item key; every one documents ``per_page`` (AC-3, AC-4).
+  none of them, so none has an item key; every one documents ``per_page`` (AC-3, AC-4);
+- ``UPDATE_BRANCH_ARGUMENTS``: issue #14 AC-3's record of this family, ``pulls/update-branch``, which merges the base
+  branch into the pull request's head branch, called with a value for each parameter its section documents, so only
+  the gate can refuse it.
 
 ``github_wrapper_fixtures.run_product_case`` (loaded by path) runs a case through the product entry script's
 ``main(argv=...)`` in the fixture project (``origin`` ``o/r``) against the fake GitHub host, and judges its exit code,
-its standard output exactly, its requests other than ``GET`` and that every request was routed. These rows are not in
-``CASES``, so the fork never runs them. No test opens a connection.
+its standard output exactly, its requests other than ``GET`` (none at all for a refusal) and that every request was
+routed. ``test_a_branch_writing_record_is_refused`` runs issue #14 AC-3's call the same way and expects exit 2, no
+request and a log record naming the ID and that no subcommand sends it. These rows are not in ``CASES``, so the fork
+never runs them. No test opens a connection.
 
 Run: ``python scripts/run_tests.py test/test_github_api_pulls.py`` (no network).
 """
@@ -26,11 +30,13 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import logging
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, FrozenSet, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pytest
 
@@ -61,18 +67,21 @@ FAMILY_MODULE = f"{fx.PACKAGE}.families.{FAMILY_NAME}"
 FAMILY_FILE = fx.SCRIPTS_DIR / fx.PACKAGE / "families" / f"{FAMILY_NAME}.py"
 
 AC_4 = "AC-4"
+ISSUE_14 = "issue-14"
+ISSUE_14_AC_3 = "AC-3"
 
 CALL = "call"
 OPTION_PATH = "--path"
 OPTION_QUERY = "--query"
+OPTION_RAW_FIELD = "--raw-field"
 OPERATION_ID_INDEX = 1  # argv is ``call <operation-id> …``
 #: AC-4's page size: one item per page, so the two items of a list arrive over two pages.
 PER_PAGE = "1"
 #: The pages AC-4's two items arrive on, as each request asks for them (the first names no ``page``).
 PAGES_ASKED = [str(fx.FIRST_PAGE), "2"]
-
-#: AC-2: the IDs of the family that stay on ``PENDING`` (#32 DL-002).
-RESIDUAL_IDS: FrozenSet[str] = frozenset({"pulls/update-branch"})
+#: ``run_product_case`` reads standard error along with standard output; no case here withholds a value, so
+#: ``fx.assert_log`` judges the log records alone.
+STDERR_READ_BY_THE_RUN = ""
 
 # The path parameter values the cases give (``owner`` and ``repo`` default to the fixture's ``origin``, ``o/r``).
 PARAM_PULL_NUMBER = "pull_number"
@@ -163,6 +172,32 @@ def _paged_case(*, operation: PagedOperation) -> Any:
 
 PAGED_CASES: Tuple[Any, ...] = tuple(_paged_case(operation=operation) for operation in PAGED_OPERATIONS)
 
+# Issue #14 AC-3: ``rest/pulls.md`` "Update a pull request branch" (``PUT
+# /repos/{owner}/{repo}/pulls/{pull_number}/update-branch``) merges the base branch into the pull request's head
+# branch, as the page its section links says, so ``call`` refuses it although the family declares its record.
+#: AC-3's ID of this family, as a literal: never read from the records or from ``GATED_OPERATIONS``.
+OP_UPDATE_BRANCH = "pulls/update-branch"
+BODY_EXPECTED_HEAD_SHA = "expected_head_sha"
+#: A value for each parameter the section documents: path ``pull_number`` (``owner`` and ``repo`` are the fixture's
+#: ``origin``) and body ``expected_head_sha``, a string, so no refusal but the gate's applies.
+UPDATE_BRANCH_ARGUMENTS: Tuple[str, ...] = (
+    OPTION_PATH,
+    f"{PARAM_PULL_NUMBER}={PULL_NUMBER}",
+    OPTION_RAW_FIELD,
+    f"{BODY_EXPECTED_HEAD_SHA}={fx.HEAD_SHA}",
+)
+#: AC-3's wording: the refusal says that no subcommand sends the ID (``GATED_OPERATIONS`` maps it to ``None``).
+NO_SUBCOMMAND_SENDS_IT = r"(?i)\bno\b[\w\s-]*\bsubcommand\b[\w\s-]*\bsends\b"
+#: AC-3's case: exit 2, nothing on standard output, no request, and one log record naming the ID as ``json.dumps``
+#: renders it (#28 D4) and that no subcommand sends it.
+UPDATE_BRANCH_REFUSED = fx.GoldenCase(
+    name=f"{ISSUE_14}/{ISSUE_14_AC_3}/exit-2/{OP_UPDATE_BRANCH}",
+    argv=(CALL, OP_UPDATE_BRANCH, *UPDATE_BRANCH_ARGUMENTS),
+    stdout="",
+    exit_code=fx.EXIT_REFUSED,
+    log=fx.LogExpectation(refusal=(re.escape(json.dumps(obj=OP_UPDATE_BRANCH)), NO_SUBCOMMAND_SENDS_IT), withheld=()),
+)
+
 
 @pytest.fixture(autouse=True)
 def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -197,13 +232,22 @@ def _record_problems(*, record: Any, transport: ModuleType) -> List[str]:
     return problems
 
 
-def test_only_the_residual_ids_are_pending() -> None:
-    """AC-2: ``pulls.PENDING`` is exactly ``{"pulls/update-branch"}``: every other operation ID of the family has its
-    record."""
+def _record_of(*, operation_id: str) -> Any:
+    """The one record of ``families/pulls.py`` with ``operation_id``; none, or more than one, fails the calling test."""
+    matches = [record for record in _family().OPERATIONS if record.operation_id == operation_id]
+    assert len(matches) == 1, (
+        f"{json.dumps(obj=operation_id)}: families/{FAMILY_NAME}.py declares {len(matches)} records with this ID, "
+        "one expected"
+    )
+    return matches[0]
+
+
+def test_nothing_is_pending() -> None:
+    """Issue #14 AC-2: ``pulls.PENDING`` is empty; every operation ID of the family has its record."""
     family = _family()
 
-    assert family.PENDING == RESIDUAL_IDS, (
-        f"families/{FAMILY_NAME}.py has pending IDs {sorted(family.PENDING)}; only {sorted(RESIDUAL_IDS)} expected"
+    assert family.PENDING == frozenset(), (
+        f"families/{FAMILY_NAME}.py still has pending IDs {sorted(family.PENDING)}; none expected"
     )
 
 
@@ -229,6 +273,21 @@ def test_the_records_follow_the_transcription_rules() -> None:
     assert problems == [], f"families/{FAMILY_NAME}.py breaks AC-3: {problems}"
 
 
+def test_the_branch_writing_record_has_no_item_key_and_no_content_type() -> None:
+    """Issue #14 AC-1: the one record of ``pulls/update-branch`` in ``OPERATIONS``, found by its ID as a literal, has
+    ``content_type`` ``None`` (its section reads "Request body (`application/json`, optional)": a JSON body) and
+    ``item_key`` ``None`` (its section has no ``Paging:`` line)."""
+    operation_id = "pulls/update-branch"
+    record = _record_of(operation_id=operation_id)
+    problems = []
+    if record.content_type is not None:
+        problems.append(f"content_type {record.content_type!r}, None expected")
+    if record.item_key is not None:
+        problems.append(f"item_key {record.item_key!r}, None expected")
+
+    assert problems == [], f"{json.dumps(obj=operation_id)}: {problems}"
+
+
 @pytest.mark.parametrize(argnames="case", argvalues=PAGED_CASES, ids=fx.case_name)
 def test_a_paged_record_prints_every_page(
     case: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
@@ -241,3 +300,23 @@ def test_a_paged_record_prints_every_page(
     assert asked == PAGES_ASKED, f"{case.name}: the pages asked for are {asked}, {PAGES_ASKED} expected"
     sizes = [request.query.get(fx.QUERY_PER_PAGE) for request in requests]
     assert all(size == [PER_PAGE] for size in sizes), f"{case.name}: per_page sent as {sizes}"
+
+
+def test_a_branch_writing_record_is_refused(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #14 AC-3: ``pulls/update-branch`` is declared and ``registry.lookup`` returns its record, yet ``call
+    pulls/update-branch --path pull_number=77 --raw-field expected_head_sha=<sha>`` exits 2 with nothing on standard
+    output and no request, and a log record names the ID and that no subcommand sends it."""
+    registry = fx.import_api_module(name=REGISTRY)
+    declared = _record_of(operation_id=OP_UPDATE_BRANCH)
+
+    assert registry.lookup(operation_id=OP_UPDATE_BRANCH) == declared, (
+        f"{OP_UPDATE_BRANCH}: lookup returns another record"
+    )
+    caplog.set_level(level=logging.DEBUG)
+    fx.run_product_case(case=UPDATE_BRANCH_REFUSED, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+    fx.assert_log(case=UPDATE_BRANCH_REFUSED, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)

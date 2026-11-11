@@ -13,8 +13,9 @@ where its section names another media type (``conventions.md`` "Headers, media t
 ``create-pr``, ``get-pr``, ``approve-pr`` and ``merge-pr`` send ``pulls/create``, ``pulls/get``, ``pulls/create-review``
 and ``pulls/merge``; ``get-pr-checks`` reads the head SHA with ``pulls/get`` (design D5). Every record is also sent by
 ``call <operation-id>`` (#28), which refuses ``pulls/merge`` and ``pulls/merge-async`` (#32 DL-003): both merge, and
-``merge-pr`` is the subcommand that does. ``pulls/update-branch``, which writes the pull request's head branch, is the
-one pending ID (#32 DL-002).
+``merge-pr`` is the subcommand that does. It also refuses ``pulls/update-branch``, the record of this family whose call
+writes a branch: it merges the base branch into the pull request's head branch and no subcommand sends it (issue #14
+AC-3), by ``commands/call.py`` ``GATED_OPERATIONS``. No operation of the family is pending.
 """
 
 from __future__ import annotations
@@ -291,6 +292,20 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         api_version=API_VERSION_DEFAULT,
         accept=ACCEPT_JSON,
     ),
+    # rest/pulls.md "Update a pull request branch": optional body ``expected_head_sha``; 202. ``call`` refuses it, its
+    # call writes a branch (issue #14 AC-3).
+    RestOperation(
+        operation_id="pulls/update-branch",
+        method="PUT",
+        path="/repos/{owner}/{repo}/pulls/{pull_number}/update-branch",
+        query_params=frozenset(),
+        body_params=frozenset({"expected_head_sha"}),
+        multi_segment=frozenset(),
+        paging=Paging.NONE,
+        item_key=None,
+        api_version=API_VERSION_DEFAULT,
+        accept=ACCEPT_JSON,
+    ),
     # rest/pulls.md "Get all requested reviewers for a pull request": one object and no ``Paging:`` line; one request.
     RestOperation(
         operation_id="pulls/list-requested-reviewers",
@@ -436,4 +451,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[str] = frozenset({"pulls/update-branch"})
+PENDING: FrozenSet[str] = frozenset()

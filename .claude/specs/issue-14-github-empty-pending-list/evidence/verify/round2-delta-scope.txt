@@ -1,0 +1,98 @@
+# round 2 delta scope: what the rework and the trunk merge changed
+2026-11-11T14:24:03Z
+## rework: git diff cf17ede a65fe83 --stat
+ .../decisions/decision-log.md                      |   9 ++
+ .../evidence/green/rework-1.txt                    |  13 +++
+ .../evidence/verify/baseline-green.txt             |  13 +++
+ .../evidence/verify/full-suite.txt                 |  20 ++++
+ .../evidence/verify/green-after-restore.txt        |  30 +++++
+ .../mutant-call-any-body-for-every-record.txt      |  74 ++++++++++++
+ .../verify/mutant-call-any-body-reverted.txt       |  43 +++++++
+ .../mutant-call-any-body-skips-path-and-query.txt  |  56 +++++++++
+ .../verify/mutant-call-any-body-skips-path.txt     |  30 +++++
+ .../evidence/verify/mutant-gate-autofix.txt        |  32 +++++
+ .../verify/mutant-gate-names-a-subcommand.txt      |  53 +++++++++
+ .../evidence/verify/mutant-gate-pulls.txt          |  32 +++++
+ .../evidence/verify/mutant-pending-restored.txt    |  85 ++++++++++++++
+ .../evidence/verify/mutant-record-body-names.txt   | 100 ++++++++++++++++
+ .../evidence/verify/mutant-record-fixed-fields.txt | 129 +++++++++++++++++++++
+ .../evidence/verify/mutant-record-method-path.txt  |  98 ++++++++++++++++
+ .../verify/mutant-record-unnamed-fields.txt        |  50 ++++++++
+ .../mutant-registry-any-body-for-every-record.txt  |  62 ++++++++++
+ .../verify/mutant-registry-any-body-reverted.txt   |  54 +++++++++
+ .../mutant-registry-any-body-skips-query.txt       |  27 +++++
+ .../verify/mutant-registry-kind-guard-dropped.txt  |  27 +++++
+ .../evidence/verify/mutant-wave-1.txt              | 123 ++++++++++++++++++++
+ .../evidence/verify/refutation-report.md           |  85 ++++++++++++++
+ docs/lessons-learned.md                            |   6 +
+ src/payload/test/test_github_api_code_scanning.py  |  17 +++
+ src/payload/test/test_github_api_copilot.py        |  87 +++++++++++++-
+ src/payload/test/test_github_api_pulls.py          |  19 ++-
+ 27 files changed, 1366 insertions(+), 8 deletions(-)
+## rework, product paths only: git diff cf17ede a65fe83 --name-only -- src/payload/scripts prompts clients templates src/hooks (empty = no product file)
+## merge: git diff a65fe83 0ffd759 --name-only
+.claude/specs/issue-40-gitlab-openapi-only-records/decisions/decision-log.md
+.claude/specs/issue-40-gitlab-openapi-only-records/design.md
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/REPORT.md
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/green/rework-1.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/green/wave-1.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/green/wave-2.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/green/wave-3.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/red/wave-1.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/red/wave-2.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/verify/full-suite.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/verify/mutant-wave-1.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/verify/mutant-wave-2.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/verify/mutant-wave-3.txt
+.claude/specs/issue-40-gitlab-openapi-only-records/evidence/verify/refutation-report.md
+.claude/specs/issue-40-gitlab-openapi-only-records/prompt.md
+.claude/specs/issue-40-gitlab-openapi-only-records/prompts.md
+.claude/specs/issue-40-gitlab-openapi-only-records/qa_log.md
+.claude/specs/issue-40-gitlab-openapi-only-records/requirements.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/best-practice-reviewer/iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/best-practice-reviewer/iteration-02.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/devops-iac-reviewer/iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/review-latest.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/security-reviewer/iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/security-reviewer/iteration-02.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/spec-review-agent/iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/spec-review-agent/iteration-02.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/spec-review-agent/iteration-03.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/spec-review-agent/tasks-iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/standards-reviewer/iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/standards-reviewer/iteration-02.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/standards-reviewer/iteration-03.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/test-architect/iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/test-architect/iteration-02.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/test-architect/iteration-03.md
+.claude/specs/issue-40-gitlab-openapi-only-records/review/test-architect/tasks-iteration-01.md
+.claude/specs/issue-40-gitlab-openapi-only-records/tasks.md
+docs/findings-ledger.md
+docs/forLLMConsumption.md
+src/payload/scripts/gitlab_api/commands/call.py
+src/payload/scripts/gitlab_api/families/deploy.py
+src/payload/scripts/gitlab_api/families/openapi_only.py
+src/payload/scripts/gitlab_api/registry.py
+src/payload/scripts/gitlab_api/transport.py
+src/payload/scripts/gitlab_wrapper.py
+src/payload/test/test_gitlab_api_call.py
+src/payload/test/test_gitlab_api_deploy.py
+src/payload/test/test_gitlab_api_openapi_only.py
+src/payload/test/test_gitlab_api_registry.py
+src/payload/test/test_gitlab_api_transport.py
+test/test_gitlab_api_properties.py
+test/test_gitlab_wrapper_contract.py
+## merge, GitHub paths only (empty = no GitHub file):
+## merge parents: git log -1 --format=%p 0ffd759
+a65fe83 252c21e
+## UB-5 on the PR diff: git diff 252c21e 0ffd759 --name-only -- src/payload/scripts/gitlab_wrapper.py src/payload/test/test_wrapper_delivery.py (empty = neither file in the PR)
+## the PR diff, product and test paths: git diff 252c21e 0ffd759 --name-only -- src test
+src/payload/scripts/github_api/commands/call.py
+src/payload/scripts/github_api/families/code_scanning.py
+src/payload/scripts/github_api/families/copilot.py
+src/payload/scripts/github_api/families/pulls.py
+src/payload/scripts/github_api/registry.py
+src/payload/test/test_github_api_call.py
+src/payload/test/test_github_api_code_scanning.py
+src/payload/test/test_github_api_copilot.py
+src/payload/test/test_github_api_pulls.py
