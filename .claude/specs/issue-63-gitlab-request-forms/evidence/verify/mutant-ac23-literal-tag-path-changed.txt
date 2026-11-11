@@ -1,0 +1,67 @@
+# mutant ac23-literal-tag-path-changed: AC-2.3: the literal endpoints are sent as written
+# edit src/payload/scripts/gitlab_api/families/developer_experience.py: '        path="/projects/1/repository/tags/my%2Ftag",' -> '        path="/projects/1/repository/tags/my/tag",'
+# sha256 before src/payload/scripts/gitlab_api/families/developer_experience.py: b5ab21c39f47828a17bbb8c8cf992dec5d02c859a6fc331f6e3b35df6c2c059d  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_developer_experience.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_developer_experience.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [42 items]
+
+F.........F.............F...F.....F.......                               [100%]
+================================== FAILURES ===================================
+_____________________ test_every_reference_has_its_record _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_developer_experience.py:324: in test_every_reference_has_its_record
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+E   AssertionError: the records after a base record are not its section's other endpoints:
+E     'developer-experience#file-path-branches-and-tags-name': declared (('GET', '/projects/1/branches/my%2Fbranch/commits'), ('GET', '/projects/1/repository/tags/my/tag')), expected (('GET', '/projects/1/branches/my%2Fbranch/commits'), ('GET', '/projects/1/repository/tags/my%2Ftag'))
+E   assert {'developer-e...ags/my/tag'))} == {'developer-e...s/my%2Ftag'))}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mdeveloper-experience#file-path-branches-and-tags-name[39;49;00m[33m'[39;49;00m: (([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/1/branches/my[39;49;00m[33m%2F[39;49;00m[33mbranch/commits[39;49;00m[33m'[39;49;00m), ([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/1/repository/tags/my/tag[39;49;00m[33m'[39;49;00m))}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mdeveloper-experience#file-path-branches-and-tags-name[39;49;00m[33m'[39;49;...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_the_literal_endpoints_are_sent_as_written[/projects/1/repository/tags/my%2Ftag] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_developer_experience.py:433: in test_the_literal_endpoints_are_sent_as_written
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['developer-experience#file-path-branches-and-tags-name', '--endpoint', 'GET /projects/1/repository/tags/my%2Ftag'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:666 'developer-experience#file-path-branches-and-tags-name': the endpoint "GET /projects/1/repository/tags/my%2Ftag" is none of its endpoints, GET /projects/1/repository/files/src%2FREADME.md, GET /projects/1/branches/my%2Fbranch/commits, GET /projects/1/repository/tags/my/tag
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1563: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: developer-experience#file-path-branches-and-tags-name: GET /projects/1/repository/tags/my/tag is none of the section's endpoints [('GET', '/projects/1/repository/files/src%2FREADME.md'), ('GET', '/projects/1/branches/my%2Fbranch/commits'), ('GET', '/projects/1/repository/tags/my%2Ftag')]
+E   assert not ["developer-experience#file-path-branches-and-tags-name: GET /projects/1/repository/tags/my/tag is none of the section...%2FREADME.md'), ('GET', '/projects/1/branches/my%2Fbranch/commits'), ('GET', '/projects/1/repository/tags/my%2Ftag')]"]
+__________________ test_every_index_row_is_mapped_or_pending __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:589: in test_every_index_row_is_mapped_or_pending
+    assert not gaps, gap_report(gaps=gaps)
+E   AssertionError: 1 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+E     families/developer_experience.py:
+E         ('GET', '/projects/1/repository/tags/my%2Ftag'),  # rest/developer-experience.md#file-path-branches-and-tags-name
+E   assert not [IndexRow(method='GET', path='/projects/1/repository/tags/my%2Ftag', reference='rest/developer-experience.md#file-path-branches-and-tags-name')]
+__________________ test_every_declared_key_is_in_its_family ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:694: in test_every_declared_key_is_in_its_family
+    assert not problems, "declarations the operations index does not bear out:\n" + "\n".join(problems)
+E   AssertionError: declarations the operations index does not bear out:
+E     families/developer_experience.py: the record 'developer-experience#file-path-branches-and-tags-name' declares ('GET', '/projects/1/repository/tags/my/tag'); the rows of its Reference carry [('GET', '/projects/1/branches/my%2Fbranch/commits'), ('GET', '/projects/1/repository/files/src%2FREADME.md'), ('GET', '/projects/1/repository/tags/my%2Ftag')]
+E   assert not ["families/developer_experience.py: the record 'developer-experience#file-path-branches-and-tags-name' declares ('GET'.../commits'), ('GET', '/projects/1/repository/files/src%2FREADME.md'), ('GET', '/projects/1/repository/tags/my%2Ftag')]"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_developer_experience.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_developer_experience.py::test_the_literal_endpoints_are_sent_as_written[/projects/1/repository/tags/my%2Ftag]
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_index_row_is_mapped_or_pending
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_declared_key_is_in_its_family
+================== 5 failed, 37 passed in 129.23s (0:02:09) ===================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/families/developer_experience.py: b5ab21c39f47828a17bbb8c8cf992dec5d02c859a6fc331f6e3b35df6c2c059d match=True  # pragma: allowlist secret
+# verdict: KILLED (5 failed, 37 passed in 129.23s (0:02:09))

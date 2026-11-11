@@ -1,0 +1,30 @@
+# mutant ub2-third-party-import: UB-2: container_registry.py imports only the standard library
+# edit src/payload/scripts/gitlab_api/container_registry.py: 'import re\nfrom typing import TYPE_CHECKING' -> 'import re\nimport yaml  # noqa: F401\nfrom typing import TYPE_CHECKING'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): test/test_gitlab_api_properties.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [9 items]
+
+........F                                                                [100%]
+================================== FAILURES ===================================
+_________________________ test_standard_library_only __________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:507: in test_standard_library_only
+    assert foreign == [], f"imports outside gitlab_api and the standard library: {foreign}"
+E   AssertionError: imports outside gitlab_api and the standard library: ['gitlab_api/container_registry.py: yaml']
+E   assert ['gitlab_api/...try.py: yaml'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mgitlab_api/container_registry.py: yaml[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_api_properties.py::test_standard_library_only - Asser...
+========================= 1 failed, 8 passed in 5.48s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 8 passed in 5.48s)

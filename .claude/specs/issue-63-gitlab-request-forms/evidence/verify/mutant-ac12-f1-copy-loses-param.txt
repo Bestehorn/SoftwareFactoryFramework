@@ -1,0 +1,34 @@
+# mutant ac12-f1-copy-loses-param: AC-1.2/D8: an F1 record copies its base record's Params
+# edit src/payload/scripts/gitlab_api/families/verify.py: '        path="/projects/:id/releases/permalink/latest/evidence",\n        params=(Param(name="suffix_path", location=Location.QUERY, required=True),),\n' -> '        path="/projects/:id/releases/permalink/latest/evidence",\n'
+# sha256 before src/payload/scripts/gitlab_api/families/verify.py: b47c3ba0f7220ec9bed0d3d9a84d1fdbea3c8e84c9142dabe276b860087d6594  # pragma: allowlist secret
+# tests (paired): test/test_gitlab_wrapper_contract.py src/payload/test/test_gitlab_api_verify.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_gitlab_wrapper_contract.py src/payload/test/test_gitlab_api_verify.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [72 items]
+
+......F.............................................................F... [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1563: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: verify#get-the-latest-release: the query row 'suffix_path' is not declared by the record
+E   assert not ["verify#get-the-latest-release: the query row 'suffix_path' is not declared by the record"]
+______________ test_each_record_of_an_id_copies_its_base_record _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1764: in test_each_record_of_an_id_copies_its_base_record
+    assert not problems, "\n".join(problems)
+E   AssertionError: verify#get-the-latest-release GET /projects/:id/releases/permalink/latest/evidence: its Params [] are not the base record's less its own path parameters, [('suffix_path', 'query', 'scalar', True)]
+E   assert not ["verify#get-the-latest-release GET /projects/:id/releases/permalink/latest/evidence: its Params [] are not the base record's less its own path parameters, [('suffix_path', 'query', 'scalar', True)]"]
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_each_record_of_an_id_copies_its_base_record
+================== 2 failed, 70 passed in 125.79s (0:02:05) ===================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/families/verify.py: b47c3ba0f7220ec9bed0d3d9a84d1fdbea3c8e84c9142dabe276b860087d6594 match=True  # pragma: allowlist secret
+# verdict: KILLED (2 failed, 70 passed in 125.79s (0:02:05))

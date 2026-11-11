@@ -1,0 +1,28 @@
+# mutant ac53-bearer-logs-in: AC-5.3/D4 step 1: a bearer token is refused with nothing sent
+# edit src/payload/scripts/gitlab_api/container_registry.py: '    raise GitLabAPIError(\n        f"token_type' -> '    return "oauth2"\n    raise GitLabAPIError(\n        f"token_type'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [58 items]
+
+..................................................F.......               [100%]
+================================== FAILURES ===================================
+_____ test_no_registry_token_sends_nothing_to_the_registry[bearer-token] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 0 (AC-5.3); stderr:
+E     
+E   assert 0 == 1
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[bearer-token]
+======================== 1 failed, 57 passed in 5.63s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 57 passed in 5.63s)

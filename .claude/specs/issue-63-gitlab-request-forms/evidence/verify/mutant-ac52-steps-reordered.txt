@@ -1,0 +1,169 @@
+# mutant ac52-steps-reordered: AC-5.2/D4: steps 1 and 2 are taken in order
+# edit src/payload/scripts/gitlab_api/container_registry.py: '    registry_login = login(transport=transport)\n    origin = registry_origin(transport=transport, project=project)\n' -> '    origin = registry_origin(transport=transport, project=project)\n    registry_login = login(transport=transport)\n'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [58 items]
+
+..............................................FFFFFFFFFFFF               [100%]
+================================== FAILURES ===================================
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1951: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert sent(fake=fake_gitlab) == [
+E   AssertionError: the login, the project's registry, the registry token for the record's scope, then the registry (D4 steps 1-4)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...nce/1a2b3c4')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1951: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert sent(fake=fake_gitlab) == [
+E   AssertionError: the login, the project's registry, the registry token for the record's scope, then the registry (D4 steps 1-4)
+E   assert [('GET', 'htt...v2/_catalog')] == [('GET', 'htt...v2/_catalog')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_____ test_no_registry_token_sends_nothing_to_the_registry[bearer-token] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ojects/4242')] == []
+E     
+E     Left contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 token_type 'bearer' has no login the container registry's /jwt/auth accepts: a container-registry record is sent with a private or a job token
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1951: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert sent(fake=fake_gitlab) == [
+E   AssertionError: the login, the project's registry, the registry token for the record's scope, then the registry (D4 steps 1-4)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...nce/1a2b3c4')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4 answered 404: manifest unknown
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:349 {"errors": [{"code": "MANIFEST_UNKNOWN", "message": "manifest unknown"}]}
+___ test_no_registry_token_sends_nothing_to_the_registry[user-answers-401] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...api/v4/user')] == [('GET', 'htt...api/v4/user')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Left contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/api/v4/user answered 401: 401 Unauthorized
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:349 {"message": "401 Unauthorized"}
+____ test_no_registry_token_sends_nothing_to_the_registry[no-image-prefix] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ojects/4242')] == [('GET', 'htt...ojects/4242')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Right contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 tenant-scale#retrieve-a-project answered no non-empty string 'container_registry_image_prefix', which a container-registry request needs: nothing is sent to the registry
+__ test_no_registry_token_sends_nothing_to_the_registry[empty-image-prefix] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ojects/4242')] == [('GET', 'htt...ojects/4242')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Right contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 tenant-scale#retrieve-a-project answered no non-empty string 'container_registry_image_prefix', which a container-registry request needs: nothing is sent to the registry
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-without-a-host] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ojects/4242')] == [('GET', 'htt...ojects/4242')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Right contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 the project '4242' answered the container_registry_image_prefix '/group/project', whose registry host before the first '/' is empty or holds '@', '?', '#', a backslash or white space
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-a-fragment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ojects/4242')] == [('GET', 'htt...ojects/4242')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Right contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 the project '4242' answered the container_registry_image_prefix 'registry.example.com#/x', whose registry host before the first '/' is empty or holds '@', '?', '#', a backslash or white space
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-userinfo] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ojects/4242')] == [('GET', 'htt...ojects/4242')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Right contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 the project '4242' answered the container_registry_image_prefix 'user@registry.example.com/x', whose registry host before the first '/' is empty or holds '@', '?', '#', a backslash or white space
+_ test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-401] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ct%3Adelete')] == [('GET', 'htt...ct%3Adelete')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete answered 401: 401 Unauthorized
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:349 {"message": "401 Unauthorized"}
+_ test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-no-token] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ct%3Adelete')] == [('GET', 'htt...ct%3Adelete')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/projects/4242[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete answered 200 without a non-empty string 'token': no registry token, so nothing is sent to the registry (the answer is not quoted, for it may hold a credential)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[bearer-token]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[user-answers-401]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[no-image-prefix]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[empty-image-prefix]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-without-a-host]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-a-fragment]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-userinfo]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-401]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-no-token]
+======================== 12 failed, 46 passed in 5.97s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# verdict: KILLED (12 failed, 46 passed in 5.97s)

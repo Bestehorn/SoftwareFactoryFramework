@@ -1,0 +1,102 @@
+# mutant f4-registry-base-through-request: D4: request(base=CONTAINER_REGISTRY) raises ValueError
+# edit src/payload/scripts/gitlab_api/transport.py: 'self._roots: Dict[Base, str] = {Base.REST: self._rest_base,' -> 'self._roots: Dict[Base, str] = {Base.CONTAINER_REGISTRY: self._rest_base, Base.REST: self._rest_base,'
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_transport.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_transport.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [94 items]
+
+........................................................................ [ 76%]
+........F...F...F.....                                                   [100%]
+================================== FAILURES ===================================
+____________ test_a_host_request_is_sent_outside_the_api[private] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1242: in test_a_host_request_is_sent_outside_the_api
+    client.request(method="GET", path=REGISTRY_CATALOG_PATH, base=registry.Base.CONTAINER_REGISTRY)
+src\payload\scripts\gitlab_api\transport.py:661: in request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/v2/_catalog (still scripted: [])
+_____________ test_a_host_request_is_sent_outside_the_api[bearer] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1242: in test_a_host_request_is_sent_outside_the_api
+    client.request(method="GET", path=REGISTRY_CATALOG_PATH, base=registry.Base.CONTAINER_REGISTRY)
+src\payload\scripts\gitlab_api\transport.py:661: in request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/v2/_catalog (still scripted: [])
+______________ test_a_host_request_is_sent_outside_the_api[job] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1242: in test_a_host_request_is_sent_outside_the_api
+    client.request(method="GET", path=REGISTRY_CATALOG_PATH, base=registry.Base.CONTAINER_REGISTRY)
+src\payload\scripts\gitlab_api\transport.py:661: in request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/v2/_catalog (still scripted: [])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_host_request_is_sent_outside_the_api[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_host_request_is_sent_outside_the_api[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_host_request_is_sent_outside_the_api[job]
+======================== 3 failed, 91 passed in 6.22s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: KILLED (3 failed, 91 passed in 6.22s)

@@ -1,0 +1,29 @@
+# mutant f2-extra-values-accepted: D2: expand refuses a number of values other than the places
+# edit src/payload/scripts/gitlab_api/registry.py: '        if not isinstance(value, (list, tuple)) or len(value) != places:' -> '        if not isinstance(value, (list, tuple)) or len(value) < places:'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_tenant_scale.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_tenant_scale.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [153 items]
+
+..................................................F..................... [ 47%]
+........................................................................ [ 94%]
+.........                                                                [100%]
+================================== FAILURES ===================================
+__________ test_each_place_of_a_positional_name_takes_its_own_value ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1084: in test_each_place_of_a_positional_name_takes_its_own_value
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_each_place_of_a_positional_name_takes_its_own_value
+======================= 1 failed, 152 passed in 10.62s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 152 passed in 10.62s)

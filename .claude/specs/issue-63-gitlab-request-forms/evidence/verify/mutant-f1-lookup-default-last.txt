@@ -1,0 +1,59 @@
+# mutant f1-lookup-default-last: AC-2.2: no endpoint sends the first declared (base) endpoint
+# edit src/payload/scripts/gitlab_api/registry.py: '    if endpoint is None:\n        return records[0]' -> '    if endpoint is None:\n        return records[-1]'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_plan.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_plan.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [229 items]
+
+................................................F....................... [ 31%]
+........................................................................ [ 62%]
+......................................F................................. [ 94%]
+............F                                                            [100%]
+================================== FAILURES ===================================
+_______________ test_lookup_chooses_an_endpoint_of_a_reference ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:996: in test_lookup_chooses_an_endpoint_of_a_reference
+    assert registry.lookup(operation_id=EMOJI_OPERATION_ID) == records[EMOJI_ENDPOINTS[0]], (
+E   AssertionError: given no endpoint, lookup returns the first record declared with the id, its base endpoint (design.md D1, AC-2.2)
+E   assert RestOperation...en_scope=None) == RestOperation...en_scope=None)
+E     
+E     Omitting 11 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mpath[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute path:
+E       path: [0m[33m'[39;49;00m[33m/projects/:id/issues/:issue_iid/award_emoji[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33m/projects/:id/merge_requests/:merge_request_iid/award_emoji[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E       [0m[91m- /projects/:id/merge_requests/:merge_request_iid/award_emoji[39;49;00m[90m[39;49;00m
+E       [92m+ /projects/:id/issues/:issue_iid/award_emoji[39;49;00m[90m[39;49;00m
+_ test_a_list_record_prints_every_item[list-all-emoji-reactions-for-a-resource] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_plan.py:832: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-emoji-reactions-for-a-resource', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 plan#list-all-emoji-reactions-for-a-resource: "issue_iid" given with --path is not documented; the path parameter snippet_id has no value; its path parameters: id, snippet_id; its attributes: issue_iid/merge_request_iid/snippet_id (query, scalar), page (query, scalar), per_page (query, scalar)
+__________________ test_an_other_endpoint_is_sent_when_named __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_plan.py:877: in test_an_other_endpoint_is_sent_when_named
+    assert code == EXIT_OK, f"call {default} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#add-an-emoji-reaction-to-a-resource', '--path', 'issue_iid=4', '-f', 'name=thumbsup'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 plan#add-an-emoji-reaction-to-a-resource: "issue_iid" given with --path is not documented; the path parameter snippet_id has no value; its path parameters: id, snippet_id; its attributes: issue_iid/merge_request_iid/snippet_id (body, scalar), name (body, scalar)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_lookup_chooses_an_endpoint_of_a_reference
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-emoji-reactions-for-a-resource]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_an_other_endpoint_is_sent_when_named
+======================= 3 failed, 226 passed in 11.47s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (3 failed, 226 passed in 11.47s)

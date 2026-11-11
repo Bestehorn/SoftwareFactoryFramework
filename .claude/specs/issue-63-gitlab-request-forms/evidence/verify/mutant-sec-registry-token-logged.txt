@@ -1,0 +1,58 @@
+# mutant sec-registry-token-logged: D4/UB-2: the registry token enters no log record
+# edit src/payload/scripts/gitlab_api/container_registry.py: '    registry_token = transport.container_registry_token(login=registry_login, scope=scope)\n' -> '    registry_token = transport.container_registry_token(login=registry_login, scope=scope)\n    __import__("logging").getLogger("gitlab_api").warning("registry token %s", registry_token)\n'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [58 items]
+
+..............................................FF.F........               [100%]
+================================== FAILURES ===================================
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1973: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert reported == [], f"no log record holds a secret (D4 AC-5.3, UB-2): {reported}"
+E   AssertionError: no log record holds a secret (D4 AC-5.3, UB-2): ['the registry token']
+E   assert ['the registry token'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mthe registry token[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[33mWARNING [0m gitlab_api:container_registry.py:131 registry token registry-token-for-the-package-test
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1973: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert reported == [], f"no log record holds a secret (D4 AC-5.3, UB-2): {reported}"
+E   AssertionError: no log record holds a secret (D4 AC-5.3, UB-2): ['the registry token']
+E   assert ['the registry token'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mthe registry token[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[33mWARNING [0m gitlab_api:container_registry.py:131 registry token registry-token-for-the-package-test
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1973: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert reported == [], f"no log record holds a secret (D4 AC-5.3, UB-2): {reported}"
+E   AssertionError: no log record holds a secret (D4 AC-5.3, UB-2): ['the registry token']
+E   assert ['the registry token'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mthe registry token[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[33mWARNING [0m gitlab_api:container_registry.py:131 registry token registry-token-for-the-package-test
+[31m[1mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4 answered 404: manifest unknown
+[31m[1mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:349 {"errors": [{"code": "MANIFEST_UNKNOWN", "message": "manifest unknown"}]}
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404]
+======================== 3 failed, 55 passed in 5.91s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# verdict: KILLED (3 failed, 55 passed in 5.91s)

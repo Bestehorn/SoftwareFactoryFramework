@@ -1,0 +1,29 @@
+# mutant f1-duplicate-key-accepted: D1: two records of one family on one key are refused
+# edit src/payload/scripts/gitlab_api/registry.py: '    return len(sources) == 1 and len(keys) == len(declarations) and len(set(keys)) == len(keys)' -> '    return len(sources) == 1 and len(keys) == len(declarations)'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [167 items]
+
+................................................F....................... [ 43%]
+........................................................................ [ 86%]
+.......................                                                  [100%]
+================================== FAILURES ===================================
+_______________ test_lookup_chooses_an_endpoint_of_a_reference ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1049: in test_lookup_chooses_an_endpoint_of_a_reference
+    with pytest.raises(ValueError, match=re.escape(operation_id)) as duplicate_refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_lookup_chooses_an_endpoint_of_a_reference
+======================== 1 failed, 166 passed in 9.43s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 166 passed in 9.43s)

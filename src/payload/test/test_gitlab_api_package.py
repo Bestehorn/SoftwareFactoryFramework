@@ -25,9 +25,10 @@ What is pinned:
 - a container-registry record is sent as ``GET /user``, ``GET /projects/<project_id>``, the ``/jwt/auth`` request for
   its scope with ``Authorization: Basic`` of the login and the configured token as its only credential, then its own
   request to the registry of the project's ``container_registry_image_prefix`` with ``Authorization: Bearer`` of the
-  registry token alone (#63 AC-5.2, UB-2); a registry token that cannot be obtained sends only the steps up to the
-  failing one and nothing to the registry, and exits 1 (#63 AC-5.3); no log record holds the configured token, the
-  Base64 of the login and the token, or the registry token.
+  registry token alone (#63 AC-5.2, UB-2); a registry token that cannot be obtained — a ``GET /user`` answer without a
+  string ``username`` and a registry host holding ``?``, a backslash or white space among the ways — sends only the
+  steps up to the failing one and nothing to the registry, and exits 1 (#63 AC-5.3); no log record holds the configured
+  token, the Base64 of the login and the token, or the registry token, nor the body of a refused ``/jwt/auth`` answer.
 
 Every expected ID, key, ``Kind``, required name, prefix value, paged ID, media type, URL and body is a literal table
 transcribed from ``docs/api-reference/gitlab/operations-index.md`` and ``rest/package.md`` (the container-registry
@@ -1371,12 +1372,21 @@ STEP_1_SENT: Tuple[Tuple[str, str], ...] = ((METHOD_GET, USER_URL),)
 STEPS_1_TO_2_SENT: Tuple[Tuple[str, str], ...] = (*STEP_1_SENT, (METHOD_GET, PROJECT_URL))
 STEPS_1_TO_3_SENT: Tuple[Tuple[str, str], ...] = (*STEPS_1_TO_2_SENT, (METHOD_GET, DELETE_TAGS_JWT_URL))
 
-# #63 AC-5.3 (design.md Correctness Properties): a `bearer` token (no step is sent); `GET /user` answering 401; a
-# project answer without `container_registry_image_prefix`, or with one whose registry host is empty or holds `#` or
-# `@`; `/jwt/auth` answering 401, or `{}`.
+# #63 AC-5.3 (design.md Correctness Properties): a `bearer` token (no step is sent); `GET /user` answering 401, or
+# answering without a string `username` (D4 step 1); a project answer without `container_registry_image_prefix`, or with
+# one whose registry host is empty or holds `#`, `@`, `?`, a backslash or white space (D4 step 2); `/jwt/auth` answering
+# 401, or `{}`.
 NO_TOKEN_CASES = (
     pytest.param(NoTokenCase(sent=(), token_type=TOKEN_TYPE_BEARER), id="bearer-token"),
     pytest.param(NoTokenCase(sent=STEP_1_SENT, user=UNAUTHORIZED_ANSWER), id="user-answers-401"),
+    pytest.param(
+        NoTokenCase(sent=STEP_1_SENT, user=Answer(status=STATUS_OK, body={FIELD_ID: 7})),
+        id="user-answer-without-a-username",
+    ),
+    pytest.param(
+        NoTokenCase(sent=STEP_1_SENT, user=Answer(status=STATUS_OK, body={FIELD_ID: 7, FIELD_USERNAME: 7})),
+        id="user-answer-with-a-username-that-is-not-a-string",
+    ),
     pytest.param(
         NoTokenCase(sent=STEPS_1_TO_2_SENT, project=Answer(status=STATUS_OK, body={FIELD_ID: PROJECT_ID})),
         id="no-image-prefix",
@@ -1413,10 +1423,59 @@ NO_TOKEN_CASES = (
         ),
         id="image-prefix-host-with-userinfo",
     ),
+    pytest.param(
+        NoTokenCase(
+            sent=STEPS_1_TO_2_SENT,
+            project=Answer(
+                status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: "registry.example.com?x/g"}
+            ),
+        ),
+        id="image-prefix-host-with-a-query",
+    ),
+    pytest.param(
+        NoTokenCase(
+            sent=STEPS_1_TO_2_SENT,
+            project=Answer(
+                status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: "registry.example.com\\x/g"}
+            ),
+        ),
+        id="image-prefix-host-with-a-backslash",
+    ),
+    pytest.param(
+        NoTokenCase(
+            sent=STEPS_1_TO_2_SENT,
+            project=Answer(status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: "registry example.com/g"}),
+        ),
+        id="image-prefix-host-with-white-space",
+    ),
     pytest.param(NoTokenCase(sent=STEPS_1_TO_3_SENT, jwt=UNAUTHORIZED_ANSWER), id="jwt-auth-answers-401"),
     pytest.param(
         NoTokenCase(sent=STEPS_1_TO_3_SENT, jwt=Answer(status=STATUS_OK, body={})),
         id="jwt-auth-answers-no-token",
+    ),
+)
+
+# #63 design.md D4 step 3, "AC-5.3": a `/jwt/auth` success answer that is not a JSON object, or whose `token` is not a
+# non-empty string, is refused naming the URL and the field, never quoting its body, which may hold the registry token;
+# the marker stands for such a body, which no log record and no standard error may hold.
+JWT_ANSWER_MARKER = "jwt-auth-answer-marker-for-the-package-test"  # pragma: allowlist secret
+
+
+class JwtAnswer(NamedTuple):
+    """A ``/jwt/auth`` success answer of the configured host: its headers and its body, sent verbatim when text."""
+
+    headers: Tuple[Tuple[str, str], ...]
+    body: Any
+
+
+UNUSABLE_JWT_ANSWERS = (
+    pytest.param(
+        JwtAnswer(headers=((HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON),), body=f"{{not JSON: {JWT_ANSWER_MARKER}"),
+        id="claims-json-but-is-not-json",
+    ),
+    pytest.param(JwtAnswer(headers=(), body=[JWT_ANSWER_MARKER]), id="a-json-array"),
+    pytest.param(
+        JwtAnswer(headers=(), body={FIELD_REGISTRY_TOKEN: "", FIELD_MESSAGE: JWT_ANSWER_MARKER}), id="an-empty-token"
     ),
 )
 
@@ -1999,3 +2058,35 @@ def test_no_registry_token_sends_nothing_to_the_registry(
     assert error_messages(caplog=caplog), "an ERROR record says why the registry token was not obtained (#41 AC-1.7)"
     reported = secrets_in(texts=reported_texts(caplog=caplog, err=captured.err), secrets=SECRETS)
     assert reported == [], f"no log record holds a secret (D4 AC-5.3, UB-2): {reported}"
+
+
+@pytest.mark.parametrize(argnames="answer", argvalues=UNUSABLE_JWT_ANSWERS)
+def test_a_refused_jwt_auth_answer_is_never_reported(
+    answer: JwtAnswer,
+    project: Path,
+    fake_gitlab: Any,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """#63 AC-5.3, UB-2 (design.md D4 step 3): a delete-by-reference call whose ``/jwt/auth`` success answer is not a
+    JSON object, or holds no non-empty string ``token``, exits 1 with an ERROR record after the requests of steps 1 to
+    3 and sends nothing to the registry; no log record and no standard error holds that answer's body, the configured
+    token, the Base64 of the login and the token, or the registry token."""
+    caplog.set_level(level=logging.DEBUG)
+    fake_gitlab.script(method=METHOD_GET, url=USER_URL, status=USER_ANSWER.status, body=USER_ANSWER.body)
+    fake_gitlab.script(method=METHOD_GET, url=PROJECT_URL, status=PROJECT_ANSWER.status, body=PROJECT_ANSWER.body)
+    fake_gitlab.script(
+        method=METHOD_GET, url=DELETE_TAGS_JWT_URL, status=STATUS_OK, headers=answer.headers, body=answer.body
+    )
+    fake_gitlab.script(method=METHOD_DELETE, url=DELETE_TAGS_URL, status=STATUS_ACCEPTED)
+    code = run_call(root=project, argv=DELETE_TAGS_ARGV)
+    captured = capsys.readouterr()
+    assert code == EXIT_API_ERROR, (
+        f"call {list(DELETE_TAGS_ARGV)} exits {EXIT_API_ERROR}, got {code} (AC-5.3); stderr:\n{captured.err}"
+    )
+    assert off_host_requests(fake=fake_gitlab) == [], "nothing is sent to the registry (AC-5.3, AC-8.3)"
+    assert sent(fake=fake_gitlab) == list(STEPS_1_TO_3_SENT), "the requests of steps 1 to 3, its own included (D4)"
+    assert error_messages(caplog=caplog), "an ERROR record says why the registry token was not obtained (#41 AC-1.7)"
+    withheld = {**SECRETS, "the /jwt/auth answer's body": JWT_ANSWER_MARKER}
+    reported = secrets_in(texts=reported_texts(caplog=caplog, err=captured.err), secrets=withheld)
+    assert reported == [], f"no log record and no standard error holds these (D4 AC-5.3, UB-2): {reported}"

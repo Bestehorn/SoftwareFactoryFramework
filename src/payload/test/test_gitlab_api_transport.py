@@ -21,7 +21,9 @@ What is pinned (issue #13, ``design.md`` D4 and "Correctness Properties"):
 - issue #63 (``design.md`` D4, D5): ``base=Base.HOST`` sends under ``https://<hostname>``, outside ``/api/v4``, and
   ``Base.CONTAINER_REGISTRY`` is refused (AC-5.1); ``container_registry_token`` asks ``/jwt/auth`` with
   ``Authorization: Basic`` of ``<login>:<token>`` alone and ``container_registry_request`` sends ``Authorization:
-  Bearer <registry token>`` alone, ``_send`` refusing every origin but its ``destination`` (AC-5.2, UB-2); a request
+  Bearer <registry token>`` alone, ``_send`` refusing every origin but its ``destination`` (AC-5.2, UB-2); a
+  ``/jwt/auth`` success answer that is not a JSON object, or whose ``token`` is not a non-empty string, raises
+  ``GitLabAPIError`` whose message and ``details`` hold neither its body nor a secret (AC-5.3, UB-2); a request
   header is sent beside ``Accept``, the ``Content-Type`` and the credential, and a name the transport owns or a value
   holding CR, LF or NUL is refused before anything is sent (AC-6.2).
 
@@ -1311,6 +1313,73 @@ def test_the_registry_token_is_asked_for_with_basic_credentials(
     )
     assert sent.body is None, "the token request carries no body"
     assert TOKEN not in sent.url, "the token never enters a URL"
+
+
+# D4 step 3, "AC-5.3": a `/jwt/auth` success answer that is not a JSON object (one claiming JSON but not JSON, a text
+# body, a JSON array), or whose `token` is not a non-empty string, is refused naming the URL and the field, never
+# quoting its body, which may hold the registry token; the marker stands for such a body. Each case: the answer's
+# headers, then its body (text is sent verbatim).
+REFUSED_JWT_ANSWER_MARKER = "jwt-auth-answer-marker-for-the-transport-test"  # pragma: allowlist secret
+REFUSED_JWT_LOGIN = "john_smith"
+REFUSED_JWT_SCOPE = "repository:group/project:delete"
+REFUSED_JWT_URL = f"https://{HOST}/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete"
+FIELD_NOTE = "note"
+REFUSED_JWT_ANSWERS = [
+    pytest.param(
+        ((HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON),),
+        f"{{not JSON: {REFUSED_JWT_ANSWER_MARKER}",
+        id="claims-json-but-is-not-json",
+    ),
+    pytest.param(((HEADER_CONTENT_TYPE, CONTENT_TYPE_TEXT),), REFUSED_JWT_ANSWER_MARKER, id="a-text-body"),
+    pytest.param((), [REFUSED_JWT_ANSWER_MARKER], id="a-json-array"),
+    pytest.param((), {FIELD_TOKEN: "", FIELD_NOTE: REFUSED_JWT_ANSWER_MARKER}, id="an-empty-token"),
+    pytest.param((), {FIELD_TOKEN: [REFUSED_JWT_ANSWER_MARKER]}, id="a-token-that-is-not-a-string"),
+]
+
+
+@pytest.mark.parametrize(("headers", "body"), REFUSED_JWT_ANSWERS)
+def test_a_registry_token_answer_without_a_token_is_never_quoted(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+    headers: Tuple[Tuple[str, str], ...],
+    body: Any,
+) -> None:
+    caplog.set_level(level=logging.DEBUG)
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = make_client(transport=transport, sleeper=sleeper)
+    fake_gitlab.script(method="GET", url=REFUSED_JWT_URL, headers=headers, body=body)
+
+    with pytest.raises(errors.GitLabAPIError) as raised:
+        client.container_registry_token(login=REFUSED_JWT_LOGIN, scope=REFUSED_JWT_SCOPE)
+
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("GET", REFUSED_JWT_URL)], (
+        "one GET of /jwt/auth, then the refusal (D4 step 3)"
+    )
+    refusal = raised.value
+    reported = {
+        "the message": str(refusal),
+        "the details": str(refusal.details),
+        **{f"log record {index}": record.getMessage() for index, record in enumerate(caplog.records)},
+        "the captured log": caplog.text,
+        "standard error": capsys.readouterr().err,
+    }
+    login_and_token = base64.b64encode(s=f"{REFUSED_JWT_LOGIN}:{TOKEN}".encode(encoding="utf-8")).decode(
+        encoding="ascii"
+    )
+    withheld = {
+        "the /jwt/auth answer's body": REFUSED_JWT_ANSWER_MARKER,
+        "the configured token": TOKEN,
+        "the Base64 of <login>:<token>": login_and_token,
+    }
+    leaked = sorted(
+        f"{where} holds {what}" for where, text in reported.items() for what, value in withheld.items() if value in text
+    )
+    assert leaked == [], (
+        "the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)"
+    )
 
 
 # D4 step 4 and doc/api/container_registry.md: the record's path after `/http(s)://${CI_REGISTRY}`, `${NAME}`s written.

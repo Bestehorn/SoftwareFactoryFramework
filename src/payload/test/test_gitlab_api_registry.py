@@ -36,7 +36,11 @@ and an id declared twice is refused as before (AC-2.2, AC-2.4). ``expand`` write
 AC-3.2, UB-1), and a ``[.name]`` suffix as ``.`` and its value only when it is given (AC-4.1). ``base_of`` reads
 whether a path is sent under ``/api/v4``, at the host root or to the container registry (AC-5.1); ``encode`` sends a
 ``Location.HEADER`` value as a request header and nowhere else (AC-6.2); ``send`` refuses a container-registry record
-given no project, with nothing sent (AC-5.2).
+given no project, with nothing sent (AC-5.2). Each of these refusals is pinned too, with nothing sent: ``pages`` refuses
+a record not under ``/api/v4`` and a request header (D4, D5); ``send`` refuses a container-registry record given a
+body, a file, a request header or raw bytes (DL-009), and one whose ``token_scope`` is missing or names a ``${NAME}``
+given no value (D4); a positional name given no value is refused saying so (D2). A positional name held only in an
+optional group left out takes no value (D2).
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
@@ -366,6 +370,94 @@ REGISTRY_STEP_ANSWERS: Tuple[Any, ...] = (
     {FIELD_REGISTRY_CREDENTIAL: "scripted-registry-answer"},
     None,
 )
+# The configured project a container-registry record is sent with (design.md D4 step 2).
+REGISTRY_PROJECT = "group/app"
+# `pages` fetches with a GET under /api/v4 that carries a query only (design.md D4, D5): GET records on the two paths
+# of F4 that are not under /api/v4, software-supply-chain-security.md "Retrieve the token information" and package.md
+# "Listing all container repositories" (with its docs.gitlab.com `container_registry` scope); and a GET record on the
+# routed path of SYMBOL_FILE_PATH with its `Symbolchecksum` request header (rest/package.md "NuGet API").
+PAGES_BASE_OPERATION_ID = "synthetic#pages-a-record-not-under-the-api"
+PAGES_BASE_CASES: Dict[str, Tuple[str, Any]] = {
+    "host-root": (TOKEN_INFO_PATH, None),
+    "container-registry": (REGISTRY_CATALOG_PATH, "registry:catalog:*"),
+}
+PAGES_HEADER_OPERATION_ID = "synthetic#pages-a-record-given-a-request-header"
+SYMBOL_FILE_ROUTED_PATH = "/projects/:id/packages/nuget/symbolfiles/:file_name/:signature/:file_name"
+SYMBOL_CHECKSUM_HEADER = "Symbolchecksum"
+SYMBOL_CHECKSUM_VALUES: Dict[str, Any] = {**SYMBOL_FILE_VALUES, SYMBOL_CHECKSUM_HEADER: "SHA256:0a1b2c"}
+SYMBOL_CHECKSUM_SENT_HEADERS = ((SYMBOL_CHECKSUM_HEADER, "SHA256:0a1b2c"),)
+# DL-009: a container-registry request carries its path, its query and the registry token only (design.md D4), so a
+# body, a file, a request header and raw bytes are refused. Each case is a record on REGISTRY_DELETE_PATH: the one
+# `Param` it declares (name, `Location` and `Kind` member names), its `BodyFormat` member name, its `content_type`, the
+# values given beside REGISTRY_DELETE_VALUES, the raw bytes, and the `EncodedRequest` fields `encode` gives for them.
+REGISTRY_UPLOAD_FILE = Path("registry-upload.bin")
+REGISTRY_INPUT_CASES: Dict[str, Dict[str, Any]] = {
+    "json-body": {
+        "param": ("note", "BODY", "SCALAR"),
+        "body": "JSON",
+        "content_type": None,
+        "values": {"note": "kept"},
+        "data": None,
+        "encoded": {"json_body": {"note": "kept"}},
+    },
+    "form-body": {
+        "param": ("note", "BODY", "SCALAR"),
+        "body": "FORM",
+        "content_type": None,
+        "values": {"note": "kept"},
+        "data": None,
+        "encoded": {"form": (("note", "kept"),)},
+    },
+    "file": {
+        "param": ("file", "BODY", "FILE"),
+        "body": "JSON",
+        "content_type": None,
+        "values": {"file": REGISTRY_UPLOAD_FILE},
+        "data": None,
+        "encoded": {"files": (("file", REGISTRY_UPLOAD_FILE),)},
+    },
+    "header": {
+        "param": (NONCE_HEADER, "HEADER", "SCALAR"),
+        "body": "JSON",
+        "content_type": None,
+        "values": {NONCE_HEADER: "n1"},
+        "data": None,
+        "encoded": {"headers": ((NONCE_HEADER, "n1"),)},
+    },
+    "raw-bytes": {
+        "param": None,
+        "body": "JSON",
+        "content_type": RAW_MEDIA_TYPE,
+        "values": {},
+        "data": RAW_BYTES,
+        "encoded": {},
+    },
+}
+# D2's refusal of a positional name given no value says so (`_described`), naming the name; D2's places are counted on
+# the path once its optional groups are written, so a positional name whose every place is in a group left out takes no
+# value, and given a list it fills each place of the group in path order.
+POSITIONAL_NO_VALUE_CASES: Dict[str, Dict[str, Any]] = {"absent": {}, "none": {"id": None}}
+POSITIONAL_NAME_WRITTEN = ":id"
+POSITIONAL_NO_VALUE_TEXT = "no value"
+GROUPED_CERTIFICATE_OPERATION_ID = "synthetic#positional-places-in-an-optional-group"
+GROUPED_CERTIFICATE_PATH = "/projects/:project_id/certificates(/:id/keys/:id)"
+GROUPED_CERTIFICATE_CASES: Dict[str, Dict[str, Any]] = {
+    "absent": {"project_id": 1},
+    "none": {"project_id": 1, "id": None},
+    "given": {"project_id": 1, "id": ["7", "my/key"]},
+}
+GROUPED_CERTIFICATE_WRITTEN = {
+    "absent": "/projects/1/certificates",
+    "none": "/projects/1/certificates",
+    "given": "/projects/1/certificates/7/keys/my%2Fkey",
+}
+# D4's scope: a container-registry record that declares no `token_scope`, and one whose `token_scope` names a `${NAME}`
+# that is no path parameter, so no value is given for it (docs.gitlab.com `container_registry` writes the delete scope
+# with `${CI_PROJECT_PATH}`); each with the text its refusal names.
+SCOPE_REFUSED_CASES: Dict[str, Tuple[Any, str]] = {
+    "no-token-scope": (None, "token_scope"),
+    "scope-name-given-no-value": ("repository:${CI_PROJECT_PATH}:delete", "${CI_PROJECT_PATH}"),
+}
 
 
 def load_fixtures() -> ModuleType:
@@ -433,6 +525,35 @@ def serve_families(*, monkeypatch: pytest.MonkeyPatch, registry: ModuleType, fam
         return tuple(families)
 
     monkeypatch.setattr(registry, "discover_families", discover_families)
+
+
+def private_transport(*, transport_module: ModuleType) -> Any:
+    """The ``Transport`` of design.md D4 built for a test: the fake host, a private token, a fixed clock, a recording
+    sleep, the default opener."""
+    sleeps: List[float] = []
+    return transport_module.Transport(
+        host=fixtures.HOST,
+        token="registry-test-token",
+        token_type=TOKEN_TYPE_PRIVATE,
+        sleep=sleeps.append,
+        clock=lambda: FIXED_CLOCK_SECONDS,
+    )
+
+
+def serve_registry_record(
+    *, monkeypatch: pytest.MonkeyPatch, registry: ModuleType, fake_gitlab: Any, record: Any
+) -> None:
+    """Serve ``record`` in a synthetic family beside the declared ones, so the records of design.md D4's steps 1 and 2
+    are found, and queue the answers of the four steps: a send that went ahead to the registry fails its test on the
+    test's oracle rather than on an unknown id or the fake's unscripted-request error."""
+    declared = registry.discover_families()
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[*declared, synthetic_family(name="synthetic", operations=[record])],
+    )
+    for answer in REGISTRY_STEP_ANSWERS:
+        fake_gitlab.script_next(body=answer)
 
 
 @pytest.mark.parametrize(
@@ -1204,4 +1325,181 @@ def test_send_fetches_the_registry_token_before_the_registry(monkeypatch: pytest
     assert fake_gitlab.requests == [], (
         "a container-registry record sent without the configured project is refused before step 1, with no request to "
         "the instance or the registry (design.md D4, AC-5.2)"
+    )
+
+
+@pytest.mark.parametrize("case", list(PAGES_BASE_CASES), ids=list(PAGES_BASE_CASES))
+def test_pages_refuses_a_record_not_under_the_api(case: str, monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    path, token_scope = PAGES_BASE_CASES[case]
+    record = registry.RestOperation(
+        operation_id=PAGES_BASE_OPERATION_ID, method="GET", path=path, token_scope=token_scope
+    )
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[synthetic_family(name="synthetic", operations=[record])],
+    )
+    transport = private_transport(transport_module=transport_module)
+
+    with pytest.raises(ValueError, match=re.escape(PAGES_BASE_OPERATION_ID)):
+        registry.pages(transport=transport, operation_id=PAGES_BASE_OPERATION_ID)
+    assert fake_gitlab.requests == [], (
+        f"pages refuses a GET record on {path!r}, which is not under /api/v4, before returning its pages, with no "
+        "request (design.md D4, AC-5.1)"
+    )
+
+
+def test_pages_refuses_a_request_header(monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    record = registry.RestOperation(
+        operation_id=PAGES_HEADER_OPERATION_ID,
+        method="GET",
+        path=SYMBOL_FILE_ROUTED_PATH,
+        params=(registry.Param(name=SYMBOL_CHECKSUM_HEADER, location=registry.Location.HEADER),),
+    )
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[synthetic_family(name="synthetic", operations=[record])],
+    )
+    transport = private_transport(transport_module=transport_module)
+    assert registry.encode(operation=record, values=SYMBOL_CHECKSUM_VALUES) == registry.EncodedRequest(
+        headers=SYMBOL_CHECKSUM_SENT_HEADERS
+    ), "encode gives the header, so the refusal below is pages' and not encode's (design.md D5)"
+    # The record pages without the header: the refusal below is the header's, not the record's or its path values'.
+    registry.pages(transport=transport, operation_id=PAGES_HEADER_OPERATION_ID, values=SYMBOL_FILE_VALUES)
+
+    with pytest.raises(ValueError, match=re.escape(PAGES_HEADER_OPERATION_ID)):
+        registry.pages(transport=transport, operation_id=PAGES_HEADER_OPERATION_ID, values=SYMBOL_CHECKSUM_VALUES)
+    assert fake_gitlab.requests == [], (
+        "pages refuses a request header before returning its pages, with no request: a page is a GET carrying a "
+        "query only (design.md D5, AC-6.3)"
+    )
+
+
+@pytest.mark.parametrize("case", list(REGISTRY_INPUT_CASES), ids=list(REGISTRY_INPUT_CASES))
+def test_send_refuses_a_registry_record_anything_but_a_query(
+    case: str, monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any
+) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    given = REGISTRY_INPUT_CASES[case]
+    declared = given["param"]
+    params: Tuple[Any, ...] = ()
+    if declared is not None:
+        name, location, kind = declared
+        params = (
+            registry.Param(name=name, location=getattr(registry.Location, location), kind=getattr(registry.Kind, kind)),
+        )
+    record = registry.RestOperation(
+        operation_id=REGISTRY_DELETE_OPERATION_ID,
+        method="DELETE",
+        path=REGISTRY_DELETE_PATH,
+        params=params,
+        body=getattr(registry.BodyFormat, given["body"]),
+        content_type=given["content_type"],
+        token_scope=REGISTRY_DELETE_SCOPE,
+    )
+    values = {**REGISTRY_DELETE_VALUES, **given["values"]}
+    assert registry.encode(operation=record, values=values) == registry.EncodedRequest(**given["encoded"]), (
+        "encode gives the record's values, so the refusal below is send's and not encode's (design.md D4, D5)"
+    )
+    serve_registry_record(monkeypatch=monkeypatch, registry=registry, fake_gitlab=fake_gitlab, record=record)
+    transport = private_transport(transport_module=transport_module)
+
+    with pytest.raises(ValueError, match=re.escape(REGISTRY_DELETE_OPERATION_ID)):
+        registry.send(
+            transport=transport,
+            operation_id=REGISTRY_DELETE_OPERATION_ID,
+            values=values,
+            data=given["data"],
+            project=REGISTRY_PROJECT,
+        )
+    assert fake_gitlab.requests == [], (
+        f"a container-registry record given {case} is refused before step 1, with no request to the instance or the "
+        "registry: a registry request carries its path, its query and the registry token only (DL-009, design.md D4)"
+    )
+
+
+@pytest.mark.parametrize("case", list(POSITIONAL_NO_VALUE_CASES), ids=list(POSITIONAL_NO_VALUE_CASES))
+def test_a_positional_name_given_no_value_is_refused(
+    case: str, monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any
+) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    certificate = registry.RestOperation(
+        operation_id=CERTIFICATE_OPERATION_ID,
+        method="DELETE",
+        path=CERTIFICATE_PATH,
+        positional_names=POSITIONAL_NAMES,
+    )
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[synthetic_family(name="synthetic", operations=[certificate])],
+    )
+    # Any request `send` would send is answered, so sending one fails this test on its oracle below rather than on the
+    # fake's unscripted-request error.
+    fake_gitlab.script_next()
+    transport = private_transport(transport_module=transport_module)
+
+    with pytest.raises(ValueError) as refusal:
+        registry.send(
+            transport=transport, operation_id=CERTIFICATE_OPERATION_ID, values=POSITIONAL_NO_VALUE_CASES[case]
+        )
+    message = str(refusal.value)
+    assert POSITIONAL_NAME_WRITTEN in message and POSITIONAL_NO_VALUE_TEXT in message, (
+        f"the refusal of the positional name given no value names {POSITIONAL_NAME_WRITTEN} and says it was given "
+        f"{POSITIONAL_NO_VALUE_TEXT!r}; got {message!r} (design.md D2, AC-3.3)"
+    )
+    assert fake_gitlab.requests == [], "a positional name given no value is refused with no request (design.md D2)"
+
+
+def test_a_positional_name_in_a_left_out_group_takes_no_value() -> None:
+    registry = gitlab_module(name="registry")
+    grouped = registry.RestOperation(
+        operation_id=GROUPED_CERTIFICATE_OPERATION_ID,
+        method="DELETE",
+        path=GROUPED_CERTIFICATE_PATH,
+        positional_names=POSITIONAL_NAMES,
+    )
+    written = {
+        case: registry.expand(operation=grouped, values=values) for case, values in GROUPED_CERTIFICATE_CASES.items()
+    }
+    assert written == GROUPED_CERTIFICATE_WRITTEN, (
+        "the places of a positional name are counted once the optional groups are written: `:id`, held only in a group "
+        "left out, takes no value, and given a list it fills each place of the group in path order (design.md D2, "
+        "AC-3.1)"
+    )
+
+
+@pytest.mark.parametrize("case", list(SCOPE_REFUSED_CASES), ids=list(SCOPE_REFUSED_CASES))
+def test_send_refuses_a_registry_scope_it_cannot_write(
+    case: str, monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any
+) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    token_scope, refusal_text = SCOPE_REFUSED_CASES[case]
+    record = registry.RestOperation(
+        operation_id=REGISTRY_DELETE_OPERATION_ID,
+        method="DELETE",
+        path=REGISTRY_DELETE_PATH,
+        token_scope=token_scope,
+    )
+    serve_registry_record(monkeypatch=monkeypatch, registry=registry, fake_gitlab=fake_gitlab, record=record)
+    transport = private_transport(transport_module=transport_module)
+
+    with pytest.raises(ValueError, match=re.escape(refusal_text)):
+        registry.send(
+            transport=transport,
+            operation_id=REGISTRY_DELETE_OPERATION_ID,
+            values=REGISTRY_DELETE_VALUES,
+            project=REGISTRY_PROJECT,
+        )
+    assert fake_gitlab.requests == [], (
+        f"a container-registry record whose scope cannot be written ({case}) is refused before step 1, with no request "
+        "to the instance or the registry (design.md D4, AC-5.2)"
     )

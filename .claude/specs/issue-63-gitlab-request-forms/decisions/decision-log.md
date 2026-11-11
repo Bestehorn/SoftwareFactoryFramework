@@ -80,3 +80,12 @@
 **Evidence:** src/payload/scripts/gitlab_api/registry.py `send`; evidence/green/wave-1.txt.
 **Supersedes:** none
 **Artifacts touched:** src/payload/scripts/gitlab_api/registry.py
+
+## DL-010 — 2026-11-11T19:28:01Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Answer the verifier's REFUTED (RF-1..RF-6, all test gaps) with tests only: F:package, T and G pin the step-2 host shapes, the missing username and the never-quoted `/jwt/auth` body; R pins `pages`' base and header refusals, DL-009's refusal and the four unexecuted refusal lines; no product file changes; a delta re-verification follows.
+**Driver:** evidence/verify/refutation-report.md RF-1..RF-6 (9 surviving mutants of 70).
+**Alternatives considered:** none (the code holds; only the proof was missing).
+**Evidence:** evidence/green/rework-1.txt (957 passed); each new test failed under its mutant (implementer reports).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_package.py, test_gitlab_api_transport.py, test_gitlab_api_container_registry.py, test_gitlab_api_registry.py

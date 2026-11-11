@@ -1,0 +1,39 @@
+# mutant f1-lookup-trailing-slash: AC-2.4: an endpoint is chosen by exact equality (trailing /)
+# edit src/payload/scripts/gitlab_api/registry.py: '        if (record.method, record.path) == endpoint:' -> '        if (record.method, record.path) == (endpoint[0], endpoint[1].rstrip("/")):'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_plan.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_plan.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [229 items]
+
+........................................................................ [ 31%]
+................F....................................................... [ 62%]
+........................................................................ [ 94%]
+.............                                                            [100%]
+================================== FAILURES ===================================
+___________________ test_only_a_declared_endpoint_is_chosen ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:323: in test_only_a_declared_endpoint_is_chosen
+    @given(
+            
+..\..\..\..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:348: in test_only_a_declared_endpoint_is_chosen
+    with pytest.raises(expected_exception=ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+E   Failing explicit example: test_only_a_declared_endpoint_is_chosen(
+E       method='POST',
+E       path='/projects/:id/issues/:issue_iid/award_emoji/',
+E   )
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_api_properties.py::test_only_a_declared_endpoint_is_chosen
+======================= 1 failed, 228 passed in 11.61s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 228 passed in 11.61s)

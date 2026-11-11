@@ -1,0 +1,32 @@
+# mutant f5-header-case-sensitive: AC-6.3/D5: a header name is matched ignoring case, stored under its declared spelling
+# edit src/payload/scripts/gitlab_api/commands/call.py: '        return next((header for header in declared if header.lower() == lowered), name)' -> '        return name'
+# sha256 before src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_software_supply_chain_security.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_software_supply_chain_security.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [145 items]
+
+........................................................................ [ 49%]
+.......................................F................................ [ 99%]
+.                                                                        [100%]
+================================== FAILURES ===================================
+____ test_an_undeclared_header_is_refused[declared-header-in-another-case] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2558: in test_an_undeclared_header_is_refused
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#set-status-of-an-external-control', '--path', 'external_control_id=3', '-f', 'status=pass', '--header', 'X-Gitlab-Timestamp=1700000000', '--header', 'X-Gitlab-Hmac-Sha256=ab12', '--header', 'x-gitlab-nonce=n1'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:666 software-supply-chain-security#set-status-of-an-external-control: "x-gitlab-nonce" given with --header is not documented; its path parameters: id, external_control_id; its attributes: status (body, scalar), X-Gitlab-Timestamp (header, scalar), X-Gitlab-Nonce (header, scalar), X-Gitlab-Hmac-Sha256 (header, scalar)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undeclared_header_is_refused[declared-header-in-another-case]
+======================== 1 failed, 144 passed in 9.32s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 144 passed in 9.32s)

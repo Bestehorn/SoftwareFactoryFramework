@@ -1,0 +1,31 @@
+# mutant sec-s3-gate-names-a-subcommand: UB-3/D6: the S3 import maps to None (no subcommand sends it)
+# edit src/payload/scripts/gitlab_api/commands/call.py: '        gitlab_dedicated.OP_IMPORT_FROM_S3: None,' -> '        gitlab_dedicated.OP_IMPORT_FROM_S3: "project import",'
+# sha256 before src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_gitlab_dedicated.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_gitlab_dedicated.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [124 items]
+
+........................................................................ [ 58%]
+............................F.......................                     [100%]
+================================== FAILURES ===================================
+________________________ test_the_s3_import_is_refused ________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2612: in test_the_s3_import_is_refused
+    assert any(OP_IMPORT_FROM_S3 in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+E   AssertionError: one log record names 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket' and ends ': no subcommand sends it': the gate refuses the S3 import, which writes into an existing project (issue #63 design.md D6); logged: ['call refuses the GitLab operation "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket": use the project import subcommand, which sends it']
+E   assert False
+E    +  where False = any(<generator object test_the_s3_import_is_refused.<locals>.<genexpr> at 0x000001DBED355460>)
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:666 call refuses the GitLab operation "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket": use the project import subcommand, which sends it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_the_s3_import_is_refused
+======================== 1 failed, 123 passed in 7.82s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 123 passed in 7.82s)

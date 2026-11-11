@@ -1,0 +1,32 @@
+# mutant sec-step2-empty-allowed: D4 step 2: an empty registry host is refused
+# edit src/payload/scripts/gitlab_api/container_registry.py: '    if not host or REFUSED_IN_HOST.search(string=host):' -> '    if REFUSED_IN_HOST.search(string=host):'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [58 items]
+
+.......................................................F..               [100%]
+================================== FAILURES ===================================
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-without-a-host] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1998: in test_no_registry_token_sends_nothing_to_the_registry
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+E   AssertionError: the requests of the steps up to the failing one (D4)
+E   assert [('GET', 'htt...ct%3Adelete')] == [('GET', 'htt...ojects/4242')]
+E     
+E     Left contains one more item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/jwt/auth?service=container_registry&scope=repository[39;49;00m[33m%[39;49;00m[33m3Agroup[39;49;00m[33m%2F[39;49;00m[33mproject[39;49;00m[33m%[39;49;00m[33m3Adelete[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:347 DELETE https:///v2/group/project/tags/reference/1a2b3c4 got no response: <urlopen error no host given>
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-without-a-host]
+======================== 1 failed, 57 passed in 5.52s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 57 passed in 5.52s)

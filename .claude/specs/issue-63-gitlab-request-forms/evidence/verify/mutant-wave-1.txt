@@ -1,0 +1,265 @@
+# mutant-wave-1: worktree at commit ce555f6 (wave 1); wave 1's IMPL files reverted: registry.py and transport.py to origin/main 6beeb77, container_registry.py removed; wave 1's Run line
+# reverted files vs ce555f6:
+ D src/payload/scripts/gitlab_api/container_registry.py
+M  src/payload/scripts/gitlab_api/registry.py
+M  src/payload/scripts/gitlab_api/transport.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [866 items]
+
+.....................................................F.................. [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 33%]
+........................................................................ [ 41%]
+.............................................FF.FFF.F................... [ 49%]
+........................................................................ [ 58%]
+........................................................................ [ 66%]
+........................................................................ [ 74%]
+...................F..F.F.F..F.F..F.F.F.F..F.F.F..F.F..F................ [ 83%]
+........................................................................ [ 91%]
+.......................FFF............................F................. [ 99%]
+..                                                                       [100%]
+================================== FAILURES ===================================
+_________________ test_a_job_token_logs_in_as_gitlab_ci_token _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:131: in test_a_job_token_logs_in_as_gitlab_ci_token
+    container_registry = gitlab_module(name="container_registry")
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_container_registry.py:118: in gitlab_module
+    assert source.is_file(), f"gitlab_api/{name}.py does not exist under {SCRIPTS_DIR}"
+E   AssertionError: gitlab_api/container_registry.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-63/tmp/verify/wt/src/payload/scripts/gitlab_api/container_registry.py').is_file
+_______________ test_lookup_chooses_an_endpoint_of_a_reference ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:990: in test_lookup_chooses_an_endpoint_of_a_reference
+    endpoint: registry.lookup(operation_id=EMOJI_OPERATION_ID, endpoint=endpoint) for endpoint in EMOJI_ENDPOINTS
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: lookup() got an unexpected keyword argument 'endpoint'
+__________ test_each_place_of_a_positional_name_takes_its_own_value ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1072: in test_each_place_of_a_positional_name_takes_its_own_value
+    certificate = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'positional_names'
+_________________ test_the_suffix_is_written_only_when_given __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1100: in test_the_suffix_is_written_only_when_given
+    assert registry.placeholders(path=ARCHIVE_PATH) == ARCHIVE_NAMED, (
+E   AssertionError: the `[.format]` suffix names the path parameter `format`, after `id`, so a call may give it (design.md D3, AC-4.1)
+E   assert ('id',) == ('id', 'format')
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mformat[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____________________ test_the_base_is_read_from_the_path _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1119: in test_the_base_is_read_from_the_path
+    read = {case: registry.base_of(path=path) for case, path in BASE_CASES.items()}
+                  ^^^^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'base_of'
+_________________ test_a_header_param_is_encoded_as_a_header __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1137: in test_a_header_param_is_encoded_as_a_header
+    params = (
+src\payload\test\test_gitlab_api_registry.py:1139: in <genexpr>
+    registry.Param(name=name, location=registry.Location.HEADER, required=True)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: type object 'Location' has no attribute 'HEADER'
+__________ test_send_fetches_the_registry_token_before_the_registry ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1171: in test_send_fetches_the_registry_token_before_the_registry
+    record = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'token_scope'
+____________ test_a_host_request_is_sent_outside_the_api[private] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1222: in test_a_host_request_is_sent_outside_the_api
+    response = client.request(method="GET", path=TOKEN_INFO_PATH, base=registry.Base.HOST)
+                                                                       ^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'Base'
+_____________ test_a_host_request_is_sent_outside_the_api[bearer] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1222: in test_a_host_request_is_sent_outside_the_api
+    response = client.request(method="GET", path=TOKEN_INFO_PATH, base=registry.Base.HOST)
+                                                                       ^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'Base'
+______________ test_a_host_request_is_sent_outside_the_api[job] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1222: in test_a_host_request_is_sent_outside_the_api
+    response = client.request(method="GET", path=TOKEN_INFO_PATH, base=registry.Base.HOST)
+                                                                       ^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'Base'
+_ test_the_registry_token_is_asked_for_with_basic_credentials[repository-delete-private-as-its-username] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1300: in test_the_registry_token_is_asked_for_with_basic_credentials
+    token = client.container_registry_token(login=login, scope=scope)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_token'
+_ test_the_registry_token_is_asked_for_with_basic_credentials[repository-delete-job-as-gitlab-ci-token] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1300: in test_the_registry_token_is_asked_for_with_basic_credentials
+    token = client.container_registry_token(login=login, scope=scope)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_token'
+_ test_the_registry_token_is_asked_for_with_basic_credentials[registry-catalog-private-as-its-username] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1300: in test_the_registry_token_is_asked_for_with_basic_credentials
+    token = client.container_registry_token(login=login, scope=scope)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_token'
+_ test_the_registry_token_is_asked_for_with_basic_credentials[registry-catalog-job-as-gitlab-ci-token] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1300: in test_the_registry_token_is_asked_for_with_basic_credentials
+    token = client.container_registry_token(login=login, scope=scope)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_token'
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-private] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_request'
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-bearer] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_request'
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-job] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_request'
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-private] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_request'
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-bearer] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_request'
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-job] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'container_registry_request'
+_____ test_a_request_header_is_sent_beside_the_transport_headers[private] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1445: in test_a_request_header_is_sent_beside_the_transport_headers
+    client.request(method="PATCH", path=EXTERNAL_CONTROL_PATH, json_body=EXTERNAL_CONTROL_BODY, headers=CONTROL_HEADERS)
+E   TypeError: Transport.request() got an unexpected keyword argument 'headers'
+_____ test_a_request_header_is_sent_beside_the_transport_headers[bearer] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1445: in test_a_request_header_is_sent_beside_the_transport_headers
+    client.request(method="PATCH", path=EXTERNAL_CONTROL_PATH, json_body=EXTERNAL_CONTROL_BODY, headers=CONTROL_HEADERS)
+E   TypeError: Transport.request() got an unexpected keyword argument 'headers'
+_______ test_a_request_header_is_sent_beside_the_transport_headers[job] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1445: in test_a_request_header_is_sent_beside_the_transport_headers
+    client.request(method="PATCH", path=EXTERNAL_CONTROL_PATH, json_body=EXTERNAL_CONTROL_BODY, headers=CONTROL_HEADERS)
+E   TypeError: Transport.request() got an unexpected keyword argument 'headers'
+___________________ test_only_a_declared_endpoint_is_chosen ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+  + Exception Group Traceback (most recent call last):
+  |   File "D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\test\test_gitlab_api_properties.py", line 323, in test_only_a_declared_endpoint_is_chosen
+  |     @given(
+  |     
+  |   File "D:\Code Workspace\CodingProjectSetupPrompt\venv\Lib\site-packages\hypothesis\core.py", line 1730, in _raise_to_user
+  |     raise the_error_hypothesis_found
+  | ExceptionGroup: Hypothesis found 2 distinct failures in explicit examples. (2 sub-exceptions)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\test\test_gitlab_api_properties.py", line 349, in test_only_a_declared_endpoint_is_chosen
+    |     registry.lookup(operation_id=ENDPOINT_OPERATION_ID, endpoint=(method, path))
+    |     ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    | TypeError: lookup() got an unexpected keyword argument 'endpoint'
+    | (note: 3 other explicit examples also failed with this error; use Verbosity.verbose to view)
+    | Failing explicit example: test_only_a_declared_endpoint_is_chosen(
+    |     method='POST',
+    |     path='/Projects/:id/issues/:issue_iid/award_emoji',
+    | )
+    +---------------- 2 ----------------
+    | Traceback (most recent call last):
+    |   File "D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\test\test_gitlab_api_properties.py", line 345, in test_only_a_declared_endpoint_is_chosen
+    |     chosen = registry.lookup(operation_id=ENDPOINT_OPERATION_ID, endpoint=(method, path))
+    | TypeError: lookup() got an unexpected keyword argument 'endpoint'
+    | Failing explicit example: test_only_a_declared_endpoint_is_chosen(
+    |     method='POST',
+    |     path='/projects/:id/merge_requests/:merge_request_iid/award_emoji',
+    | )
+    +------------------------------------
+_____________________ test_each_place_takes_its_own_value _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:353: in test_each_place_takes_its_own_value
+    @given(first=PLACE_VALUES, second=PLACE_VALUES)
+                   ^^^
+..\..\..\..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:360: in test_each_place_takes_its_own_value
+    operation = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'positional_names'
+E   Failing explicit example: test_each_place_takes_its_own_value(
+E       first='7',
+E       second='12345',
+E   )
+_________________ test_only_a_listed_format_reaches_the_path __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:377: in test_only_a_listed_format_reaches_the_path
+    @given(value=st.one_of(st.sampled_from(elements=ARCHIVE_FORMATS), st.text()))
+                   ^^^
+..\..\..\..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:386: in test_only_a_listed_format_reaches_the_path
+    operation = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'suffix_values'
+E   (note: 2 other explicit examples also failed with this error; use Verbosity.verbose to view)
+E   Failing explicit example: test_only_a_listed_format_reaches_the_path(
+E       value='',
+E   )
+__________ test_only_the_upload_module_path_holds_a_hyphenated_name ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1207: in test_only_the_upload_module_path_holds_a_hyphenated_name
+    assert not differing, differing
+E   AssertionError: {'DELETE /http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA} -> package#delete-ima...ojects/:id/repository/archive[.format] -> create#retrieve-file-archive-from-a-repository': (('id',), ('id', 'format'))}
+E   assert not {'DELETE /http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA} -> package#delete-ima...ojects/:id/repository/archive[.format] -> create#retrieve-file-archive-from-a-repository': (('id',), ('id', 'format'))}
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_job_token_logs_in_as_gitlab_ci_token
+FAILED src/payload/test/test_gitlab_api_registry.py::test_lookup_chooses_an_endpoint_of_a_reference
+FAILED src/payload/test/test_gitlab_api_registry.py::test_each_place_of_a_positional_name_takes_its_own_value
+FAILED src/payload/test/test_gitlab_api_registry.py::test_the_suffix_is_written_only_when_given
+FAILED src/payload/test/test_gitlab_api_registry.py::test_the_base_is_read_from_the_path
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_header_param_is_encoded_as_a_header
+FAILED src/payload/test/test_gitlab_api_registry.py::test_send_fetches_the_registry_token_before_the_registry
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_host_request_is_sent_outside_the_api[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_host_request_is_sent_outside_the_api[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_host_request_is_sent_outside_the_api[job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_the_registry_token_is_asked_for_with_basic_credentials[repository-delete-private-as-its-username]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_the_registry_token_is_asked_for_with_basic_credentials[repository-delete-job-as-gitlab-ci-token]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_the_registry_token_is_asked_for_with_basic_credentials[registry-catalog-private-as-its-username]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_the_registry_token_is_asked_for_with_basic_credentials[registry-catalog-job-as-gitlab-ci-token]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[job]
+FAILED test/test_gitlab_api_properties.py::test_only_a_declared_endpoint_is_chosen
+FAILED test/test_gitlab_api_properties.py::test_each_place_takes_its_own_value
+FAILED test/test_gitlab_api_properties.py::test_only_a_listed_format_reaches_the_path
+FAILED test/test_gitlab_wrapper_contract.py::test_only_the_upload_module_path_holds_a_hyphenated_name
+================= 27 failed, 839 passed in 169.33s (0:02:49) ==================
+exit=1

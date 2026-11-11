@@ -5,7 +5,13 @@ What is pinned (issue #63, ``design.md`` D4 and "Correctness Properties" AC-5.2)
 - under a ``job`` token, ``send`` logs in as ``gitlab-ci-token`` and asks GitLab nothing for the login: no
   ``GET /user`` (step 1); ``GET /projects/<project>`` carries the configured ``Job-token`` (step 2); the ``/jwt/auth``
   request carries ``Authorization: Basic`` of ``gitlab-ci-token:<token>`` as its only credential header (step 3); the
-  registry request carries ``Authorization: Bearer <registry token>`` alone (step 4), and ``send`` returns its answer.
+  registry request carries ``Authorization: Bearer <registry token>`` alone (step 4), and ``send`` returns its answer;
+- under a ``private`` token, a ``GET /user`` answer whose ``username`` is absent or not a string raises
+  ``GitLabAPIError`` with nothing sent after it (step 1, AC-5.3);
+- a ``/jwt/auth`` success answer that is not a JSON object, or whose ``token`` is not a non-empty string, raises
+  ``GitLabAPIError`` with nothing sent to the registry; neither its message nor its ``details``, any log record or
+  standard error holds that answer's body, the configured token or the Base64 of the login and the token (step 3,
+  AC-5.3, UB-2).
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, as ``test_gitlab_api_transport.py`` does, so a module not written
@@ -21,10 +27,11 @@ from __future__ import annotations
 import base64
 import importlib
 import importlib.util
+import logging
 import sys
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict
+from typing import Any, Dict, List, Mapping, Tuple
 
 import pytest
 
@@ -59,6 +66,8 @@ REGISTRY_TOKEN = "registry-token-for-the-test"  # pragma: allowlist secret
 FIXED_CLOCK_SECONDS = 1_000.0
 
 TOKEN_TYPE_JOB = "job"
+TOKEN_TYPE_PRIVATE = "private"
+PRIVATE_TOKEN = "private-token-for-the-test"  # pragma: allowlist secret
 # The login of a job token (lib/gitlab/auth.rb CI_JOB_USER; design.md D4 step 1, Sources).
 JOB_LOGIN = "gitlab-ci-token"
 
@@ -91,6 +100,31 @@ JWT_URL = "https://gitlab.example.com/jwt/auth?service=container_registry&scope=
 REGISTRY_URL = "https://registry.example.com/v2/group/project/tags/reference/1a2b3c4"
 # The answer the fake gives the registry request, returned by `send` as step 4's Response.
 REGISTRY_STATUS = 202
+PROJECT_ANSWER = {FIELD_ID: 1, FIELD_IMAGE_PREFIX: "registry.example.com/group/project"}
+
+HEADER_CONTENT_TYPE = "Content-Type"
+CONTENT_TYPE_JSON = "application/json"
+FIELD_NOTE = "note"
+
+# D4 step 1, "AC-5.3": a `GET /user` answer whose `username` is absent, or is not a string, gives no login.
+USER_ANSWERS_WITHOUT_A_LOGIN = [
+    pytest.param({FIELD_ID: 7}, id="no-username"),
+    pytest.param({FIELD_ID: 7, FIELD_USERNAME: 7}, id="a-username-that-is-not-a-string"),
+]
+
+# D4 step 3, "AC-5.3": a `/jwt/auth` success answer that is not a JSON object, or whose `token` is not a non-empty
+# string, is refused naming the URL and the field, never quoting its body, which may hold the registry token; the marker
+# stands for such a body. Each case: the answer's headers, then its body (text is sent verbatim).
+JWT_ANSWER_MARKER = "jwt-auth-answer-marker-for-the-container-registry-test"  # pragma: allowlist secret
+UNUSABLE_JWT_ANSWERS = [
+    pytest.param(
+        ((HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON),),
+        f"{{not JSON: {JWT_ANSWER_MARKER}",
+        id="claims-json-but-is-not-json",
+    ),
+    pytest.param((), [JWT_ANSWER_MARKER], id="a-json-array"),
+    pytest.param((), {FIELD_TOKEN: "", FIELD_NOTE: JWT_ANSWER_MARKER}, id="an-empty-token"),
+]
 
 
 def fixed_clock() -> float:
@@ -122,6 +156,18 @@ def gitlab_module(*, name: str) -> ModuleType:
 def credentials_sent(*, request: Any) -> Dict[str, str]:
     """Every credential header the recorded request carried, by lower-cased name."""
     return {name.lower(): value for name, value in request.headers.items() if name.lower() in CREDENTIAL_HEADER_NAMES}
+
+
+def sent(*, fake: Any) -> List[Tuple[str, str]]:
+    """``(method, URL)`` of every request the fake host recorded, in order."""
+    return [(request.method, request.url) for request in fake.requests]
+
+
+def leaks(*, reported: Mapping[str, str], withheld: Mapping[str, str]) -> List[str]:
+    """``<where> holds <what>`` for each text of ``reported`` holding a value of ``withheld``, sorted."""
+    return sorted(
+        f"{where} holds {what}" for where, text in reported.items() for what, value in withheld.items() if value in text
+    )
 
 
 # --- AC-5.2 a job token's login -------------------------------------------------------------------------------------
@@ -188,3 +234,97 @@ def test_a_job_token_logs_in_as_gitlab_ci_token(fake_gitlab: Any) -> None:
         "the configured token reaches no request off the configured origin (UB-2)"
     )
     assert response.status == REGISTRY_STATUS, "send returns the registry's answer (D4 step 4)"
+
+
+# --- AC-5.3 a login that cannot be read -----------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("user_answer", USER_ANSWERS_WITHOUT_A_LOGIN)
+def test_a_user_answer_without_a_username_sends_nothing_further(fake_gitlab: Any, user_answer: Dict[str, Any]) -> None:
+    container_registry = gitlab_module(name="container_registry")
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = transport.Transport(
+        host=HOST,
+        token=PRIVATE_TOKEN,
+        token_type=transport.TokenType(TOKEN_TYPE_PRIVATE),
+        sleep=refuse_sleep,
+        clock=fixed_clock,
+    )
+    fake_gitlab.script(method="GET", url=USER_URL, body=user_answer)
+    # The later steps are answered, so a login taken from this answer shows as a request after GET /user.
+    fake_gitlab.script(method="GET", url=PROJECT_URL, body=PROJECT_ANSWER)
+    fake_gitlab.script(method="GET", url=JWT_URL, body={FIELD_TOKEN: REGISTRY_TOKEN})
+    fake_gitlab.script(method=METHOD_DELETE, url=REGISTRY_URL, status=REGISTRY_STATUS)
+
+    with pytest.raises(errors.GitLabAPIError):
+        container_registry.send(
+            transport=client,
+            method=METHOD_DELETE,
+            path=REGISTRY_PATH,
+            query=(),
+            scope=SCOPE,
+            project=PROJECT,
+        )
+
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL)], (
+        "a GET /user answer without a string username raises before step 2, nothing sent after it (D4 step 1, AC-5.3)"
+    )
+
+
+# --- AC-5.3, UB-2 a registry token answer that is refused -----------------------------------------------------------
+
+
+@pytest.mark.parametrize(("headers", "body"), UNUSABLE_JWT_ANSWERS)
+def test_a_refused_registry_token_answer_is_never_quoted(
+    fake_gitlab: Any,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+    headers: Tuple[Tuple[str, str], ...],
+    body: Any,
+) -> None:
+    caplog.set_level(level=logging.DEBUG)
+    container_registry = gitlab_module(name="container_registry")
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = transport.Transport(
+        host=HOST,
+        token=TOKEN,
+        token_type=transport.TokenType(TOKEN_TYPE_JOB),
+        sleep=refuse_sleep,
+        clock=fixed_clock,
+    )
+    fake_gitlab.script(method="GET", url=PROJECT_URL, body=PROJECT_ANSWER)
+    fake_gitlab.script(method="GET", url=JWT_URL, headers=headers, body=body)
+    fake_gitlab.script(method=METHOD_DELETE, url=REGISTRY_URL, status=REGISTRY_STATUS)
+
+    with pytest.raises(errors.GitLabAPIError) as raised:
+        container_registry.send(
+            transport=client,
+            method=METHOD_DELETE,
+            path=REGISTRY_PATH,
+            query=(),
+            scope=SCOPE,
+            project=PROJECT,
+        )
+
+    assert sent(fake=fake_gitlab) == [("GET", PROJECT_URL), ("GET", JWT_URL)], (
+        "a refused /jwt/auth answer raises before step 4: nothing is sent to the registry (D4 step 3, AC-5.3)"
+    )
+    refusal = raised.value
+    reported = {
+        "the message": str(refusal),
+        "the details": str(refusal.details),
+        **{f"log record {index}": record.getMessage() for index, record in enumerate(caplog.records)},
+        "the captured log": caplog.text,
+        "standard error": capsys.readouterr().err,
+    }
+    login_and_token = base64.b64encode(s=f"{JOB_LOGIN}:{TOKEN}".encode(encoding="utf-8")).decode(encoding="ascii")
+    withheld = {
+        "the /jwt/auth answer's body": JWT_ANSWER_MARKER,
+        "the configured token": TOKEN,
+        "the Base64 of <login>:<token>": login_and_token,
+    }
+    assert leaks(reported=reported, withheld=withheld) == [], (
+        "the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)"
+    )
