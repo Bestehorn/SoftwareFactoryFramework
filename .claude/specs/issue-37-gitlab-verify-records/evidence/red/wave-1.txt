@@ -1,0 +1,851 @@
+# tasks: TEST-1 TEST-2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [120 items]
+
+FFFFFFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFF................... [ 60%]
+..............F.................................                         [100%]
+================================== FAILURES ===================================
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:826: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "verify.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: verify.PENDING is not the keys AC-1 keeps pending:
+E     not expected: ('DELETE', '/admin/ci/variables/:key')
+E     not expected: ('DELETE', '/admin/clusters/:cluster_id')
+E     not expected: ('DELETE', '/features/:name')
+E     not expected: ('DELETE', '/groups/:id/clusters/:cluster_id')
+E     not expected: ('DELETE', '/groups/:id/deploy_tokens/:token_id')
+E     not expected: ('DELETE', '/groups/:id/protected_environments/:name')
+E     not expected: ('DELETE', '/groups/:id/variables/:key')
+E     not expected: ('DELETE', '/projects/:id/artifacts')
+E     not expected: ('DELETE', '/projects/:id/cluster_agents/:agent_id')
+E     not expected: ('DELETE', '/projects/:id/cluster_agents/:agent_id/tokens/:token_id')
+E     not expected: ('DELETE', '/projects/:id/cluster_agents/:agent_id/url_configurations/:url_configuration_id')
+E     not expected: ('DELETE', '/projects/:id/clusters/:cluster_id')
+E     not expected: ('DELETE', '/projects/:id/deploy_keys/:key_id')
+E     not expected: ('DELETE', '/projects/:id/deploy_tokens/:token_id')
+E     not expected: ('DELETE', '/projects/:id/deployments/:deployment_id')
+E     not expected: ('DELETE', '/projects/:id/environments/:environment_id')
+E     not expected: ('DELETE', '/projects/:id/environments/review_apps')
+E     not expected: ('DELETE', '/projects/:id/feature_flags/:feature_flag_name')
+E     not expected: ('DELETE', '/projects/:id/feature_flags_user_lists/:iid')
+E     not expected: ('DELETE', '/projects/:id/freeze_periods/:freeze_period_id')
+E     not expected: ('DELETE', '/projects/:id/jobs/:job_id/artifacts')
+E     not expected: ('DELETE', '/projects/:id/pipeline_schedules/:pipeline_schedule_id')
+E     not expected: ('DELETE', '/projects/:id/pipeline_schedules/:pipeline_schedule_id/variables/:key')
+E     not expected: ('DELETE', '/projects/:id/pipelines/:pipeline_id')
+E     not expected: ('DELETE', '/projects/:id/protected_environments/:name')
+E     not expected: ('DELETE', '/projects/:id/releases/:tag_name')
+E     not expected: ('DELETE', '/projects/:id/releases/:tag_name/assets/links/:link_id')
+E     not expected: ('DELETE', '/projects/:id/runners/:runner_id')
+E     not expected: ('DELETE', '/projects/:id/triggers/:trigger_id')
+E     not expected: ('DELETE', '/projects/:id/variables/:key')
+E     not expected: ('DELETE', '/runner_controllers/:id')
+E     not expected: ('DELETE', '/runner_controllers/:id/scopes/instance')
+E     not expected: ('DELETE', '/runner_controllers/:id/scopes/runners/:runner_id')
+E     not expected: ('DELETE', '/runner_controllers/:id/tokens/:token_id')
+E     not expected: ('DELETE', '/runners')
+E     not expected: ('DELETE', '/runners/:id')
+E     not expected: ('GET', '/admin/ci/variables')
+E     not expected: ('GET', '/admin/ci/variables/:key')
+E     not expected: ('GET', '/admin/clusters')
+E     not expected: ('GET', '/admin/clusters/:cluster_id')
+E     not expected: ('GET', '/deploy_keys')
+E     not expected: ('GET', '/deploy_tokens')
+E     not expected: ('GET', '/discover-cert-based-clusters')
+E     not expected: ('GET', '/features')
+E     not expected: ('GET', '/features/definitions')
+E     not expected: ('GET', '/groups/:id/clusters')
+E     not expected: ('GET', '/groups/:id/clusters/:cluster_id')
+E     not expected: ('GET', '/groups/:id/deploy_tokens')
+E     not expected: ('GET', '/groups/:id/deploy_tokens/:token_id')
+E     not expected: ('GET', '/groups/:id/protected_environments')
+E     not expected: ('GET', '/groups/:id/protected_environments/:name')
+E     not expected: ('GET', '/groups/:id/releases')
+E     not expected: ('GET', '/groups/:id/runners')
+E     not expected: ('GET', '/groups/:id/variables')
+E     not expected: ('GET', '/groups/:id/variables/:key')
+E     not expected: ('GET', '/job')
+E     not expected: ('GET', '/job/allowed_agents')
+E     not expected: ('GET', '/metadata')
+E     not expected: ('GET', '/pipelines')
+E     not expected: ('GET', '/projects/:id/ci/lint')
+E     not expected: ('GET', '/projects/:id/cluster_agents')
+E     not expected: ('GET', '/projects/:id/cluster_agents/:agent_id')
+E     not expected: ('GET', '/projects/:id/cluster_agents/:agent_id/tokens')
+E     not expected: ('GET', '/projects/:id/cluster_agents/:agent_id/tokens/:token_id')
+E     not expected: ('GET', '/projects/:id/cluster_agents/:agent_id/url_configurations')
+E     not expected: ('GET', '/projects/:id/cluster_agents/:agent_id/url_configurations/:url_configuration_id')
+E     not expected: ('GET', '/projects/:id/clusters')
+E     not expected: ('GET', '/projects/:id/clusters/:cluster_id')
+E     not expected: ('GET', '/projects/:id/deploy_keys')
+E     not expected: ('GET', '/projects/:id/deploy_keys/:key_id')
+E     not expected: ('GET', '/projects/:id/deploy_tokens')
+E     not expected: ('GET', '/projects/:id/deploy_tokens/:token_id')
+E     not expected: ('GET', '/projects/:id/deployments')
+E     not expected: ('GET', '/projects/:id/deployments/:deployment_id')
+E     not expected: ('GET', '/projects/:id/deployments/:deployment_id/merge_requests')
+E     not expected: ('GET', '/projects/:id/environments')
+E     not expected: ('GET', '/projects/:id/environments/:environment_id')
+E     not expected: ('GET', '/projects/:id/feature_flags')
+E     not expected: ('GET', '/projects/:id/feature_flags/:feature_flag_name')
+E     not expected: ('GET', '/projects/:id/feature_flags_settings')
+E     not expected: ('GET', '/projects/:id/feature_flags_user_lists')
+E     not expected: ('GET', '/projects/:id/feature_flags_user_lists/:iid')
+E     not expected: ('GET', '/projects/:id/freeze_periods')
+E     not expected: ('GET', '/projects/:id/freeze_periods/:freeze_period_id')
+E     not expected: ('GET', '/projects/:id/jobs')
+E     not expected: ('GET', '/projects/:id/jobs/:job_id')
+E     not expected: ('GET', '/projects/:id/jobs/:job_id/artifacts')
+E     not expected: ('GET', '/projects/:id/jobs/:job_id/artifacts/tree')
+E     not expected: ('GET', '/projects/:id/jobs/artifacts/:ref_name/download')
+E     not expected: ('GET', '/projects/:id/merge_trains')
+E     not expected: ('GET', '/projects/:id/merge_trains/:target_branch')
+E     not expected: ('GET', '/projects/:id/merge_trains/merge_requests/:merge_request_iid')
+E     not expected: ('GET', '/projects/:id/pipeline_schedules')
+E     not expected: ('GET', '/projects/:id/pipeline_schedules/:pipeline_schedule_id')
+E     not expected: ('GET', '/projects/:id/pipeline_schedules/:pipeline_schedule_id/pipelines')
+E     not expected: ('GET', '/projects/:id/pipeline_schedules/:pipeline_schedule_id/variables/:key')
+E     not expected: ('GET', '/projects/:id/pipelines/:pipeline_id/test_report')
+E     not expected: ('GET', '/projects/:id/pipelines/:pipeline_id/test_report_summary')
+E     not expected: ('GET', '/projects/:id/pipelines/:pipeline_id/trigger_jobs')
+E     not expected: ('GET', '/projects/:id/pipelines/:pipeline_id/variables')
+E     not expected: ('GET', '/projects/:id/pipelines/latest')
+E     not expected: ('GET', '/projects/:id/protected_environments')
+E     not expected: ('GET', '/projects/:id/protected_environments/:name')
+E     not expected: ('GET', '/projects/:id/releases')
+E     not expected: ('GET', '/projects/:id/releases/:tag_name')
+E     not expected: ('GET', '/projects/:id/releases/:tag_name/assets/links')
+E     not expected: ('GET', '/projects/:id/releases/:tag_name/assets/links/:link_id')
+E     not expected: ('GET', '/projects/:id/releases/:tag_name/downloads/:direct_asset_path')
+E     not expected: ('GET', '/projects/:id/releases/permalink/latest')
+E     not expected: ('GET', '/projects/:id/resource_groups')
+E     not expected: ('GET', '/projects/:id/resource_groups/:key')
+E     not expected: ('GET', '/projects/:id/resource_groups/:key/current_job')
+E     not expected: ('GET', '/projects/:id/resource_groups/:key/upcoming_jobs')
+E     not expected: ('GET', '/projects/:id/runners')
+E     not expected: ('GET', '/projects/:id/triggers')
+E     not expected: ('GET', '/projects/:id/triggers/:trigger_id')
+E     not expected: ('GET', '/projects/:id/variables')
+E     not expected: ('GET', '/projects/:id/variables/:key')
+E     not expected: ('GET', '/runner_controllers')
+E     not expected: ('GET', '/runner_controllers/:id')
+E     not expected: ('GET', '/runner_controllers/:id/scopes')
+E     not expected: ('GET', '/runner_controllers/:id/tokens')
+E     not expected: ('GET', '/runner_controllers/:id/tokens/:token_id')
+E     not expected: ('GET', '/runners')
+E     not expected: ('GET', '/runners/:id')
+E     not expected: ('GET', '/runners/:id/jobs')
+E     not expected: ('GET', '/runners/:id/managers')
+E     not expected: ('GET', '/runners/all')
+E     not expected: ('GET', '/runners/router/discovery')
+E     not expected: ('GET', '/templates/gitlab_ci_ymls')
+E     not expected: ('GET', '/templates/gitlab_ci_ymls/:key')
+E     not expected: ('GET', '/users/:id_or_username/project_deploy_keys')
+E     not expected: ('POST', '/admin/ci/variables')
+E     not expected: ('POST', '/admin/clusters/add')
+E     not expected: ('POST', '/deploy_keys')
+E     not expected: ('POST', '/features/:name')
+E     not expected: ('POST', '/features/my_user_feature')
+E     not expected: ('POST', '/groups/:id/clusters/user')
+E     not expected: ('POST', '/groups/:id/deploy_tokens')
+E     not expected: ('POST', '/groups/:id/protected_environments')
+E     not expected: ('POST', '/groups/:id/runners/reset_registration_token')
+E     not expected: ('POST', '/groups/:id/variables')
+E     not expected: ('POST', '/job/test_balancing/initialize')
+E     not expected: ('POST', '/job/test_balancing/request')
+E     not expected: ('POST', '/projects/:id/ci/lint')
+E     not expected: ('POST', '/projects/:id/cluster_agents')
+E     not expected: ('POST', '/projects/:id/cluster_agents/:agent_id/tokens')
+E     not expected: ('POST', '/projects/:id/cluster_agents/:agent_id/url_configurations')
+E     not expected: ('POST', '/projects/:id/clusters/user')
+E     not expected: ('POST', '/projects/:id/deploy_keys')
+E     not expected: ('POST', '/projects/:id/deploy_keys/:key_id/enable')
+E     not expected: ('POST', '/projects/:id/deploy_tokens')
+E     not expected: ('POST', '/projects/:id/deployments')
+E     not expected: ('POST', '/projects/:id/deployments/:deployment_id/approval')
+E     not expected: ('POST', '/projects/:id/environments')
+E     not expected: ('POST', '/projects/:id/environments/:environment_id/stop')
+E     not expected: ('POST', '/projects/:id/environments/stop_stale')
+E     not expected: ('POST', '/projects/:id/feature_flags')
+E     not expected: ('POST', '/projects/:id/feature_flags_user_lists')
+E     not expected: ('POST', '/projects/:id/freeze_periods')
+E     not expected: ('POST', '/projects/:id/jobs/:job_id/artifacts/keep')
+E     not expected: ('POST', '/projects/:id/jobs/:job_id/cancel')
+E     not expected: ('POST', '/projects/:id/jobs/:job_id/erase')
+E     not expected: ('POST', '/projects/:id/jobs/:job_id/play')
+E     not expected: ('POST', '/projects/:id/jobs/:job_id/retry')
+E     not expected: ('POST', '/projects/:id/pipeline')
+E     not expected: ('POST', '/projects/:id/pipeline_schedules')
+E     not expected: ('POST', '/projects/:id/pipeline_schedules/:pipeline_schedule_id/play')
+E     not expected: ('POST', '/projects/:id/pipeline_schedules/:pipeline_schedule_id/take_ownership')
+E     not expected: ('POST', '/projects/:id/pipeline_schedules/:pipeline_schedule_id/variables')
+E     not expected: ('POST', '/projects/:id/pipelines/:pipeline_id/cancel')
+E     not expected: ('POST', '/projects/:id/pipelines/:pipeline_id/retry')
+E     not expected: ('POST', '/projects/:id/protected_environments')
+E     not expected: ('POST', '/projects/:id/releases')
+E     not expected: ('POST', '/projects/:id/releases/:tag_name/assets/links')
+E     not expected: ('POST', '/projects/:id/releases/:tag_name/evidence')
+E     not expected: ('POST', '/projects/:id/runners')
+E     not expected: ('POST', '/projects/:id/runners/reset_registration_token')
+E     not expected: ('POST', '/projects/:id/trigger/pipeline')
+E     not expected: ('POST', '/projects/:id/triggers')
+E     not expected: ('POST', '/projects/:id/variables')
+E     not expected: ('POST', '/runner_controllers')
+E     not expected: ('POST', '/runner_controllers/:id/scopes/instance')
+E     not expected: ('POST', '/runner_controllers/:id/scopes/runners/:runner_id')
+E     not expected: ('POST', '/runner_controllers/:id/tokens')
+E     not expected: ('POST', '/runner_controllers/:id/tokens/:token_id/rotate')
+E     not expected: ('POST', '/runners')
+E     not expected: ('POST', '/runners/:id/reset_authentication_token')
+E     not expected: ('POST', '/runners/reset_authentication_token')
+E     not expected: ('POST', '/runners/reset_registration_token')
+E     not expected: ('POST', '/runners/verify')
+E     not expected: ('PUT', '/admin/ci/variables/:key')
+E     not expected: ('PUT', '/admin/clusters/:cluster_id')
+E     not expected: ('PUT', '/groups/:id/clusters/:cluster_id')
+E     not expected: ('PUT', '/groups/:id/protected_environments/:name')
+E     not expected: ('PUT', '/groups/:id/variables/:key')
+E     not expected: ('PUT', '/projects/:id/clusters/:cluster_id')
+E     not expected: ('PUT', '/projects/:id/deploy_keys/:key_id')
+E     not expected: ('PUT', '/projects/:id/deployments/:deployment_id')
+E     not expected: ('PUT', '/projects/:id/environments/:environments_id')
+E     not expected: ('PUT', '/projects/:id/feature_flags/:feature_flag_name')
+E     not expected: ('PUT', '/projects/:id/feature_flags_settings')
+E     not expected: ('PUT', '/projects/:id/feature_flags_user_lists/:iid')
+E     not expected: ('PUT', '/projects/:id/freeze_periods/:freeze_period_id')
+E     not expected: ('PUT', '/projects/:id/pipeline_schedules/:pipeline_schedule_id')
+E     not expected: ('PUT', '/projects/:id/pipeline_schedules/:pipeline_schedule_id/variables/:key')
+E     not expected: ('PUT', '/projects/:id/pipelines/:pipeline_id/metadata')
+E     not expected: ('PUT', '/projects/:id/protected_environments/:name')
+E     not expected: ('PUT', '/projects/:id/releases/:tag_name')
+E     not expected: ('PUT', '/projects/:id/releases/:tag_name/assets/links/:link_id')
+E     not expected: ('PUT', '/projects/:id/resource_groups/:key')
+E     not expected: ('PUT', '/projects/:id/triggers/:trigger_id')
+E     not expected: ('PUT', '/projects/:id/variables/:key')
+E     not expected: ('PUT', '/runner_controllers/:id')
+E     not expected: ('PUT', '/runners/:id')
+E   assert frozenset({('...:name'), ...}) == frozenset({('...rsion'), ...})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/features/:name[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/environments/review_apps[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/cluster_agents/:agent_id/url_configurations[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:849: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the Params that are not Kind.SCALAR are not the sections' (AC-3):\n" + (
+E   AssertionError: the Params that are not Kind.SCALAR are not the sections' (AC-3):
+E     missing: 'verify#add-a-cluster-to-a-project'
+E     missing: 'verify#create-a-feature-flag'
+E     missing: 'verify#create-a-group-cluster'
+E     missing: 'verify#create-a-group-deploy-token'
+E     missing: 'verify#create-a-new-pipeline'
+E     missing: 'verify#create-a-new-pipeline-schedule'
+E     missing: 'verify#create-a-project-deploy-token'
+E     missing: 'verify#create-a-release'
+E     missing: 'verify#create-a-runner'
+E     missing: 'verify#create-an-instance-cluster'
+E     missing: 'verify#delete-a-group-variable'
+E     missing: 'verify#delete-a-variable'
+E     missing: 'verify#initialize-test-balancing-for-a-parallel-job'
+E     missing: 'verify#list-all-available-runners'
+E     missing: 'verify#list-all-jobs-for-a-project'
+E     missing: 'verify#list-all-merge-requests-associated-with-a-deployment'
+E     missing: 'verify#list-all-of-a-groups-runners'
+E     missing: 'verify#list-all-of-a-projects-runners'
+E     missing: 'verify#list-all-runners'
+E     missing: 'verify#list-all-trigger-jobs-by-pipeline'
+E     missing: 'verify#protect-a-single-environment'
+E     missing: 'verify#protect-a-single-environment-1'
+E     missing: 'verify#retrieve-a-single-variable'
+E     missing: 'verify#retrieve-details-of-a-group-variable'
+E     missing: 'verify#retry-a-job'
+E     missing: 'verify#run-a-job'
+E     missing: 'verify#trigger-a-pipeline-with-a-token'
+E     missing: 'verify#update-a-cluster-in-a-project'
+E     missing: 'verify#update-a-feature-flag'
+E     missing: 'verify#update-a-group-cluster'
+E     missing: 'verify#update-a-group-variable'
+E     missing: 'verify#update-a-pipeline-schedule'
+E     missing: 'verify#update-a-protected-environment'
+E     missing: 'verify#update-a-protected-environment-1'
+E     missing: 'verify#update-a-release'
+E     missing: 'verify#update-a-variable'
+E     missing: 'verify#update-an-instance-cluster'
+E     missing: 'verify#update-runners-details'
+E   assert {'verify#list...pe': 'ARRAY'}} == {'verify#add-...'ARRAY'}, ...}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 38 more items:
+E     [0m{[33m'[39;49;00m[33mverify#add-a-cluster-to-a-project[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mplatform_kubernetes_attributes[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mHASH[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mverify#create-a-feature-flag[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mstrategies[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY_OF_HASHES[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mv...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:876: in test_only_the_list_records_are_paged
+    assert paged == expected, "the paged records are not the sections' lists (AC-4):\n" + mapping_difference(
+E   AssertionError: the paged records are not the sections' lists (AC-4):
+E     missing: 'verify#list-all-agent-tokens'
+E     missing: 'verify#list-all-agents'
+E     missing: 'verify#list-all-available-runners'
+E     missing: 'verify#list-all-cicd-templates'
+E     missing: 'verify#list-all-clusters-in-a-project'
+E     missing: 'verify#list-all-deploy-keys'
+E     missing: 'verify#list-all-deploy-tokens'
+E     missing: 'verify#list-all-environments'
+E     missing: 'verify#list-all-feature-flag-definitions'
+E     missing: 'verify#list-all-feature-flag-user-lists-for-a-project'
+E     missing: 'verify#list-all-feature-flags'
+E     missing: 'verify#list-all-files-in-the-artifacts-archive'
+E     missing: 'verify#list-all-group-level-protected-environments'
+E     missing: 'verify#list-all-group-variables'
+E     missing: 'verify#list-all-instance-variables'
+E     missing: 'verify#list-all-jobs-for-a-project'
+E     missing: 'verify#list-all-jobs-processed-by-a-runner'
+E     missing: 'verify#list-all-merge-requests-associated-with-a-deployment'
+E     missing: 'verify#list-all-merge-requests-in-a-merge-train'
+E     missing: 'verify#list-all-merge-trains-for-a-project'
+E     missing: 'verify#list-all-of-a-groups-runners'
+E     missing: 'verify#list-all-of-a-projects-runners'
+E     missing: 'verify#list-all-pipeline-schedules'
+E     missing: 'verify#list-all-pipelines-triggered-by-a-pipeline-schedule'
+E     missing: 'verify#list-all-project-deployments'
+E     missing: 'verify#list-all-release-links'
+E     missing: 'verify#list-all-releases-in-a-group'
+E     missing: 'verify#list-all-resource-groups'
+E     missing: 'verify#list-all-runner-controller-tokens'
+E     missing: 'verify#list-all-runner-controllers'
+E     missing: 'verify#list-all-runners'
+E     missing: 'verify#list-all-runners-managers'
+E     missing: 'verify#list-all-trigger-jobs-by-pipeline'
+E     missing: 'verify#list-all-url-configurations'
+E     missing: 'verify#list-deploy-keys-for-project'
+E     missing: 'verify#list-feature-flags-for-a-project'
+E     missing: 'verify#list-freeze-periods'
+E     missing: 'verify#list-group-clusters'
+E     missing: 'verify#list-group-deploy-tokens'
+E     missing: 'verify#list-instance-clusters'
+E     missing: 'verify#list-pipelines'
+E     missing: 'verify#list-project-deploy-keys-for-user'
+E     missing: 'verify#list-project-deploy-tokens'
+E     missing: 'verify#list-project-trigger-tokens'
+E     missing: 'verify#list-project-variables'
+E     missing: 'verify#list-protected-environments'
+E     missing: 'verify#list-releases'
+E     missing: 'verify#list-upcoming-jobs-for-a-specific-resource-group'
+E   assert {'verify#list...'per_page'}))} == {'verify#list...enset()), ...}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Right contains 48 more items:
+E     [0m{[33m'[39;49;00m[33mverify#list-all-agent-tokens[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m, [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mpage[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mper_page[39;49;00m[33m'[39;49;00m}))}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mverify#list-all-agents[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m, [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mpage[39;49;...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_list_record_prints_every_page[list-all-group-level-protected-environments] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-group-level-protected-environments', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-group-level-protected-environments': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_page[list-all-agent-tokens] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-agent-tokens', '--path', 'id=101', '--path', 'agent_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-agent-tokens': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-all-group-variables] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-group-variables', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-group-variables': no family module and no graphql_only record declares it
+____________ test_a_list_record_prints_every_page[list-all-agents] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-agents', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-agents': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-all-instance-variables] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-instance-variables'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-instance-variables': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-all-available-runners] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-available-runners'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-available-runners': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-all-jobs-for-a-project] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-jobs-for-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-jobs-for-a-project': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-all-cicd-templates] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-cicd-templates'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-cicd-templates': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[list-all-jobs-processed-by-a-runner] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-jobs-processed-by-a-runner', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-jobs-processed-by-a-runner': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[list-all-clusters-in-a-project] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-clusters-in-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-clusters-in-a-project': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-merge-requests-associated-with-a-deployment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-merge-requests-associated-with-a-deployment', '--path', 'id=101', '--path', 'deployment_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-merge-requests-associated-with-a-deployment': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_page[list-all-deploy-keys] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-deploy-keys'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-deploy-keys': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-merge-requests-in-a-merge-train] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-merge-requests-in-a-merge-train', '--path', 'id=101', '--path', 'target_branch=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-merge-requests-in-a-merge-train': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-all-deploy-tokens] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-deploy-tokens'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-deploy-tokens': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[list-all-merge-trains-for-a-project] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-merge-trains-for-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-merge-trains-for-a-project': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_page[list-all-environments] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-environments', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-environments': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[list-all-of-a-groups-runners] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-of-a-groups-runners', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-of-a-groups-runners': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-feature-flag-definitions] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-feature-flag-definitions'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-feature-flag-definitions': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[list-all-of-a-projects-runners] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-of-a-projects-runners', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-of-a-projects-runners': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-feature-flag-user-lists-for-a-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-feature-flag-user-lists-for-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-feature-flag-user-lists-for-a-project': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-all-feature-flags] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-feature-flags'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-feature-flags': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-all-pipeline-schedules] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-pipeline-schedules', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-pipeline-schedules': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-files-in-the-artifacts-archive] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-files-in-the-artifacts-archive', '--path', 'id=101', '--path', 'job_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-files-in-the-artifacts-archive': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-pipelines-triggered-by-a-pipeline-schedule] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-pipelines-triggered-by-a-pipeline-schedule', '--path', 'id=101', '--path', 'pipeline_schedule_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-pipelines-triggered-by-a-pipeline-schedule': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[list-all-releases-in-a-group] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-releases-in-a-group', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-releases-in-a-group': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[list-all-project-deployments] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-project-deployments', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-project-deployments': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-all-resource-groups] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-resource-groups', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-resource-groups': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-all-release-links] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-release-links', '--path', 'id=101', '--path', 'tag_name=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-release-links': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-group-deploy-tokens] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-group-deploy-tokens', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-group-deploy-tokens': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-runner-controller-tokens] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-runner-controller-tokens', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-runner-controller-tokens': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-all-runner-controllers] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-runner-controllers'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-runner-controllers': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-instance-clusters] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-instance-clusters'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-instance-clusters': no family module and no graphql_only record declares it
+____________ test_a_list_record_prints_every_page[list-pipelines] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-pipelines'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-pipelines': no family module and no graphql_only record declares it
+___________ test_a_list_record_prints_every_page[list-all-runners] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-runners'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-runners': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-project-deploy-keys-for-user] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-project-deploy-keys-for-user', '--path', 'id_or_username=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-project-deploy-keys-for-user': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-all-runners-managers] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-runners-managers', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-runners-managers': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-project-deploy-tokens] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-project-deploy-tokens', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-project-deploy-tokens': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-trigger-jobs-by-pipeline] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-trigger-jobs-by-pipeline', '--path', 'id=101', '--path', 'pipeline_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-trigger-jobs-by-pipeline': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-all-url-configurations] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-all-url-configurations', '--path', 'id=101', '--path', 'agent_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-all-url-configurations': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-project-trigger-tokens] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-project-trigger-tokens', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-project-trigger-tokens': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[list-deploy-keys-for-project] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-deploy-keys-for-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-deploy-keys-for-project': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-project-variables] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-project-variables', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-project-variables': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-feature-flags-for-a-project] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-feature-flags-for-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-feature-flags-for-a-project': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-protected-environments] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-protected-environments', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-protected-environments': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_page[list-freeze-periods] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-freeze-periods', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-freeze-periods': no family module and no graphql_only record declares it
+_____________ test_a_list_record_prints_every_page[list-releases] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-releases', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-releases': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_page[list-group-clusters] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-group-clusters', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-group-clusters': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-upcoming-jobs-for-a-specific-resource-group] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_verify.py:898: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['verify#list-upcoming-jobs-for-a-specific-resource-group', '--path', 'id=101', '--path', 'key=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#list-upcoming-jobs-for-a-specific-resource-group': no family module and no graphql_only record declares it
+_ test_a_body_that_is_not_json_is_written_unchanged[artifacts-after-a-redirect] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-37\src\payload\test\test_gitlab_api_call.py:1165: in test_a_body_that_is_not_json_is_written_unchanged
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['verify#download-job-artifacts-by-job-id', '--path', 'job_id=3001'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'verify#download-job-artifacts-by-job-id': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_verify.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_verify.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_verify.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-group-level-protected-environments]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-agent-tokens]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-group-variables]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-agents]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-instance-variables]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-available-runners]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-jobs-for-a-project]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-cicd-templates]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-jobs-processed-by-a-runner]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-clusters-in-a-project]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-merge-requests-associated-with-a-deployment]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-deploy-keys]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-merge-requests-in-a-merge-train]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-deploy-tokens]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-merge-trains-for-a-project]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-environments]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-of-a-groups-runners]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-feature-flag-definitions]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-of-a-projects-runners]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-feature-flag-user-lists-for-a-project]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-feature-flags]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-pipeline-schedules]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-files-in-the-artifacts-archive]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-pipelines-triggered-by-a-pipeline-schedule]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-releases-in-a-group]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-project-deployments]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-resource-groups]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-release-links]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-group-deploy-tokens]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-runner-controller-tokens]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-runner-controllers]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-instance-clusters]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-pipelines]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-runners]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-project-deploy-keys-for-user]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-runners-managers]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-project-deploy-tokens]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-trigger-jobs-by-pipeline]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-all-url-configurations]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-project-trigger-tokens]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-deploy-keys-for-project]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-project-variables]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-feature-flags-for-a-project]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-protected-environments]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-freeze-periods]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-releases]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-group-clusters]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_list_record_prints_every_page[list-upcoming-jobs-for-a-specific-resource-group]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[artifacts-after-a-redirect]
+======================= 52 failed, 68 passed in 10.93s ========================
+exit=1
