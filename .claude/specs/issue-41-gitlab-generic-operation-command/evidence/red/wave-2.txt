@@ -1,0 +1,699 @@
+# tasks: 2.1 2.2 2.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_call_properties.py test/test_gitlab_wrapper_contract.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [175 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFF.FFF.FFFF.FFF.F....... [ 41%]
+...............F.F...................................................... [ 82%]
+...............................                                          [100%]
+================================== FAILURES ===================================
+_____ test_a_gated_operation_names_its_subcommand[merge-a-merge-request] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:611: in test_a_gated_operation_names_its_subcommand
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_____________ test_an_attribute_carries_its_kind[file-multipart] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-upload-a-file', '--file', 'file=<upload>', '-f', 'title=T', '-F', 'labels=["a", "b"]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+________ test_a_gated_operation_names_its_subcommand[create-an-issue] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:611: in test_a_gated_operation_names_its_subcommand
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+________________ test_a_field_that_is_not_json_is_refused[nan] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:930: in test_a_field_that_is_not_json_is_refused
+    assert USAGE_PREFIX in captured.err and FIELD_OPTION_NAME in captured.err, (
+E   AssertionError: argparse's usage message names the option -F/--field (design.md D2); stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert ('usage:' in "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" and '-F/--field' in "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n")
+E    +  where "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" = CaptureResult(out='', err="usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n").err
+E    +  and   "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" = CaptureResult(out='', err="usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n").err
+_____________ test_a_field_that_is_not_json_is_refused[infinity] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:930: in test_a_field_that_is_not_json_is_refused
+    assert USAGE_PREFIX in captured.err and FIELD_OPTION_NAME in captured.err, (
+E   AssertionError: argparse's usage message names the option -F/--field (design.md D2); stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert ('usage:' in "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" and '-F/--field' in "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n")
+E    +  where "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" = CaptureResult(out='', err="usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n").err
+E    +  and   "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" = CaptureResult(out='', err="usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n").err
+________________ test_an_operation_call_sends_its_record[get] _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: in test_an_operation_call_sends_its_record
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+__________ test_a_field_that_is_not_json_is_refused[minus-infinity] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:930: in test_a_field_that_is_not_json_is_refused
+    assert USAGE_PREFIX in captured.err and FIELD_OPTION_NAME in captured.err, (
+E   AssertionError: argparse's usage message names the option -F/--field (design.md D2); stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert ('usage:' in "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" and '-F/--field' in "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n")
+E    +  where "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" = CaptureResult(out='', err="usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n").err
+E    +  and   "usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n" = CaptureResult(out='', err="usage: gitlab_wrapper.py [-h] subcommand ...\ngitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)\n").err
+_____ test_an_operation_call_sends_its_record[delete-one-encoded-segment] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: in test_an_operation_call_sends_its_record
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#delete-repository-branch', '--path', 'branch=feature/x'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+______ test_a_list_prints_every_page_as_one_array[offset-by-x-next-page] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1012: in test_a_list_prints_every_page_as_one_array
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-labels'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+___________ test_an_operation_call_sends_its_record[put-json-body] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: in test_an_operation_call_sends_its_record
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#update-an-issue', '--path', 'issue_iid=5', '-f', 'title=T', '-F', 'assignee_ids=[1, 2]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+______ test_an_operation_call_sends_its_record[query-in-the-order-given] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: in test_an_operation_call_sends_its_record
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-issues', '--query', 'state=opened', '--query', 'assignee_username=a', '--query', 'assignee_username=b', '--query', 'iids[]=3'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_______ test_a_list_prints_every_page_as_one_array[keyset-by-link-next] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1012: in test_a_list_prints_every_page_as_one_array
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-keyset-issues'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_____________ test_an_operation_call_sends_its_record[form-body] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: in test_an_operation_call_sends_its_record
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-create-a-form-record', '-f', 'title=T', '-F', 'labels=["a", "b"]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+______ test_a_json_or_empty_body_prints_as_documented[json-with-charset] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1066: in test_a_json_or_empty_body_prints_as_documented
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+__________ test_a_json_or_empty_body_prints_as_documented[empty-204] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1066: in test_a_json_or_empty_body_prints_as_documented
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#delete-repository-branch', '--path', 'branch=feature/x'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+__ test_an_operation_call_sends_its_record[fixed-pairs-after-the-attributes] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: in test_an_operation_call_sends_its_record
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-list-with-fixed-pairs', '--query', 'search=x'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+___ test_a_body_that_is_not_json_is_written_unchanged[text-plain-job-trace] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1162: in test_a_body_that_is_not_json_is_written_unchanged
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['verify#retrieve-a-log-file-for-a-job', '--path', 'job_id=3001'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+____________ test_an_operation_call_sends_its_record[bearer-token] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:730: in test_an_operation_call_sends_its_record
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+__ test_a_body_that_is_not_json_is_written_unchanged[octet-stream-not-utf8] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1162: in test_a_body_that_is_not_json_is_written_unchanged
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['verify#retrieve-a-log-file-for-a-job', '--path', 'job_id=3001'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+____________ test_an_attribute_carries_its_kind[scalar-json-body] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=true'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_ test_a_body_that_is_not_json_is_written_unchanged[json-text-without-content-type] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1162: in test_a_body_that_is_not_json_is_written_unchanged
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+______________ test_an_attribute_carries_its_kind[scalar-query] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=true'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_ test_a_body_that_is_not_json_is_written_unchanged[artifacts-after-a-redirect] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1162: in test_a_body_that_is_not_json_is_written_unchanged
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['verify#download-job-artifacts-by-job-id', '--path', 'job_id=3001'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+____________ test_an_attribute_carries_its_kind[scalar-form-body] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=true'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+____________ test_an_api_error_exits_1_with_its_details[http-404] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1258: in test_an_api_error_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, f"call {list(case.argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5'] exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 1
+_____________ test_an_attribute_carries_its_kind[array-json-body] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=["a", 2]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+____ test_an_api_error_exits_1_with_its_details[rate-limit-retries-spent] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1258: in test_an_api_error_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, f"call {list(case.argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5'] exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 1
+_______________ test_an_attribute_carries_its_kind[array-query] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=["a", 2]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+______ test_an_api_error_exits_1_with_its_details[graphql-errors-at-200] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1258: in test_an_api_error_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, f"call {list(case.argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['graphql#syntheticProject', '-f', 'fullPath=g/p'] exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 1
+_____________ test_an_attribute_carries_its_kind[array-form-body] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=["a", 2]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+__ test_an_api_error_exits_1_with_its_details[dot-dot-id-of-a-paged-record] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1258: in test_an_api_error_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, f"call {list(case.argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-labels', '--path', 'id=..'] exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 1
+_____________ test_an_attribute_carries_its_kind[hash-json-body] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options={"k": "v", "n": 1, "flag": false}'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+________ test_an_api_error_exits_1_with_its_details[dot-dot-issue-iid] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1258: in test_an_api_error_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, f"call {list(case.argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=..'] exits 1, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 1
+_______________ test_an_attribute_carries_its_kind[hash-query] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options={"k": "v", "n": 1, "flag": false}'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+____ test_a_project_path_takes_the_configured_project[project-id-default] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1328: in test_a_project_path_takes_the_configured_project
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_____________ test_an_attribute_carries_its_kind[hash-form-body] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options={"k": "v", "n": 1, "flag": false}'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_________ test_a_project_path_takes_the_configured_project[id-given] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1328: in test_a_project_path_takes_the_configured_project
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#retrieve-a-project-issue', '--path', 'issue_iid=5', '--path', 'id=group/project'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+________ test_an_attribute_carries_its_kind[array_of_hashes-json-body] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=[{"key": "VAR1", "value": "hello"}, {"key": "VAR2", "value": "world"}]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+____ test_a_project_path_takes_the_configured_project[projects-id-itself] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1328: in test_a_project_path_takes_the_configured_project
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-retrieve-a-project'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+__________ test_an_attribute_carries_its_kind[array_of_hashes-query] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=[{"key": "VAR1", "value": "hello"}, {"key": "VAR2", "value": "world"}]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+__ test_a_project_path_takes_the_configured_project[group-id-has-no-default] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1322: in test_a_project_path_takes_the_configured_project
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+________ test_an_attribute_carries_its_kind[array_of_hashes-form-body] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:897: in test_an_attribute_carries_its_kind
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#synthetic-set-an-attribute', '-F', 'options=[{"key": "VAR1", "value": "hello"}, {"key": "VAR2", "value": "world"}]'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_______________ test_a_graphql_record_sends_its_document[data] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1407: in test_a_graphql_record_sends_its_document
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['graphql#syntheticProject', '-f', 'fullPath=g/p', '-F', 'first=2'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+_____ test_a_graphql_record_sends_its_document[connection-over-two-pages] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1407: in test_a_graphql_record_sends_its_document
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['graphql#syntheticProjectIssues', '-f', 'fullPath=g/p'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert 2 == 0
+________ test_an_unknown_operation_is_refused[only-on-a-pending-list] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1439: in test_an_unknown_operation_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_________ test_an_unknown_operation_is_refused[not-in-the-reference] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1439: in test_an_unknown_operation_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+__________ test_an_undocumented_parameter_is_refused[path-parameter] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1526: in test_an_undocumented_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_____ test_an_undocumented_parameter_is_refused[body-attribute-as-query] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1526: in test_an_undocumented_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+____________ test_an_undocumented_parameter_is_refused[attribute] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1526: in test_an_undocumented_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_____ test_an_undocumented_parameter_is_refused[all-three-in-one-message] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1526: in test_an_undocumented_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+____ test_an_undocumented_parameter_is_refused[graphql-variable-and-query] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1526: in test_an_undocumented_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+________ test_an_undocumented_parameter_is_refused[connection-cursor] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1526: in test_an_undocumented_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_____________ test_a_missing_path_parameter_is_refused[issue-iid] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1580: in test_a_missing_path_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_____________ test_a_missing_path_parameter_is_refused[group-id] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1580: in test_a_missing_path_parameter_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_______ test_a_value_of_the_wrong_shape_is_refused[string-for-an-array] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1643: in test_a_value_of_the_wrong_shape_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_______ test_a_value_of_the_wrong_shape_is_refused[object-for-a-scalar] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1643: in test_a_value_of_the_wrong_shape_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+________ test_a_value_of_the_wrong_shape_is_refused[file-for-a-scalar] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1643: in test_a_value_of_the_wrong_shape_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+________ test_a_value_of_the_wrong_shape_is_refused[string-for-a-hash] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1643: in test_a_value_of_the_wrong_shape_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:349: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: argument subcommand: invalid choice: 'call' (choose from delete-branch, issue, label, mr, pipeline)
+E     
+E   assert []
+_______________________ test_call_takes_no_token_option _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_call.py:1675: in test_call_takes_no_token_option
+    assert call_parser is not None, (
+E   AssertionError: the entry script's parser has no `call` subcommand: build_parser registers commands/call.py (design.md D1)
+E   assert None is not None
+_______________ test_any_json_value_becomes_the_attribute_value _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_call_properties.py:111: in test_any_json_value_becomes_the_attribute_value
+    ???
+test\test_gitlab_api_call_properties.py:118: in test_any_json_value_becomes_the_attribute_value
+    call = _import_product_module(module_name=CALL_MODULE, module_file=CALL_FILE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_api_call_properties.py:92: in _import_product_module
+    assert module_file.is_file(), f"{module_name} is not written: {module_file} does not exist"
+E   AssertionError: gitlab_api.commands.call is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\scripts\gitlab_api\commands\call.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-41/src/payload/scripts/gitlab_api/commands/call.py').is_file
+E   Failing test case: test_any_json_value_becomes_the_attribute_value(
+E       name='_',
+E       kind_and_value=('ARRAY', []),
+E   )
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:902: in test_every_record_is_sent_as_its_section_documents
+    call = gitlab_module(name="commands.call")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:227: in gitlab_module
+    assert source.is_file(), f"{PACKAGE}/{'/'.join(name.split('.'))}.py does not exist under {SCRIPTS}"
+E   AssertionError: gitlab_api/commands/call.py does not exist under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\scripts
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-41/src/payload/scripts/gitlab_api/commands/call.py').is_file
+___________ test_an_unreachable_call_matches_its_reference_section ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:951: in test_an_unreachable_call_matches_its_reference_section
+    assert (PACKAGE_DIR / "commands" / "call.py").is_file(), "gitlab_api/commands/call.py does not exist"
+E   AssertionError: gitlab_api/commands/call.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = ((WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-41/src/payload/scripts/gitlab_api') / 'commands') / 'call.py').is_file
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_gated_operation_names_its_subcommand[merge-a-merge-request]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[file-multipart]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_gated_operation_names_its_subcommand[create-an-issue]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_field_that_is_not_json_is_refused[nan]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_field_that_is_not_json_is_refused[infinity]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[get]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_field_that_is_not_json_is_refused[minus-infinity]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[delete-one-encoded-segment]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_list_prints_every_page_as_one_array[offset-by-x-next-page]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[put-json-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[query-in-the-order-given]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_list_prints_every_page_as_one_array[keyset-by-link-next]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[form-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_json_or_empty_body_prints_as_documented[json-with-charset]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_json_or_empty_body_prints_as_documented[empty-204]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[fixed-pairs-after-the-attributes]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[text-plain-job-trace]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_operation_call_sends_its_record[bearer-token]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[octet-stream-not-utf8]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[scalar-json-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[json-text-without-content-type]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[scalar-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[artifacts-after-a-redirect]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[scalar-form-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_api_error_exits_1_with_its_details[http-404]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array-json-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_api_error_exits_1_with_its_details[rate-limit-retries-spent]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_api_error_exits_1_with_its_details[graphql-errors-at-200]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array-form-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_api_error_exits_1_with_its_details[dot-dot-id-of-a-paged-record]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[hash-json-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_api_error_exits_1_with_its_details[dot-dot-issue-iid]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[hash-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_project_path_takes_the_configured_project[project-id-default]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[hash-form-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_project_path_takes_the_configured_project[id-given]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array_of_hashes-json-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_project_path_takes_the_configured_project[projects-id-itself]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array_of_hashes-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_project_path_takes_the_configured_project[group-id-has-no-default]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[array_of_hashes-form-body]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_graphql_record_sends_its_document[data]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_graphql_record_sends_its_document[connection-over-two-pages]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_unknown_operation_is_refused[only-on-a-pending-list]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_unknown_operation_is_refused[not-in-the-reference]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undocumented_parameter_is_refused[path-parameter]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undocumented_parameter_is_refused[body-attribute-as-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undocumented_parameter_is_refused[attribute]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undocumented_parameter_is_refused[all-three-in-one-message]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undocumented_parameter_is_refused[graphql-variable-and-query]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undocumented_parameter_is_refused[connection-cursor]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_missing_path_parameter_is_refused[issue-iid]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_missing_path_parameter_is_refused[group-id]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_value_of_the_wrong_shape_is_refused[string-for-an-array]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_value_of_the_wrong_shape_is_refused[object-for-a-scalar]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_value_of_the_wrong_shape_is_refused[file-for-a-scalar]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_value_of_the_wrong_shape_is_refused[string-for-a-hash]
+FAILED src/payload/test/test_gitlab_api_call.py::test_call_takes_no_token_option
+FAILED test/test_gitlab_api_call_properties.py::test_any_json_value_becomes_the_attribute_value
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+FAILED test/test_gitlab_wrapper_contract.py::test_an_unreachable_call_matches_its_reference_section
+======================= 62 failed, 113 passed in 12.36s =======================
