@@ -1,16 +1,18 @@
 """The GitLab wrapper's operation call, ``call <operation-id>`` (issue #41, design.md D1 to D4): any record that a
 family module of ``gitlab_api/families/`` or ``gitlab_api/graphql_only.py`` declares, sent by its operation ID.
 
-The grammar (D2)::
+The grammar (D2, and issue #40 design.md D5 for ``--input``)::
 
     python scripts/gitlab_wrapper.py call <operation-id> [--path NAME=VALUE]... [--query NAME=VALUE]...
-        [-f|--raw-field NAME=TEXT]... [-F|--field NAME=JSON]... [--file NAME=PATH]...
+        [-f|--raw-field NAME=TEXT]... [-F|--field NAME=JSON]... [--file NAME=PATH]... [--input FILE]
 
 - ``<operation-id>``: a record's ID, ``<stem>#<anchor>`` for a REST record (``plan#retrieve-a-project-issue``) and
   ``graphql#<field>`` for a GraphQL record.
-- ``--path NAME=VALUE``: a path parameter, as text, written by ``registry.expand`` as ONE percent-encoded segment. On a
-  record whose path is ``/projects/:id`` or starts with ``/projects/:id/``, an ``id`` the call does not give is the
-  configured project (``project_id`` of ``config/gitlab.json``); no other ``:id`` has a default.
+- ``--path NAME=VALUE``: a path parameter, as text: a ``:name`` written by ``registry.expand`` as ONE percent-encoded
+  segment, a ``*name`` with each ``/`` kept and each part between them one such segment; the parameter of an optional
+  ``(...)`` group may be left out, and the group is then not sent (issue #40, design.md D2). On a record whose path is
+  ``/projects/:id`` or starts with ``/projects/:id/``, an ``id`` the call does not give is the configured project
+  (``project_id`` of ``config/gitlab.json``); no other ``:id`` has a default.
 - ``--query NAME=VALUE``: an attribute the record declares in the query, as text. The values of one name are collected
   in the order given: a list for an ``ARRAY`` attribute, even with one value, and the one string for any other
   ``Kind`` (a repeated name becomes a list, which the shape check refuses).
@@ -21,6 +23,12 @@ The grammar (D2)::
   of ``None`` is not sent (``registry.encode``); a GraphQL variable sends it.
 - ``--file NAME=PATH``: a ``FILE`` attribute, ``pathlib.Path(PATH)`` as its value. The transport reads the file when it
   builds the request, and the body is then ``multipart/form-data``, every other body attribute a form field in it.
+- ``--input FILE``: the request body is the bytes of FILE, or of standard input's binary buffer when FILE is ``-``,
+  sent unchanged under the record's ``content_type`` (issue #40, design.md D5). Only a REST record that has a
+  ``content_type`` takes it, its attributes given with ``--query``; such a record called without ``--input`` sends no
+  body. The option's ``type``, ``read_input``, reads the bytes whole when the arguments are parsed; a file that cannot
+  be read is an argparse usage error (exit 2) for ``--input``, before the config is read, whose message names only the
+  path, rendered with ``json.dumps``.
 - A GraphQL record takes its variables with ``-f`` and ``-F``, and with ``--file`` a variable its document declares of
   type ``Upload`` or a list of them (``registry.upload_variables``; issue #44, design.md D4): each ``--file`` of a
   list's name is one item, in command-line order, a single one included, and one ``Upload`` keeps the last file given;
@@ -32,16 +40,21 @@ error (exit 2), raised by the option's ``type`` (``assignment``, ``json_member``
 read: argparse names the option, and the message names the text before the first ``=`` (all of it when there is none)
 rendered with ``json.dumps``, never a value. A path name, or an attribute given by ``-f`` or ``-F``, given twice keeps
 its last value; ``-f`` and ``-F`` share one destination, so their values keep their command-line order. A ``-f`` or
-``-F`` value replaces the ``--query`` values of the same name, and ``--file`` replaces both.
+``-F`` value replaces the ``--query`` values of the same name, and ``--file`` replaces both. The raw body ``--input``
+read goes to ``registry.send`` as its ``data``.
 
-``call_operation`` refuses with exit 2 (``EXIT_REFUSED``), before any request (D4): an ID in ``GATED_OPERATIONS``,
-naming the compatibility subcommand that sends it, or, for an ID mapped to ``None`` (``graphql#workItemCreate``,
-``graphql#workItemsCsvImport``), saying that no subcommand sends it (issue #44, design.md D6); an ID no record
-declares, or one declared twice (``registry.lookup``); a name the record does not document or a path parameter left
-without a value, in one message naming each such name with its option, each missing path parameter, then the record's
-documented parameters (``check_parameters``); a value of a shape its ``Kind`` does not take (``registry.encode``); and a
-paged record given body values (``registry.pages``). Each refusal is a ``ValueError``, logged; every name the caller
-supplied is rendered with ``json.dumps``.
+``call_operation`` refuses with exit 2 (``EXIT_REFUSED``), before any request (D4), in this order: a raw body given
+together with one or more ``-f`` or ``-F`` values (``refuse_both_bodies``), in a message naming ``--input``,
+``-f/--raw-field`` and ``-F/--field`` and saying that a raw-body record's attributes are given with ``--query``; an ID
+in ``GATED_OPERATIONS``, naming the compatibility subcommand that sends it, or, for an ID mapped to ``None``
+(``graphql#workItemCreate``, ``graphql#workItemsCsvImport``), saying that no subcommand sends it (issue #44,
+design.md D6); an ID no record declares, or one declared twice (``registry.lookup``); a raw body for any record but a
+REST record with a ``content_type`` (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that
+its body is given with ``-f``, ``-F`` or ``--file``; a name the record does not document or a path parameter outside
+an optional group left without a value, in one message naming each such name with its option, each missing path
+parameter, then the record's documented parameters (``check_parameters``); a value of a shape its ``Kind`` does not
+take (``registry.encode``); and a paged record given body values (``registry.pages``). Each refusal is a
+``ValueError``, logged; every name the caller supplied is rendered with ``json.dumps``, and no byte of a raw body is.
 
 What prints (D3):
 
@@ -53,8 +66,8 @@ What prints (D3):
 - a GraphQL record: ``print_json`` of its ``data``, or of the one array of the nodes of every page of its connection.
 
 A ``GitLabAPIError`` (an HTTP error, spent ``429`` retries, no response, GraphQL ``errors``, an empty, ``.`` or ``..``
-path value, a ``--file`` that cannot be read) reaches the entry script, which logs its message and details and exits
-1. Standard library only; Python 3.9.
+path value or glob part, a ``--file`` that cannot be read) reaches the entry script, which logs its message and
+details and exits 1. Standard library only; Python 3.9.
 """
 
 from __future__ import annotations
@@ -62,6 +75,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
@@ -86,6 +100,7 @@ OPTION_RAW_FIELD = "--raw-field"
 OPTION_FIELD_SHORT = "-F"
 OPTION_FIELD = "--field"
 OPTION_FILE = "--file"
+OPTION_INPUT = "--input"
 # How D4's message names the option of a name given with `-f` or `-F`, which share one destination.
 OPTION_FIELDS = f"{OPTION_RAW_FIELD_SHORT}/{OPTION_FIELD_SHORT}"
 # The `argparse.Namespace` attributes the options are stored under; `-f` and `-F` share one.
@@ -93,12 +108,16 @@ ARG_PATH = "path"
 ARG_QUERY = "query"
 ARG_FIELDS = "fields"
 ARG_FILES = "files"
+ARG_RAW_BODY = "raw_body"
 ACTION_APPEND = "append"
 METAVAR_VALUE = "NAME=VALUE"
 METAVAR_TEXT = "NAME=TEXT"
 METAVAR_JSON = "NAME=JSON"
 METAVAR_PATH = "NAME=PATH"
+METAVAR_FILE = "FILE"
 ASSIGNMENT_SEPARATOR = "="
+# The `--input` text that reads the raw body from standard input rather than from a file, as `gh api` spells it.
+STDIN_INPUT = "-"
 # Each destination with the option D4's message names it by, in the message's order.
 DESTINATION_OPTIONS: Tuple[Tuple[str, str], ...] = (
     (ARG_PATH, OPTION_PATH),
@@ -145,12 +164,13 @@ class Assignment(NamedTuple):
 
 @dataclass(frozen=True)
 class PreparedCall:
-    """A call that steps 1 to 5 accepted: its record, its values and, for a paged record, the generator of its items,
-    which sends nothing until it is read."""
+    """A call that steps 1 to 5 accepted: its record, its values, for a paged record the generator of its items, which
+    sends nothing until it is read, and the raw body ``--input`` read, ``None`` when none was given."""
 
     operation: Operation
     values: Dict[str, Any]
     items: Optional[Iterator[Any]] = None
+    raw_body: Optional[bytes] = None
 
 
 # --- The argparse types (D2) ----------------------------------------------------------------------------------------
@@ -197,6 +217,19 @@ def file_member(text: str) -> Assignment:
     """The ``type`` of ``--file``: ``NAME=PATH`` with ``pathlib.Path(PATH)`` as the value; the transport reads it."""
     name, value = _split(text=text)
     return Assignment(name=name, value=Path(value))
+
+
+def read_input(text: str) -> bytes:
+    """The ``type`` of ``--input`` (issue #40, design.md D5): the bytes of standard input's binary buffer when ``text``
+    is ``-``, else the bytes of the file ``text`` names, read whole by ``Path.read_bytes``. An ``OSError`` raises
+    ``argparse.ArgumentTypeError`` naming only the path, ``text`` as given rendered with ``json.dumps``; argparse
+    handles no other exception type of a ``type``."""
+    try:
+        if text == STDIN_INPUT:
+            return sys.stdin.buffer.read()
+        return Path(text).read_bytes()
+    except OSError:
+        raise argparse.ArgumentTypeError(f"{json.dumps(obj=text)} cannot be read") from None
 
 
 # --- The values of a call (D2 step 3) ---------------------------------------------------------------------------
@@ -308,11 +341,13 @@ def undocumented(*, operation: Operation, args: argparse.Namespace) -> List[Tupl
 
 
 def missing_path_parameters(*, operation: Operation, project: str, args: argparse.Namespace) -> List[str]:
-    """The path parameters of a REST record that the call leaves without a value once ``id`` has its default."""
+    """The path parameters of a REST record outside an optional ``(...)`` group (``registry.required_placeholders``)
+    that the call leaves without a value once ``id`` has its default; the parameter of a group may be left out, and
+    the group is then not sent (issue #40, design.md D2)."""
     if isinstance(operation, GraphQLOperation):
         return []
     given = path_values(operation=operation, project=project, args=args)
-    return [name for name in dict.fromkeys(registry.placeholders(path=operation.path)) if name not in given]
+    return [name for name in dict.fromkeys(registry.required_placeholders(path=operation.path)) if name not in given]
 
 
 def _listed(*, names: Sequence[str]) -> str:
@@ -363,19 +398,48 @@ def refuse_gated(*, operation_id: str) -> None:
     raise ValueError(f"{refused}: use the {subcommand} subcommand, which sends it")
 
 
+def refuse_both_bodies(*, raw_body: Optional[bytes], args: argparse.Namespace) -> None:
+    """Issue #40 design.md D5 step 1: refuse with ``ValueError`` a raw body given together with one or more ``-f`` or
+    ``-F`` values, in a message naming ``--input``, ``-f/--raw-field`` and ``-F/--field`` and saying that a raw-body
+    record's attributes are given with ``--query``."""
+    if raw_body is None or not _given(args=args, dest=ARG_FIELDS):
+        return
+    raise ValueError(
+        f"{COMMAND} refuses {OPTION_INPUT} together with {OPTION_RAW_FIELD_SHORT}/{OPTION_RAW_FIELD} or "
+        f"{OPTION_FIELD_SHORT}/{OPTION_FIELD}: a raw body is the whole request body, and a raw-body record's "
+        f"attributes are given with {OPTION_QUERY}"
+    )
+
+
+def refuse_raw_body(*, operation: Operation, raw_body: Optional[bytes]) -> None:
+    """Issue #40 design.md D5 step 2: refuse with ``ValueError`` a raw body for any record but a ``RestOperation`` with
+    a ``content_type``, in a message naming its ID and ``--input`` and saying that its body is given with ``-f``,
+    ``-F`` or ``--file``."""
+    if raw_body is None or (isinstance(operation, RestOperation) and operation.content_type is not None):
+        return
+    raise ValueError(
+        f"{COMMAND} refuses {OPTION_INPUT} for the GitLab operation {json.dumps(obj=operation.operation_id)}: it takes "
+        f"no raw body; its body is given with {OPTION_RAW_FIELD_SHORT}, {OPTION_FIELD_SHORT} or {OPTION_FILE}"
+    )
+
+
 def prepare_call(*, transport: Transport, project: str, operation_id: str, args: argparse.Namespace) -> PreparedCall:
-    """Steps 1 to 5, each refusal a ``ValueError`` and nothing sent: the gate, ``registry.lookup``, the values, D4's
-    check, and the shape check — ``registry.encode`` for a ``Paging.NONE`` REST record, ``registry.pages`` (its own
-    look-up, encoding, ``GET``-only check and ``expand``) for a paged one."""
+    """Steps 1 to 5, each refusal a ``ValueError`` and nothing sent: a raw body beside ``-f`` or ``-F``
+    (``refuse_both_bodies``), the gate, ``registry.lookup``, a raw body for a record that takes none
+    (``refuse_raw_body``), the values, D4's check, and the shape check — ``registry.encode`` for a ``Paging.NONE``
+    REST record, ``registry.pages`` (its own look-up, encoding, ``GET``-only check and ``expand``) for a paged one."""
+    raw_body: Optional[bytes] = getattr(args, ARG_RAW_BODY, None)
+    refuse_both_bodies(raw_body=raw_body, args=args)
     refuse_gated(operation_id=operation_id)
     operation = registry.lookup(operation_id=operation_id)
+    refuse_raw_body(operation=operation, raw_body=raw_body)
     values = call_values(operation=operation, project=project, args=args)
     check_parameters(operation=operation, project=project, args=args)
     if isinstance(operation, GraphQLOperation):
         return PreparedCall(operation=operation, values=values)
     if operation.paging is Paging.NONE:
         registry.encode(operation=operation, values=values)
-        return PreparedCall(operation=operation, values=values)
+        return PreparedCall(operation=operation, values=values, raw_body=raw_body)
     items = registry.pages(transport=transport, operation_id=operation_id, values=values)
     return PreparedCall(operation=operation, values=values, items=items)
 
@@ -393,7 +457,8 @@ def print_response(*, response: Response) -> None:
 
 def send_call(*, transport: Transport, prepared: PreparedCall) -> None:
     """Step 6 and D3: a paged record's items read and printed as one array once the last page has arrived; a GraphQL
-    record through ``registry.call``; a ``Paging.NONE`` record through ``registry.send``."""
+    record through ``registry.call``; a ``Paging.NONE`` record through ``registry.send``, the raw body as its
+    ``data``."""
     operation_id = prepared.operation.operation_id
     if prepared.items is not None:
         print_json(value=list(prepared.items))
@@ -401,7 +466,10 @@ def send_call(*, transport: Transport, prepared: PreparedCall) -> None:
     if isinstance(prepared.operation, GraphQLOperation):
         print_json(value=registry.call(transport=transport, operation_id=operation_id, values=prepared.values))
         return
-    print_response(response=registry.send(transport=transport, operation_id=operation_id, values=prepared.values))
+    response = registry.send(
+        transport=transport, operation_id=operation_id, values=prepared.values, data=prepared.raw_body
+    )
+    print_response(response=response)
 
 
 def call_operation(
@@ -479,4 +547,12 @@ def register(*, subparsers: SubParsers) -> None:
         type=file_member,
         metavar=METAVAR_PATH,
         help="a file attribute; the body is sent as multipart/form-data",
+    )
+    parser.add_argument(
+        OPTION_INPUT,
+        dest=ARG_RAW_BODY,
+        default=None,
+        type=read_input,
+        metavar=METAVAR_FILE,
+        help="the request body, its bytes sent unchanged (- reads standard input); only for a raw-body record",
     )

@@ -1,0 +1,129 @@
+# Mutant runs, wave 3 (tasks 3.1-3.3): the usage docstring, the map, the findings ledger
+
+Tree: worktree issue-40, branch issue-40-gitlab-openapi-only-records
+HEAD: 48929f37dfb9098b6d430c0a442ad8ad97345a92  # pragma: allowlist secret
+Harness: a disposable script outside the worktree. Each mutant is written, the named tests (wave 3's Run line) run
+through scripts/run_tests.py (-p no:cacheprovider), and the pristine bytes and mtime are written back and proven by
+sha256. exit=0 is SURVIVED, exit=1 is KILLED, any other exit is INVALID. GREEN is the pristine tree.
+
+## GREEN — the pristine tree, no mutation
+
+- every remembered file pristine after the run: True
+
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+exit=0 verdict=GREEN
+
+```text
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [189 items]
+
+........................................................................ [ 38%]
+........................................................................ [ 76%]
+.............................................                            [100%]
+============================ 189 passed in 13.02s =============================
+```
+
+## W3-REVERT — wave 3 reverted: gitlab_wrapper.py, forLLMConsumption.md and findings-ledger.md at origin/main
+
+- file: src/payload/scripts/gitlab_wrapper.py (reverted to origin/main)
+  - sha256 pristine: de12e42cc1663ba4928290e05d6cb7faf29ce1552a9b09e124ee6644ca8c0de6  # pragma: allowlist secret
+  - sha256 mutant:   3a00ed70b35773e6daddd4a0170c3fa5a2c0ecf153b5284c299ae3e8703481ad  # pragma: allowlist secret
+- file: docs/forLLMConsumption.md (reverted to origin/main)
+  - sha256 pristine: fb449795c3de7cc0593f8028cb041a5f69d6b8784da487a570e1dbdbf9ac6539  # pragma: allowlist secret
+  - sha256 mutant:   5c586d4072e361fab53e76cf2483527ea4ae7105cd54cc558fadadf28b71e3fa  # pragma: allowlist secret
+- file: docs/findings-ledger.md (reverted to origin/main)
+  - sha256 pristine: 918e5757baf8e0a782775e9a959209eb0000cba1276563b95171253050313634  # pragma: allowlist secret
+  - sha256 mutant:   5ca31ee36b2ebbf8c6dc172f93ad236009bd0fdb773e250b5f9a67f52f5ceeb4  # pragma: allowlist secret
+- restored src/payload/scripts/gitlab_wrapper.py: sha256 de12e42cc1663ba4928290e05d6cb7faf29ce1552a9b09e124ee6644ca8c0de6  # pragma: allowlist secret equals pristine: True
+- restored docs/forLLMConsumption.md: sha256 fb449795c3de7cc0593f8028cb041a5f69d6b8784da487a570e1dbdbf9ac6539  # pragma: allowlist secret equals pristine: True
+- restored docs/findings-ledger.md: sha256 918e5757baf8e0a782775e9a959209eb0000cba1276563b95171253050313634  # pragma: allowlist secret equals pristine: True
+- every remembered file pristine after the run: True
+
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+exit=0 verdict=SURVIVED
+
+```text
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [189 items]
+
+........................................................................ [ 38%]
+........................................................................ [ 76%]
+.............................................                            [100%]
+============================ 189 passed in 12.88s =============================
+```
+
+## M3.01 — a usage phrase C pins dropped (`bytes unchanged`)
+
+- file: src/payload/scripts/gitlab_wrapper.py (1 edit(s))
+  - sha256 pristine: de12e42cc1663ba4928290e05d6cb7faf29ce1552a9b09e124ee6644ca8c0de6  # pragma: allowlist secret
+  - sha256 mutant:   3293a71e3ed05911675da688ffe9af15f7fa0ec9d3c85b31dc27b7ea34d63e52  # pragma: allowlist secret
+  - edit: 'any other body as its bytes unchanged.' -> 'any other body as its bytes.'
+- restored src/payload/scripts/gitlab_wrapper.py: sha256 de12e42cc1663ba4928290e05d6cb7faf29ce1552a9b09e124ee6644ca8c0de6  # pragma: allowlist secret equals pristine: True
+- every remembered file pristine after the run: True
+
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+exit=1 verdict=KILLED
+
+```text
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [189 items]
+
+........................................................................ [ 38%]
+..F..................................................................... [ 76%]
+.............................................                            [100%]
+================================== FAILURES ===================================
+___________________ test_the_usage_names_the_operation_call ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_wrapper_compat.py:1571: in test_the_usage_names_the_operation_call
+    assert missing == [], f"the usage of {WRAPPER_FILE} does not name: {missing}"
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\scripts\gitlab_wrapper.py does not name: ['bytes unchanged']
+E   assert ['bytes unchanged'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mbytes unchanged[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_the_usage_names_the_operation_call
+======================= 1 failed, 188 passed in 12.75s ========================
+```
+
+## GREEN — the pristine tree, no mutation
+
+- every remembered file pristine after the run: True
+
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+exit=0 verdict=GREEN
+
+```text
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [189 items]
+
+........................................................................ [ 38%]
+........................................................................ [ 76%]
+.............................................                            [100%]
+============================ 189 passed in 15.21s =============================
+```
+

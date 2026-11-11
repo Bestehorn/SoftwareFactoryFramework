@@ -1,0 +1,387 @@
+# tasks: 1.1 1.2 1.3 1.4
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [405 items]
+
+........................FF.FFF.FFF.FFFF.FFFFF.FF........................ [ 17%]
+........................F..F.F............F..F............F...F......F.. [ 35%]
+F...F...F....F...F..................F.F.F............................... [ 53%]
+........................................................................ [ 71%]
+........................................................................ [ 88%]
+.............................................                            [100%]
+================================== FAILURES ===================================
+___________ test_placeholders_name_every_path_form[optional-group] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:460: in test_placeholders_name_every_path_form
+    assert registry.placeholders(path=path) == named, (
+E   AssertionError: '/projects/:id/packages/generic/:package_name/*package_version/(*path/):file_name' names ('id', 'package_name', 'package_version', 'path', 'file_name'): every :name and *name, without its sigil, in path order, inside an optional group or not (design.md D1, AC-2.4)
+E   assert ('id', 'packa..., 'file_name') == ('id', 'packa..., 'file_name')
+E     
+E     At index 2 diff: [0m[33m'[39;49;00m[33mfile_name[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33mpackage_version[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Right contains 2 more items, first extra item: [0m[33m'[39;49;00m[33mpath[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_________ test_placeholders_name_every_path_form[escaped-parentheses] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:460: in test_placeholders_name_every_path_form
+    assert registry.placeholders(path=path) == named, (
+E   AssertionError: "/projects/:project_id/packages/nuget/v2/Packages\\(Id='*package_name',Version='*package_version'\\)" names ('project_id', 'package_name', 'package_version'): every :name and *name, without its sigil, in path order, inside an optional group or not (design.md D1, AC-2.4)
+E   assert ('project_id',) == ('project_id'...kage_version')
+E     
+E     Right contains 2 more items, first extra item: [0m[33m'[39;49;00m[33mpackage_name[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_ test_placeholders_name_every_path_form[glob-and-placeholder-inside-a-segment] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:460: in test_placeholders_name_every_path_form
+    assert registry.placeholders(path=path) == named, (
+E   AssertionError: '/projects/:id/packages/debian/dists/*distribution/:component/binary-:architecture/Packages' names ('id', 'distribution', 'component', 'architecture'): every :name and *name, without its sigil, in path order, inside an optional group or not (design.md D1, AC-2.4)
+E   assert ('id', 'compo...architecture') == ('id', 'distr...architecture')
+E     
+E     At index 1 diff: [0m[33m'[39;49;00m[33mcomponent[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33mdistribution[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Right contains one more item: [0m[33m'[39;49;00m[33marchitecture[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____________ test_placeholders_name_every_path_form[colon-only] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:464: in test_placeholders_name_every_path_form
+    assert registry.required_placeholders(path=path) == required, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'required_placeholders'
+_________________ test_a_glob_value_keeps_its_slashes[space] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:483: in test_a_glob_value_keeps_its_slashes
+    assert registry.expand(operation=operation, values={**MAVEN_VALUES, "path": value}) == expected, (
+E   AssertionError: the glob *path given '1.0/rc 1' keeps each `/`, each part between them one percent-encoded segment (design.md D1, AC-2.1)
+E   assert '/projects/1/...jar/authorize' == '/projects/1/...jar/authorize'
+E     
+E     [0m[91m- /projects/1/packages/maven/1.0/rc%201/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                            ^^^^^^^^^^[90m[39;49;00m
+E     [92m+ /projects/1/packages/maven/*path/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                            ^^^^^[90m[39;49;00m
+_______________ test_a_glob_value_keeps_its_slashes[npm-scope] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:483: in test_a_glob_value_keeps_its_slashes
+    assert registry.expand(operation=operation, values={**MAVEN_VALUES, "path": value}) == expected, (
+E   AssertionError: the glob *path given '@scope/pkg' keeps each `/`, each part between them one percent-encoded segment (design.md D1, AC-2.1)
+E   assert '/projects/1/...jar/authorize' == '/projects/1/...jar/authorize'
+E     
+E     [0m[91m- /projects/1/packages/maven/%40scope/pkg/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                            ^^^^^^ ^^^^^[90m[39;49;00m
+E     [92m+ /projects/1/packages/maven/*path/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                            ^ ^^^[90m[39;49;00m
+___________ test_a_glob_value_keeps_its_slashes[query-and-fragment] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:483: in test_a_glob_value_keeps_its_slashes
+    assert registry.expand(operation=operation, values={**MAVEN_VALUES, "path": value}) == expected, (
+E   AssertionError: the glob *path given 'a?b#c' keeps each `/`, each part between them one percent-encoded segment (design.md D1, AC-2.1)
+E   assert '/projects/1/...jar/authorize' == '/projects/1/...jar/authorize'
+E     
+E     [0m[91m- /projects/1/packages/maven/a%3Fb%23c/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                             ^^^^^^^^[90m[39;49;00m
+E     [92m+ /projects/1/packages/maven/*path/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                            ++ ^^[90m[39;49;00m
+______________ test_a_glob_value_keeps_its_slashes[encoded-dots] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:483: in test_a_glob_value_keeps_its_slashes
+    assert registry.expand(operation=operation, values={**MAVEN_VALUES, "path": value}) == expected, (
+E   AssertionError: the glob *path given '%2e%2e/x' keeps each `/`, each part between them one percent-encoded segment (design.md D1, AC-2.1)
+E   assert '/projects/1/...jar/authorize' == '/projects/1/...jar/authorize'
+E     
+E     [0m[91m- /projects/1/packages/maven/%252e%252e/x/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                            ^^^^^^^^^^^^[90m[39;49;00m
+E     [92m+ /projects/1/packages/maven/*path/x.jar/authorize[39;49;00m[90m[39;49;00m
+E     ?                            ^^^^^[90m[39;49;00m
+______ test_a_glob_part_that_is_no_segment_is_refused[empty-inner-part] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+________ test_a_glob_part_that_is_no_segment_is_refused[leading-slash] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+_______ test_a_glob_part_that_is_no_segment_is_refused[trailing-slash] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+__________ test_a_glob_part_that_is_no_segment_is_refused[dot-part] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+________ test_a_glob_part_that_is_no_segment_is_refused[dot-dot-part] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+____________ test_a_glob_part_that_is_no_segment_is_refused[empty] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+_____________ test_a_glob_part_that_is_no_segment_is_refused[dot] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+___________ test_a_glob_part_that_is_no_segment_is_refused[dot-dot] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:498: in test_a_glob_part_that_is_no_segment_is_refused
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+______________ test_an_optional_group_is_written_only_when_given ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:513: in test_an_optional_group_is_written_only_when_given
+    assert written == {"given": GENERIC_WITH_GROUP, "absent": GENERIC_WITHOUT_GROUP, "none": GENERIC_WITHOUT_GROUP}, (
+E   AssertionError: the group `(*path/)` is written without its parentheses when `path` has a value, and left out whole when `path` is absent or None (design.md D1, AC-2.3)
+E   assert {'given': '/p...th/)file.txt'} == {'given': '/p...1.0/file.txt'}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mgiven[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m/projects/1/packages/generic/pkg/*package_version/(*path/)file.txt[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mgiven[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m/projects/1/packages/generic/pkg/1.0/a/b/file.txt[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mabsent[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m/projects/1/packages/generic/pkg/*package_version/(*path/)file.txt[39;49;00m[33m'[39;49;00m}[9...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_an_escaped_parenthesis_is_sent_without_its_backslash __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:530: in test_an_escaped_parenthesis_is_sent_without_its_backslash
+    assert written == ESCAPED_WRITTEN, (
+E   AssertionError: each `\(` and `\)` is sent as its parenthesis and never read as an optional group; `$`, `'`, `,` and `=` are sent as the path writes them, and a value's parentheses are percent-encoded (design.md D1, AC-2.5)
+E   assert {'single-pack...etadata', ...} == {'single-pack...etadata', ...}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33menumerate-with-no-value[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m/projects/7/packages/nuget/v2/Packages[39;49;00m[33m\\[39;49;00m[33m([39;49;00m[33m\\[39;49;00m[33m)[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33menumerate-with-no-value[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m/projects/7/packages/nuget/v2/Packages()[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mglob-value-with-parentheses[39;49;00m[33m'...
+E     
+E     ...Full output truncated, use '-vv' to show
+___________________ test_send_sends_a_raw_record_its_bytes ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:539: in test_send_sends_a_raw_record_its_bytes
+    raw_record = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'content_type'
+_________________ test_a_raw_body_is_sent_unchanged[private] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1019: in test_a_raw_body_is_sent_unchanged
+    response = client.request_raw(
+               ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'request_raw'
+__________________ test_a_raw_body_is_sent_unchanged[bearer] __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1019: in test_a_raw_body_is_sent_unchanged
+    response = client.request_raw(
+               ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'request_raw'
+___________________ test_a_raw_body_is_sent_unchanged[job] ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1019: in test_a_raw_body_is_sent_unchanged
+    response = client.request_raw(
+               ^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'Transport' object has no attribute 'request_raw'
+______________________ test_glob_value_keeps_each_slash _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:192: in test_glob_value_keeps_each_slash
+    @given(parts=GLOB_PARTS)
+                   ^^^
+..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:205: in test_glob_value_keeps_each_slash
+    assert len(pieces) == len(parts), path
+E   AssertionError: /projects/*glob/issues
+E   assert 1 == 2
+E    +  where 1 = len(['*glob'])
+E    +  and   2 = len(['1.0', 'rc 1'])
+E   Failing explicit example: test_glob_value_keeps_each_slash(
+E       parts=['1.0', 'rc 1'],
+E   )
+______________ test_a_glob_value_with_a_refused_part_is_refused _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:211: in test_a_glob_value_with_a_refused_part_is_refused
+    @given(parts=parts_with_a_refused_part())
+                   ^^^
+..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:224: in test_a_glob_value_with_a_refused_part_is_refused
+    with pytest.raises(expected_exception=errors.GitLabAPIError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE GitLabAPIError
+E   (note: 4 other explicit examples also failed with this error; use Verbosity.verbose to view)
+E   Failing explicit example: test_a_glob_value_with_a_refused_part_is_refused(
+E       parts=['', '1.0'],
+E   )
+______________ test_a_section_is_read_as_the_reference_writes_it ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:821: in test_a_section_is_read_as_the_reference_writes_it
+    assert record_problems(record=record, section=sections.get(record.operation_id)) == [], record.operation_id
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+__________ test_the_method_rejects_a_call_that_differs[method-PATCH] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:904: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+_________ test_the_method_rejects_a_call_that_differs[path-geo_site] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:904: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+____ test_the_method_rejects_a_call_that_differs[body-site_name-for-name] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:904: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+_______ test_the_method_rejects_a_call_that_differs[name-in-the-query] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:904: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+___ test_the_method_rejects_a_call_that_differs[record-name-declared-query] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:904: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+_____ test_the_method_rejects_a_call_that_differs[record-member-as-param] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:904: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+________________ test_a_path_form_is_read_and_sent_as_written _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:963: in test_a_path_form_is_read_and_sent_as_written
+    upload = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'content_type'
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:991: in test_every_record_matches_its_reference_section
+    for problem in record_problems(record=record, section=sections.get(record.operation_id))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\test\test_gitlab_wrapper_contract.py:1039: in test_every_record_is_sent_as_its_section_documents
+    sent_record_problems(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\test\test_gitlab_wrapper_contract.py:1005: in sent_record_problems
+    documented = documented_paging(section=documented_raw_body(section=section, record=record), record=record)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+---------------------------- Captured stdout call -----------------------------
+{}
+___________ test_an_unreachable_call_matches_its_reference_section ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1063: in test_an_unreachable_call_matches_its_reference_section
+    assert record_problems(record=record, section=section) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:481: in record_problems
+    section = documented_raw_body(section=section, record=record)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:620: in documented_raw_body
+    if record.content_type is None:
+       ^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'content_type'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_placeholders_name_every_path_form[optional-group]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_placeholders_name_every_path_form[escaped-parentheses]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_placeholders_name_every_path_form[glob-and-placeholder-inside-a-segment]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_placeholders_name_every_path_form[colon-only]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_value_keeps_its_slashes[space]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_value_keeps_its_slashes[npm-scope]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_value_keeps_its_slashes[query-and-fragment]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_value_keeps_its_slashes[encoded-dots]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[empty-inner-part]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[leading-slash]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[trailing-slash]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[dot-part]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[dot-dot-part]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[empty]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[dot]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_glob_part_that_is_no_segment_is_refused[dot-dot]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_an_optional_group_is_written_only_when_given
+FAILED src/payload/test/test_gitlab_api_registry.py::test_an_escaped_parenthesis_is_sent_without_its_backslash
+FAILED src/payload/test/test_gitlab_api_registry.py::test_send_sends_a_raw_record_its_bytes
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_raw_body_is_sent_unchanged[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_raw_body_is_sent_unchanged[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_raw_body_is_sent_unchanged[job]
+FAILED test/test_gitlab_api_properties.py::test_glob_value_keeps_each_slash
+FAILED test/test_gitlab_api_properties.py::test_a_glob_value_with_a_refused_part_is_refused
+FAILED test/test_gitlab_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[method-PATCH]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[path-geo_site]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[body-site_name-for-name]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[name-in-the-query]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[record-name-declared-query]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[record-member-as-param]
+FAILED test/test_gitlab_wrapper_contract.py::test_a_path_form_is_read_and_sent_as_written
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+FAILED test/test_gitlab_wrapper_contract.py::test_an_unreachable_call_matches_its_reference_section
+======================= 35 failed, 370 passed in 20.80s =======================
+exit=1

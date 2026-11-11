@@ -9,6 +9,13 @@ Issue #41, design.md D5. The reference is `docs/api-reference/gitlab/rest/<stem>
 - the CALL half: `sent_call` reads a request the fake host recorded (method, path after `/api/v4`, the names of its
   query pairs and body members), and `call_problems` names every difference between it and the section.
 
+A path parameter is a `:name`, or a `*name` glob whose value keeps its `/` (issue #40, design.md D3). The call half
+writes a section's path as a call sends it: each optional `(...)` group's parentheses dropped, each backslash-escaped
+parenthesis written as the parenthesis alone, each `:name` and `*name` replaced by its value. The reference half reads
+a `query`, `body` or `form` row naming a `*name` of the record's path as that path parameter, never as a row the record
+lacks. Both halves read a raw-body record, one with a `content_type`, against its section without the `file` row, the
+request body, and with every other `body` row a `query` row (issue #40, design.md D5).
+
 `is_unreachable` states D5's rule: an operation no `sff-test-*` project on GitLab.com can reach, by its index row's
 path (`/admin/`, `/geo/`, `/hooks/`) or by an effective `Offering:` that does not name `GitLab.com`. For such an
 operation the two halves are the whole proof (AC-3.1, AC-3.2).
@@ -98,10 +105,20 @@ IN_QUERY = "query"
 IN_BODY = "body"
 IN_FORM = "form"
 SENT_PLACES = (IN_QUERY, IN_BODY)
+# The row of a raw-body record's section that is the request body, not an attribute (issue #40, design.md D5).
+RAW_BODY_ROW = "file"
 # `parent[key]`: the hash member a query pair or a FORM-body pair names (`not[labels]`, `context[user]`).
 PARENT_KEY = re.compile(pattern=r"[A-Za-z_][A-Za-z0-9_]*\[[A-Za-z0-9_]+\]")
 BRACKET = "["
-PATH_PLACEHOLDER = re.compile(pattern=r":(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
+# A path parameter: `:name`, one segment, or `*name`, a glob whose value keeps its `/` (`/packages/npm/*package_name`).
+PATH_PLACEHOLDER = re.compile(pattern=r"(?P<sigil>[:*])(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
+GROUP_SIGIL = "sigil"
+GLOB_SIGIL = "*"
+# A parenthesis of an optional group, `(` or `)` with no backslash before it (`(*path/)`), dropped from a written path.
+UNESCAPED_PARENTHESIS = re.compile(pattern=r"(?<!\\)[()]")
+# A parenthesis the path writes escaped, `\(` or `\)` (`Packages\(\)`), written without its backslash.
+ESCAPED_PARENTHESIS = re.compile(pattern=r"\\(?P<parenthesis>[()])")
+GROUP_PARENTHESIS = "parenthesis"
 
 # conventions.md "Offset-based" and "Keyset-based": the query names a paged record may send or not, by the value of
 # its `registry.Paging` member.
@@ -405,6 +422,15 @@ def paging_parameters(*, record: Any) -> FrozenSet[str]:
     return PAGING_PARAMETERS.get(record.paging.value, NO_PAGING_PARAMETERS)
 
 
+def glob_names(*, path: str) -> FrozenSet[str]:
+    """The `*name` path parameters of a path, without the sigil: the names `PATH_PLACEHOLDER` matches with `*`."""
+    return frozenset(
+        match.group(GROUP_NAME)
+        for match in PATH_PLACEHOLDER.finditer(string=path)
+        if match.group(GROUP_SIGIL) == GLOB_SIGIL
+    )
+
+
 def endpoint_problems(*, record: Any, section: Section, registry: ModuleType) -> List[str]:
     """A record method and path that is no endpoint of the section; a `path` row no endpoint has as a placeholder."""
     problems: List[str] = []
@@ -452,14 +478,16 @@ def record_problems(*, record: Any, section: Optional[Section]) -> List[str]:
     if section is None:
         return [f"{record.operation_id}: no section of rest/*.md has this id"]
     registry = gitlab_module(name="registry")
+    section = documented_raw_body(section=section, record=record)
     declared = {param.name for param in record.params}
     optional = paging_parameters(record=record)
+    globs = glob_names(path=record.path)
     problems = endpoint_problems(record=record, section=section, registry=registry)
     problems.extend(param_problems(record=record, section=section, registry=registry))
     problems.extend(
         f"the {location} row {name!r} is not declared by the record"
         for name, location in section.attributes.items()
-        if location in SENT_PLACES and name not in declared and name not in optional
+        if location in SENT_PLACES and name not in declared and name not in optional and name not in globs
     )
     problems.extend(
         f"the fixed name {name!r} is not a query row"
@@ -532,15 +560,21 @@ def documented_name(*, name: str, documented: Iterable[str]) -> str:
 
 
 def expanded_path(*, path: str, values: Mapping[str, Any]) -> Optional[str]:
-    """``path`` with each `:name` replaced by its value; ``None`` when a placeholder has no value."""
+    """``path`` as a call with ``values`` writes it (issue #40, design.md D3): each unescaped `(` and `)` dropped, so
+    every optional group is written; then the backslash of each escaped parenthesis dropped; then each `:name` and
+    `*name` replaced by its value. ``None`` when a placeholder has no value."""
     names = [match.group(GROUP_NAME) for match in PATH_PLACEHOLDER.finditer(string=path)]
     if any(name not in values for name in names):
         return None
-    return PATH_PLACEHOLDER.sub(repl=lambda match: str(values[match.group(GROUP_NAME)]), string=path)
+    grouped = UNESCAPED_PARENTHESIS.sub(repl="", string=path)
+    literal = ESCAPED_PARENTHESIS.sub(repl=lambda match: match.group(GROUP_PARENTHESIS), string=grouped)
+    return PATH_PLACEHOLDER.sub(repl=lambda match: str(values[match.group(GROUP_NAME)]), string=literal)
 
 
 def route_problems(*, section: Section, values: Mapping[str, Any], sent: SentCall) -> List[str]:
-    """A method other than the section's; a path other than the section's with each `:name` replaced by its value."""
+    """A method other than the section's; a path other than each of the section's paths as `expanded_path` writes it
+    with the values: its optional groups written, its escaped parentheses unescaped, each `:name` and `*name` replaced
+    by its value."""
     methods = sorted({method for method, _ in section.endpoints})
     paths = [expanded_path(path=path, values=values) for _, path in section.endpoints]
     problems: List[str] = []
@@ -577,6 +611,20 @@ def documented_paging(*, section: Section, record: Any) -> Section:
     """The section with the paging parameters of a paged record documented as query names (D5 "Paging parameters")."""
     added = {name: Row(location=IN_QUERY) for name in paging_parameters(record=record) if name not in section.rows}
     return replace(section, rows={**section.rows, **added})
+
+
+def documented_raw_body(*, section: Section, record: Any) -> Section:
+    """The section as a raw-body record sends it (issue #40, design.md D5): for a record whose ``content_type`` is set,
+    without its `file` row, which is the request body, and with every other `body` row read as `query`, where the
+    record sends it; for any other record, the section unchanged."""
+    if record.content_type is None:
+        return section
+    rows = {
+        name: Row(location=IN_QUERY, parent=row.parent) if row.location == IN_BODY else row
+        for name, row in section.rows.items()
+        if name != RAW_BODY_ROW
+    }
+    return replace(section, rows=rows)
 
 
 # --- Records and calls the tests build ----------------------------------------------------------------------------
@@ -861,6 +909,72 @@ def test_the_method_rejects_a_call_that_differs(problems_of: Callable[..., List[
     assert any(named in problem for problem in problems), problems
 
 
+# --- Issue #40 AC-1.4, AC-3.3: the path forms, read and sent as written (design.md D3, D5) -------------------------
+
+# `openapi-only#download-package-file` and `openapi-only#upload-package-file` share a path with two globs, one of them
+# an optional group's; the download's table holds the globs as `query` rows, the upload's as `body` rows beside its
+# `file` row. The NuGet section's path escapes its parentheses around two globs held as `query` rows. The deploy
+# section's `path` row is `In` `path`, the parameter of its group. Every path value is TEST_VALUE, so each sent path is
+# written here with `v1`.
+GENERIC_DOWNLOAD_ID = "openapi-only#download-package-file"
+GENERIC_UPLOAD_ID = "openapi-only#upload-package-file"
+GENERIC_PATH = "/projects/:id/packages/generic/:package_name/*package_version/(*path/):file_name"
+GENERIC_GLOBS = ("package_version", "path")
+GENERIC_VALUES: Dict[str, Any] = {name: TEST_VALUE for name in ("id", "package_name", *GENERIC_GLOBS, "file_name")}
+GENERIC_SENT_PATH = "/projects/v1/packages/generic/v1/v1/v1/v1"
+GENERIC_GROUP_KEPT_PATH = "/projects/v1/packages/generic/v1/v1/(v1/)v1"
+GENERIC_GROUP_LEFT_OUT_PATH = "/projects/v1/packages/generic/v1/v1/v1"
+UPLOAD_DECLARED = "select"
+UPLOAD_LEFT_OUT = "status"
+NUGET_ID = "openapi-only#the-nuget-v2-feed-single-package-metadata-endpoint"
+NUGET_VALUES: Dict[str, Any] = {name: TEST_VALUE for name in ("project_id", "package_name", "package_version")}
+NUGET_SENT_PATH = "/projects/v1/packages/nuget/v2/Packages(Id='v1',Version='v1')"
+NUGET_ESCAPED_PATH = "/projects/v1/packages/nuget/v2/Packages\\(Id='v1',Version='v1'\\)"
+MODEL_FILE_ID = "deploy#download-a-machine-learning-model-package-file"
+MODEL_FILE_PATH = "/projects/:id/packages/ml_models/:model_version_id/files/(*path/):file_name"
+
+
+def test_a_path_form_is_read_and_sent_as_written() -> None:
+    """The call half passes the download sent with its globs and its group written, a glob held as a `query` row given
+    as a path value, and the NuGet path sent with bare parentheses; it names the path that keeps the group's
+    parentheses, the one that leaves the group out though `path` was given, and the NuGet path still escaped. The
+    reference half passes the download and the deploy file download built with no `Param`, and for the raw-body upload
+    built without `status` names `status` and nothing of the `file` row (issue #40, design.md D3, D5)."""
+    registry = gitlab_module(name="registry")
+    transport = gitlab_module(name="transport")
+    sections = reference_sections(rest_dir=REST_DIR)
+    generic, nuget, upload_section = sections[GENERIC_DOWNLOAD_ID], sections[NUGET_ID], sections[GENERIC_UPLOAD_ID]
+    assert {name: generic.attributes.get(name) for name in GENERIC_GLOBS} == {name: IN_QUERY for name in GENERIC_GLOBS}
+    assert upload_section.rows[RAW_BODY_ROW].location == IN_BODY
+
+    sent = SentCall(method="GET", path=GENERIC_SENT_PATH)
+    assert call_problems(section=generic, values=GENERIC_VALUES, sent=sent) == []
+    for path in (GENERIC_GROUP_KEPT_PATH, GENERIC_GROUP_LEFT_OUT_PATH):
+        problems = call_problems(section=generic, values=GENERIC_VALUES, sent=SentCall(method="GET", path=path))
+        assert any(repr(path) in problem for problem in problems), (path, problems)
+    sent = SentCall(method="GET", path=NUGET_SENT_PATH)
+    assert call_problems(section=nuget, values=NUGET_VALUES, sent=sent) == []
+    sent = SentCall(method="GET", path=NUGET_ESCAPED_PATH)
+    problems = call_problems(section=nuget, values=NUGET_VALUES, sent=sent)
+    assert any(repr(NUGET_ESCAPED_PATH) in problem for problem in problems), problems
+
+    download = registry.RestOperation(operation_id=GENERIC_DOWNLOAD_ID, method="GET", path=GENERIC_PATH)
+    model_file = registry.RestOperation(operation_id=MODEL_FILE_ID, method="GET", path=MODEL_FILE_PATH)
+    upload = registry.RestOperation(
+        operation_id=GENERIC_UPLOAD_ID,
+        method="PUT",
+        path=GENERIC_PATH,
+        params=(registry.Param(name=UPLOAD_DECLARED, location=registry.Location.QUERY),),
+        content_type=transport.CONTENT_TYPE_OCTET_STREAM,
+    )
+
+    assert record_problems(record=download, section=generic) == []
+    assert record_problems(record=model_file, section=sections[MODEL_FILE_ID]) == []
+    assert record_problems(record=upload, section=upload_section) == [
+        f"{GENERIC_UPLOAD_ID}: the query row {UPLOAD_LEFT_OUT!r} is not declared by the record"
+    ]
+
+
 # --- AC-3.1, AC-1.1: every declared record ------------------------------------------------------------------------
 
 
@@ -888,7 +1002,7 @@ def sent_record_problems(
         return [f"{record.operation_id}: call exited {code}: {' | '.join(logged)}"]
     if len(requests) != 1:
         return [f"{record.operation_id}: call sent {len(requests)} requests, not one"]
-    documented = documented_paging(section=section, record=record)
+    documented = documented_paging(section=documented_raw_body(section=section, record=record), record=record)
     differences = call_problems(section=documented, values=values, sent=sent_call(request=requests[0]))
     return [f"{record.operation_id}: {problem}" for problem in differences]
 

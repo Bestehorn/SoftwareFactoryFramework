@@ -16,6 +16,12 @@ Issue #44 (``design.md`` D4) adds: ``upload_variables`` maps each variable a rec
 one in a list, with ``None`` and returns the files with the operations path each fills, in order (AC-3.1).
 ``upload_variables`` also leaves out a definition that has no type, and still reads the ones around it.
 
+Issue #40 (``design.md`` D1, D5) adds the path forms of the reference: ``placeholders`` names every ``:name`` and
+``*name`` in path order (AC-2.4); ``expand`` writes a ``*name`` glob with each ``/`` kept and each part one segment,
+refusing an empty, ``.`` or ``..`` part (AC-2.1, AC-2.2), an optional ``(...)`` group only when its parameter has a
+value (AC-2.3), and an escaped ``\\(`` or ``\\)`` as its parenthesis (AC-2.5); ``send`` sends a raw-body record the
+bytes it is given as its body, and refuses bytes for any other record with nothing sent (AC-3.2).
+
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
 fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
@@ -115,6 +121,54 @@ SPLIT_FILES: Tuple[Tuple[str, Path], ...] = (
     ("variables.files.1", SECOND_FILE),
     ("variables.file", THIRD_FILE),
 )
+# The path forms of issue #40 (design.md D1), each on a reference path of operations-index.md as its row writes it (a
+# `\` is `\\` here, as `families/openapi_only.py` spells it): a `*name` glob, an optional `(...)` group, an escaped
+# parenthesis, and a `:name` inside a segment.
+MAVEN_OPERATION_ID = "synthetic#workhorse-authorize-the-maven-package-file-upload"
+MAVEN_AUTHORIZE_PATH = "/projects/:id/packages/maven/*path/:file_name/authorize"
+MAVEN_VALUES = {"id": 1, "file_name": "x.jar"}
+# The glob of MAVEN_AUTHORIZE_PATH as a refusal names it (design.md § Correctness Properties AC-2.2).
+MAVEN_GLOB = "*path"
+GENERIC_OPERATION_ID = "synthetic#download-package-file"
+GENERIC_PACKAGE_PATH = "/projects/:id/packages/generic/:package_name/*package_version/(*path/):file_name"
+GENERIC_VALUES = {"id": 1, "package_name": "pkg", "package_version": "1.0", "file_name": "file.txt"}
+GENERIC_WITH_GROUP = "/projects/1/packages/generic/pkg/1.0/a/b/file.txt"
+GENERIC_WITHOUT_GROUP = "/projects/1/packages/generic/pkg/1.0/file.txt"
+NUGET_SINGLE_PACKAGE_PATH = (
+    "/projects/:project_id/packages/nuget/v2/Packages\\(Id='*package_name',Version='*package_version'\\)"
+)
+NUGET_FIND_BY_ID_PATH = "/projects/:project_id/packages/nuget/v2/FindPackagesById\\(\\)"
+NUGET_ENUMERATE_PATH = "/projects/:project_id/packages/nuget/v2/Packages\\(\\)"
+NUGET_METADATA_PATH = "/projects/:id/packages/nuget/v2/$metadata"
+DEBIAN_INDEX_PATH = "/projects/:id/packages/debian/dists/*distribution/:component/binary-:architecture/Packages"
+# design.md § Correctness Properties AC-2.5: each case's path and values, and the path `expand` writes for it.
+ESCAPED_CASES = {
+    "single-package": (NUGET_SINGLE_PACKAGE_PATH, {"project_id": 7, "package_name": "N", "package_version": "1.0"}),
+    "find-by-id": (NUGET_FIND_BY_ID_PATH, {"project_id": 7}),
+    "enumerate-with-no-value": (NUGET_ENUMERATE_PATH, {"project_id": 7}),
+    "metadata": (NUGET_METADATA_PATH, {"id": 7}),
+    "glob-value-with-parentheses": (
+        NUGET_SINGLE_PACKAGE_PATH,
+        {"project_id": 7, "package_name": "a(b)'", "package_version": "1.0"},
+    ),
+}
+ESCAPED_WRITTEN = {
+    "single-package": "/projects/7/packages/nuget/v2/Packages(Id='N',Version='1.0')",
+    "find-by-id": "/projects/7/packages/nuget/v2/FindPackagesById()",
+    "enumerate-with-no-value": "/projects/7/packages/nuget/v2/Packages()",
+    "metadata": "/projects/7/packages/nuget/v2/$metadata",
+    "glob-value-with-parentheses": "/projects/7/packages/nuget/v2/Packages(Id='a%28b%29%27',Version='1.0')",
+}
+# The raw-body record of design.md D5 on the reference path of `openapi-only#create-or-update-a-terraform-state`, a
+# record on the same path that is not one, and bytes a text-layer read would translate (`\r\n`) or fail to decode
+# (`\xff`) (design.md § Correctness Properties AC-3.2).
+RAW_OPERATION_ID = "synthetic#create-or-update-a-terraform-state"
+PLAIN_OPERATION_ID = "synthetic#create-or-update-a-terraform-state-without-a-raw-body"
+TERRAFORM_STATE_PATH = "/projects/:id/terraform/state/:name"
+TERRAFORM_STATE_VALUES = {"id": 1, "name": "production"}
+TERRAFORM_STATE_SENT_PATH = "/projects/1/terraform/state/production"
+RAW_MEDIA_TYPE = "application/octet-stream"
+RAW_BYTES = b"terraform state\r\nserial \xff\x00"
 
 
 def load_fixtures() -> ModuleType:
@@ -472,4 +526,150 @@ def test_split_uploads_puts_null_where_each_file_goes() -> None:
     assert files == SPLIT_FILES, (
         "each file with the operations path it fills, variables.<name> or variables.<name>.<index>, in the order of "
         "the values and of each list (design.md D4, AC-3.1)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("path", "named", "required"),
+    [
+        (
+            GENERIC_PACKAGE_PATH,
+            ("id", "package_name", "package_version", "path", "file_name"),
+            ("id", "package_name", "package_version", "file_name"),
+        ),
+        (
+            NUGET_SINGLE_PACKAGE_PATH,
+            ("project_id", "package_name", "package_version"),
+            ("project_id", "package_name", "package_version"),
+        ),
+        (
+            DEBIAN_INDEX_PATH,
+            ("id", "distribution", "component", "architecture"),
+            ("id", "distribution", "component", "architecture"),
+        ),
+        ("/projects/:id/repository/branches/:branch", ("id", "branch"), ("id", "branch")),
+    ],
+    ids=["optional-group", "escaped-parentheses", "glob-and-placeholder-inside-a-segment", "colon-only"],
+)
+def test_placeholders_name_every_path_form(path: str, named: Tuple[str, ...], required: Tuple[str, ...]) -> None:
+    registry = gitlab_module(name="registry")
+    assert registry.placeholders(path=path) == named, (
+        f"{path!r} names {named!r}: every :name and *name, without its sigil, in path order, inside an optional group "
+        "or not (design.md D1, AC-2.4)"
+    )
+    assert registry.required_placeholders(path=path) == required, (
+        f"{path!r} must be given {required!r}: its placeholders with every optional group's left out (design.md D1, "
+        "AC-2.3, AC-2.4)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("1.0/rc 1", "/projects/1/packages/maven/1.0/rc%201/x.jar/authorize"),
+        ("@scope/pkg", "/projects/1/packages/maven/%40scope/pkg/x.jar/authorize"),
+        ("a?b#c", "/projects/1/packages/maven/a%3Fb%23c/x.jar/authorize"),
+        ("%2e%2e/x", "/projects/1/packages/maven/%252e%252e/x/x.jar/authorize"),
+    ],
+    ids=["space", "npm-scope", "query-and-fragment", "encoded-dots"],
+)
+def test_a_glob_value_keeps_its_slashes(value: str, expected: str) -> None:
+    registry = gitlab_module(name="registry")
+    operation = registry.RestOperation(operation_id=MAVEN_OPERATION_ID, method="PUT", path=MAVEN_AUTHORIZE_PATH)
+    assert registry.expand(operation=operation, values={**MAVEN_VALUES, "path": value}) == expected, (
+        f"the glob {MAVEN_GLOB} given {value!r} keeps each `/`, each part between them one percent-encoded segment "
+        "(design.md D1, AC-2.1)"
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    ["a//b", "/a", "a/", "a/./b", "a/../b", "", ".", ".."],
+    ids=["empty-inner-part", "leading-slash", "trailing-slash", "dot-part", "dot-dot-part", "empty", "dot", "dot-dot"],
+)
+def test_a_glob_part_that_is_no_segment_is_refused(value: str) -> None:
+    registry = gitlab_module(name="registry")
+    errors = gitlab_module(name="errors")
+    operation = registry.RestOperation(operation_id=MAVEN_OPERATION_ID, method="PUT", path=MAVEN_AUTHORIZE_PATH)
+    with pytest.raises(errors.GitLabAPIError, match=re.escape(MAVEN_GLOB)):
+        registry.expand(operation=operation, values={**MAVEN_VALUES, "path": value})
+    with pytest.raises(ValueError):
+        registry.expand(operation=operation, values=MAVEN_VALUES)
+
+
+def test_an_optional_group_is_written_only_when_given() -> None:
+    registry = gitlab_module(name="registry")
+    errors = gitlab_module(name="errors")
+    operation = registry.RestOperation(operation_id=GENERIC_OPERATION_ID, method="GET", path=GENERIC_PACKAGE_PATH)
+    written = {
+        "given": registry.expand(operation=operation, values={**GENERIC_VALUES, "path": "a/b"}),
+        "absent": registry.expand(operation=operation, values=GENERIC_VALUES),
+        "none": registry.expand(operation=operation, values={**GENERIC_VALUES, "path": None}),
+    }
+    assert written == {"given": GENERIC_WITH_GROUP, "absent": GENERIC_WITHOUT_GROUP, "none": GENERIC_WITHOUT_GROUP}, (
+        "the group `(*path/)` is written without its parentheses when `path` has a value, and left out whole when "
+        "`path` is absent or None (design.md D1, AC-2.3)"
+    )
+    with pytest.raises(errors.GitLabAPIError):
+        registry.expand(operation=operation, values={**GENERIC_VALUES, "path": ""})
+
+
+def test_an_escaped_parenthesis_is_sent_without_its_backslash() -> None:
+    registry = gitlab_module(name="registry")
+    written = {
+        case: registry.expand(
+            operation=registry.RestOperation(operation_id=f"synthetic#{case}", method="GET", path=path),
+            values=values,
+        )
+        for case, (path, values) in ESCAPED_CASES.items()
+    }
+    assert written == ESCAPED_WRITTEN, (
+        "each `\\(` and `\\)` is sent as its parenthesis and never read as an optional group; `$`, `'`, `,` and `=` "
+        "are sent as the path writes them, and a value's parentheses are percent-encoded (design.md D1, AC-2.5)"
+    )
+
+
+def test_send_sends_a_raw_record_its_bytes(monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    raw_record = registry.RestOperation(
+        operation_id=RAW_OPERATION_ID, method="POST", path=TERRAFORM_STATE_PATH, content_type=RAW_MEDIA_TYPE
+    )
+    plain_record = registry.RestOperation(operation_id=PLAIN_OPERATION_ID, method="POST", path=TERRAFORM_STATE_PATH)
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[synthetic_family(name="synthetic", operations=[raw_record, plain_record])],
+    )
+    sent_url = f"{fixtures.REST_BASE}{TERRAFORM_STATE_SENT_PATH}"
+    fake_gitlab.script(method="POST", url=sent_url)
+    # The request `send` would send if it sent the plain record's bytes is scripted too, so sending it fails this test
+    # on its oracle below rather than on the fake's unscripted-request error.
+    fake_gitlab.script(method="POST", url=sent_url)
+    sleeps: List[float] = []
+    transport = transport_module.Transport(
+        host=fixtures.HOST,
+        token="registry-test-token",
+        token_type=TOKEN_TYPE_PRIVATE,
+        sleep=sleeps.append,
+        clock=lambda: FIXED_CLOCK_SECONDS,
+    )
+
+    registry.send(transport=transport, operation_id=RAW_OPERATION_ID, values=TERRAFORM_STATE_VALUES, data=RAW_BYTES)
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("POST", sent_url)], (
+        "send sends the raw-body record's one request: its method, its path expanded (design.md D5)"
+    )
+    sent = fake_gitlab.requests[0]
+    assert sent.body == RAW_BYTES, "the bytes go out as the body, unchanged (design.md D5, AC-3.2)"
+    assert sent.header(name=fixtures.HEADER_CONTENT_TYPE) == RAW_MEDIA_TYPE, (
+        "the body's Content-Type is the record's media type (design.md D5, AC-3.2)"
+    )
+
+    sent_before = list(fake_gitlab.requests)
+    with pytest.raises(ValueError):
+        registry.send(
+            transport=transport, operation_id=PLAIN_OPERATION_ID, values=TERRAFORM_STATE_VALUES, data=RAW_BYTES
+        )
+    assert fake_gitlab.requests == sent_before, (
+        "bytes given for a record with no media type are refused with no request (design.md D5)"
     )
