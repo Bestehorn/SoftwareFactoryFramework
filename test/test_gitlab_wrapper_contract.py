@@ -1080,6 +1080,21 @@ UPLOAD_MODULE_NAMES = ("id", "module-name", "module-system", "module-version")
 UPLOAD_MODULE_SENT_PATH = "/projects/v1/packages/terraform/modules/v1/v1/v1/file"
 # #40's `registry.PLACEHOLDER` name, copied: the path parameters every index path but the upload-module key holds.
 BASE_PLACEHOLDER = re.compile(pattern=r"[:*](?P<name>[A-Za-z_][A-Za-z0-9_]*)")
+# The `[.format]` suffix row and the container-registry delete row, whose names `BASE_PLACEHOLDER` does not read as
+# written: the suffix is a path parameter too, and a `${NAME}` of the registry path is one (issue #63, design.md D3,
+# D4, D9).
+ARCHIVE_ID = "create#retrieve-file-archive-from-a-repository"
+ARCHIVE_PATH = "/projects/:id/repository/archive[.format]"
+ARCHIVE_NAMES = ("id", "format")
+REGISTRY_DELETE_ID = "package#delete-image-tags-by-reference"
+REGISTRY_DELETE_PATH = "/http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}"
+REGISTRY_DELETE_NAMES = ("CI_REGISTRY_IMAGE", "CI_COMMIT_SHORT_SHA")
+# Each index row whose names are a literal, not `BASE_PLACEHOLDER`'s: its Reference, its one path and its names.
+LITERAL_NAME_ROWS: Dict[str, Tuple[str, Tuple[str, ...]]] = {
+    UPLOAD_MODULE_ID: (UPLOAD_MODULE_PATH, UPLOAD_MODULE_NAMES),
+    ARCHIVE_ID: (ARCHIVE_PATH, ARCHIVE_NAMES),
+    REGISTRY_DELETE_ID: (REGISTRY_DELETE_PATH, REGISTRY_DELETE_NAMES),
+}
 
 
 def test_a_route_prefix_and_a_hyphenated_name_are_read_as_written() -> None:
@@ -1171,16 +1186,19 @@ def test_a_route_prefix_and_a_hyphenated_name_are_read_as_written() -> None:
 def test_only_the_upload_module_path_holds_a_hyphenated_name() -> None:
     """For every row of `operations-index.md`, `registry.placeholders` gives the names the literal copy of #40's
     pattern finds in its path; the one row of `package#upload-module` gives its four names, three of them hyphenated,
-    instead (UB-4; issue #43, design.md D1)."""
+    instead (UB-4; issue #43, design.md D1). Two more rows give their literal names instead: the `archive[.format]`
+    row `("id", "format")`, its suffix, and the delete-by-reference row its two `${NAME}` names (UB-1; issue #63,
+    design.md D9)."""
     registry = gitlab_module(name="registry")
     rows = index_rows(path=INDEX)
-    assert [row.path for row in rows if row.operation_id == UPLOAD_MODULE_ID] == [UPLOAD_MODULE_PATH]
+    for operation_id, (literal_path, _) in LITERAL_NAME_ROWS.items():
+        assert [row.path for row in rows if row.operation_id == operation_id] == [literal_path], operation_id
 
     differing: Dict[str, Tuple[Tuple[str, ...], Tuple[str, ...]]] = {}
     for row in rows:
         expected: Tuple[str, ...]
-        if row.operation_id == UPLOAD_MODULE_ID:
-            expected = UPLOAD_MODULE_NAMES
+        if row.operation_id in LITERAL_NAME_ROWS:
+            expected = LITERAL_NAME_ROWS[row.operation_id][1]
         else:
             expected = tuple(match.group(GROUP_NAME) for match in BASE_PLACEHOLDER.finditer(string=row.path))
         given = registry.placeholders(path=row.path)

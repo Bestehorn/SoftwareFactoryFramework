@@ -71,3 +71,12 @@
 **Evidence:** review/<lane>/tasks-iteration-02.md.
 **Supersedes:** none
 **Artifacts touched:** tasks.md
+
+## DL-009 — 2026-11-11T16:28:41Z — issue-work-orchestrator — phase:IMPLEMENT
+
+**Decision:** Keep IMPL 1.6's extra refusal in `registry.send`: a container-registry record given a body, a file, a request header or raw bytes raises `ValueError` with nothing sent, since `container_registry.send` takes none of them; it narrows what is sent and no record or test reaches it.
+**Driver:** IMPL 1.6 report; design D4 (the registry request carries the path, query and registry token only).
+**Alternatives considered:** drop the inputs silently (rejected: a caller's value would vanish unsent with exit 0).
+**Evidence:** src/payload/scripts/gitlab_api/registry.py `send`; evidence/green/wave-1.txt.
+**Supersedes:** none
+**Artifacts touched:** src/payload/scripts/gitlab_api/registry.py

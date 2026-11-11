@@ -15,6 +15,12 @@ A record whose path starts with `/<route-prefix>/` is routed only under a value 
 UB-2): `test_route_accepts_only_the_records_prefixes` has `route` write each declared npm value in place of
 `/<route-prefix>` and refuse any other text with `ValueError`.
 
+The request forms of issue #63 (AC-2.4, AC-3.1, AC-3.2 and AC-4.2): `test_only_a_declared_endpoint_is_chosen` has
+`lookup` return, of a synthetic ID's records, the one whose method and path equal the endpoint given and refuse any
+other with `ValueError`, `test_each_place_takes_its_own_value` has `expand` write each place of a `positional_names`
+name from its own value, and `test_only_a_listed_format_reaches_the_path` has it write a `[.format]` suffix only for one
+of the record's `suffix_values`, refusing any other text with `ValueError`.
+
 The properties live in this repository's own `test/`, where Hypothesis is a dev extra; the shipped `src/payload/test/`
 stays pytest-only. `src/payload/scripts` is put on `sys.path`, and `gitlab_api` is imported inside each test, so the
 module collects whether or not the package exists yet.
@@ -34,9 +40,11 @@ import ast
 import importlib
 import sys
 from collections.abc import Sequence
+from contextlib import AbstractContextManager
 from pathlib import Path
 from types import ModuleType
 from typing import Any
+from unittest.mock import patch
 from urllib.parse import parse_qsl, quote, unquote, urlencode
 
 import pytest
@@ -93,6 +101,40 @@ ROUTE_PREFIX_TEMPLATE = "/<route-prefix>"
 DIST_TAGS_SUFFIX = "/-/package/:package_name/dist-tags"
 DIST_TAGS_TEMPLATE = ROUTE_PREFIX_TEMPLATE + DIST_TAGS_SUFFIX
 NPM_ROUTE_PREFIXES = ("/packages/npm", "/projects/:id/packages/npm", "/groups/:id/-/packages/npm")
+
+# The endpoint property (issue #63, design.md D1 and "Correctness Properties" AC-2.4): one synthetic ID declared on the
+# three endpoints of the emoji-reaction "Add" section (`docs/api-reference/gitlab/operations-index.md`), in one
+# synthetic family that `discover_families` is made to return.
+METHOD_POST = "POST"
+ENDPOINT_OPERATION_ID = OPERATION_ID_PREFIX + "add-an-emoji-reaction-to-a-resource"
+ISSUE_EMOJI_PATH = "/projects/:id/issues/:issue_iid/award_emoji"
+MERGE_REQUEST_EMOJI_PATH = "/projects/:id/merge_requests/:merge_request_iid/award_emoji"
+SNIPPET_EMOJI_PATH = "/projects/:id/snippets/:snippet_id/award_emoji"
+EMOJI_PATHS = (ISSUE_EMOJI_PATH, MERGE_REQUEST_EMOJI_PATH, SNIPPET_EMOJI_PATH)
+ENDPOINT_METHODS = (METHOD_POST, METHOD_GET)
+SYNTHETIC_FAMILY = "properties"
+SYNTHETIC_FAMILY_MODULE = "synthetic_families." + SYNTHETIC_FAMILY
+DISCOVER_FAMILIES = "discover_families"
+
+# The positional property (issue #63, design.md D2 and "Correctness Properties" AC-3.1, AC-3.2): the group SSH
+# certificate delete, whose path holds `:id` twice, the group's and the certificate's.
+METHOD_DELETE = "DELETE"
+POSITIONAL_PARAMETER = "id"
+GROUPS_PREFIX = "/groups/"
+CERTIFICATES_INFIX = "/ssh_certificates/"
+POSITIONAL_PATH_TEMPLATE = GROUPS_PREFIX + ":" + POSITIONAL_PARAMETER + CERTIFICATES_INFIX + ":" + POSITIONAL_PARAMETER
+PLACES = 2
+# A value of one place: any text UTF-8 can encode but the empty text, `.` and `..`, which are no segment.
+PLACE_VALUES = PATH_VALUES.filter(lambda value: value not in DOT_SEGMENTS)
+
+# The suffix property (issue #63, design.md D3 and "Correctness Properties" AC-4.2): the archive path of the index row
+# and the page's "Available options" (docs.gitlab.com `repositories`), verbatim and in their order.
+ARCHIVE_PATH_TEMPLATE = "/projects/:id/repository/archive[.format]"
+ARCHIVE_FORMATS = ("bz2", "tar", "tar.bz2", "tar.gz", "tb2", "tbz", "tbz2", "zip")
+SUFFIX_PARAMETER = "format"
+SUFFIX_SEPARATOR = "."
+ARCHIVE_PROJECT = "7"
+ARCHIVED_PATH = "/projects/7/repository/archive"
 
 # The UB-2 scan: the entry script and every module under the package, named by their paths below `SCRIPTS`.
 PACKAGE_NAME = "gitlab_api"
@@ -262,6 +304,99 @@ def test_route_accepts_only_the_records_prefixes(prefix: str) -> None:
     else:
         with pytest.raises(expected_exception=ValueError):
             registry.route(operation=operation, prefix=prefix)
+
+
+def serving_one_family(*, registry: ModuleType, operations: Sequence[Any]) -> AbstractContextManager[Any]:
+    """A patch making `registry.discover_families` return one synthetic family that declares `operations`, so `lookup`
+    reads their records alone (R's `serve_families`). It is a context manager entered inside the test body, so each
+    example Hypothesis runs restores the registry; a function-scoped `monkeypatch` would be shared by them all."""
+    family = ModuleType(name=SYNTHETIC_FAMILY_MODULE)
+    family.__dict__.update(FAMILY=SYNTHETIC_FAMILY, OPERATIONS=tuple(operations), PENDING=frozenset())
+
+    def discover_families(*, package: ModuleType | None = None) -> tuple[ModuleType, ...]:
+        return (family,)
+
+    return patch.object(target=registry, attribute=DISCOVER_FAMILIES, new=discover_families)
+
+
+@settings(deadline=None)  # the first example also pays for importing the package
+@given(
+    method=st.one_of(st.sampled_from(elements=ENDPOINT_METHODS), st.text()),
+    path=st.one_of(st.sampled_from(elements=EMOJI_PATHS), st.text()),
+)
+@example(method="post", path=ISSUE_EMOJI_PATH)
+@example(method=METHOD_POST, path="/Projects/:id/issues/:issue_iid/award_emoji")
+@example(method=METHOD_POST, path=ISSUE_EMOJI_PATH + "/")
+@example(method=METHOD_POST, path="/projects/:id/issues/:merge_request_iid/award_emoji")
+@example(method=METHOD_POST, path=MERGE_REQUEST_EMOJI_PATH)
+def test_only_a_declared_endpoint_is_chosen(method: str, path: str) -> None:
+    """AC-2.4: of the records one ID declares, `lookup` given an endpoint returns the record whose method and path
+    equal it as text, and refuses any other pair with `ValueError` — one differing only in case, by a trailing `/` or
+    by a `:name` among them — so no endpoint but a declared one is chosen."""
+    registry = load_registry()
+    records = [
+        registry.RestOperation(operation_id=ENDPOINT_OPERATION_ID, method=METHOD_POST, path=emoji_path)
+        for emoji_path in EMOJI_PATHS
+    ]
+    declared = {(record.method, record.path): record for record in records}
+
+    with serving_one_family(registry=registry, operations=records):
+        if (method, path) in declared:
+            chosen = registry.lookup(operation_id=ENDPOINT_OPERATION_ID, endpoint=(method, path))
+            assert chosen == declared[(method, path)], chosen
+        else:
+            with pytest.raises(expected_exception=ValueError):
+                registry.lookup(operation_id=ENDPOINT_OPERATION_ID, endpoint=(method, path))
+
+
+@settings(deadline=None)  # the first example also pays for importing the package
+@given(first=PLACE_VALUES, second=PLACE_VALUES)
+@example(first="7", second="12345")
+def test_each_place_takes_its_own_value(first: str, second: str) -> None:
+    """AC-3.1 and AC-3.2: on a path that holds `:id` twice, `id` a name of the record's `positional_names`, `expand`
+    writes the first value at the first place and the second at the second, each one segment, free of delimiters,
+    that decodes to its value."""
+    registry = load_registry()
+    operation = registry.RestOperation(
+        operation_id=OPERATION_ID_PREFIX + "delete-a-group-ssh-certificate",
+        method=METHOD_DELETE,
+        path=POSITIONAL_PATH_TEMPLATE,
+        positional_names=(POSITIONAL_PARAMETER,),
+    )
+
+    path = registry.expand(operation=operation, values={POSITIONAL_PARAMETER: [first, second]})
+
+    assert path.startswith(GROUPS_PREFIX), path
+    segments = path[len(GROUPS_PREFIX) :].split(sep=CERTIFICATES_INFIX)
+    assert len(segments) == PLACES, path
+    assert [delimiter for segment in segments for delimiter in SEGMENT_DELIMITERS if delimiter in segment] == [], path
+    assert [unquote(string=segment) for segment in segments] == [first, second], path
+
+
+@settings(deadline=None)  # the first example also pays for importing the package
+@given(value=st.one_of(st.sampled_from(elements=ARCHIVE_FORMATS), st.text()))
+@example(value="ZIP")
+@example(value="rar")
+@example(value="")
+def test_only_a_listed_format_reaches_the_path(value: str) -> None:
+    """AC-4.2: `expand` writes the `[.format]` suffix as `.` and the value for each of the record's `suffix_values`,
+    and refuses any other text — another case, an unlisted format, the empty text — with `ValueError`, so no text but a
+    listed format reaches the path."""
+    registry = load_registry()
+    operation = registry.RestOperation(
+        operation_id=OPERATION_ID_PREFIX + "retrieve-file-archive-from-a-repository",
+        method=METHOD_GET,
+        path=ARCHIVE_PATH_TEMPLATE,
+        suffix_values=ARCHIVE_FORMATS,
+    )
+    values = {PATH_PARAMETER: ARCHIVE_PROJECT, SUFFIX_PARAMETER: value}
+
+    if value in ARCHIVE_FORMATS:
+        path = registry.expand(operation=operation, values=values)
+        assert path == ARCHIVED_PATH + SUFFIX_SEPARATOR + value, path
+    else:
+        with pytest.raises(expected_exception=ValueError):
+            registry.expand(operation=operation, values=values)
 
 
 def scanned_sources() -> dict[str, str]:

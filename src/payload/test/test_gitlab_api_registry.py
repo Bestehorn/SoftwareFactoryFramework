@@ -28,6 +28,16 @@ names they hold on #40's base (AC-3.1, UB-4); ``route`` writes the prefix value 
 ``/<route-prefix>``, and returns a record with no route prefix, given none, as itself (AC-2.2); ``expand`` and ``send``
 refuse a prefix record no prefix was written into, with nothing sent (AC-2.4).
 
+Issue #63 (``design.md`` D1 to D5) adds the request forms the records lacked, each on synthetic records: ``lookup``
+returns, of the records one family declares with an id, the one whose ``(method, path)`` equals the ``endpoint`` it is
+given, and the first declared when it is given none; any other endpoint is refused naming the declared ones in order,
+and an id declared twice is refused as before (AC-2.2, AC-2.4). ``expand`` writes each place of a name in a record's
+``positional_names`` from its own value, while any other name still takes its one value at every place (AC-3.1,
+AC-3.2, UB-1), and a ``[.name]`` suffix as ``.`` and its value only when it is given (AC-4.1). ``base_of`` reads
+whether a path is sent under ``/api/v4``, at the host root or to the container registry (AC-5.1); ``encode`` sends a
+``Location.HEADER`` value as a request header and nowhere else (AC-6.2); ``send`` refuses a container-registry record
+given no project, with nothing sent (AC-5.2).
+
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
 fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
@@ -222,6 +232,140 @@ NUGET_PREFIX_VALUES = ("/groups/:id/-/packages/nuget", "/projects/:id/packages/n
 PROJECT_NUGET_PREFIX = "/projects/:id/packages/nuget"
 SYMBOL_FILE_VALUES = {"id": 1, "file_name": "a.pdb", "signature": "s"}
 SYMBOL_FILE_WRITTEN = "/projects/1/packages/nuget/symbolfiles/a.pdb/s/a.pdb"
+# The request forms of issue #63 (design.md D1 to D5, § Correctness Properties), each on a reference path as its
+# operations-index.md row writes it. F1: the three endpoints of plan.md "Add an emoji reaction to a resource", declared
+# in an order that is neither the section's nor sorted, so only "the first declared" gives the merge-request record;
+# and endpoints no record of the id declares: another path, another method, the method in lower case, another `:name`.
+EMOJI_OPERATION_ID = "synthetic#add-an-emoji-reaction-to-a-resource"
+EMOJI_ENDPOINTS = (
+    ("POST", "/projects/:id/merge_requests/:merge_request_iid/award_emoji"),
+    ("POST", "/projects/:id/snippets/:snippet_id/award_emoji"),
+    ("POST", "/projects/:id/issues/:issue_iid/award_emoji"),
+)
+UNDECLARED_ENDPOINTS = (
+    ("POST", "/projects/:id/epics"),
+    ("PUT", "/projects/:id/issues/:issue_iid/award_emoji"),
+    ("post", "/projects/:id/merge_requests/:merge_request_iid/award_emoji"),
+    ("POST", "/projects/:id/snippets/:snippet/award_emoji"),
+)
+# An id one record declares (UB-1); an id two records of one family declare with one key; an id two families declare.
+ONCE_OPERATION_ID = "synthetic#declared-once"
+ONCE_ENDPOINT = ("GET", "/once")
+SAME_KEY_OPERATION_ID = "synthetic#declared-twice-on-one-key"
+SAME_KEY_ENDPOINT = ("GET", "/twice")
+TWO_FAMILIES_OPERATION_ID = "synthetic-beta#declared-in-two-families"
+TWO_FAMILIES_ENDPOINTS = (("GET", "/alpha/twice"), ("GET", "/beta/twice"))
+DECLARED_TIMES = re.compile(pattern=r"declared [0-9]+ times")
+GRAPHQL_ENDPOINT = ("POST", "/api/graphql")
+# F2: the path of create.md "Delete a group SSH certificate", whose `:id` is the group and then the certificate. Each
+# case gives the two values as a list or a tuple, in place order; one value, three, and a value that is no list are
+# refused (design.md D2, § Correctness Properties AC-3.1, AC-3.2).
+CERTIFICATE_OPERATION_ID = "synthetic#delete-a-group-ssh-certificate"
+CERTIFICATE_PATH = "/groups/:id/ssh_certificates/:id"
+POSITIONAL_NAMES = ("id",)
+POSITIONAL_CASES: Dict[str, Dict[str, Any]] = {
+    "list": {"id": ["7", "my/group"]},
+    "tuple": {"id": ("my/group", "7")},
+}
+POSITIONAL_WRITTEN = {
+    "list": "/groups/7/ssh_certificates/my%2Fgroup",
+    "tuple": "/groups/my%2Fgroup/ssh_certificates/7",
+}
+POSITIONAL_REFUSED: Dict[str, Dict[str, Any]] = {
+    "one-value": {"id": ["7"]},
+    "three-values": {"id": ["7", "my/group", "9"]},
+    "no-list": {"id": "7"},
+}
+# F3: the path of create.md "Retrieve file archive from a repository" and the formats of docs.gitlab.com
+# `repositories` "Available options" (design.md D3, § Correctness Properties AC-4.1).
+ARCHIVE_OPERATION_ID = "synthetic#retrieve-file-archive-from-a-repository"
+ARCHIVE_PATH = "/projects/:id/repository/archive[.format]"
+ARCHIVE_FORMATS = ("bz2", "tar", "tar.bz2", "tar.gz", "tb2", "tbz", "tbz2", "zip")
+ARCHIVE_NAMED = ("id", "format")
+ARCHIVE_REQUIRED = ("id",)
+ARCHIVE_CASES: Dict[str, Dict[str, Any]] = {
+    "zip": {"id": 1, "format": "zip"},
+    "dotted-format": {"id": 1, "format": "tar.gz"},
+    "absent": {"id": 1},
+    "none": {"id": 1, "format": None},
+}
+ARCHIVE_WRITTEN = {
+    "zip": "/projects/1/repository/archive.zip",
+    "dotted-format": "/projects/1/repository/archive.tar.gz",
+    "absent": "/projects/1/repository/archive",
+    "none": "/projects/1/repository/archive",
+}
+# F4: the three index paths that are not under `/api/v4` — software-supply-chain-security.md "Retrieve the token
+# information" at the host root, package.md "Delete image tags by reference" and "Listing all container repositories"
+# on the container registry — and two that are; each with the `registry.Base` member name `base_of` reads and the rest
+# of the path (design.md D4, § Correctness Properties AC-5.1).
+TOKEN_INFO_PATH = "https://HOST/oauth/token/info"
+REGISTRY_DELETE_PATH = "/http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}"
+REGISTRY_CATALOG_PATH = "/http(s)://${CI_REGISTRY}/v2/_catalog"
+USER_STATUS_PATH = "/user/status"
+BASE_CASES = {
+    "host-root": TOKEN_INFO_PATH,
+    "registry-delete": REGISTRY_DELETE_PATH,
+    "registry-catalog": REGISTRY_CATALOG_PATH,
+    "rest": USER_STATUS_PATH,
+    "rest-route-prefix": DIST_TAGS_PATH,
+}
+BASE_READ = {
+    "host-root": ("HOST", "/oauth/token/info"),
+    "registry-delete": ("CONTAINER_REGISTRY", "/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}"),
+    "registry-catalog": ("CONTAINER_REGISTRY", "/v2/_catalog"),
+    "rest": ("REST", USER_STATUS_PATH),
+    "rest-route-prefix": ("REST", DIST_TAGS_PATH),
+}
+REGISTRY_DELETE_NAMES = ("CI_REGISTRY_IMAGE", "CI_COMMIT_SHORT_SHA")
+# F5: the record of software-supply-chain-security.md "Set status of an external control" — its three
+# `- Request headers:` names and its `status` row — with requirements.md AC-6.2's values, given in an order that is not
+# the declared one, so "in the caller's order" shows (design.md D5, § Correctness Properties AC-6.2).
+EXTERNAL_CONTROL_OPERATION_ID = "synthetic#set-status-of-an-external-control"
+EXTERNAL_CONTROL_PATH = "/projects/:id/compliance_external_controls/:external_control_id/status"
+EXTERNAL_CONTROL_HEADERS = ("X-Gitlab-Timestamp", "X-Gitlab-Nonce", "X-Gitlab-Hmac-Sha256")
+STATUS_NAME = "status"
+NONCE_HEADER = "X-Gitlab-Nonce"
+EXTERNAL_CONTROL_VALUES: Dict[str, Any] = {
+    "id": 1,
+    "external_control_id": 3,
+    "X-Gitlab-Hmac-Sha256": "ab12",
+    STATUS_NAME: "pass",
+    "X-Gitlab-Timestamp": 1700000000,
+    NONCE_HEADER: "n1",
+}
+WITHOUT_NONCE = {name: value for name, value in EXTERNAL_CONTROL_VALUES.items() if name != NONCE_HEADER}
+SENT_HEADERS = [("X-Gitlab-Hmac-Sha256", "ab12"), ("X-Gitlab-Timestamp", "1700000000"), (NONCE_HEADER, "n1")]
+SENT_HEADERS_WITHOUT_NONCE = [("X-Gitlab-Hmac-Sha256", "ab12"), ("X-Gitlab-Timestamp", "1700000000")]
+PART_JSON = "json_body"
+PART_HEADERS = "headers"
+STATUS_PAIRS = [(STATUS_NAME, "pass")]
+STATUS_BODY = {STATUS_NAME: "pass"}
+HEADER_ENCODED_PARTS: Dict[str, Dict[str, Any]] = {
+    "json-body": {PART_QUERY: [], PART_FORM: [], PART_JSON: STATUS_BODY, PART_HEADERS: SENT_HEADERS},
+    "form-body": {PART_QUERY: [], PART_FORM: STATUS_PAIRS, PART_JSON: None, PART_HEADERS: SENT_HEADERS},
+    "nonce-not-given": {
+        PART_QUERY: [],
+        PART_FORM: [],
+        PART_JSON: STATUS_BODY,
+        PART_HEADERS: SENT_HEADERS_WITHOUT_NONCE,
+    },
+}
+# F4's container registry: a record on the path of package.md "Delete image tags by reference" with its scope
+# (docs.gitlab.com `container_registry`: `repository:${CI_PROJECT_PATH}:delete`) and its two `${NAME}` values, and the
+# answers design.md D4's steps 1 to 4 read, in step order (§ Correctness Properties AC-5.2).
+REGISTRY_DELETE_OPERATION_ID = "synthetic#delete-image-tags-by-reference"
+REGISTRY_DELETE_SCOPE = "repository:${CI_REGISTRY_IMAGE}:delete"
+REGISTRY_DELETE_VALUES = {"CI_REGISTRY_IMAGE": "group/app", "CI_COMMIT_SHORT_SHA": "1a2b3c4"}
+FIELD_USERNAME = "username"
+FIELD_IMAGE_PREFIX = "container_registry_image_prefix"
+FIELD_REGISTRY_CREDENTIAL = "token"
+REGISTRY_STEP_ANSWERS: Tuple[Any, ...] = (
+    {FIELD_USERNAME: "registry-user"},
+    {FIELD_IMAGE_PREFIX: "registry.example.com/group/app"},
+    {FIELD_REGISTRY_CREDENTIAL: "scripted-registry-answer"},
+    None,
+)
 
 
 def load_fixtures() -> ModuleType:
@@ -262,6 +406,17 @@ def encoded_part(*, encoded: Any, name: str) -> List[Tuple[str, str]]:
     part feeds; read as an attribute or as a mapping key, the two shapes D5 leaves open."""
     part = encoded[name] if isinstance(encoded, Mapping) else getattr(encoded, name)
     return [(str(pair_name), str(pair_value)) for pair_name, pair_value in part]
+
+
+def sent_parts(*, encoded: Any) -> Dict[str, Any]:
+    """Where ``registry.encode``'s result sends its values: the query, form and header pairs and the JSON body (issue
+    #63, design.md D5)."""
+    return {
+        PART_QUERY: encoded_part(encoded=encoded, name=PART_QUERY),
+        PART_FORM: encoded_part(encoded=encoded, name=PART_FORM),
+        PART_JSON: encoded[PART_JSON] if isinstance(encoded, Mapping) else getattr(encoded, PART_JSON),
+        PART_HEADERS: encoded_part(encoded=encoded, name=PART_HEADERS),
+    }
 
 
 def synthetic_family(*, name: str, operations: Sequence[Any]) -> ModuleType:
@@ -813,4 +968,240 @@ def test_a_prefix_record_is_sent_only_under_a_prefix(monkeypatch: pytest.MonkeyP
     assert [(request.method, request.url) for request in fake_gitlab.requests] == [("GET", sent_url)], (
         "send sends the record's one request under the prefix it is given, the prefix's `:id` written in (design.md "
         "D2, AC-2.2)"
+    )
+
+
+def test_lookup_chooses_an_endpoint_of_a_reference(monkeypatch: pytest.MonkeyPatch) -> None:
+    registry = gitlab_module(name="registry")
+    graphql_only = gitlab_module(name="graphql_only")
+
+    def record(*, operation_id: str, endpoint: Tuple[str, str]) -> Any:
+        method, path = endpoint
+        return registry.RestOperation(operation_id=operation_id, method=method, path=path)
+
+    records = {endpoint: record(operation_id=EMOJI_OPERATION_ID, endpoint=endpoint) for endpoint in EMOJI_ENDPOINTS}
+    declared_once = record(operation_id=ONCE_OPERATION_ID, endpoint=ONCE_ENDPOINT)
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[synthetic_family(name="synthetic", operations=[*records.values(), declared_once])],
+    )
+    chosen = {
+        endpoint: registry.lookup(operation_id=EMOJI_OPERATION_ID, endpoint=endpoint) for endpoint in EMOJI_ENDPOINTS
+    }
+    assert chosen == records, (
+        "each endpoint of the id, given as its (method, path), chooses the record that declares it (design.md D1, "
+        "AC-2.4)"
+    )
+    assert registry.lookup(operation_id=EMOJI_OPERATION_ID) == records[EMOJI_ENDPOINTS[0]], (
+        "given no endpoint, lookup returns the first record declared with the id, its base endpoint (design.md D1, "
+        "AC-2.2)"
+    )
+    once = {
+        "no-endpoint": registry.lookup(operation_id=ONCE_OPERATION_ID),
+        "its-endpoint": registry.lookup(operation_id=ONCE_OPERATION_ID, endpoint=ONCE_ENDPOINT),
+    }
+    assert once == {"no-endpoint": declared_once, "its-endpoint": declared_once}, (
+        "an id one record declares is that record, given no endpoint or its own (design.md D1, UB-1)"
+    )
+
+    declared = [f"{method} {path}" for method, path in EMOJI_ENDPOINTS]
+    for endpoint in UNDECLARED_ENDPOINTS:
+        with pytest.raises(ValueError, match=re.escape(EMOJI_OPERATION_ID)) as refusal:
+            registry.lookup(operation_id=EMOJI_OPERATION_ID, endpoint=endpoint)
+        message = str(refusal.value)
+        assert all(part in message for part in endpoint), (
+            f"the refusal of {endpoint!r} names the endpoint given; got {message!r} (design.md D1, AC-2.4)"
+        )
+        positions = [message.find(text) for text in declared]
+        assert -1 not in positions and positions == sorted(positions), (
+            f"the refusal of {endpoint!r} names each declared endpoint as METHOD path, in declaration order "
+            f"{declared!r}; got {message!r} (design.md D1, AC-2.4)"
+        )
+
+    alpha_endpoint, beta_endpoint = TWO_FAMILIES_ENDPOINTS
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[
+            synthetic_family(
+                name="synthetic-alpha",
+                operations=[
+                    record(operation_id=SAME_KEY_OPERATION_ID, endpoint=SAME_KEY_ENDPOINT),
+                    record(operation_id=SAME_KEY_OPERATION_ID, endpoint=SAME_KEY_ENDPOINT),
+                    record(operation_id=TWO_FAMILIES_OPERATION_ID, endpoint=alpha_endpoint),
+                ],
+            ),
+            synthetic_family(
+                name="synthetic-beta",
+                operations=[record(operation_id=TWO_FAMILIES_OPERATION_ID, endpoint=beta_endpoint)],
+            ),
+        ],
+    )
+    twice = (
+        (SAME_KEY_OPERATION_ID, None),
+        (SAME_KEY_OPERATION_ID, SAME_KEY_ENDPOINT),
+        (TWO_FAMILIES_OPERATION_ID, None),
+        (TWO_FAMILIES_OPERATION_ID, alpha_endpoint),
+        (TWO_FAMILIES_OPERATION_ID, beta_endpoint),
+    )
+    for operation_id, given in twice:
+        with pytest.raises(ValueError, match=re.escape(operation_id)) as duplicate_refusal:
+            registry.lookup(operation_id=operation_id, endpoint=given)
+        assert DECLARED_TIMES.search(string=str(duplicate_refusal.value)), (
+            f"{operation_id!r}, declared twice with one key in one family or once in each of two families, is refused "
+            f"as declared more than once whatever the endpoint ({given!r}); got {duplicate_refusal.value} (design.md "
+            "D1, AC-2.4)"
+        )
+
+    graphql_record = registry.GraphQLOperation(
+        operation_id=GRAPHQL_OPERATION_ID,
+        capability=SYNTHETIC_CAPABILITY,
+        document=PROJECT_DOCUMENT,
+    )
+    monkeypatch.setattr(graphql_only, "OPERATIONS", (graphql_record,))
+    assert registry.lookup(operation_id=GRAPHQL_OPERATION_ID) == graphql_record, (
+        "a GraphQL record given no endpoint is found, so the refusal below is the endpoint's (design.md D1)"
+    )
+    with pytest.raises(ValueError):
+        registry.lookup(operation_id=GRAPHQL_OPERATION_ID, endpoint=GRAPHQL_ENDPOINT)
+
+
+def test_each_place_of_a_positional_name_takes_its_own_value() -> None:
+    registry = gitlab_module(name="registry")
+    certificate = registry.RestOperation(
+        operation_id=CERTIFICATE_OPERATION_ID,
+        method="DELETE",
+        path=CERTIFICATE_PATH,
+        positional_names=POSITIONAL_NAMES,
+    )
+    written = {case: registry.expand(operation=certificate, values=values) for case, values in POSITIONAL_CASES.items()}
+    assert written == POSITIONAL_WRITTEN, (
+        "each place of `:id`, a name of positional_names, is written from its own item of the list or tuple given, in "
+        "path order, each as one percent-encoded segment (design.md D2, AC-3.1, AC-3.2)"
+    )
+    for values in POSITIONAL_REFUSED.values():
+        with pytest.raises(ValueError):
+            registry.expand(operation=certificate, values=values)
+
+    symbol_file = registry.RestOperation(
+        operation_id=SYMBOL_FILE_OPERATION_ID, method="GET", path=SYMBOL_FILE_PATH, route_prefixes=NUGET_PREFIX_VALUES
+    )
+    assert symbol_file.positional_names == (), "a record that names no positional name keeps () (design.md D2)"
+    routed = registry.route(operation=symbol_file, prefix=PROJECT_NUGET_PREFIX)
+    assert registry.expand(operation=routed, values=SYMBOL_FILE_VALUES) == SYMBOL_FILE_WRITTEN, (
+        "without positional_names, `:file_name`, which the path holds twice, takes its one value at both places "
+        "(design.md D2, UB-1; #43 UB-4)"
+    )
+
+
+def test_the_suffix_is_written_only_when_given() -> None:
+    registry = gitlab_module(name="registry")
+    assert registry.placeholders(path=ARCHIVE_PATH) == ARCHIVE_NAMED, (
+        "the `[.format]` suffix names the path parameter `format`, after `id`, so a call may give it (design.md D3, "
+        "AC-4.1)"
+    )
+    assert registry.required_placeholders(path=ARCHIVE_PATH) == ARCHIVE_REQUIRED, (
+        "the suffix is optional: a call need not give `format` (design.md D3, AC-4.1)"
+    )
+    archive = registry.RestOperation(
+        operation_id=ARCHIVE_OPERATION_ID, method="GET", path=ARCHIVE_PATH, suffix_values=ARCHIVE_FORMATS
+    )
+    written = {case: registry.expand(operation=archive, values=values) for case, values in ARCHIVE_CASES.items()}
+    assert written == ARCHIVE_WRITTEN, (
+        "the suffix is written as `.` and the format given, verbatim, and left out whole when `format` is absent or "
+        "None; `[.format]` is never written (design.md D3, AC-4.1)"
+    )
+
+
+def test_the_base_is_read_from_the_path() -> None:
+    registry = gitlab_module(name="registry")
+    read = {case: registry.base_of(path=path) for case, path in BASE_CASES.items()}
+    expected = {case: (getattr(registry.Base, member), rest) for case, (member, rest) in BASE_READ.items()}
+    assert read == expected, (
+        "a path starting `https://HOST/` is read as HOST and the rest, one starting `/http(s)://${CI_REGISTRY}/` as "
+        "CONTAINER_REGISTRY and the rest, any other as REST and the whole path (design.md D4, AC-5.1)"
+    )
+    named = {
+        "placeholders": registry.placeholders(path=REGISTRY_DELETE_PATH),
+        "required": registry.required_placeholders(path=REGISTRY_DELETE_PATH),
+    }
+    assert named == {"placeholders": REGISTRY_DELETE_NAMES, "required": REGISTRY_DELETE_NAMES}, (
+        "each ${NAME} of the rest of a container-registry path is a path parameter, in path order, and the root's "
+        "`${CI_REGISTRY}` is none (design.md D4, AC-5.1)"
+    )
+
+
+def test_a_header_param_is_encoded_as_a_header() -> None:
+    registry = gitlab_module(name="registry")
+    params = (
+        *(
+            registry.Param(name=name, location=registry.Location.HEADER, required=True)
+            for name in EXTERNAL_CONTROL_HEADERS
+        ),
+        registry.Param(name=STATUS_NAME, location=registry.Location.BODY, required=True),
+    )
+
+    def record(*, body: Any) -> Any:
+        return registry.RestOperation(
+            operation_id=EXTERNAL_CONTROL_OPERATION_ID,
+            method="PATCH",
+            path=EXTERNAL_CONTROL_PATH,
+            params=params,
+            body=body,
+        )
+
+    json_record = record(body=registry.BodyFormat.JSON)
+    form_record = record(body=registry.BodyFormat.FORM)
+    encoded = {
+        "json-body": registry.encode(operation=json_record, values=EXTERNAL_CONTROL_VALUES),
+        "form-body": registry.encode(operation=form_record, values=EXTERNAL_CONTROL_VALUES),
+        "nonce-not-given": registry.encode(operation=json_record, values=WITHOUT_NONCE),
+    }
+    parts = {case: sent_parts(encoded=value) for case, value in encoded.items()}
+    assert parts == HEADER_ENCODED_PARTS, (
+        "each header value given is in headers, as text, under its declared name, in the caller's order, and never in "
+        "the query, the form or the JSON body; a header not given is not there (design.md D5, AC-6.2)"
+    )
+
+
+def test_send_fetches_the_registry_token_before_the_registry(monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    record = registry.RestOperation(
+        operation_id=REGISTRY_DELETE_OPERATION_ID,
+        method="DELETE",
+        path=REGISTRY_DELETE_PATH,
+        token_scope=REGISTRY_DELETE_SCOPE,
+    )
+    # The real families stay served beside the synthetic one, so the records of design.md D4's steps 1 and 2 are found:
+    # a send that went ahead without the project would send step 1, not fail on an unknown id with nothing sent.
+    declared = registry.discover_families()
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[*declared, synthetic_family(name="synthetic", operations=[record])],
+    )
+    assert registry.encode(operation=record, values=REGISTRY_DELETE_VALUES) == registry.EncodedRequest(), (
+        "each ${NAME} of the registry path is a path parameter, so the refusal below is send's and not encode's "
+        "refusal of an undeclared value (design.md D4)"
+    )
+    # The answers of the four steps are queued, so a send that went ahead fails this test on its oracle below rather
+    # than on the fake's unscripted-request error.
+    for answer in REGISTRY_STEP_ANSWERS:
+        fake_gitlab.script_next(body=answer)
+    sleeps: List[float] = []
+    transport = transport_module.Transport(
+        host=fixtures.HOST,
+        token="registry-test-token",
+        token_type=TOKEN_TYPE_PRIVATE,
+        sleep=sleeps.append,
+        clock=lambda: FIXED_CLOCK_SECONDS,
+    )
+
+    with pytest.raises(ValueError):
+        registry.send(transport=transport, operation_id=REGISTRY_DELETE_OPERATION_ID, values=REGISTRY_DELETE_VALUES)
+    assert fake_gitlab.requests == [], (
+        "a container-registry record sent without the configured project is refused before step 1, with no request to "
+        "the instance or the registry (design.md D4, AC-5.2)"
     )

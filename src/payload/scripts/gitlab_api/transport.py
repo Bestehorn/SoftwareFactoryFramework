@@ -17,7 +17,17 @@ operation record:
 - ``graphql`` POSTs ``{"query", "variables"}`` to ``/api/graphql`` and raises on GraphQL errors at HTTP ``200``;
   ``graphql_nodes`` pages a connection by ``pageInfo.endCursor`` (AC-4.1 to AC-4.3);
 - ``graphql`` given files sends the multipart GraphQL request of ``graphql/conventions.md`` "File uploads", one
-  ``multipart/form-data`` POST: the parts ``operations`` and ``map``, then one part per file (issue #44 D4, AC-3.1).
+  ``multipart/form-data`` POST: the parts ``operations`` and ``map``, then one part per file (issue #44 D4, AC-3.1);
+- ``request`` and ``request_raw`` send under the root of their ``base`` (issue #63 D4): ``Base.REST`` under
+  ``https://<hostname>/api/v4``, ``Base.HOST`` under ``https://<hostname>``; ``Base.CONTAINER_REGISTRY`` raises
+  ``ValueError``, for only ``container_registry_request`` reaches the registry. ``container_registry_token`` asks
+  ``https://<hostname>/jwt/auth`` for a registry token with ``Authorization: Basic`` of ``<login>:<token>`` (RFC 7617)
+  as its only credential header; ``container_registry_request`` sends ``Authorization: Bearer <registry token>`` alone
+  to the registry's origin, the ``destination`` ``_send`` holds the URL to, so the configured token reaches only the
+  configured origin (UB-2);
+- the ``headers`` a caller gives are sent beside ``Accept``, the ``Content-Type`` and the one credential header; a name
+  in ``TRANSPORT_HEADER_NAMES`` (ignoring case) and a value ``registry.check_header_value`` refuses (CR, LF or NUL)
+  raise ``ValueError`` before anything is sent (issue #63 D5).
 
 The token never enters a URL, a log record or an exception message. It comes from ``config/gitlab.json`` through
 ``Transport.from_config`` (the config keys are the ``FIELD_*`` constants below); nothing here reads the process
@@ -26,6 +36,7 @@ environment. Standard library only; Python 3.9.
 
 from __future__ import annotations
 
+import base64
 import http.client
 import json
 import logging
@@ -43,7 +54,7 @@ from pathlib import Path
 from typing import IO, Any, Callable, Dict, Iterator, List, Mapping, Optional, Sequence, Tuple, Union
 
 from gitlab_api.errors import GitLabAPIError, GitLabGraphQLResponseError, GitLabRateLimitError
-from gitlab_api.registry import Paging, Pair
+from gitlab_api.registry import Base, Paging, Pair, check_header_value
 
 LOGGER = logging.getLogger(__name__)
 
@@ -58,9 +69,17 @@ FIELD_IN_PROGRESS_LABEL = "in_progress_label"
 
 HEADER_AUTHORIZATION = "Authorization"
 BEARER_PREFIX = "Bearer "
+# RFC 7617 section 2: `Basic`, then the Base64 of the user-id, a single colon and the password.
+BASIC_PREFIX = "Basic "
+BASIC_SEPARATOR = ":"
 
 HEADER_ACCEPT = "Accept"
 HEADER_CONTENT_TYPE = "Content-Type"
+# The headers Python's `AbstractHTTPHandler.do_request_` adds unless the request already holds them (#63 design.md D5).
+HEADER_CONTENT_LENGTH = "Content-Length"
+HEADER_TRANSFER_ENCODING = "Transfer-Encoding"
+HEADER_HOST = "Host"
+HEADER_USER_AGENT = "User-Agent"
 HEADER_CONTENT_DISPOSITION = "Content-Disposition"
 HEADER_RETRY_AFTER = "Retry-After"
 HEADER_LINK = "Link"
@@ -81,8 +100,16 @@ METHOD_POST = "POST"
 FOLLOWED_REDIRECT_METHODS = frozenset({METHOD_GET, METHOD_HEAD})
 
 REST_BASE_TEMPLATE = "https://{host}/api/v4"
+# #63 design.md D4 "The host root": the root of a record documented under `https://HOST`, outside /api/v4.
+HOST_ROOT_TEMPLATE = "https://{host}"
 GRAPHQL_URL_TEMPLATE = "https://{host}/api/graphql"
 REST_PATH_PREFIX = "/"
+# doc/api/container_registry.md: a registry token is asked for at
+# `${CI_SERVER_URL}/jwt/auth?service=container_registry&scope=${SCOPE}` (#63 design.md D4 step 3).
+JWT_AUTH_PATH = "/jwt/auth"
+PARAM_SERVICE = "service"
+PARAM_SCOPE = "scope"
+SERVICE_CONTAINER_REGISTRY = "container_registry"
 # The scheme's default port, as `http.client` connects (`HTTPConnection.default_port`); any other scheme has none.
 DEFAULT_PORTS: Dict[str, int] = {"https": http.client.HTTPS_PORT, "http": http.client.HTTP_PORT}
 PORT_SEPARATOR = ":"
@@ -119,6 +146,9 @@ FIELD_MESSAGE = "message"
 FIELD_ERROR = "error"
 FIELD_ERROR_DESCRIPTION = "error_description"
 FIELD_SCOPE = "scope"
+# authenticate_with_container_registry.md "Authenticate with the registry API": the registry token is the `/jwt/auth`
+# answer's `token` field.
+FIELD_REGISTRY_CREDENTIAL = "token"
 FIELD_QUERY = "query"
 FIELD_VARIABLES = "variables"
 FIELD_DATA = "data"
@@ -160,6 +190,20 @@ TOKEN_HEADERS: Dict[TokenType, Tuple[str, str]] = {
 # `Authorization`, `Job-token`) and as `Request.remove_header` matches it. Derived from TOKEN_HEADERS, so a header a
 # token type sends cannot be missing from what a cross-origin redirect strips.
 CREDENTIAL_HEADERS = tuple(name.capitalize() for name, _ in TOKEN_HEADERS.values())
+# #63 design.md D5: the header names a caller may not give, lower-cased, as RFC 9110 section 5.1 compares them — those
+# the transport sets, those urllib adds, and every token type's credential header (derived from TOKEN_HEADERS).
+TRANSPORT_HEADER_NAMES = frozenset(
+    name.lower()
+    for name in (
+        HEADER_ACCEPT,
+        HEADER_CONTENT_TYPE,
+        HEADER_CONTENT_LENGTH,
+        HEADER_TRANSFER_ENCODING,
+        HEADER_HOST,
+        HEADER_USER_AGENT,
+        *(header for header, _ in TOKEN_HEADERS.values()),
+    )
+)
 
 
 def token_type_of(*, value: Union[TokenType, str]) -> TokenType:
@@ -175,6 +219,22 @@ def credential_header(*, token_type: TokenType, token: str) -> Tuple[str, str]:
     """The one header name and value that carry ``token`` for ``token_type``."""
     name, prefix = TOKEN_HEADERS[token_type]
     return name, prefix + token
+
+
+def basic_credential(*, login: str, token: str) -> Tuple[str, str]:
+    """``Authorization: Basic`` of ``<login>:<token>``: the user-id, a single colon and the password, UTF-8 encoded,
+    then Base64 (RFC 7617 section 2)."""
+    octets = f"{login}{BASIC_SEPARATOR}{token}".encode(encoding=TEXT_ENCODING)
+    return HEADER_AUTHORIZATION, BASIC_PREFIX + base64.b64encode(s=octets).decode(encoding=ASCII_ENCODING)
+
+
+def check_request_header(*, name: str, value: str) -> None:
+    """Raise ``ValueError`` for a header a caller may not give: a name in ``TRANSPORT_HEADER_NAMES``, compared ignoring
+    case, or a value ``registry.check_header_value`` refuses (CR, LF or NUL; #63 design.md D5). The message names the
+    header and never quotes its value, which may be a credential."""
+    if name.lower() in TRANSPORT_HEADER_NAMES:
+        raise ValueError(f"the request header {name!r} is the transport's to send; a caller may not give it")
+    check_header_value(name=name, value=value)
 
 
 @dataclass(frozen=True)
@@ -217,6 +277,12 @@ def origin(*, url: str) -> Origin:
         authority, port_text = authority[:separator], authority[separator + 1 :]
     scheme = request.type.lower()
     return Origin(scheme=scheme, host=authority.lower(), port=_port(url=url, scheme=scheme, text=port_text))
+
+
+def _destination_of(*, root: str) -> Origin:
+    """``origin(url=root)``, for ``Transport.container_registry_request``, whose ``origin`` parameter hides the
+    function."""
+    return origin(url=root)
 
 
 class CredentialStrippingRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -441,17 +507,38 @@ def request_body(
     return None, None
 
 
+def rooted_url(*, root: str, path: str, query: Sequence[Pair]) -> str:
+    """``root`` + ``path``, then the query string of ``query`` when it holds pairs; a path not starting with ``/``
+    raises ``ValueError``."""
+    if not path.startswith(REST_PATH_PREFIX):
+        raise ValueError(f"a request path starts with {REST_PATH_PREFIX!r}: {path!r}")
+    url = root + path
+    return f"{url}?{join_pairs(pairs=query)}" if query else url
+
+
 def _build_request(
-    *, method: str, url: str, data: Optional[bytes], content_type: Optional[str], credential: Tuple[str, str]
+    *,
+    method: str,
+    url: str,
+    data: Optional[bytes],
+    content_type: Optional[str],
+    credential: Tuple[str, str],
+    headers: Sequence[Pair],
 ) -> urllib.request.Request:
-    """A request carrying ``Accept``, its ``Content-Type`` and the credential, all set with ``add_header`` so the
-    redirect handler decides on the credential at every hop."""
+    """A request carrying ``Accept``, its ``Content-Type``, the caller's ``headers`` and the credential, all set with
+    ``add_header`` so the redirect handler decides on the credential at every hop. Every header of ``headers`` is
+    checked by ``check_request_header`` first, so a refused one raises ``ValueError`` before a request exists; a name
+    given twice keeps its last value, as ``add_header`` stores one value per name (#63 design.md D5)."""
+    for name, value in headers:
+        check_request_header(name=name, value=value)
     request = urllib.request.Request(url=url, data=data, method=method)
     request.add_header(key=HEADER_ACCEPT, val=CONTENT_TYPE_JSON)
     if data is not None and content_type:
         request.add_header(key=HEADER_CONTENT_TYPE, val=content_type)
-    name, value = credential
-    request.add_header(key=name, val=value)
+    for name, value in headers:
+        request.add_header(key=name, val=value)
+    credential_name, credential_value = credential
+    request.add_header(key=credential_name, val=credential_value)
     return request
 
 
@@ -519,6 +606,9 @@ class Transport:
         self._rest_base = REST_BASE_TEMPLATE.format(host=host)
         self._graphql_url = GRAPHQL_URL_TEMPLATE.format(host=host)
         self._origin = origin(url=self._rest_base)
+        # The root each base sends under (#63 design.md D4); `Base.CONTAINER_REGISTRY` has none here, for only
+        # `container_registry_request` reaches the registry, with the registry token.
+        self._roots: Dict[Base, str] = {Base.REST: self._rest_base, Base.HOST: HOST_ROOT_TEMPLATE.format(host=host)}
 
     @classmethod
     def from_config(cls, *, config: Mapping[str, Any]) -> Transport:
@@ -540,11 +630,22 @@ class Transport:
         form: Optional[Sequence[Pair]] = None,
         json_body: Any = None,
         files: Optional[Sequence[Tuple[str, Path]]] = None,
+        base: Base = Base.REST,
+        headers: Sequence[Pair] = (),
     ) -> Response:
-        """One REST request to ``path`` under ``/api/v4``; empty ``form`` and ``files`` count as absent."""
-        url = self._rest_url(path=path, query=tuple(query or ()))
+        """One REST request to ``path`` under the root of ``base`` (``/api/v4`` for ``Base.REST``, the host's root for
+        ``Base.HOST``; ``Base.CONTAINER_REGISTRY`` raises ``ValueError``), with ``headers`` beside the transport's;
+        empty ``form`` and ``files`` count as absent (#63 design.md D4, D5)."""
+        url = self._url(base=base, path=path, query=tuple(query or ()))
         data, content_type = request_body(form=tuple(form or ()), json_body=json_body, files=tuple(files or ()))
-        return self._send(method=method, url=url, data=data, content_type=content_type, credential=self._credential)
+        return self._send(
+            method=method,
+            url=url,
+            data=data,
+            content_type=content_type,
+            credential=self._credential,
+            headers=tuple(headers),
+        )
 
     def request_raw(
         self,
@@ -554,12 +655,50 @@ class Transport:
         query: Optional[Sequence[Pair]] = None,
         data: Optional[bytes] = None,
         content_type: str,
+        base: Base = Base.REST,
+        headers: Sequence[Pair] = (),
     ) -> Response:
-        """One REST request to ``path`` under ``/api/v4`` whose body is ``data``, unchanged, sent as ``content_type``;
-        ``data`` ``None`` sends no body and no ``Content-Type``. The origin check, the one credential header and the
-        redirect handler are ``request``'s (#40 design.md D5)."""
-        url = self._rest_url(path=path, query=tuple(query or ()))
-        return self._send(method=method, url=url, data=data, content_type=content_type, credential=self._credential)
+        """One REST request to ``path`` under the root of ``base``, as ``request``'s, whose body is ``data``, unchanged,
+        sent as ``content_type``; ``data`` ``None`` sends no body and no ``Content-Type``. The origin check, the one
+        credential header, the ``headers`` and the redirect handler are ``request``'s (#40 design.md D5, #63 D4, D5)."""
+        url = self._url(base=base, path=path, query=tuple(query or ()))
+        return self._send(
+            method=method,
+            url=url,
+            data=data,
+            content_type=content_type,
+            credential=self._credential,
+            headers=tuple(headers),
+        )
+
+    # --- The container registry (#63 design.md D4 steps 3 and 4) ---
+
+    def container_registry_token(self, *, login: str, scope: str) -> str:
+        """The registry token for ``scope``: the ``token`` of the answer to
+        ``GET https://<hostname>/jwt/auth?service=container_registry&scope=<scope>``, sent on the configured origin with
+        ``Authorization: Basic`` of ``<login>:<token>`` (RFC 7617) as its only credential header (D4 step 3)."""
+        url = rooted_url(
+            root=self._roots[Base.HOST],
+            path=JWT_AUTH_PATH,
+            query=((PARAM_SERVICE, SERVICE_CONTAINER_REGISTRY), (PARAM_SCOPE, scope)),
+        )
+        response = self._send(method=METHOD_GET, url=url, credential=basic_credential(login=login, token=self._token))
+        registry_token: str = response.value[FIELD_REGISTRY_CREDENTIAL]
+        return registry_token
+
+    def container_registry_request(
+        self, *, origin: str, method: str, path: str, query: Sequence[Pair], token: str
+    ) -> Response:
+        """One request to the container registry at ``origin`` (``https://<registry host>[:<port>]``, D4 step 2) for
+        ``path`` and ``query``, carrying ``Authorization: Bearer <token>``, the registry token, as its only credential.
+        ``_send`` holds the URL to ``origin``'s origin, so the configured token reaches only the configured origin and
+        the registry token only the registry (D4 step 4, UB-2)."""
+        return self._send(
+            method=method,
+            url=rooted_url(root=origin, path=path, query=tuple(query)),
+            credential=credential_header(token_type=TokenType.BEARER, token=token),
+            destination=_destination_of(root=origin),
+        )
 
     def pages(self, *, path: str, query: Optional[Sequence[Pair]] = None, paging: Paging) -> Iterator[Any]:
         """The items of every page of a list endpoint, in page order, each page fetched only when the previous one is
@@ -568,7 +707,7 @@ class Transport:
         first_query = tuple(query or ())
         if paging is Paging.OFFSET and all(name != PARAM_PER_PAGE for name, _ in first_query):
             first_query += ((PARAM_PER_PAGE, str(MAX_PER_PAGE)),)
-        url: Optional[str] = self._rest_url(path=path, query=first_query)
+        url: Optional[str] = self._url(base=Base.REST, path=path, query=first_query)
         while url is not None:
             response = self._send(method=METHOD_GET, url=url, credential=self._credential)
             yield from _page_items(response=response, url=url)
@@ -588,13 +727,17 @@ class Transport:
         if not page:
             return None
         unpaged = tuple(pair for pair in query if pair[0] != PARAM_PAGE)
-        return self._rest_url(path=path, query=unpaged + ((PARAM_PAGE, page),))
+        return self._url(base=Base.REST, path=path, query=unpaged + ((PARAM_PAGE, page),))
 
-    def _rest_url(self, *, path: str, query: Sequence[Pair]) -> str:
-        if not path.startswith(REST_PATH_PREFIX):
-            raise ValueError(f"a REST path starts with {REST_PATH_PREFIX!r}: {path!r}")
-        url = self._rest_base + path
-        return f"{url}?{join_pairs(pairs=query)}" if query else url
+    def _url(self, *, base: Base, path: str, query: Sequence[Pair]) -> str:
+        """The URL of ``path`` under the root of ``base``; a base with no root here raises ``ValueError`` before
+        anything is sent (#63 design.md D4)."""
+        root = self._roots.get(base)
+        if root is None:
+            raise ValueError(
+                f"a {base.name} path is sent with container_registry_request, not with request or request_raw: {path!r}"
+            )
+        return rooted_url(root=root, path=path, query=query)
 
     # --- GraphQL ---
 
@@ -678,17 +821,29 @@ class Transport:
         credential: Tuple[str, str],
         data: Optional[bytes] = None,
         content_type: Optional[str] = None,
+        headers: Sequence[Pair] = (),
+        destination: Optional[Origin] = None,
     ) -> Response:
-        """Send one request to the configured origin, retrying a ``429``; an error status raises (AC-3.2 to AC-3.5).
+        """Send one request to ``destination``, the configured origin by default, retrying a ``429``; an error status
+        raises (AC-3.2 to AC-3.5).
 
-        A URL on another origin raises ``GitLabAPIError`` naming it before anything is sent."""
+        A URL on another origin raises ``GitLabAPIError`` naming it, and a header of ``headers`` that
+        ``check_request_header`` refuses raises ``ValueError``, before anything is sent. Only
+        ``container_registry_request`` passes another ``destination``, with a credential of the registry token alone
+        (#63 design.md D4, UB-2)."""
+        expected = self._origin if destination is None else destination
         found = origin(url=url)
-        if found != self._origin:
-            raise GitLabAPIError(f"refusing {method} {url}: its origin {found} is not the configured {self._origin}")
+        if found != expected:
+            raise GitLabAPIError(f"refusing {method} {url}: its origin {found} is not the destination {expected}")
         retries = 0
         while True:
             request = _build_request(
-                method=method, url=url, data=data, content_type=content_type, credential=credential
+                method=method,
+                url=url,
+                data=data,
+                content_type=content_type,
+                credential=credential,
+                headers=headers,
             )
             response = self._attempt(request=request, method=method, url=url)
             if response.status != HTTPStatus.TOO_MANY_REQUESTS:
