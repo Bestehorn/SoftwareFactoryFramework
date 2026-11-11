@@ -854,16 +854,23 @@ def test_an_unreachable_call_matches_its_reference_section(
     }
     assert judged == UNREACHABLE_EXAMPLES
     section = sections[BUDGET_UPDATE]
+    registry = _import_product_module(name=REGISTRY)
     # Step 1 and 2: the record a slice would write, and the reference half on it.
     record = _budget_record(
-        registry=_import_product_module(name=REGISTRY),
+        registry=registry,
         transport=_import_product_module(name=TRANSPORT),
         body_params=BUDGET_BODY_NAMES,
     )
     assert record_problems(record=record, section=section) == []
-    # Step 3: the record declared, for this test only.
+    # Step 3: the record declared, for this test only, in place of any record the family already declares of its ID
+    # (issue #33 DL-005), so the ID is declared once and `registry.lookup` returns this record.
     billing = _import_product_module(name=BILLING_FAMILY)
-    monkeypatch.setattr(target=billing, name=ATTRIBUTE_OPERATIONS, value=(*billing.OPERATIONS, record))
+    others = tuple(
+        each
+        for each in billing.OPERATIONS
+        if not (isinstance(each, registry.RestOperation) and each.operation_id == record.operation_id)
+    )
+    monkeypatch.setattr(target=billing, name=ATTRIBUTE_OPERATIONS, value=(*others, record))
     expected = expected_call(section=section, values=BUDGET_PATH_VALUES)
     assert expected.path == BUDGET_PATH
     # Step 4: the call through the product's `main`, against a host that answers the `PATCH`.
