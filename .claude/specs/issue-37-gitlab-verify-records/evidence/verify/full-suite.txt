@@ -1,0 +1,20 @@
+# verify: whole-suite verdict (issue #37, PR #58)
+command: python scripts/github_wrapper.py get-run 42984180429 ; python scripts/github_wrapper.py get-jobs 42984180429
+tree HEAD (git rev-parse HEAD in the worktree): a11645b624ff9a48104ea99518cfd9eca771448a  # pragma: allowlist secret
+get-run 42984180429 (fields quoted from the wrapper output, exit=0):
+  "name": "ci"
+  "head_branch": "issue-37-gitlab-verify-records"
+  "head_sha": "a11645b624ff9a48104ea99518cfd9eca771448a"  # pragma: allowlist secret
+  "event": "pull_request"
+  "status": "completed"
+  "conclusion": "success"
+  "pull_requests": number 58, base main 52403f8e60b896f934282ea18efe44547be65bdd  # pragma: allowlist secret
+  "run_attempt": 1
+  "run_started_at": "2026-11-11T08:04:42Z", "updated_at": "2026-11-11T08:06:58Z"
+get-jobs 42984180429 (complete output, exit=0):
+130401333350   completed    success      verify (security)
+130401333706   completed    success      verify (tests)
+130401333788   completed    success      verify (lint)
+130401333881   completed    success      verify (types)
+130402151165   completed    success      report
+verdict: GREEN; head_sha equals the tree's HEAD; the merge base with origin/main is the PR base 52403f8.
