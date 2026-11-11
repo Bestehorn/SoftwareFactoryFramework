@@ -25,7 +25,10 @@ Green captures:
 **Verifier.**
 - **Round 1:** REFUTED (M2c, M2l), both test gaps (`evidence/verify/refutation-report.md`). The other 22 mutants were killed, the whole-wave reverts reproduced the red captures, and F.2 to F.4 held. DL-008 added the two tests and changed no product file.
 - **Round 2:** VERIFIED (`evidence/verify/refutation-report-2.md`). M2c, M2l and nine near-variants were killed, and registry.py's refusal line is now covered.
+- **The merge with #46** (5e6ad6f, code-merge-reviewer) kept both sides. Its follow-up c0b697b makes a `graphql/` call refuse `--input` (DL-009, #46 AC-1.3).
+- **Round 3:** REFUTED (C3), a test gap (`evidence/verify/refutation-report-3.md`). No test noticed when the both-bodies refusal was removed from the GraphQL path. DL-010 added `test_a_raw_body_beside_a_variable_is_refused_first`.
+- **Round 4:** VERIFIED (`evidence/verify/refutation-report-4.md`). C3 and six near-variants were killed.
 
-**Whole suite.** CI run 42987753500 success on 67276ba.
+**Whole suite.** CI run 42998537938 success on 683a86c.
 
 E2E: not applicable. The real-forge check is #10's fixture on an ephemeral `sff-test-*` repository. G runs every call through `main`, and Q proves every document against the reference, in CI job `verify`, leg `tests`.
