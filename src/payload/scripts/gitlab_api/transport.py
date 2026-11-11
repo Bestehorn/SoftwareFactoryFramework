@@ -7,7 +7,8 @@ operation record:
   origin: ``_send`` refuses a URL on any other origin before sending it, and ``CredentialStrippingRedirectHandler``
   drops every credential header on a redirect to another origin, for every later hop as well (AC-3.1);
 - query and form pairs keep their brackets literal and send ``+`` as ``%2B`` (AC-2.3); a JSON body is native JSON; a
-  file makes the body ``multipart/form-data`` (AC-2.4);
+  file makes the body ``multipart/form-data`` (AC-2.4); ``request_raw`` sends a raw body's bytes unchanged under the
+  given ``Content-Type`` (#40 AC-3.2);
 - ``pages`` follows offset paging by ``Link`` ``rel="next"`` or ``x-next-page`` and keyset paging by ``Link`` only,
   never by ``x-total-pages`` (AC-2.5, AC-2.6);
 - a ``429`` waits ``Retry-After`` seconds, else backs off exponentially, and raises ``GitLabRateLimitError`` when the
@@ -543,6 +544,21 @@ class Transport:
         """One REST request to ``path`` under ``/api/v4``; empty ``form`` and ``files`` count as absent."""
         url = self._rest_url(path=path, query=tuple(query or ()))
         data, content_type = request_body(form=tuple(form or ()), json_body=json_body, files=tuple(files or ()))
+        return self._send(method=method, url=url, data=data, content_type=content_type, credential=self._credential)
+
+    def request_raw(
+        self,
+        *,
+        method: str,
+        path: str,
+        query: Optional[Sequence[Pair]] = None,
+        data: Optional[bytes] = None,
+        content_type: str,
+    ) -> Response:
+        """One REST request to ``path`` under ``/api/v4`` whose body is ``data``, unchanged, sent as ``content_type``;
+        ``data`` ``None`` sends no body and no ``Content-Type``. The origin check, the one credential header and the
+        redirect handler are ``request``'s (#40 design.md D5)."""
+        url = self._rest_url(path=path, query=tuple(query or ()))
         return self._send(method=method, url=url, data=data, content_type=content_type, credential=self._credential)
 
     def pages(self, *, path: str, query: Optional[Sequence[Pair]] = None, paging: Paging) -> Iterator[Any]:
