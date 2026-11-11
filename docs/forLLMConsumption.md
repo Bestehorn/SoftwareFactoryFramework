@@ -35,8 +35,10 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   `test_github_wrapper_fork_parity.py`. The product wrapper calls any declared record by its operation ID:
   `python scripts/github_wrapper.py call issues/get --path issue_number=5` (`--path`, `--query`, `-f/--raw-field`,
   `-F/--field`; a refusal exits 2). `test/test_github_wrapper_contract.py` checks each record against its
-  `rest/<category>.md` section. Not yet installed here: sessions run the fork, which has no `call`
-  (`config/toolchain.json`).
+  `rest/<category>.md` section. A GraphQL-only capability is a record of `graphql_only.py`, called the same way:
+  `python scripts/github_wrapper.py call graphql/pinIssue -F 'input={"issueId": "<node id>"}'` (`-f`/`-F` give the
+  document's variables). `test/test_github_graphql_contract.py` checks each document against `graphql/`. Not yet
+  installed here: sessions run the fork, which has no `call` (`config/toolchain.json`).
 - `src/payload/scripts/gitlab_api/` — the package of the product GitLab wrapper, copied with its entry script
   `gitlab_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of
   `docs/api-reference/gitlab/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites:

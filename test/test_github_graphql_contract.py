@@ -6,7 +6,7 @@ Every ``GraphQLOperation`` of ``github_api.graphql_only`` is held to ``docs/api-
 root type and names each way the record departs from the reference; ``selected_members`` names the members a record's
 walk visits, and ``row_members`` the members each "Only in GraphQL" row of ``conventions.md`` names. The tests prove
 the method on the reference and on altered copies of named records, then hold every record to it (AC-1.1, AC-1.2,
-AC-1.3, AC-3.1).
+AC-1.3, AC-3.1). ``test_the_map_names_the_graphql_call`` holds the project map to naming the GraphQL call (D7, AC-4.2).
 
 The reference exists only in this repository, so this module lives in ``test/`` (cross-wrapper decision X1). It loads
 the product package ``github_api`` from ``src/payload/scripts/`` as ``test_github_wrapper_coverage.py`` does: each
@@ -48,6 +48,10 @@ QUERIES_FILE = "queries.md"
 MUTATIONS_FILE = "mutations.md"
 TYPE_FILES = ("objects-a-p.md", "objects-p-w.md", "interfaces.md")
 CONVENTIONS = GRAPHQL_DIR / "conventions.md"
+
+# The project map, and how it names a GraphQL call (D7, AC-4.2).
+LLM_MAP = ROOT / "docs" / "forLLMConsumption.md"
+CALL_SUBCOMMAND = "call"
 
 # How the reference writes a section, a signature line, a table and an argument.
 GROUP_NAME = "name"
@@ -1005,3 +1009,13 @@ def test_every_member_a_row_names_is_selected() -> None:
         unselected.extend(f"{json.dumps(capability)}: {member}" for member in sorted(members - selected))
 
     assert not unselected, "members a row names that no record of its capability selects:\n" + "\n".join(unselected)
+
+
+def test_the_map_names_the_graphql_call() -> None:
+    """AC-4.2: the project map, ``docs/forLLMConsumption.md``, names how to make a GraphQL call: it holds
+    ``call graphql/``."""
+    graphql_call = f"{CALL_SUBCOMMAND} {GRAPHQL_ID_PREFIX}"
+
+    text = LLM_MAP.read_text(encoding="utf-8")
+
+    assert graphql_call in text, f"{LLM_MAP.relative_to(ROOT)} does not hold {graphql_call!r}: it names no GraphQL call"

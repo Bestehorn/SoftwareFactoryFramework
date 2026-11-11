@@ -37,6 +37,30 @@ Usage:
         # an empty body as nothing, any other body as its bytes unchanged. An unknown operation,
         # an undocumented parameter, a missing path parameter, and pulls/merge and issues/create (use merge-pr
         # and create-issue) are refused before any request: exit 2.
+    python scripts/github_wrapper.py call graphql/pinIssue -F 'input={"issueId": "<node id>"}'   # a GraphQL record
+        # -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes one, input, its input object,
+        # whose IDs are a REST response's node_id or an id a GraphQL record printed. A connection prints as one
+        # JSON array of every page's nodes, any other result as its data, both as indented JSON. --path, --query and a
+        # variable the document does not declare (after, on a connection) are refused: exit 2.
+        # The "Only in GraphQL" capabilities and their records:
+        #   Repository discussions: graphql/Repository.discussions graphql/Repository.discussionCategories
+        #     graphql/createDiscussion graphql/addDiscussionComment graphql/markDiscussionCommentAsAnswer
+        #   Create, update, delete, copy or link a Projects v2 project: graphql/createProjectV2 graphql/copyProjectV2
+        #     graphql/updateProjectV2 graphql/deleteProjectV2 graphql/linkProjectV2ToRepository
+        #   Auto-merge on or off: graphql/enablePullRequestAutoMerge graphql/disablePullRequestAutoMerge
+        #   Draft to ready and back: graphql/markPullRequestReadyForReview graphql/convertPullRequestToDraft
+        #   Resolve review threads: graphql/PullRequest.reviewThreads graphql/resolveReviewThread
+        #     graphql/unresolveReviewThread
+        #   Hide comments: graphql/minimizeComment graphql/unminimizeComment
+        #   Move an issue to another repo: graphql/transferIssue
+        #   Pin an issue: graphql/pinIssue graphql/unpinIssue
+        #   Revert a PR: graphql/revertPullRequest
+        #   Read a merge queue, remove an entry: graphql/Repository.mergeQueue graphql/dequeuePullRequest
+        #   Sponsors: graphql/createSponsorship graphql/createSponsorsTier
+        #   Multi-file commit in one call: graphql/createCommitOnBranch
+        #   Branch protection with wildcard patterns: graphql/createBranchProtectionRule
+        # graphql/enablePullRequestAutoMerge (use merge-pr), graphql/createCommitOnBranch, graphql/revertPullRequest
+        # and graphql/transferIssue are refused before any request: exit 2.
 
 Credentials: credentials/github-pat.txt (one-line PAT, gitignored).
 The owner/repo are auto-detected from .git/config — do NOT hardcode them.

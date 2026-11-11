@@ -1,6 +1,6 @@
 """Tests of the GitHub wrapper's GraphQL call, ``call graphql/<member>`` (``github_api/graphql_only.py``,
 ``github_api/commands/call.py``, ``registry.graphql_call``; issue #30 design D3, D5, D6; AC-2.1 to AC-2.6, AC-3.1 to
-AC-3.3).
+AC-3.3), and of its usage in the entry script's docstring (design D7; AC-4.1).
 
 Installed from ``src/payload/test/test_github_api_graphql_only.py`` to ``test/test_github_api_graphql_only.py``, beside
 ``scripts/github_wrapper.py`` and ``scripts/github_api/``. Every call here is a golden case whose argv is
@@ -22,6 +22,9 @@ exactly, every ``POST`` as ``GoldenCase.writes`` holds it (method, path, and the
   case, which records the request and raises ``urllib.error.URLError``.
 - ``test_an_undeclared_variable_is_refused`` (AC-2.5) and ``test_a_refused_mutation_sends_nothing`` (AC-3.1 to AC-3.3)
   are answered by the same route, so only the refusal keeps a request from being sent and answered.
+- ``test_the_usage_names_every_graphql_record`` (AC-4.1) reads the entry script's ``__doc__`` within its GraphQL entry
+  only (the ``call graphql/`` usage line and the ``#`` lines under it), so what the docstring says of a REST ``call``
+  cannot satisfy it.
 
 The expected request of a call is built from the document of the record that declares its ID (``declared_document``);
 while no single record declares it, ``call`` refuses the ID with exit 2, which is ``run_product_case``'s first check.
@@ -749,3 +752,102 @@ def test_a_refused_mutation_sends_nothing(
     )
 
     _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AC-4.1 — the usage names every GraphQL record
+# ---------------------------------------------------------------------------------------------------------------------
+
+#: A usage line of the entry script's docstring starts with this, after its indent; the GraphQL entry's with the second.
+USAGE_LINE_PREFIX = "python scripts/github_wrapper.py "
+GRAPHQL_USAGE_PREFIX = f"{USAGE_LINE_PREFIX}{CALL} {GRAPHQL_ID_PREFIX}"
+#: Each line under a usage line starts with it, after its indent.
+COMMENT_MARKER = "#"
+#: What ends a capability where the entry names it, before the IDs of its records (design D7).
+CAPABILITY_END = ":"
+#: What the GraphQL entry names besides its records (design D7): how a variable is given as JSON, a mutation's one
+#: variable, how a connection and any other result print, and the exit code of a refusal.
+USAGE_TERMS: Tuple[str, ...] = ("-F NAME=JSON", VARIABLE_INPUT, "JSON array", FIELD_DATA, "exit 2")
+
+
+def graphql_usage_entry(*, doc: str) -> str:
+    """The GraphQL entry of the usage ``doc``: its one ``call graphql/`` usage line and the ``#`` lines under it, up to
+    the first line that is no ``#`` line (the next usage line), as one text in which each line's ``#`` is dropped and
+    white space is collapsed, so a phrase wrapped onto the next line reads as one."""
+    lines = doc.splitlines()
+    starts = [number for number, line in enumerate(lines) if line.strip().startswith(GRAPHQL_USAGE_PREFIX)]
+    assert len(starts) == 1, (
+        f"the docstring of {fx.PRODUCT_SCRIPT.name} holds {len(starts)} usage lines starting "
+        f"{GRAPHQL_USAGE_PREFIX!r}, expected one"
+    )
+    entry = [lines[starts[0]].strip()]
+    for line in lines[starts[0] + 1 :]:
+        text = line.strip()
+        if not text.startswith(COMMENT_MARKER):
+            break
+        entry.append(text[len(COMMENT_MARKER) :])
+    return " ".join(" ".join(entry).split())
+
+
+def names_id(*, text: str, operation_id: str) -> bool:
+    """Whether ``text`` names ``operation_id`` whole: not as a part of a longer ID."""
+    whole = rf"(?<![\w./]){re.escape(pattern=operation_id)}(?![\w/]|\.\w)"
+    return re.search(pattern=whole, string=text) is not None
+
+
+def capability_problems(*, entry: str, ids_by_capability: Mapping[str, Sequence[str]]) -> List[str]:
+    """Each capability the GraphQL ``entry`` does not name as ``<capability>:``, and each ID of a capability's records
+    the entry does not name after it and before the next capability it names."""
+    labels = {
+        capability: re.compile(pattern=rf"(?<!\w){re.escape(pattern=capability)}{re.escape(pattern=CAPABILITY_END)}")
+        for capability in ids_by_capability
+    }
+    starts = sorted(match.start() for label in labels.values() for match in label.finditer(string=entry))
+    problems: List[str] = []
+    for capability, operation_ids in ids_by_capability.items():
+        found = labels[capability].search(string=entry)
+        if found is None:
+            problems.append(f"{json.dumps(obj=capability)} is not named as {capability}{CAPABILITY_END}")
+            continue
+        following = [start for start in starts if start > found.start()]
+        segment = entry[found.end() : following[0] if following else len(entry)]
+        problems.extend(
+            f"{json.dumps(obj=capability)}: {operation_id} is not named before the next capability"
+            for operation_id in operation_ids
+            if not names_id(text=segment, operation_id=operation_id)
+        )
+    return problems
+
+
+def test_the_usage_names_every_graphql_record(monkeypatch: pytest.MonkeyPatch) -> None:
+    """AC-4.1: the GraphQL entry of the entry script's ``__doc__`` (its ``call graphql/`` usage line and the ``#``
+    lines under it, up to the next usage line) names every capability of ``graphql_only.OPERATIONS``, followed by the
+    IDs of its records before the next capability; ``-F NAME=JSON``, ``input``, ``JSON array``, ``data`` and
+    ``exit 2``; and each of ``REFUSED_MUTATIONS`` and ``merge-pr``. Only the entry is read, so what the docstring says
+    of a REST ``call`` satisfies none of it; the test fails when ``OPERATIONS`` holds no record."""
+    wrapper = fx.load_script(path=fx.PRODUCT_SCRIPT, name=fx.PRODUCT_MODULE, monkeypatch=monkeypatch)
+    graphql_only = fx.import_api_module(name=GRAPHQL_ONLY)
+    ids_by_capability: Dict[str, List[str]] = {}
+    for record in graphql_only.OPERATIONS:
+        ids_by_capability.setdefault(str(record.capability), []).append(str(record.operation_id))
+    assert ids_by_capability, "graphql_only.OPERATIONS holds no record for the usage to name"
+    doc = wrapper.__doc__
+    assert doc, f"{fx.PRODUCT_SCRIPT} has no module docstring"
+
+    entry = graphql_usage_entry(doc=doc)
+
+    problems = capability_problems(entry=entry, ids_by_capability=ids_by_capability)
+    problems.extend(f"{term!r} is not in the entry" for term in USAGE_TERMS if term not in entry)
+    problems.extend(
+        f"the refused {operation_id} is not named"
+        for operation_id in REFUSED_MUTATIONS
+        if not names_id(text=entry, operation_id=operation_id)
+    )
+    problems.extend(
+        f"{subcommand!r}, the subcommand to use for a refused record, is not named"
+        for subcommand in SUBCOMMAND_OF_REFUSED.values()
+        if subcommand not in entry
+    )
+    assert not problems, (
+        f"the GraphQL usage entry of {fx.PRODUCT_SCRIPT.name}:\n" + "\n".join(problems) + f"\nThe entry reads: {entry}"
+    )
