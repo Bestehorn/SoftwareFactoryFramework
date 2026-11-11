@@ -43,11 +43,15 @@ Usage:
         # -F/--field NAME=JSON (an attribute: a number, boolean, array, object or quoted string); --file NAME=PATH
         # (a file attribute, sent multipart); --input FILE (a raw-body record's body: the bytes of FILE, or of standard
         # input for -, sent unchanged; the record's attributes go in --query; refused beside -f or -F, and for a record
-        # that takes no raw body). A GraphQL record takes its variables with -f and -F.
+        # that takes no raw body); --route-prefix PREFIX (a protocol route's <route-prefix>, for a record whose path
+        # starts with /<route-prefix>/: one of the values its page lists, verbatim, e.g. /groups/:id/-/packages/npm,
+        # each :name of it a path parameter given with --path). A GraphQL record takes its variables with -f and -F.
         # A list prints as one JSON array of every page's items, a JSON response as indented JSON, an empty body as
         # nothing, any other body as its bytes unchanged. An unknown operation, an undocumented parameter, a missing
-        # path parameter, a value of the wrong shape, and ai-coding#merge-a-merge-request and plan#create-an-issue
-        # (use mr merge and issue create) are refused before any request: exit 2.
+        # path parameter, a value of the wrong shape, a route prefix that none of the record's values equals, none for
+        # a record whose path starts with /<route-prefix>/ or one for any other record, and
+        # ai-coding#merge-a-merge-request and plan#create-an-issue (use mr merge and issue create) are refused before
+        # any request: exit 2.
     python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record
         # -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one,
         # input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each
