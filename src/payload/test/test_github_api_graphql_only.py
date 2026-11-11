@@ -25,6 +25,9 @@ exactly, every ``POST`` as ``GoldenCase.writes`` holds it (method, path, and the
   case, which records the request and raises ``urllib.error.URLError``.
 - ``test_an_undeclared_variable_is_refused`` (AC-2.5) and ``test_a_refused_mutation_sends_nothing`` (AC-3.1 to AC-3.3)
   are answered by the same route, so only the refusal keeps a request from being sent and answered.
+- ``test_a_raw_body_is_refused`` (issue #46 AC-1.1, AC-1.3) gives ``--input`` a file under ``tmp_path``, alone and
+  beside ``-F input=...``, and is answered by that route too: a GraphQL record has no ``content_type``, so its call
+  takes no raw body.
 - ``test_the_usage_names_every_graphql_record`` (AC-4.1) reads the entry script's ``__doc__`` within its GraphQL entry
   only (the ``call graphql/`` usage line and the ``#`` lines under it), so what the docstring says of a REST ``call``
   cannot satisfy it.
@@ -824,6 +827,78 @@ def test_a_refused_mutation_sends_nothing(
         slug=operation_id,
         argv=(CALL, operation_id, *json_field(name=VARIABLE_INPUT, value={})),
         patterns=refusal_patterns(operation_id=operation_id),
+    )
+
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Issue #46 AC-1.1, AC-1.3 — a raw body is refused before any request
+# ---------------------------------------------------------------------------------------------------------------------
+
+OPTION_INPUT = "--input"
+#: The two variable options as a refusal names them, as argparse names them.
+NAMED_RAW_FIELD = "-f/--raw-field"
+NAMED_FIELD = "-F/--field"
+ISSUE_46_AC_1_1 = "issue-46/AC-1.1"
+ISSUE_46_AC_1_3 = "issue-46/AC-1.3"
+#: The file ``--input`` names, under ``tmp_path``: the pin call's variables as JSON, so even a body that would be the
+#: right variables is refused.
+INPUT_FILE = "variables.json"
+INPUT_CONTENT = json.dumps(obj=PIN_VARIABLES).encode(encoding="utf-8")
+
+
+@dataclass(frozen=True)
+class RawBodyCase:
+    """A row of ``RAW_BODY_CASES``: ``call graphql/pinIssue <arguments> --input <INPUT_FILE under tmp_path>``, refused
+    under ``criterion`` with exit 2 and no request; one log record matches every pattern of ``patterns``."""
+
+    criterion: str
+    slug: str
+    arguments: Tuple[str, ...]
+    patterns: Tuple[str, ...]
+
+
+RAW_BODY_CASES: Tuple[RawBodyCase, ...] = (
+    RawBodyCase(
+        criterion=ISSUE_46_AC_1_3,
+        slug="input-beside-a-variable",
+        arguments=PIN_ARGUMENTS,
+        patterns=(re.escape(pattern=OPTION_INPUT), re.escape(pattern=NAMED_RAW_FIELD), re.escape(pattern=NAMED_FIELD)),
+    ),
+    RawBodyCase(
+        criterion=ISSUE_46_AC_1_1,
+        slug="input-for-a-graphql-record",
+        arguments=(),
+        patterns=(named(name=OP_PIN_ISSUE), re.escape(pattern=OPTION_INPUT)),
+    ),
+)
+
+
+def raw_body_case_name(raw: RawBodyCase) -> str:
+    """The test id of a ``RAW_BODY_CASES`` row."""
+    return raw.slug
+
+
+@pytest.mark.parametrize(argnames="raw", argvalues=RAW_BODY_CASES, ids=raw_body_case_name)
+def test_a_raw_body_is_refused(
+    raw: RawBodyCase,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #46 AC-1.1 and AC-1.3 (its design D1: ``--input`` is for exactly the records whose ``content_type`` is
+    set, and never beside ``-f``/``-F``) on a GraphQL record, which has none: ``--input`` of a file under ``tmp_path``
+    exits 2 with no request, although ``POST /graphql`` would be answered. Beside ``-F input=...`` the log record names
+    ``--input``, ``-f/--raw-field`` and ``-F/--field``; alone, it names the ID and ``--input``."""
+    path = tmp_path / INPUT_FILE
+    path.write_bytes(data=INPUT_CONTENT)
+    case = _refusal(
+        criterion=raw.criterion,
+        slug=raw.slug,
+        argv=(CALL, OP_PIN_ISSUE, *raw.arguments, OPTION_INPUT, str(path)),
+        patterns=raw.patterns,
     )
 
     _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)

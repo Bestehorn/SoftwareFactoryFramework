@@ -40,23 +40,25 @@ A GraphQL record, whose operation ID starts with ``graphql/`` (``registry.GRAPHQ
 - ``-f`` and ``-F`` give the document's variables, parsed as the body members above; the variables are ``body_of``'s
   object, or ``{}`` when none was given. A mutation takes one variable, ``input``, its whole input object
   (``-F input=<JSON object>``). The ``origin`` repository is no default: the variables are exactly those given.
-- ``--path``, ``--query`` and a variable the document does not declare (``registry.declared_variables``; ``after`` on
-  a record that pages a connection, which the transport sets on every page) are refused.
+- ``--path``, ``--query``, ``--input`` (a GraphQL record has no ``content_type``) and a variable the document does not
+  declare (``registry.declared_variables``; ``after`` on a record that pages a connection, which the transport sets on
+  every page) are refused.
 
-``cmd_call`` refuses, with exit 2 (``EXIT_REFUSED``) and before any request, in this order. For a REST record: a raw
-body given together with one or more body members (``refuse_both_bodies``), in a message naming ``--input``,
-``-f/--raw-field`` and ``-F/--field``. For any record: an ID in ``GATED_OPERATIONS``, naming the compatibility
-subcommand to use, or, for a record whose call commits to, creates, moves or renames a branch, creates issues
-(issue #28 design D8, its exceptions row) or moves an issue into another repository (issue #30 design D5), saying that
-no subcommand sends it. Then, for a REST record: an ID no record declares (``registry.lookup``); a raw body for a
-record whose ``content_type`` is ``None`` (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying
-that its body is given with ``-f``/``-F``; and a call that gives a path, query or body name the record does not
-document or leaves a path parameter without a value, in one message naming each such name with its kind, each missing
-path parameter, then the record's documented path, query and body parameters (``check_call``). For a GraphQL record:
-an ID no record of ``graphql_only.py`` declares, or one declared twice (``registry.graphql_lookup``); and a call that
-gives a ``--path`` or ``--query`` name or a variable the document does not declare, in one message naming each such
-name with its kind, then the variables the document declares (``check_graphql_call``). A refusal is logged; every
-name the caller gave is rendered with ``json.dumps``, and no byte of a raw body is.
+``cmd_call`` refuses, with exit 2 (``EXIT_REFUSED``) and before any request, in this order: a raw body given together
+with one or more body members (``refuse_both_bodies``), in a message naming ``--input``, ``-f/--raw-field`` and
+``-F/--field``; an ID in ``GATED_OPERATIONS``, naming the compatibility subcommand to use, or, for a record whose call
+commits to, creates, moves or renames a branch, creates issues (issue #28 design D8, its exceptions row) or moves an
+issue into another repository (issue #30 design D5), saying that no subcommand sends it. Then, for a REST record: an
+ID no record declares (``registry.lookup``); a raw body for a record whose ``content_type`` is ``None``
+(``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that its body is given with ``-f``/``-F``;
+and a call that gives a path, query or body name the record does not document or leaves a path parameter without a
+value, in one message naming each such name with its kind, each missing path parameter, then the record's documented
+path, query and body parameters (``check_call``). For a GraphQL record: an ID no record of ``graphql_only.py``
+declares, or one declared twice (``registry.graphql_lookup``); a raw body, which no GraphQL record takes
+(``refuse_graphql_raw_body``), in a message naming the ID and ``--input`` and saying that its variables are given with
+``-f``/``-F``; and a call that gives a ``--path`` or ``--query`` name or a variable the document does not declare, in
+one message naming each such name with its kind, then the variables the document declares (``check_graphql_call``).
+A refusal is logged; every name the caller gave is rendered with ``json.dumps``, and no byte of a raw body is.
 
 What prints (D3):
 
@@ -277,6 +279,19 @@ def refuse_raw_body(*, operation: RestOperation, raw_body: Optional[bytes]) -> N
     )
 
 
+def refuse_graphql_raw_body(*, operation: GraphQLOperation, raw_body: Optional[bytes]) -> None:
+    """Issue #46 design D1 (``--input`` is for exactly the records whose ``content_type`` is set) on a GraphQL record,
+    which has none: refuse with ``ValueError`` a raw body, in a message naming its ID and ``--input`` and saying that
+    its variables are given with ``-f``/``-F``."""
+    if raw_body is None:
+        return
+    raise ValueError(
+        f"{CMD_CALL} refuses {OPTION_INPUT} for the GitHub GraphQL record {json.dumps(obj=operation.operation_id)}: "
+        f"its variables are JSON, given with {OPTION_RAW_FIELD_SHORT}/{OPTION_RAW_FIELD} or "
+        f"{OPTION_FIELD_SHORT}/{OPTION_FIELD}"
+    )
+
+
 def path_values(*, operation: RestOperation, given: Sequence[Assignment], owner: str, repo: str) -> Dict[str, Any]:
     """The path values of the call: the given ones, a name given twice holding its last value, and ``owner`` and
     ``repo`` for a ``{owner}`` or ``{repo}`` of the record's path that the call gives no value for."""
@@ -375,14 +390,18 @@ def print_body(*, body: bytes) -> None:
 
 
 def _call_graphql(*, transport: Transport, operation_id: str, args: argparse.Namespace) -> Optional[int]:
-    """Issue #30 D3's GraphQL call: a gated ID, an ID no record of ``graphql_only.py`` declares once, then
-    ``check_graphql_call``, each a ``ValueError`` logged and returned as ``EXIT_REFUSED`` before any request; then the
-    record sent through ``registry.graphql_call`` with the ``-f``/``-F`` members as its variables, and its result
-    printed by ``print_json``."""
+    """Issue #30 D3's GraphQL call: a raw body beside body members (issue #46 D1 step 1), a gated ID, an ID no record
+    of ``graphql_only.py`` declares once, a raw body (``refuse_graphql_raw_body``), then ``check_graphql_call``, each a
+    ``ValueError`` logged and returned as ``EXIT_REFUSED`` before any request; then the record sent through
+    ``registry.graphql_call`` with the ``-f``/``-F`` members as its variables, and its result printed by
+    ``print_json``."""
     members = _given(args=args, dest=ARG_MEMBERS)
+    raw_body: Optional[bytes] = getattr(args, ARG_RAW_BODY, None)
     try:
+        refuse_both_bodies(raw_body=raw_body, members=members)
         refuse_gated(operation_id=operation_id)
         operation = registry.graphql_lookup(operation_id=operation_id)
+        refuse_graphql_raw_body(operation=operation, raw_body=raw_body)
         check_graphql_call(
             operation=operation,
             path_names=[each.name for each in _given(args=args, dest=ARG_PATH)],
