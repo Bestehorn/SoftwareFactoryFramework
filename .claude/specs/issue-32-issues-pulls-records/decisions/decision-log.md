@@ -71,3 +71,12 @@
 **Evidence:** code-merge-reviewer run: 789 passed over the 15 affected test files; commit eb63d18.
 **Supersedes:** none
 **Artifacts touched:** src/payload/scripts/github_api/commands/call.py
+
+## DL-009 — 2026-11-11T05:17:36Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Rework after the verifier REFUTED AC-6's wording: K's gated cases now assert `which sends it` on the `pulls/merge` and `issues/create` refusals and its absence on `pulls/merge-async`; mutants M06 and M06b now fail K (3 and 1 failures); one push, then a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md (M06, M06b survived).
+**Alternatives considered:** drop `GATED_NOT_SENT` (rejected: the message would state a falsehood, DL-007).
+**Evidence:** evidence/green/rework-1.txt; rework implementer's mutant runs.
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_github_api_call.py

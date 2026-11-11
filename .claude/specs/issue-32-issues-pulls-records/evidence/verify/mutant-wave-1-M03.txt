@@ -1,0 +1,32 @@
+# mutant M03: issues/get-issue-artifact paging NONE -> LINK
+# file: src/payload/scripts/github_api/families/issues.py
+# sha256 original: a63c30fb70543dd7f276d2fbe8cdb9a5d4c47bbeffcb4b238800eb966d3fab47  # pragma: allowlist secret
+# sha256 mutated:  d599d1221a6b5b7aadd86ecf6640c8c0c0d06344e3f66f4de67067d3853858d3  # pragma: allowlist secret
+# sha256 restored: a63c30fb70543dd7f276d2fbe8cdb9a5d4c47bbeffcb4b238800eb966d3fab47  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_issues.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_issues.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [47 items]
+
+.F.............................................                          [100%]
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_issues.py:297: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"families/{FAMILY_NAME}.py breaks AC-3: {problems}"
+E   AssertionError: families/issues.py breaks AC-3: ["Paging.LINK records missing [] and unexpected ['issues/get-issue-artifact']; rest/issues.md pages ['issues/list', 'issues/list-assignees', 'issues/list-comments', 'issues/list-comments-for-repo', 'issues/list-dependencies-blocked-by', 'issues/list-dependencies-blocking', 'issues/list-events', 'issues/list-events-for-repo', 'issues/list-events-for-timeline', 'issues/list-for-authenticated-user', 'issues/list-for-org', 'issues/list-for-repo', 'issues/list-issue-artifacts', 'issues/list-issue-field-values-for-issue', 'issues/list-labels-for-milestone', 'issues/list-labels-for-repo', 'issues/list-labels-on-issue', 'issues/list-milestones', 'issues/list-relates-to', 'issues/list-sub-issues', 'issues/list-suggestions']", '"issues/get-issue-artifact": paging Paging.LINK, Paging.NONE expected (#32 DL-004)']
+E   assert ["Paging.LINK...(#32 DL-004)'] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mPaging.LINK records missing [] and unexpected [[39;49;00m[33m'[39;49;00m[33missues/get-issue-artifact[39;49;00m[33m'[39;49;00m[33m]; rest/issues.md pages [[39;49;00m[33m'[39;49;00m[33missues/list[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33mis...ls-on-issue[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33missues/list-milestones[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33missues/list-relates-to[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;0...
+E     
+E     ...Full output truncated, use '-vv' to show
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_issues.py::test_the_records_follow_the_transcription_rules
+======================== 1 failed, 46 passed in 33.84s ========================

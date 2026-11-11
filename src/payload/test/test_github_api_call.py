@@ -110,6 +110,10 @@ OP_DELETE_REF = "git/delete-ref"
 
 SUBCOMMAND_MERGE_PR = "merge-pr"
 SUBCOMMAND_CREATE_ISSUE = "create-issue"
+#: The end of the refusal of a gated record its subcommand sends itself (issue #32 DL-007): ``merge-pr`` sends
+#: ``pulls/merge`` and ``create-issue`` sends ``issues/create``, but ``merge-pr`` never sends ``pulls/merge-async``, so
+#: that refusal names ``merge-pr`` without this text.
+SENDS_IT = "which sends it"
 
 KIND_PATH = "path"
 KIND_QUERY = "query"
@@ -245,6 +249,11 @@ def named(*, name: str) -> str:
 def named_each(*, names: Sequence[str]) -> Tuple[str, ...]:
     """One ``named`` pattern for each of ``names``."""
     return tuple(named(name=name) for name in names)
+
+
+def lacking(*, text: str) -> str:
+    """A pattern that matches only a message holding no ``text`` anywhere in it."""
+    return rf"\A(?![\s\S]*{re.escape(text)})"
 
 
 def named_with_kind(*, kind: str, name: str) -> str:
@@ -460,8 +469,9 @@ def _member_arguments(*, option: str, members: Sequence[Tuple[str, str]]) -> Tup
 
 
 def _gated_cases() -> Tuple[Any, ...]:
-    """AC-1.1: the records a gated compatibility subcommand sends are refused, naming that subcommand; issue #32 AC-6
-    adds ``pulls/merge-async``, called with a value for each documented body parameter."""
+    """AC-1.1: the records a gated compatibility subcommand sends are refused, naming that subcommand and saying that
+    it sends them; issue #32 AC-6 adds ``pulls/merge-async``, called with a value for each documented body parameter,
+    whose refusal names ``merge-pr`` and does not say that it sends it (DL-007)."""
     merge_async_body = (
         *_member_arguments(option=OPTION_RAW_FIELD, members=MERGE_ASYNC_TEXT_MEMBERS),
         *_member_arguments(option=OPTION_FIELD, members=MERGE_ASYNC_JSON_MEMBERS),
@@ -471,19 +481,19 @@ def _gated_cases() -> Tuple[Any, ...]:
             criterion=AC_1_1,
             slug="pulls-merge-is-merge-pr",
             argv=(CALL, OP_PULLS_MERGE, OPTION_PATH, "pull_number=1"),
-            patterns=(named(name=OP_PULLS_MERGE), re.escape(SUBCOMMAND_MERGE_PR)),
+            patterns=(named(name=OP_PULLS_MERGE), re.escape(SUBCOMMAND_MERGE_PR), re.escape(SENDS_IT)),
         ),
         _refusal(
             criterion=AC_1_1,
             slug="pulls-merge-async-is-merge-pr",
             argv=(CALL, OP_PULLS_MERGE_ASYNC, OPTION_PATH, "pull_number=1", *merge_async_body),
-            patterns=(named(name=OP_PULLS_MERGE_ASYNC), re.escape(SUBCOMMAND_MERGE_PR)),
+            patterns=(named(name=OP_PULLS_MERGE_ASYNC), re.escape(SUBCOMMAND_MERGE_PR), lacking(text=SENDS_IT)),
         ),
         _refusal(
             criterion=AC_1_1,
             slug="issues-create-is-create-issue",
             argv=(CALL, OP_ISSUES_CREATE, OPTION_RAW_FIELD, f"{FIELD_TITLE}=T"),
-            patterns=(named(name=OP_ISSUES_CREATE), re.escape(SUBCOMMAND_CREATE_ISSUE)),
+            patterns=(named(name=OP_ISSUES_CREATE), re.escape(SUBCOMMAND_CREATE_ISSUE), re.escape(SENDS_IT)),
         ),
     )
 
@@ -875,7 +885,8 @@ def test_a_gated_operation_names_its_subcommand(
 ) -> None:
     """AC-1.1, issue #32 AC-6: ``pulls/merge``, ``pulls/merge-async`` and ``issues/create`` are refused (exit 2, no
     request), and the log record names the operation ID and the compatibility subcommand to use (``merge-pr``,
-    ``create-issue``)."""
+    ``create-issue``); it says that the subcommand sends the record for ``pulls/merge`` and ``issues/create``, and not
+    for ``pulls/merge-async``, which ``merge-pr`` never sends (issue #32 DL-007)."""
     _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
 
 

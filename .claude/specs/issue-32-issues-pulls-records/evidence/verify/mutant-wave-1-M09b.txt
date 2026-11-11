@@ -1,0 +1,33 @@
+# mutant M09b: CREATE_RE lookahead widened to a double quote
+# file: src/hooks/gate_filing.py
+# sha256 original: 43e21cecf3d39fba985bc0baa9fd37f6b982828a47d50e84bfc757c127fc4ec3  # pragma: allowlist secret
+# sha256 mutated:  9a37d66ffb80a12bf168d3ea7070e456495387a428045ef189c71ca05b926722  # pragma: allowlist secret
+# sha256 restored: 43e21cecf3d39fba985bc0baa9fd37f6b982828a47d50e84bfc757c127fc4ec3  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/hooks/tests/test_gate_filing.py src/hooks/tests/test_dispatcher.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/hooks/tests/test_gate_filing.py src/hooks/tests/test_dispatcher.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\hooks\tests
+configfile: pytest.ini
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [97 items]
+
+........................................................................ [ 74%]
+........F................                                                [100%]
+================================== FAILURES ===================================
+_____ test_a_readable_provenance_free_body_is_blocked[quoted-create-word] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\hooks\tests\test_gate_filing.py:325: in test_a_readable_provenance_free_body_is_blocked
+    assert_block(decide(command, project), command)
+src\hooks\tests\test_gate_filing.py:109: in assert_block
+    assert decision.exit_code == BLOCK, f"not blocked: {command!r}\n{decision.stderr}"
+E   AssertionError: not blocked: 'python scripts/github_wrapper.py "create-issue" --title "t" --body "plain text"'
+E     
+E   assert 0 == 2
+E    +  where 0 = Decision(exit_code=0, stdout='', stderr='').exit_code
+=========================== short test summary info ===========================
+FAILED src\hooks\tests\test_gate_filing.py::test_a_readable_provenance_free_body_is_blocked[quoted-create-word]
+======================== 1 failed, 96 passed in 6.02s =========================
