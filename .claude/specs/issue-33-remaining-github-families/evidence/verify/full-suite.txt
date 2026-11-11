@@ -1,0 +1,36 @@
+# Whole-suite verdict, read through scripts/github_wrapper.py from the main checkout, 2026-11-11
+
+$ python scripts/github_wrapper.py wait-run 42969041590 --timeout-seconds 540
+{"run_id": 42969041590, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/42969041590"}
+exit=0
+
+$ python scripts/github_wrapper.py get-run 42969041590   (fields quoted)
+"head_branch": "issue-33-remaining-github-families"
+"head_sha": "273d86b44ec8c8d9bb84ae8f23f77f722976bd42"  # pragma: allowlist secret
+"event": "pull_request", "status": "completed", "conclusion": "success", "run_attempt": 1
+pull_requests[0].number: 52, base.sha "5cfe09f7e0af8f415b3b8b712cdc70c66bda6e8e"  # pragma: allowlist secret
+
+$ git -C .claude/worktrees/issue-33 rev-parse HEAD
+273d86b44ec8c8d9bb84ae8f23f77f722976bd42  # pragma: allowlist secret
+(matches head_sha; `git status --porcelain` empty before verification)
+
+$ python scripts/github_wrapper.py get-jobs 42969041590
+130352950991   completed    success      verify (types)
+130352951348   completed    success      verify (lint)
+130352951384   completed    success      verify (tests)
+130352951431   completed    success      verify (security)
+130353700731   completed    success      report
+exit=0
+
+$ python scripts/github_wrapper.py get-job-logs 130352951384   (lines quoted)
+HEAD is now at ba6dc14 Merge 273d86b44ec8c8d9bb84ae8f23f77f722976bd42 into 5cfe09f7e0af8f415b3b8b712cdc70c66bda6e8e  # pragma: allowlist secret
+run_tests: python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+4 workers [2830 items]
+src/payload/scripts/github_api/commands/call.py                               143      0   100%
+(each of the 31 changed family modules: 0 Miss, 100%)
+Required test coverage of 80% reached. Total coverage: 91.01%
+======================= 2830 passed in 73.25s (0:01:13) ========================
+1053 passed in 6.83s   (tests/hook-suite)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+
+Verdict: GREEN on 273d86b, the worktree HEAD.

@@ -1,0 +1,27 @@
+# verify mutant m12: body name dropped: `description` of plan#create-a-milestone
+# target src/payload/scripts/gitlab_api/families/plan.py: original sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536  # pragma: allowlist secret
+# mutated sha256 27c7bd809ca57f0570ddbc4a5a6130faa2270c3fc720722f02aaf816ee3f0693  # pragma: allowlist secret
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [152 items]
+
+........................................................................ [ 47%]
+..............................................................F......... [ 94%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:879: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: plan#create-a-milestone: the body row 'description' is not declared by the record
+E   assert not ["plan#create-a-milestone: the body row 'description' is not declared by the record"]
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+======================= 1 failed, 151 passed in 34.58s ========================
+# exit=1
+# restored sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536 matches original: True  # pragma: allowlist secret

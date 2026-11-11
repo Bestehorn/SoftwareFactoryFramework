@@ -1,0 +1,44 @@
+# verify mutant m08: plan#clone-an-issue given a record faithful to its section and taken off PENDING
+# target src/payload/scripts/gitlab_api/families/plan.py: original sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536  # pragma: allowlist secret
+# mutated sha256 3777492b45de50eeeace89ccaa8984ef93e9747fc14cb701028cfece7eeb8568  # pragma: allowlist secret
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [152 items]
+
+F..F.................................................................... [ 47%]
+........................................................................ [ 94%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:672: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "plan.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: plan.PENDING is not the keys AC-1 keeps pending:
+E     missing: ('POST', '/projects/:id/issues/:issue_iid/clone')
+E   assert frozenset({('...emoji'), ...}) == frozenset({('...emoji'), ...})
+E     
+E     Extra items in the right set:
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/issues/:issue_iid/clone[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+________________ test_the_required_attributes_are_the_sections ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:708: in test_the_required_attributes_are_the_sections
+    assert declared == REQUIRED_ATTRIBUTES, "the required Params are not the sections' (AC-3):\n" + set_difference(
+E   AssertionError: the required Params are not the sections' (AC-3):
+E     not expected: ('plan#clone-an-issue', 'to_project_id')
+E   assert {('plan#add-a... 'name'), ...} == frozenset({('...title'), ...})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mplan#clone-an-issue[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mto_project_id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_plan.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_plan.py::test_the_required_attributes_are_the_sections
+======================= 2 failed, 150 passed in 27.74s ========================
+# exit=1
+# restored sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536 matches original: True  # pragma: allowlist secret

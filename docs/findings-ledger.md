@@ -16,6 +16,8 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | hooklib task ids | CHECKED_TASK_RE parses 2.1 and F1 but not the F.n ids spec-phase-tasks.md prescribes | src/hooks/hooklib.py CHECKED_TASK_RE; issue-28 tasks review SR-C2 | no incident: specs leave F tasks unticked | open |
 | 2026-11-11 | github_api repos | get-commit, compare-commits print one page (two item keys) | issue-27 change.md Residuals | needs a record field; no failure seen | open |
 | 2026-11-11 | github_api call gate | git/delete-ref stays callable via call | issue-27 change.md UB-4; #28 Residuals | not AC-7's branch-writing class; no incident | open |
+| 2026-11-11 | github_api copilot | copilot/set-copilot-content-exclusion-for-organization stays pending | issue-33 DL-004 | body is a map of any key; call refuses undocumented names | open |
+| 2026-11-11 | github_api gitignore, licenses | get-template and get-for-repo send ACCEPT_JSON, not their raw/html types | issue-33 change.md Residuals | needs a per-call Accept; no caller needs it | open |
 | 2026-11-11 | hooks gate_filing | blocks any command whose text holds its create phrase (commit message, ledger row) | issue-41 run 2026-11-11, before 94986b0 | scans the whole command; narrowing is a design choice | open |
 | 2026-11-11 | github_api code-scanning | code-scanning/commit-autofix stays pending (commits to target_ref) | issue-31 DL-003 | gating is one None entry now that #27 landed | open |
 | 2026-11-11 | github_api code-scanning | get-analysis SARIF and get-codeql-database zip forms need a per-call Accept | issue-31 DL-005 | records send ACCEPT_JSON; no caller needs the forms | open |
@@ -26,3 +28,8 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | gitlab_api security | AC-2 keys stay pending: other endpoints of several-endpoint sections, HOST-URL paths, X-Gitlab header controls | issue-42 DL-003 | one record per Reference; forms #41 does not build | open |
 | 2026-11-11 | gitlab_api security | as-an-administrator sections get no record; update-application-settings has no Param | issue-42 DL-005, change.md Residuals | keys mapped by other sections; no attribute table | open |
 | 2026-11-11 | gitlab_api security | token, secret and PIN records print secrets; admin token, password, shared_secret go in argv | issue-42 change.md Residuals | #41 Residuals; no failure seen | open |
+| 2026-11-11 | gitlab_api plan | plan#clone-an-issue and plan#create-a-merge-request-note (the merge quick action) stay pending | issue-39 DL-003 | GitLab gate has no no-subcommand form | open |
+| 2026-11-11 | gitlab_api plan | emoji MR/snippet keys and group notification_settings keys stay pending | issue-39 change.md Residuals | one record per Reference | open |
+| 2026-11-11 | gitlab_api plan | emoji combined path row declared as written; giving it sends a stray attribute | issue-39 change.md Residuals | N needs the row; no failure seen | open |
+| 2026-11-11 | gitlab_api plan | the clone quick action runs from saved issue notes and descriptions (part 1, update-an-issue-note) | issue-39 review iteration-01 C3 | quick actions run server-side; guarding is a mechanism | open |
+| 2026-11-11 | gitlab_api call | integration secrets passed with -f are visible in process arguments | issue-36 change.md Residuals; #41 design Residuals | no non-argv text input; guarding is a new mechanism | open |

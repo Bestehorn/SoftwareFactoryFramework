@@ -1,0 +1,37 @@
+# mutant m06: NONE record -> Paging.OFFSET: no-stage-assigned#get-asana-settings
+line ending kept: CRLF
+edit: 'path="/groups/:id/integrations/asana",\n' -> 'path="/groups/:id/integrations/asana",\n        paging=Paging.OFFSET,\n' (anchor 'operation_id="no-stage-assigned#get-asana-settings",')
+target: src/payload/scripts/gitlab_api/families/no_stage_assigned.py
+sha256 original: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+sha256 mutated (on disk): 6fd4a263cf86695c7635228c14ff46dc8f21f169d2f67f80a69fa314eccc3cdf  # pragma: allowlist secret
+sha256 restored: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+restore: byte-identical to the original (sha256 equal), mtime restored
+tests: src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+verdict: KILLED
+run_tests exit code: 1
+--- complete run_tests output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [30 items]
+
+..F...........................                                           [100%]
+================================== FAILURES ===================================
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_no_stage_assigned.py:744: in test_only_the_list_records_are_paged
+    assert paged == PAGED_RECORDS, f"the records not Paging.NONE, with their Paging (AC-3): {paged}"
+E   AssertionError: the records not Paging.NONE, with their Paging (AC-3): {'no-stage-assigned#list-all-active-integrations': 'OFFSET', 'no-stage-assigned#get-asana-settings': 'OFFSET', 'no-stage-assigned#list-all-active-integrations-1': 'OFFSET'}
+E   assert {'no-stage-as...-1': 'OFFSET'} == {'no-stage-as...-1': 'OFFSET'}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Left contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mno-stage-assigned#get-asana-settings[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_no_stage_assigned.py::test_only_the_list_records_are_paged
+======================== 1 failed, 29 passed in 28.12s ========================

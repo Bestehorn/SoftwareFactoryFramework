@@ -1,0 +1,84 @@
+# mutant m05: list record Paging.OFFSET -> Paging.NONE: no-stage-assigned#list-all-active-integrations
+line ending kept: CRLF
+edit: 'paging=Paging.OFFSET,' -> 'paging=Paging.NONE,' (anchor 'operation_id="no-stage-assigned#list-all-active-integrations",')
+target: src/payload/scripts/gitlab_api/families/no_stage_assigned.py
+sha256 original: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+sha256 mutated (on disk): 8728f59111b89a8b9378b80bb4ddea2827bb7ad9338ad5cb766d49441c75bd95  # pragma: allowlist secret
+sha256 restored: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+restore: byte-identical to the original (sha256 equal), mtime restored
+tests: src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+verdict: KILLED
+run_tests exit code: 1
+--- complete run_tests output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [30 items]
+
+..FF..........................                                           [100%]
+================================== FAILURES ===================================
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_no_stage_assigned.py:744: in test_only_the_list_records_are_paged
+    assert paged == PAGED_RECORDS, f"the records not Paging.NONE, with their Paging (AC-3): {paged}"
+E   AssertionError: the records not Paging.NONE, with their Paging (AC-3): {'no-stage-assigned#list-all-active-integrations-1': 'OFFSET'}
+E   assert {'no-stage-as...-1': 'OFFSET'} == {'no-stage-as...-1': 'OFFSET'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mno-stage-assigned#list-all-active-integrations[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_____ test_a_list_record_prints_every_page[group-id-one-encoded-segment] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\test_gitlab_api_no_stage_assigned.py:786: in test_a_list_record_prints_every_page
+    code = run_call(root=project, argv=case.argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\test_gitlab_api_no_stage_assigned.py:652: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_wrapper.py:336: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_wrapper.py:321: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\commands\call.py:381: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\commands\call.py:367: in send_call
+    print_response(response=registry.send(transport=transport, operation_id=operation_id, values=prepared.values))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\registry.py:357: in send
+    return transport.request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\transport.py:541: in request
+    return self._send(method=method, url=url, data=data, content_type=content_type, credential=self._credential)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\transport.py:652: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\transport.py:675: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/groups/g%2Fsub/integrations (still scripted: [('GET', 'https://gitlab.example.com/api/v4/groups/g%2Fsub/integrations?per_page=100'), ('GET', 'https://gitlab.example.com/api/v4/groups/g%2Fsub/integrations?per_page=100&page=2')])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_no_stage_assigned.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_no_stage_assigned.py::test_a_list_record_prints_every_page[group-id-one-encoded-segment]
+======================== 2 failed, 28 passed in 28.91s ========================
