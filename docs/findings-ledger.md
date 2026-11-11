@@ -56,3 +56,6 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | gitlab_api graphql | a mutation with errors beside partial data exits 1 printing nothing; its effect may have applied | issue-44 design.md Residuals | conventions.md Errors and partial data; no failure seen | open |
 | 2026-11-11 | gitlab_api graphql | nested connections print their first page; WorkItem.widgets prints three widgets in full | issue-44 design.md Residuals | a record pages one connection | open |
 | 2026-11-11 | gitlab_api graphql | designManagementUpload (18.6) and workItemExport (18.0) are deprecated; a regeneration dropping them fails Q | issue-44 design.md Residuals | Q flags it when the reference changes | open |
+| 2026-11-11 | github_api pulls | pulls/update-branch declared and refused by call (None gate) | issue-14 DL-002 | closes the issue-32 DL-002 row | enforced src/payload/test/test_github_api_pulls.py |
+| 2026-11-11 | github_api code-scanning | code-scanning/commit-autofix declared and refused by call (None gate) | issue-14 DL-002 | closes the issue-31 DL-003 row | enforced src/payload/test/test_github_api_code_scanning.py |
+| 2026-11-11 | github_api copilot | content-exclusion record sends any body key (body_params {*}) | issue-14 DL-002 | closes the issue-33 DL-004 row | enforced src/payload/test/test_github_api_copilot.py |

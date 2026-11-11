@@ -18,7 +18,9 @@ two paths: a record whose ``content_type`` is ``None`` goes through ``Transport.
 ``API_ROOT``, and raw ``data`` for it is refused with ``ValueError`` before anything is sent; any other record goes
 through ``Transport.request_raw``, ``data`` unchanged under the record's ``content_type``, to the record's ``root``. A
 query or body name the record does not document is refused with ``ValueError`` before anything is sent; a query name
-may end in ``[]``, ``conventions.md`` "Query strings"'s spelling of an array, and is sent as written. ``expand``
+may end in ``[]``, ``conventions.md`` "Query strings"'s spelling of an array, and is sent as written. A record whose
+``body_params`` holds ``ANY_BODY_NAME`` (``*``, a section's "any key" body) documents every body name, so each body
+member given is sent; its query names and path parameters are checked as every record's are. ``expand``
 percent-encodes every path value, refusing a ``.`` or ``..`` segment with ``GitHubAPIError``. Every caller-supplied
 value a message names is rendered with ``json.dumps``.
 """
@@ -55,6 +57,9 @@ KIND_QUERY = "query"
 KIND_BODY = "body"
 #: How ``conventions.md`` "Query strings" spells an array query name: ``repository_ids[]=1&repository_ids[]=2``.
 QUERY_ARRAY_SUFFIX = "[]"
+#: The body name of a section whose body takes any key (``*``, "any key"): a record's ``body_params`` holding it
+#: documents every body name. It stands for body names only; query and path names stay checked.
+ANY_BODY_NAME = "*"
 
 
 class Paging(Enum):
@@ -201,7 +206,10 @@ def _check_names(
     *, operation: RestOperation, kind: str, given: Optional[Mapping[str, Any]], documented: AbstractSet[str]
 ) -> None:
     """Refuse with ``ValueError`` every ``given`` name that ``documented`` lacks, before anything is sent; a query
-    name is compared through ``query_name`` and named in the message as given."""
+    name is compared through ``query_name`` and named in the message as given. A body whose ``documented`` names hold
+    ``ANY_BODY_NAME`` accepts every name; a query's ``documented`` names never do."""
+    if kind == KIND_BODY and ANY_BODY_NAME in documented:
+        return
     undocumented = sorted(name for name in (given or {}) if _documented_name(kind=kind, name=name) not in documented)
     if undocumented:
         raise ValueError(

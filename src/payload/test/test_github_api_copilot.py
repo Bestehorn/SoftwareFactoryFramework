@@ -1,24 +1,26 @@
 """Tests of the ``copilot`` records of the GitHub wrapper (``github_api/families/copilot.py``; issue #33 AC-2 to AC-4,
-the slice test module of #28 design D8).
+the slice test module of #28 design D8; issue #14 AC-1, AC-2, AC-4 and UB-3).
 
 Installed from ``src/payload/test/test_github_api_copilot.py`` to ``test/test_github_api_copilot.py``, beside
-``scripts/github_wrapper.py`` and ``scripts/github_api/``. Every operation ID, path template and item key below is
-transcribed from ``docs/api-reference/github/operations-index.md``, ``rest/copilot.md`` and ``conventions.md`` "Lists
-wrapped in an object", never read from the records:
+``scripts/github_wrapper.py`` and ``scripts/github_api/``. Every operation ID, path template, item key and body name
+below is transcribed from ``docs/api-reference/github/operations-index.md``, ``rest/copilot.md`` and ``conventions.md``
+"Lists wrapped in an object", never read from the records:
 
-- ``RESIDUAL_PENDING``: ``copilot/set-copilot-content-exclusion-for-organization``, whose body is a map of any key
-  (``*``), which ``call`` refuses as an undocumented body name, so it stays pending (AC-2, issue #33 DL-004);
 - ``PAGED_SECTIONS``: the sections with a ``Paging:`` line, each with its path template, a value for each path
   parameter but ``owner`` and ``repo``, and its item key: "items in ``repositories``" and "items in ``seats``", as
   "Lists wrapped in an object" names them; both document ``per_page``;
-- ``UNPAGED_IDS``: the other sections without a ``Paging:`` line, the residual aside. No ``copilot`` record writes a
-  branch or creates issues, so the module has no AC-6 test.
+- ``UNPAGED_IDS``: the other sections, without a ``Paging:`` line, the content-exclusion write among them (issue #14
+  AC-1). No ``copilot`` record writes a branch or creates issues, so the module has no AC-6 test. ``PENDING`` is
+  empty (issue #14 AC-2).
 
 ``test_a_paged_record_prints_every_page`` runs one golden case per paged section with
 ``github_wrapper_fixtures.run_product_case`` (loaded by path, as ``test_github_api_call.py`` loads it): ``call <id>``
-with ``--path org=...`` and ``--query per_page=1``, against a fake host serving two items, one per page. The
-structural tests read the family module imported from the ``scripts`` directory beside this suite. No test opens a
-connection.
+with ``--path org=...`` and ``--query per_page=1``, against a fake host serving two items, one per page. The two
+content-exclusion tests run ``call copilot/set-copilot-content-exclusion-for-organization`` the same way: its section's
+only body row is ``*`` ("any key"), so every ``-F`` member given is sent as given (issue #14 AC-4), while an
+undocumented ``--query`` name is still refused before any request, in a log record judged by ``fx.assert_log`` on
+``caplog.records`` (issue #14 UB-3). The structural tests read the family module imported from the ``scripts``
+directory beside this suite. No test opens a connection.
 
 Run: ``python scripts/run_tests.py test/test_github_api_copilot.py`` (no network).
 """
@@ -27,6 +29,9 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
+import json
+import logging
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -79,13 +84,40 @@ LISTED_ITEMS: Tuple[Dict[str, Any], ...] = (
     {FIELD_ID: 2, FIELD_NAME: "transport"},
 )
 
-#: AC-2: what ``PENDING`` keeps (issue #33 DL-004).
-RESIDUAL_PENDING: FrozenSet[str] = frozenset({"copilot/set-copilot-content-exclusion-for-organization"})
-
 # The path parameter value the cases give (``owner`` and ``repo`` default to the fixture's ``origin``, ``o/r``).
 PARAM_ORG = "org"
 ORG = "acme"
 ON_ORG = ((PARAM_ORG, ORG),)
+
+# Issue #14 AC-4 and UB-3: ``rest/copilot.md`` "Set Copilot content exclusion rules for an organization", ``PUT
+# /orgs/{org}/copilot/content_exclusion``, whose body rows are ``*`` ("any key", an array of string or object),
+# ``*[]{variant 2}.ifAnyMatch`` and ``*[]{variant 3}.ifNoneMatch``; it documents no query row.
+ISSUE_14_AC_4 = "issue-14-AC-4"
+ISSUE_14_UB_3 = "issue-14-UB-3"
+CONTENT_EXCLUSION_ID = "copilot/set-copilot-content-exclusion-for-organization"
+CONTENT_EXCLUSION_PATH = "/orgs/acme/copilot/content_exclusion"
+OPTION_FIELD_SHORT = "-F"
+#: The two repositories of the map: the official page's example ``{"octo-repo": ["/src/some-dir/kernel.rs"]}``, a
+#: string array, and a second one whose array holds an ``ifAnyMatch`` object (variant 2).
+REPOSITORY_OF_PATHS = "octo-repo"
+REPOSITORY_OF_PATTERNS = "octo-docs"
+FIELD_IF_ANY_MATCH = "ifAnyMatch"
+MEMBER_OF_PATHS = 'octo-repo=["/src/some-dir/kernel.rs"]'
+MEMBER_OF_PATTERNS = 'octo-docs=[{"ifAnyMatch": ["/drafts/**", "*.secret"]}]'
+#: The JSON body the two members make, exactly.
+EXCLUSION_MAP: Dict[str, Any] = {
+    REPOSITORY_OF_PATHS: ["/src/some-dir/kernel.rs"],
+    REPOSITORY_OF_PATTERNS: [{FIELD_IF_ANY_MATCH: ["/drafts/**", "*.secret"]}],
+}
+#: The fake host's ``200`` answer: a JSON object, as the section's ``200: application/json object`` reads.
+EXCLUSION_SET = {fx.FIELD_MESSAGE: "Content exclusion rules updated"}
+#: A query name the section does not document, and the kind a refusal names it with (``commands/call.py``
+#: ``check_call``: ``documents no query parameter ["sort"]``).
+UNDOCUMENTED_QUERY_NAME = "sort"
+KIND_QUERY = "query"
+#: ``run_product_case`` reads standard error along with standard output; no case here withholds a value, so
+#: ``fx.assert_log`` judges the log records alone.
+STDERR_READ_BY_THE_RUN = ""
 
 
 @dataclass(frozen=True)
@@ -115,7 +147,7 @@ PAGED_SECTIONS: Tuple[PagedSection, ...] = (
     ),
 )
 
-#: The sections of ``rest/copilot.md`` without a ``Paging:`` line, ``RESIDUAL_PENDING`` aside.
+#: The sections of ``rest/copilot.md`` without a ``Paging:`` line.
 UNPAGED_IDS: FrozenSet[str] = frozenset(
     {
         "copilot/add-copilot-seats-for-teams",
@@ -152,6 +184,7 @@ UNPAGED_IDS: FrozenSet[str] = frozenset(
         "copilot/remove-organizations-from-enterprise-coding-agent-policy",
         "copilot/set-copilot-coding-agent-permissions-organization",
         "copilot/set-copilot-coding-agent-selected-repositories-for-organization",
+        "copilot/set-copilot-content-exclusion-for-organization",
         "copilot/set-copilot-team-customizations",
         "copilot/set-enterprise-code-review-policy",
         "copilot/set-enterprise-coding-agent-policy",
@@ -163,7 +196,7 @@ UNPAGED_IDS: FrozenSet[str] = frozenset(
 )
 
 PAGED_IDS: FrozenSet[str] = frozenset(section.operation_id for section in PAGED_SECTIONS)
-#: AC-1, AC-2: the IDs ``OPERATIONS`` holds a record of, each once: every section of the family but the residual.
+#: AC-1, AC-2: the IDs ``OPERATIONS`` holds a record of, each once: every section of the family (issue #14 AC-1).
 RECORDED_IDS: FrozenSet[str] = PAGED_IDS | UNPAGED_IDS
 #: The item key each record must carry: its paged section's, and ``None`` for every other record (AC-3).
 ITEM_KEYS: Mapping[str, Optional[str]] = {section.operation_id: section.item_key for section in PAGED_SECTIONS}
@@ -225,27 +258,36 @@ def _rule_problems(*, record: Any, transport: ModuleType) -> List[str]:
     return problems
 
 
-def test_only_the_residual_ids_are_pending() -> None:
-    """AC-2: ``copilot.PENDING`` is exactly ``{"copilot/set-copilot-content-exclusion-for-organization"}`` (DL-004);
-    every other ID of the family has its record."""
+def named(*, name: str) -> str:
+    """A pattern for ``name`` as a refusal renders a name: with ``json.dumps`` (#28 design D4)."""
+    return re.escape(json.dumps(obj=name))
+
+
+def named_with_kind(*, kind: str, name: str) -> str:
+    """A pattern for the undocumented ``name`` in the list that follows ``<kind> parameter`` (or ``parameters``), as
+    ``commands/call.py`` ``check_call`` writes one (``documents no query parameter ["sort"]``); a name in another
+    kind's list, or in a list of documented names, does not match."""
+    return rf'\b{kind} parameters?[^"\[\]\n;]*\[?(?:"[^"]*",\s*)*{named(name=name)}'
+
+
+def test_nothing_is_pending() -> None:
+    """Issue #14 AC-2: ``copilot.PENDING`` is empty; every ID of the family has its record."""
     pending = frozenset(getattr(_family(), ATTRIBUTE_PENDING))
 
-    assert pending == RESIDUAL_PENDING, (
-        f"{FAMILY_MODULE}.PENDING holds {sorted(pending)}; only {sorted(RESIDUAL_PENDING)} expected"
-    )
+    assert pending == frozenset(), f"{FAMILY_MODULE}.PENDING holds {sorted(pending)}; nothing is to stay pending"
 
 
 def test_the_records_follow_the_transcription_rules() -> None:
-    """AC-3: the records are the family's sections but the residual, one each; the ``Paging.LINK`` ones are exactly the
-    sections with a ``Paging:`` line (the paged cases' IDs); and every record has no ``multi_segment`` name, its
-    section's item key (none for an operation that does not page), ``API_VERSION_DEFAULT`` and ``ACCEPT_JSON``."""
+    """AC-3: the records are the family's sections, one each; the ``Paging.LINK`` ones are exactly the sections with a
+    ``Paging:`` line (the paged cases' IDs); and every record has no ``multi_segment`` name, its section's item key
+    (none for an operation that does not page), ``API_VERSION_DEFAULT`` and ``ACCEPT_JSON``."""
     registry = fx.import_api_module(name=REGISTRY)
     transport = fx.import_api_module(name=TRANSPORT)
     records = tuple(getattr(_family(), ATTRIBUTE_OPERATIONS))
 
     declared = sorted(record.operation_id for record in records)
     assert declared == sorted(RECORDED_IDS), (
-        f"{FAMILY_MODULE} declares {declared}, its sections but the residual are {sorted(RECORDED_IDS)}"
+        f"{FAMILY_MODULE} declares {declared}, its sections are {sorted(RECORDED_IDS)}"
     )
     paged = frozenset(record.operation_id for record in records if record.paging == registry.Paging.LINK)
     assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
@@ -263,3 +305,75 @@ def test_a_paged_record_prints_every_page(
 
     urls = [request.url for request in requests]
     assert len(requests) == len(LISTED_ITEMS), f"{case.name}: one request per page expected, sent {urls}"
+
+
+def test_the_content_exclusion_map_is_sent_as_given(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #14 AC-4: ``call copilot/set-copilot-content-exclusion-for-organization --path org=acme`` with one ``-F``
+    member per repository, a string array and an array holding an ``ifAnyMatch`` object, exits 0, prints the answer,
+    and sends one ``PUT /orgs/acme/copilot/content_exclusion`` whose JSON body is exactly those two members."""
+    case = fx.GoldenCase(
+        name=f"{ISSUE_14_AC_4}/exit-0/{CONTENT_EXCLUSION_ID}",
+        argv=(
+            CALL,
+            CONTENT_EXCLUSION_ID,
+            OPTION_PATH,
+            f"{PARAM_ORG}={ORG}",
+            OPTION_FIELD_SHORT,
+            MEMBER_OF_PATHS,
+            OPTION_FIELD_SHORT,
+            MEMBER_OF_PATTERNS,
+        ),
+        stdout=fx.printed_json(value=EXCLUSION_SET),
+        exit_code=fx.EXIT_OK,
+        routes=(
+            fx.StaticRouteSpec(
+                method=fx.METHOD_PUT, url=CONTENT_EXCLUSION_PATH, replies=(fx.Reply(body=EXCLUSION_SET),)
+            ),
+        ),
+        writes=(fx.NonGetRequest(method=fx.METHOD_PUT, path=CONTENT_EXCLUSION_PATH, body=EXCLUSION_MAP),),
+    )
+
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+
+    sent = [f"{request.method} {request.url}" for request in requests]
+    assert len(requests) == 1, f"{case.name}: one request expected, sent {sent}"
+
+
+def test_the_content_exclusion_call_checks_its_query(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #14 UB-3: the record takes any body name, yet ``call`` still refuses an undocumented ``--query`` name: with
+    ``--path org=acme``, one ``-F`` member and ``--query sort=name`` it exits 2 with nothing on standard output and no
+    request, and a log record names the record's ID and ``sort`` as a query parameter."""
+    case = fx.GoldenCase(
+        name=f"{ISSUE_14_UB_3}/exit-2/{CONTENT_EXCLUSION_ID}",
+        argv=(
+            CALL,
+            CONTENT_EXCLUSION_ID,
+            OPTION_PATH,
+            f"{PARAM_ORG}={ORG}",
+            OPTION_FIELD_SHORT,
+            MEMBER_OF_PATHS,
+            OPTION_QUERY,
+            f"{UNDOCUMENTED_QUERY_NAME}=name",
+        ),
+        stdout="",
+        exit_code=fx.EXIT_REFUSED,
+        log=fx.LogExpectation(
+            refusal=(
+                named(name=CONTENT_EXCLUSION_ID),
+                named_with_kind(kind=KIND_QUERY, name=UNDOCUMENTED_QUERY_NAME),
+            ),
+            withheld=(),
+        ),
+    )
+    caplog.set_level(level=logging.DEBUG)
+
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
