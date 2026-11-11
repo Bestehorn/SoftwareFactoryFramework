@@ -8,7 +8,8 @@ What is pinned (issue #63, ``design.md`` D4 and "Correctness Properties" AC-5.2)
   registry request carries ``Authorization: Bearer <registry token>`` alone (step 4), and ``send`` returns its answer;
 - under a ``private`` token, a ``GET /user`` answer whose ``username`` is absent, not a string or empty raises
   ``GitLabAPIError`` with nothing sent after it (step 1, AC-5.3);
-- a ``container_registry_image_prefix`` whose registry host holds a space, a tab, a line feed or a carriage return
+- a ``container_registry_image_prefix`` whose registry host holds white space, any one of the characters ``\\s``
+  matches in a ``str`` pattern of ``re`` (those for which ``str.isspace()`` is true, each written as a literal escape),
   raises ``GitLabAPIError`` with nothing sent after step 2: no ``/jwt/auth`` request and no registry request (step 2,
   AC-5.3);
 - a ``/jwt/auth`` success answer that is not a JSON object, or whose ``token`` is not a non-empty string, raises
@@ -118,12 +119,45 @@ USER_ANSWERS_WITHOUT_A_LOGIN = [
 ]
 
 # D4 step 2, "AC-5.3": a `container_registry_image_prefix` whose registry host, the text before its first `/`, holds
-# white space gives no registry origin: a space, a tab, a line feed and a carriage return.
+# white space gives no registry origin. White space is every character `\s` matches in a `str` pattern of `re`, the
+# characters for which `str.isspace()` is true (docs.python.org `re` "\s"): each one, by code point, as a literal escape
+# and the id of its case. `test_the_white_space_cases_are_every_character_python_counts_as_white_space` holds this tuple
+# to Python's definition, so it cannot drift from it.
+WHITE_SPACE_CHARACTERS: Tuple[Tuple[str, str], ...] = (
+    ("\t", "a-tab"),  # U+0009 CHARACTER TABULATION
+    ("\n", "a-line-feed"),  # U+000A LINE FEED
+    ("\x0b", "a-vertical-tab"),  # U+000B LINE TABULATION
+    ("\x0c", "a-form-feed"),  # U+000C FORM FEED
+    ("\r", "a-carriage-return"),  # U+000D CARRIAGE RETURN
+    ("\x1c", "a-file-separator"),  # U+001C INFORMATION SEPARATOR FOUR
+    ("\x1d", "a-group-separator"),  # U+001D INFORMATION SEPARATOR THREE
+    ("\x1e", "a-record-separator"),  # U+001E INFORMATION SEPARATOR TWO
+    ("\x1f", "a-unit-separator"),  # U+001F INFORMATION SEPARATOR ONE
+    (" ", "a-space"),  # U+0020 SPACE
+    ("\x85", "a-next-line"),  # U+0085 NEXT LINE
+    ("\xa0", "a-no-break-space"),  # U+00A0 NO-BREAK SPACE
+    ("\u1680", "an-ogham-space-mark"),  # U+1680 OGHAM SPACE MARK
+    ("\u2000", "an-en-quad"),  # U+2000 EN QUAD
+    ("\u2001", "an-em-quad"),  # U+2001 EM QUAD
+    ("\u2002", "an-en-space"),  # U+2002 EN SPACE
+    ("\u2003", "an-em-space"),  # U+2003 EM SPACE
+    ("\u2004", "a-three-per-em-space"),  # U+2004 THREE-PER-EM SPACE
+    ("\u2005", "a-four-per-em-space"),  # U+2005 FOUR-PER-EM SPACE
+    ("\u2006", "a-six-per-em-space"),  # U+2006 SIX-PER-EM SPACE
+    ("\u2007", "a-figure-space"),  # U+2007 FIGURE SPACE
+    ("\u2008", "a-punctuation-space"),  # U+2008 PUNCTUATION SPACE
+    ("\u2009", "a-thin-space"),  # U+2009 THIN SPACE
+    ("\u200a", "a-hair-space"),  # U+200A HAIR SPACE
+    ("\u2028", "a-line-separator"),  # U+2028 LINE SEPARATOR
+    ("\u2029", "a-paragraph-separator"),  # U+2029 PARAGRAPH SEPARATOR
+    ("\u202f", "a-narrow-no-break-space"),  # U+202F NARROW NO-BREAK SPACE
+    ("\u205f", "a-medium-mathematical-space"),  # U+205F MEDIUM MATHEMATICAL SPACE
+    ("\u3000", "an-ideographic-space"),  # U+3000 IDEOGRAPHIC SPACE
+)
+# One case per character, written where the dot of `registry.example.com` is: `registry<c>example.com/group/project`.
 IMAGE_PREFIXES_WITH_WHITE_SPACE_IN_THE_HOST = [
-    pytest.param("registry example.com/group/project", id="a-space"),
-    pytest.param("registry\texample.com/group/project", id="a-tab"),
-    pytest.param("registry\nexample.com/group/project", id="a-line-feed"),
-    pytest.param("registry\rexample.com/group/project", id="a-carriage-return"),
+    pytest.param(f"registry{character}example.com/group/project", id=case_id)
+    for character, case_id in WHITE_SPACE_CHARACTERS
 ]
 
 # D4 step 3, "AC-5.3": a `/jwt/auth` success answer that is not a JSON object, or whose `token` is not a non-empty
@@ -287,6 +321,12 @@ def test_a_user_answer_without_a_username_sends_nothing_further(fake_gitlab: Any
 
 
 # --- AC-5.3 a registry host that cannot be used ---------------------------------------------------------------------
+
+
+def test_the_white_space_cases_are_every_character_python_counts_as_white_space() -> None:
+    assert sorted(character for character, _ in WHITE_SPACE_CHARACTERS) == sorted(
+        chr(code) for code in range(0x110000) if chr(code).isspace()
+    ), "WHITE_SPACE_CHARACTERS holds each character `\\s` matches in a str pattern, the str.isspace() ones, once"
 
 
 @pytest.mark.parametrize(argnames="image_prefix", argvalues=IMAGE_PREFIXES_WITH_WHITE_SPACE_IN_THE_HOST)

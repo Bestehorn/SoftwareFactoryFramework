@@ -1,0 +1,16 @@
+# round 3 baseline-green: the mutant tree, no mutation
+# sha256 src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\basetemp src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [76 items]
+
+........................................................................ [ 94%]
+....                                                                     [100%]
+============================= 76 passed in 6.24s ==============================
+exit=0
+# 76 passed in 6.24s

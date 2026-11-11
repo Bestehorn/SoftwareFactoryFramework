@@ -1,0 +1,110 @@
+# round 3 mutant sec-step2-whitespace-allowed: D4 step 2, AC-5.3: white space in the registry host is refused (`\s` dropped from REFUSED_IN_HOST)
+# edit src/payload/scripts/gitlab_api/container_registry.py: 'REFUSED_IN_HOST = re.compile(pattern=r"[@?#\\\\\\s]")' -> 'REFUSED_IN_HOST = re.compile(pattern=r"[@?#\\\\]")'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\basetemp src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [76 items]
+
+..............F.F.F.F................................................... [ 94%]
+..F.                                                                     [100%]
+================================== FAILURES ===================================
+________ test_a_registry_host_holding_white_space_is_refused[a-space] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:321: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/jwt/auth?service=container_registry&scope=repository[39;49;00m[33m%[39;49;00m[33m3Agroup[39;49;00m[33m%2F[39;49;00m[33mproject[39;49;00m[33m%[39;49;00m[33m3Adelete[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_________ test_a_registry_host_holding_white_space_is_refused[a-tab] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:321: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/jwt/auth?service=container_registry&scope=repository[39;49;00m[33m%[39;49;00m[33m3Agroup[39;49;00m[33m%2F[39;49;00m[33mproject[39;49;00m[33m%[39;49;00m[33m3Adelete[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+______ test_a_registry_host_holding_white_space_is_refused[a-line-feed] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:321: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/jwt/auth?service=container_registry&scope=repository[39;49;00m[33m%[39;49;00m[33m3Agroup[39;49;00m[33m%2F[39;49;00m[33mproject[39;49;00m[33m%[39;49;00m[33m3Adelete[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+___ test_a_registry_host_holding_white_space_is_refused[a-carriage-return] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:321: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://gitlab.example.com/jwt/auth?service=container_registry&scope=repository[39;49;00m[33m%[39;49;00m[33m3Agroup[39;49;00m[33m%2F[39;49;00m[33mproject[39;49;00m[33m%[39;49;00m[33m3Adelete[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-white-space] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\test\test_gitlab_api_package.py:2051: in test_no_registry_token_sends_nothing_to_the_registry
+    code = run_call(root=project, argv=DELETE_TAGS_ARGV, token_type=case.token_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\test\test_gitlab_api_package.py:1518: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\registry.py:859: in send
+    return _send_to_container_registry(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\registry.py:813: in _send_to_container_registry
+    return container_registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\container_registry.py:131: in send
+    return transport.container_registry_request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify3\mutants\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://registry example.com/v2/group/project/tags/reference/1a2b3c4 (still scripted: [('DELETE', 'https://registry.example.com/v2/group/project/tags/reference/1a2b3c4')])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-tab]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-line-feed]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-carriage-return]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-white-space]
+======================== 5 failed, 71 passed in 6.30s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# verdict: KILLED (5 failed, 71 passed in 6.30s)

@@ -98,3 +98,12 @@
 **Evidence:** evidence/green/rework-2.txt; each new case failed under its round-2 mutant (implementer report).
 **Supersedes:** none
 **Artifacts touched:** src/payload/test/test_gitlab_api_container_registry.py
+
+## DL-012 — 2026-11-11T20:34:01Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Close the white-space class instead of one character per round: G's registry-host refusal test covers every character `str.isspace()` counts (a literal tuple of escapes, guarded by a test that it equals Python's set); a delta round 4 verifies it.
+**Driver:** evidence/verify/refutation-report-3.md R3-1 (VT, FF and Unicode white space unpinned; R2-2 closed).
+**Alternatives considered:** restate D4 to the four pinned characters (rejected: narrows a security refusal to fit the tests).
+**Evidence:** evidence/green/rework-3.txt; both round-3 mutants killed (implementer report: 25 and 23 cases fail).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_container_registry.py
