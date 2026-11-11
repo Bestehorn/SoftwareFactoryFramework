@@ -1,0 +1,849 @@
+# mutant wave 2: families/package.py and commands/call.py written from origin/main (70c4dba); registry.py at HEAD; F, K, N, V run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [160 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..F.F.F.F..F.................... [ 45%]
+................................................F.F.FFFFFFFFF........... [ 90%]
+................                                                         [100%]
+================================== FAILURES ===================================
+__________________ test_nothing_is_pending_but_the_kept_keys __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1412: in test_nothing_is_pending_but_the_kept_keys
+    assert pending == KEPT, (
+E   AssertionError: PENDING holds 213 key(s), the kept keys are 22 (AC-1.2, AC-1.3, AC-1.7):
+E     not expected: ('DELETE', '/<route-prefix>/-/package/:package_name/dist-tags/:tag')
+E     not expected: ('DELETE', '/groups/:id/-/debian_distributions/:codename')
+E     not expected: ('DELETE', '/groups/:id/-/virtual_registries/cleanup/policy')
+E     not expected: ('DELETE', '/groups/:id/dependency_proxy/cache')
+E     not expected: ('DELETE', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel')
+E     not expected: ('DELETE', '/projects/:id/debian_distributions/:codename')
+E     not expected: ('DELETE', '/projects/:id/packages/:package_id')
+E     not expected: ('DELETE', '/projects/:id/packages/:package_id/package_files/:package_file_id')
+E     not expected: ('DELETE', '/projects/:id/packages/conan/conans/:package_name/package_version/:package_username/:package_channel/revisions/:recipe_revision')
+E     not expected: ('DELETE', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/packages/:conan_package_reference/revisions/:package_revision')
+E     not expected: ('DELETE', '/projects/:id/packages/nuget/:package_name/:package_version')
+E     not expected: ('DELETE', '/projects/:id/packages/protection/rules/:package_protection_rule_id')
+E     not expected: ('DELETE', '/projects/:id/registry/protection/repository/rules/:protection_rule_id')
+E     not expected: ('DELETE', '/projects/:id/registry/protection/tag/rules/:protection_rule_id')
+E     not expected: ('DELETE', '/projects/:id/registry/repositories/:repository_id')
+E     not expected: ('DELETE', '/projects/:id/registry/repositories/:repository_id/tags')
+E     not expected: ('DELETE', '/projects/:id/registry/repositories/:repository_id/tags/:tag_name')
+E     not expected: ('DELETE', '/virtual_registries/container/cache_entries/*id')
+E     not expected: ('DELETE', '/virtual_registries/container/registries/:id')
+E     not expected: ('DELETE', '/virtual_registries/container/registries/:id/cache')
+E     not expected: ('DELETE', '/virtual_registries/container/registry_upstreams/:id')
+E     not expected: ('DELETE', '/virtual_registries/container/upstreams/:id')
+E     not expected: ('DELETE', '/virtual_registries/container/upstreams/:id/cache')
+E     not expected: ('DELETE', '/virtual_registries/packages/maven/cache_entries/*id')
+E     not expected: ('DELETE', '/virtual_registries/packages/maven/local/upstreams/:id')
+E     not expected: ('DELETE', '/virtual_registries/packages/maven/registries/:id')
+E     not expected: ('DELETE', '/virtual_registries/packages/maven/registries/:id/cache')
+E     not expected: ('DELETE', '/virtual_registries/packages/maven/registry_upstreams/:id')
+E     not expected: ('DELETE', '/virtual_registries/packages/maven/upstreams/:id')
+E     not expected: ('DELETE', '/virtual_registries/packages/maven/upstreams/:id/cache')
+E     not expected: ('GET', '/<route-prefix>/-/package/:package_name/dist-tags')
+E     not expected: ('GET', '/<route-prefix>/:package_name')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/:component/binary-:architecture/Packages')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/:component/binary-:architecture/by-hash/SHA256/:file_sha256')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/:component/debian-installer/binary-:architecture/Packages')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/:component/debian-installer/binary-:architecture/by-hash/SHA256/:file_sha256')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/:component/source/Sources')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/:component/source/by-hash/SHA256/:file_sha256')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/InRelease')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/Release')
+E     not expected: ('GET', '/<route-prefix>/dists/*distribution/Release.gpg')
+E     not expected: ('GET', '/<route-prefix>/index')
+E     not expected: ('GET', '/<route-prefix>/metadata/:package_name/:package_version')
+E     not expected: ('GET', '/<route-prefix>/metadata/:package_name/index')
+E     not expected: ('GET', '/<route-prefix>/query')
+E     not expected: ('GET', '/<route-prefix>/symbolfiles/:file_name/:signature/:file_name')
+E     not expected: ('GET', '/<route-prefix>/v2')
+E     not expected: ('GET', '/<route-prefix>/v2/$metadata')
+E     not expected: ('GET', '/group/:id/-/packages/composer/:package_name$:sha')
+E     not expected: ('GET', '/group/:id/-/packages/composer/p/:sha')
+E     not expected: ('GET', '/group/:id/-/packages/composer/p2/:package_name')
+E     not expected: ('GET', '/group/:id/-/packages/composer/packages')
+E     not expected: ('GET', '/groups/:id/-/debian_distributions')
+E     not expected: ('GET', '/groups/:id/-/debian_distributions/:codename')
+E     not expected: ('GET', '/groups/:id/-/debian_distributions/:codename/key.asc')
+E     not expected: ('GET', '/groups/:id/-/packages/maven/*path/:file_name')
+E     not expected: ('GET', '/groups/:id/-/packages/pypi/files/:sha256/:file_identifier')
+E     not expected: ('GET', '/groups/:id/-/packages/pypi/simple')
+E     not expected: ('GET', '/groups/:id/-/packages/pypi/simple/:package_name')
+E     not expected: ('GET', '/groups/:id/-/virtual_registries/cleanup/policy')
+E     not expected: ('GET', '/groups/:id/-/virtual_registries/container/registries')
+E     not expected: ('GET', '/groups/:id/-/virtual_registries/container/upstreams')
+E     not expected: ('GET', '/groups/:id/-/virtual_registries/packages/maven/registries')
+E     not expected: ('GET', '/groups/:id/-/virtual_registries/packages/maven/upstreams')
+E     not expected: ('GET', '/groups/:id/packages')
+E     not expected: ('GET', '/groups/:id/registry/repositories')
+E     not expected: ('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel')
+E     not expected: ('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest')
+E     not expected: ('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls')
+E     not expected: ('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference')
+E     not expected: ('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest')
+E     not expected: ('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls')
+E     not expected: ('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search')
+E     not expected: ('GET', '/packages/conan/v1/conans/search')
+E     not expected: ('GET', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')
+E     not expected: ('GET', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')
+E     not expected: ('GET', '/packages/conan/v1/ping')
+E     not expected: ('GET', '/packages/conan/v1/users/authenticate')
+E     not expected: ('GET', '/packages/conan/v1/users/check_credentials')
+E     not expected: ('GET', '/packages/maven/*path/:file_name')
+E     not expected: ('GET', '/packages/terraform/modules/v1/:module_namespace/:module_name/:module_system')
+E     not expected: ('GET', '/packages/terraform/modules/v1/:module_namespace/:module_name/:module_system/1.0.0')
+E     not expected: ('GET', '/packages/terraform/modules/v1/:module_namespace/:module_name/:module_system/:module_version/download')
+E     not expected: ('GET', '/packages/terraform/modules/v1/:module_namespace/:module_name/:module_system/:module_version/file')
+E     not expected: ('GET', '/packages/terraform/modules/v1/:module_namespace/:module_name/:module_system/download')
+E     not expected: ('GET', '/packages/terraform/modules/v1/:module_namespace/:module_name/:module_system/versions')
+E     not expected: ('GET', '/projects/:id/debian_distributions')
+E     not expected: ('GET', '/projects/:id/debian_distributions/:codename')
+E     not expected: ('GET', '/projects/:id/debian_distributions/:codename/key.asc')
+E     not expected: ('GET', '/projects/:id/packages')
+E     not expected: ('GET', '/projects/:id/packages/:package_id')
+E     not expected: ('GET', '/projects/:id/packages/:package_id/package_files')
+E     not expected: ('GET', '/projects/:id/packages/:package_id/pipelines')
+E     not expected: ('GET', '/projects/:id/packages/composer/archives/:package_name')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/latest')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/files')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/files/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/packages/:conan_package_reference/latest')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/packages/:conan_package_reference/revisions')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/packages/:conan_package_reference/revisions/:package_revision/files/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/search')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/search')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/conans/search')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/users/authenticate')
+E     not expected: ('GET', '/projects/:id/packages/conan/v2/users/check_credentials')
+E     not expected: ('GET', '/projects/:id/packages/debian/pool/:distribution/:letter/:package_name/:package_version/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/go/:module_name/@v/:module_version.info')
+E     not expected: ('GET', '/projects/:id/packages/go/:module_name/@v/:module_version.mod')
+E     not expected: ('GET', '/projects/:id/packages/go/:module_name/@v/:module_version.zip')
+E     not expected: ('GET', '/projects/:id/packages/go/:module_name/@v/list')
+E     not expected: ('GET', '/projects/:id/packages/helm/:channel/charts/:file_name.tgz')
+E     not expected: ('GET', '/projects/:id/packages/helm/:channel/index.yaml')
+E     not expected: ('GET', '/projects/:id/packages/maven/*path/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/npm/:package_name/-/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/nuget/download/:package_name/:package_version/:package_filename')
+E     not expected: ('GET', '/projects/:id/packages/nuget/download/:package_name/index')
+E     not expected: ('GET', '/projects/:id/packages/protection/rules')
+E     not expected: ('GET', '/projects/:id/packages/pypi/files/:sha256/:file_identifier')
+E     not expected: ('GET', '/projects/:id/packages/pypi/simple')
+E     not expected: ('GET', '/projects/:id/packages/pypi/simple/:package_name')
+E     not expected: ('GET', '/projects/:id/packages/rubygems/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/rubygems/api/v1/dependencies')
+E     not expected: ('GET', '/projects/:id/packages/rubygems/gems/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/rubygems/quick/Marshal.4.8/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/terraform/modules/:module_name/:module_system/:module_version')
+E     not expected: ('GET', '/projects/:id/registry/protection/repository/rules')
+E     not expected: ('GET', '/projects/:id/registry/protection/tag/rules')
+E     not expected: ('GET', '/projects/:id/registry/repositories')
+E     not expected: ('GET', '/projects/:id/registry/repositories/:repository_id/tags')
+E     not expected: ('GET', '/projects/:id/registry/repositories/:repository_id/tags/:tag_name')
+E     not expected: ('GET', '/registry/repositories/:id')
+E     not expected: ('GET', '/virtual_registries/container/registries/:id')
+E     not expected: ('GET', '/virtual_registries/container/registries/:id/upstreams')
+E     not expected: ('GET', '/virtual_registries/container/upstreams/:id')
+E     not expected: ('GET', '/virtual_registries/container/upstreams/:id/cache_entries')
+E     not expected: ('GET', '/virtual_registries/packages/maven/:id/*path')
+E     not expected: ('GET', '/virtual_registries/packages/maven/local/upstreams/:id')
+E     not expected: ('GET', '/virtual_registries/packages/maven/registries/:id')
+E     not expected: ('GET', '/virtual_registries/packages/maven/registries/:id/upstreams')
+E     not expected: ('GET', '/virtual_registries/packages/maven/upstreams/:id')
+E     not expected: ('GET', '/virtual_registries/packages/maven/upstreams/:id/cache_entries')
+E     not expected: ('GET', '/virtual_registries/packages/maven/upstreams/:id/test')
+E     not expected: ('PATCH', '/groups/:id/-/virtual_registries/cleanup/policy')
+E     not expected: ('PATCH', '/projects/:id/packages/protection/rules/:package_protection_rule_id')
+E     not expected: ('PATCH', '/projects/:id/registry/protection/repository/rules/:protection_rule_id')
+E     not expected: ('PATCH', '/projects/:id/registry/protection/tag/rules/:protection_rule_id')
+E     not expected: ('PATCH', '/virtual_registries/container/registries/:id')
+E     not expected: ('PATCH', '/virtual_registries/container/registry_upstreams/:id')
+E     not expected: ('PATCH', '/virtual_registries/container/upstreams/:id')
+E     not expected: ('PATCH', '/virtual_registries/packages/maven/local/upstreams/:id')
+E     not expected: ('PATCH', '/virtual_registries/packages/maven/registries/:id')
+E     not expected: ('PATCH', '/virtual_registries/packages/maven/registry_upstreams/:id')
+E     not expected: ('PATCH', '/virtual_registries/packages/maven/upstreams/:id')
+E     not expected: ('POST', '/groups/:id/-/debian_distributions')
+E     not expected: ('POST', '/groups/:id/-/virtual_registries/cleanup/policy')
+E     not expected: ('POST', '/groups/:id/-/virtual_registries/container/registries')
+E     not expected: ('POST', '/groups/:id/-/virtual_registries/container/upstreams/test')
+E     not expected: ('POST', '/groups/:id/-/virtual_registries/packages/maven/registries')
+E     not expected: ('POST', '/groups/:id/-/virtual_registries/packages/maven/upstreams/test')
+E     not expected: ('POST', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls')
+E     not expected: ('POST', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls')
+E     not expected: ('POST', '/projects/:id/debian_distributions')
+E     not expected: ('POST', '/projects/:id/packages/composer')
+E     not expected: ('POST', '/projects/:id/packages/helm/api/:channel/charts')
+E     not expected: ('POST', '/projects/:id/packages/protection/rules')
+E     not expected: ('POST', '/projects/:id/packages/pypi')
+E     not expected: ('POST', '/projects/:id/packages/rubygems/api/v1/gems')
+E     not expected: ('POST', '/projects/:id/registry/protection/repository/rules')
+E     not expected: ('POST', '/projects/:id/registry/protection/tag/rules')
+E     not expected: ('POST', '/virtual_registries/container/registries/:id/upstreams')
+E     not expected: ('POST', '/virtual_registries/container/registry_upstreams')
+E     not expected: ('POST', '/virtual_registries/container/upstreams/:id/test')
+E     not expected: ('POST', '/virtual_registries/packages/maven/:id/*path/upload')
+E     not expected: ('POST', '/virtual_registries/packages/maven/registries/:id/local/upstreams')
+E     not expected: ('POST', '/virtual_registries/packages/maven/registries/:id/upstreams')
+E     not expected: ('POST', '/virtual_registries/packages/maven/registry_upstreams')
+E     not expected: ('POST', '/virtual_registries/packages/maven/upstreams/:id/test')
+E     not expected: ('PUT', '/<route-prefix>/-/package/:package_name/dist-tags/:tag')
+E     not expected: ('PUT', '/groups/:id/-/debian_distributions/:codename')
+E     not expected: ('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')
+E     not expected: ('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')
+E     not expected: ('PUT', '/projects/:id/debian_distributions/:codename')
+E     not expected: ('PUT', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/files/:file_name')
+E     not expected: ('PUT', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/packages/:conan_package_reference/revisions/:package_revision/files/:file_name')
+E     not expected: ('PUT', '/projects/:id/packages/debian/:file_name')
+E     not expected: ('PUT', '/projects/:id/packages/maven/*path/:file_name')
+E     not expected: ('PUT', '/projects/:id/packages/npm/:package_name')
+E     not expected: ('PUT', '/projects/:id/packages/nuget')
+E     not expected: ('PUT', '/projects/:id/packages/nuget/symbolpackage')
+E     not expected: ('PUT', '/projects/:id/packages/terraform/modules/:module-name/:module-system/:module-version/file')
+E   assert frozenset({('...annel'), ...}) == frozenset({('...rence'), ...})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/helm/:channel/charts/:file_name.tgz[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/conan/v2/conans/:package_name/:packag...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_prefix_record_is_sent_under_each_of_its_values[npm-group-full-path-one-encoded-segment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-dist-tags', '--path', 'package_name=pkg', '--route-prefix', '/groups/:id/-/packages/npm', '--path', 'id=my-group/sub'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /groups/:id/-/packages/npm
+E     
+E   assert 2 == 0
+______________ test_a_two_endpoint_entry_maps_its_first_endpoint ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1445: in test_a_two_endpoint_entry_maps_its_first_endpoint
+    assert mapped == expected, "a two-endpoint entry's record does not map its first endpoint (AC-1.2):\n" + (
+E   AssertionError: a two-endpoint entry's record does not map its first endpoint (AC-1.2):
+E     missing: 'package#create-an-authentication-token'
+E     missing: 'package#delete-a-recipe-and-package'
+E     missing: 'package#list-all-package-download-urls'
+E     missing: 'package#list-all-package-upload-urls'
+E     missing: 'package#list-all-recipe-download-urls'
+E     missing: 'package#list-all-recipe-upload-urls'
+E     missing: 'package#retrieve-a-package-file'
+E     missing: 'package#retrieve-a-package-manifest'
+E     missing: 'package#retrieve-a-package-snapshot'
+E     missing: 'package#retrieve-a-recipe-file'
+E     missing: 'package#retrieve-a-recipe-manifest'
+E     missing: 'package#retrieve-a-recipe-snapshot'
+E     missing: 'package#retrieve-package-references-metadata'
+E     missing: 'package#search-for-a-conan-package'
+E     missing: 'package#upload-a-package-file'
+E     missing: 'package#upload-a-package-file-5'
+E     missing: 'package#upload-a-recipe-file'
+E     missing: 'package#verify-authentication-credentials'
+E     missing: 'package#verify-availability-of-a-conan-repository'
+E   assert {} == {'package#cre...ntials'), ...}
+E     
+E     Right contains 19 more items:
+E     [0m{[33m'[39;49;00m[33mpackage#create-an-authentication-token[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/packages/conan/v1/users/authenticate[39;49;00m[33m'[39;49;00m)}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mpackage#delete-a-recipe-and-package[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel[39;49;00m[33m'[39;49;00m)}[90m[39;49;00m
+E     [0m{[33...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_prefix_record_is_sent_under_each_of_its_values[npm-project-the-configured-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-dist-tags', '--path', 'package_name=pkg', '--route-prefix', '/projects/:id/packages/npm'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /projects/:id/packages/npm
+E     
+E   assert 2 == 0
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1464: in test_every_param_is_typed_as_its_row
+    assert typed == KINDS, "the Params that are not Kind.SCALAR are not the rows' (AC-1.4):\n" + mapping_difference(
+E   AssertionError: the Params that are not Kind.SCALAR are not the rows' (AC-1.4):
+E     missing: 'package#create-a-debian-group-distribution'
+E     missing: 'package#create-a-debian-project-distribution'
+E     missing: 'package#delete-a-debian-group-distribution'
+E     missing: 'package#delete-a-debian-project-distribution'
+E     missing: 'package#list-all-debian-distributions-in-a-group'
+E     missing: 'package#list-all-debian-distributions-in-a-project'
+E     missing: 'package#update-a-debian-group-distribution'
+E     missing: 'package#update-a-debian-project-distribution'
+E     missing: 'package#upload-a-chart'
+E     missing: 'package#upload-a-package'
+E     missing: 'package#upload-a-package-1'
+E     missing: 'package#upload-a-package-file-5'
+E     missing: 'package#upload-a-symbol-package-file'
+E   assert {} == {'package#lis...'ARRAY'}, ...}
+E     
+E     Right contains 13 more items:
+E     [0m{[33m'[39;49;00m[33mpackage#create-a-debian-group-distribution[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mcomponents[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33marchitectures[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mpackage#create-a-debian-project-distribution[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mcomponents[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_no_param_names_a_path_parameter _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1500: in test_no_param_names_a_path_parameter
+    assert records, "package.OPERATIONS declares no record, so no Param can be checked (AC-1.5)"
+E   AssertionError: package.OPERATIONS declares no record, so no Param can be checked (AC-1.5)
+E   assert ()
+_ test_a_prefix_record_is_sent_under_each_of_its_values[debian-project-the-configured-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#download-a-distribution-release-file', '--path', 'distribution=stable', '--route-prefix', '/projects/:id/packages/debian'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /projects/:id/packages/debian
+E     
+E   assert 2 == 0
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1526: in test_only_the_list_records_are_paged
+    assert paged == PAGED_RECORDS, "the records not Paging.NONE are not the list records (AC-1.6):\n" + (
+E   AssertionError: the records not Paging.NONE are not the list records (AC-1.6):
+E     missing: 'package#for-a-group'
+E     missing: 'package#for-a-project'
+E     missing: 'package#list-all-debian-distributions-in-a-group'
+E     missing: 'package#list-all-debian-distributions-in-a-project'
+E     missing: 'package#list-all-registry-repository-tags-in-a-project'
+E     missing: 'package#list-all-upstream-registries'
+E     missing: 'package#list-all-upstream-registries-for-a-top-level-group'
+E     missing: 'package#list-all-upstream-registry-cache-entries'
+E     missing: 'package#list-package-files'
+E     missing: 'package#list-package-pipelines'
+E     missing: 'package#list-upstream-registry-cache-entries'
+E     missing: 'package#within-a-group'
+E     missing: 'package#within-a-project'
+E   assert {} == {'package#wit...'OFFSET', ...}
+E     
+E     Right contains 13 more items:
+E     [0m{[33m'[39;49;00m[33mpackage#for-a-group[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mpackage#for-a-project[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mpackage#list-all-debian-distributions-in-a-group[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mpackage#list-all-debian-distributions-in-a-project[39;49;00m[33m'[3...
+E     
+E     ...Full output truncated, use '-vv' to show
+_____ test_a_prefix_record_is_sent_under_each_of_its_values[debian-group] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#download-a-distribution-release-file', '--path', 'distribution=stable', '--route-prefix', '/groups/:id/-/packages/debian', '--path', 'id=7'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /groups/:id/-/packages/debian
+E     
+E   assert 2 == 0
+_____ test_a_prefix_record_is_sent_under_each_of_its_values[nuget-group] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#search-for-packages', '--query', 'q=pkg', '--route-prefix', '/groups/:id/-/packages/nuget', '--path', 'id=7'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /groups/:id/-/packages/nuget
+E     
+E   assert 2 == 0
+_ test_a_prefix_record_is_sent_under_each_of_its_values[nuget-project-the-configured-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#search-for-packages', '--query', 'q=pkg', '--route-prefix', '/projects/:id/packages/nuget'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /projects/:id/packages/nuget
+E     
+E   assert 2 == 0
+___________ test_a_list_record_prints_every_page[within-a-project] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#within-a-project'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#within-a-project': no family module and no graphql_only record declares it
+___________ test_the_hyphenated_names_are_sent_as_one_segment_each ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1608: in test_the_hyphenated_names_are_sent_as_one_segment_each
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-module', '--path', 'module-name=infra', '--path', 'module-system=aws', '--path', 'module-version=1.0.0', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_the_hyphenated_names_are_0\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-module': no family module and no graphql_only record declares it
+____________ test_a_list_record_prints_every_page[within-a-group] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#within-a-group', '--path', 'id=12'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#within-a-group': no family module and no graphql_only record declares it
+______ test_a_glob_record_is_sent_with_its_slashes[glob-holding-slashes] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1633: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#download-a-package-file-for-a-project', '--path', 'path=com/example/app/1.0', '--path', 'file_name=app-1.0.jar'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+E    +  where 0 = GlobCase(arguments=('--path', 'path=com/example/app/1.0', '--path', 'file_name=app-1.0.jar'), code=0, sent=(('GET', 'https://gitlab.example.com/api/v4/projects/4242/packages/maven/com/example/app/1.0/app-1.0.jar'),), logged=None).code
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#download-a-package-file-for-a-project': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-registry-repository-tags-in-a-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-registry-repository-tags-in-a-project', '--path', 'repository_id=3'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-all-registry-repository-tags-in-a-project': no family module and no graphql_only record declares it
+___ test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1633: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#download-a-package-file-for-a-project', '--path', 'path=com/../app', '--path', 'file_name=app-1.0.jar'] exits 1, got 2; stderr:
+E     
+E   assert 2 == 1
+E    +  where 1 = GlobCase(arguments=('--path', 'path=com/../app', '--path', 'file_name=app-1.0.jar'), code=1, sent=(), logged='*path').code
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#download-a-package-file-for-a-project': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-upstream-registries-for-a-top-level-group] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-upstream-registries-for-a-top-level-group', '--path', 'id=12'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-all-upstream-registries-for-a-top-level-group': no family module and no graphql_only record declares it
+__ test_a_glob_record_is_sent_with_its_slashes[glob-without-a-value-refused] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1638: in test_a_glob_record_is_sent_with_its_slashes
+    assert any(case.logged in message for message in messages), (
+E   AssertionError: an ERROR record holds 'the path parameter path has no value' (#40 AC-2.2, AC-2.4): ["unknown operation id 'package#download-a-package-file-for-a-project': no family module and no graphql_only record declares it"]
+E   assert False
+E    +  where False = any(<generator object test_a_glob_record_is_sent_with_its_slashes.<locals>.<genexpr> at 0x000001E5E3CA02E0>)
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#download-a-package-file-for-a-project': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-upstream-registry-cache-entries] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-upstream-registry-cache-entries', '--path', 'id=6'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-upstream-registry-cache-entries': no family module and no graphql_only record declares it
+_____ test_an_upload_sends_the_file_as_its_part[upload-a-package-file-5] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1659: in test_an_upload_sends_the_file_as_its_part
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package-file-5', '--file', 'package=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_an_upload_sends_the_file_0\\mypackage.1.0.0.nupkg', '-f', 'package_name=MyPackage', '-f', 'package_version=1.0.0', '-f', 'package_filename=mypackage.1.0.0.nupkg'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package-file-5': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-debian-distributions-in-a-group] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-debian-distributions-in-a-group', '--path', 'id=12'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-all-debian-distributions-in-a-group': no family module and no graphql_only record declares it
+___ test_an_upload_sends_the_file_as_its_part[upload-a-symbol-package-file] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1659: in test_an_upload_sends_the_file_as_its_part
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-symbol-package-file', '--file', 'package=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_an_upload_sends_the_file_1\\mypackage.1.0.0.snupkg', '-f', 'package_name=MyPackage', '-f', 'package_version=1.0.0', '-f', 'package_filename=mypackage.1.0.0.snupkg'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-symbol-package-file': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-debian-distributions-in-a-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-debian-distributions-in-a-project'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-all-debian-distributions-in-a-project': no family module and no graphql_only record declares it
+________ test_an_upload_sends_the_file_as_its_part[upload-a-package-1] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1659: in test_an_upload_sends_the_file_as_its_part
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package-1', '--file', 'content=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_an_upload_sends_the_file_2\\mypkg-1.0.0.tar.gz', '-f', 'name=mypkg', '-f', 'version=1.0.0'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package-1': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[list-all-upstream-registries] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-upstream-registries', '--path', 'id=12'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-all-upstream-registries': no family module and no graphql_only record declares it
+__________ test_an_upload_sends_the_file_as_its_part[upload-a-chart] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1659: in test_an_upload_sends_the_file_as_its_part
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-chart', '--path', 'channel=stable', '--file', 'chart=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_an_upload_sends_the_file_3\\mychart-0.1.0.tgz'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-chart': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-upstream-registry-cache-entries] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-upstream-registry-cache-entries', '--path', 'id=6'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-all-upstream-registry-cache-entries': no family module and no graphql_only record declares it
+_________ test_an_upload_sends_the_file_as_its_part[upload-a-package] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1659: in test_an_upload_sends_the_file_as_its_part
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package', '--path', 'id=5', '--path', 'path=foo/bar/mypkg/1.0/mypkg-1.0.jar', '--file', 'file=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_an_upload_sends_the_file_4\\mypkg-1.0.jar'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package': no family module and no graphql_only record declares it
+_____________ test_a_list_record_prints_every_page[for-a-project] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#for-a-project'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#for-a-project': no family module and no graphql_only record declares it
+_____ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-recipe-file] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-recipe-file', '--path', 'package_name=pkg', '--path', 'package_version=1.0', '--path', 'package_username=user', '--path', 'package_channel=stable', '--path', 'recipe_revision=0', '--path', 'file_name=conanfile.py', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by0\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-recipe-file': no family module and no graphql_only record declares it
+______________ test_a_list_record_prints_every_page[for-a-group] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#for-a-group', '--path', 'id=12'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#for-a-group': no family module and no graphql_only record declares it
+____ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package-file', '--path', 'package_name=pkg', '--path', 'package_version=1.0', '--path', 'package_username=user', '--path', 'package_channel=stable', '--path', 'recipe_revision=0', '--path', 'conan_package_reference=ref', '--path', 'package_revision=0', '--path', 'file_name=conan_package.tgz', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by1\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package-file': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_page[list-package-files] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-package-files', '--path', 'package_id=9'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-package-files': no family module and no graphql_only record declares it
+____ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-recipe-file-1] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-recipe-file-1', '--path', 'package_name=pkg', '--path', 'package_version=1.0', '--path', 'package_username=user', '--path', 'package_channel=stable', '--path', 'recipe_revision=0', '--path', 'file_name=conanfile.py', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by2\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-recipe-file-1': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-package-pipelines] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1555: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-package-pipelines', '--path', 'package_id=9'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-package-pipelines': no family module and no graphql_only record declares it
+_____ test_a_prefix_record_is_sent_under_each_of_its_values[npm-instance] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-dist-tags', '--path', 'package_name=pkg', '--route-prefix', '/packages/npm'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /packages/npm
+E     
+E   assert 2 == 0
+___ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-1] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package-file-1', '--path', 'package_name=pkg', '--path', 'package_version=1.0', '--path', 'package_username=user', '--path', 'package_channel=stable', '--path', 'recipe_revision=0', '--path', 'conan_package_reference=ref', '--path', 'package_revision=0', '--path', 'file_name=conan_package.tgz', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by3\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package-file-1': no family module and no graphql_only record declares it
+______ test_a_prefix_record_is_sent_under_each_of_its_values[npm-group] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1579: in test_a_prefix_record_is_sent_under_each_of_its_values
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#list-all-dist-tags', '--path', 'package_name=pkg', '--route-prefix', '/groups/:id/-/packages/npm', '--path', 'id=7'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /groups/:id/-/packages/npm
+E     
+E   assert 2 == 0
+___ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-2] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package-file-2', '--path', 'file_name=mypkg.deb', '--query', 'distribution=sid', '--query', 'component=main', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by4\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package-file-2': no family module and no graphql_only record declares it
+___ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-3] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package-file-3', '--path', 'path=com/example/app/1.0', '--path', 'file_name=app-1.0.jar', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by5\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package-file-3': no family module and no graphql_only record declares it
+___ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-4] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-package-file-4', '--path', 'package_name=pkg', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by6\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-package-file-4': no family module and no graphql_only record declares it
+_ test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-dist-tag] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#create-or-update-a-dist-tag', '--path', 'package_name=pkg', '--path', 'tag=stable', '--route-prefix', '/projects/:id/packages/npm', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by7\\upload.bin'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /projects/:id/packages/npm
+E     
+E   assert 2 == 0
+_________ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-gem] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-a-gem', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by8\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-a-gem': no family module and no graphql_only record declares it
+________ test_a_raw_upload_sends_the_bytes_as_its_body[upload-module] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1689: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#upload-module', '--path', 'module-name=infra', '--path', 'module-system=aws', '--path', 'module-version=1.0.0', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1817\\popen-gw1\\test_a_raw_upload_sends_the_by9\\upload.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-module': no family module and no graphql_only record declares it
+__ test_a_route_prefix_the_record_does_not_list_is_refused[no-route-prefix] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2149: in test_a_route_prefix_the_record_does_not_list_is_refused
+    assert naming, (
+E   AssertionError: one log record holds [], names the prefix values ['/packages/npm', '/projects/:id/packages/npm', '/groups/:id/-/packages/npm'] and says [] have no value (issue #43 AC-2.4); logged: ["unknown operation id 'package#list-all-dist-tags': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#list-all-dist-tags': no family module and no graphql_only record declares it
+_ test_a_route_prefix_the_record_does_not_list_is_refused[another-pages-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /projects/:id/packages/debian
+E     
+E   assert []
+_ test_a_route_prefix_the_record_does_not_list_is_refused[listed-value-and-a-slash] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /packages/npm/
+E     
+E   assert []
+_ test_a_route_prefix_the_record_does_not_list_is_refused[group-prefix-without-an-id] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /groups/:id/-/packages/npm
+E     
+E   assert []
+_ test_a_route_prefix_the_record_does_not_list_is_refused[rest-record-without-a-prefix-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /packages/npm
+E     
+E   assert []
+_ test_a_route_prefix_the_record_does_not_list_is_refused[listed-value-with-its-id-written-in] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /groups/7/-/packages/npm
+E     
+E   assert []
+___ test_a_route_prefix_the_record_does_not_list_is_refused[graphql-record] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /packages/npm
+E     
+E   assert []
+__ test_a_route_prefix_the_record_does_not_list_is_refused[git-bash-rewrite] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix C:/Program Files/Git/packages/npm
+E     
+E   assert []
+_ test_a_route_prefix_the_record_does_not_list_is_refused[id-under-the-instance-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2141: in test_a_route_prefix_the_record_does_not_list_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --route-prefix /packages/npm
+E     
+E   assert []
+_ test_a_hyphenated_name_is_documented_and_required[hyphenated-name-left-without-a-value] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2221: in test_a_hyphenated_name_is_documented_and_required
+    assert naming, (
+E   AssertionError: one log record says ['module-system'] have no value, names [] given with --path undocumented, and lists the path parameters ['id', 'module-name', 'module-system', 'module-version'] (issue #43 AC-3.1); logged: ["unknown operation id 'package#upload-module': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-module': no family module and no graphql_only record declares it
+_ test_a_hyphenated_name_is_documented_and_required[name-before-the-hyphen-undocumented] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_call.py:2221: in test_a_hyphenated_name_is_documented_and_required
+    assert naming, (
+E   AssertionError: one log record says [] have no value, names ['module'] given with --path undocumented, and lists the path parameters ['id', 'module-name', 'module-system', 'module-version'] (issue #43 AC-3.1); logged: ["unknown operation id 'package#upload-module': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:484 unknown operation id 'package#upload-module': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_nothing_is_pending_but_the_kept_keys
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[npm-group-full-path-one-encoded-segment]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_two_endpoint_entry_maps_its_first_endpoint
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[npm-project-the-configured-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_param_names_a_path_parameter
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[debian-project-the-configured-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[debian-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[nuget-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[nuget-project-the-configured-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[within-a-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_the_hyphenated_names_are_sent_as_one_segment_each
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[within-a-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_glob_record_is_sent_with_its_slashes[glob-holding-slashes]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-all-registry-repository-tags-in-a-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-all-upstream-registries-for-a-top-level-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_glob_record_is_sent_with_its_slashes[glob-without-a-value-refused]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-upstream-registry-cache-entries]
+FAILED src/payload/test/test_gitlab_api_package.py::test_an_upload_sends_the_file_as_its_part[upload-a-package-file-5]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-all-debian-distributions-in-a-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_an_upload_sends_the_file_as_its_part[upload-a-symbol-package-file]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-all-debian-distributions-in-a-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_an_upload_sends_the_file_as_its_part[upload-a-package-1]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-all-upstream-registries]
+FAILED src/payload/test/test_gitlab_api_package.py::test_an_upload_sends_the_file_as_its_part[upload-a-chart]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-all-upstream-registry-cache-entries]
+FAILED src/payload/test/test_gitlab_api_package.py::test_an_upload_sends_the_file_as_its_part[upload-a-package]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[for-a-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-recipe-file]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[for-a-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-package-files]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-recipe-file-1]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_list_record_prints_every_page[list-package-pipelines]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[npm-instance]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-1]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[npm-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-2]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-3]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-4]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-dist-tag]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-gem]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-module]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[no-route-prefix]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[another-pages-prefix]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[listed-value-and-a-slash]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[group-prefix-without-an-id]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[rest-record-without-a-prefix-path]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[listed-value-with-its-id-written-in]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[graphql-record]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[git-bash-rewrite]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_route_prefix_the_record_does_not_list_is_refused[id-under-the-instance-prefix]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_hyphenated_name_is_documented_and_required[hyphenated-name-left-without-a-value]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_hyphenated_name_is_documented_and_required[name-before-the-hyphen-undocumented]
+================= 56 failed, 104 passed in 118.91s (0:01:58) ==================
+exit=1

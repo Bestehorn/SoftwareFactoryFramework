@@ -1,0 +1,53 @@
+# mutant pkg-maven-raw-upload-file-param: one replacement in src/payload/scripts/gitlab_api/families/package.py
+# old:
+#           path="/projects/:id/packages/maven/*path/:file_name",
+#           content_type=CONTENT_TYPE_OCTET_STREAM,
+# new:
+#           path="/projects/:id/packages/maven/*path/:file_name",
+#           params=(Param(name="file", location=Location.BODY, kind=Kind.FILE),),
+#           content_type=CONTENT_TYPE_OCTET_STREAM,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [214 items]
+
+..F...............................F..................................... [ 33%]
+........................................................................ [ 67%]
+......................................................F...............   [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1464: in test_every_param_is_typed_as_its_row
+    assert typed == KINDS, "the Params that are not Kind.SCALAR are not the rows' (AC-1.4):\n" + mapping_difference(
+E   AssertionError: the Params that are not Kind.SCALAR are not the rows' (AC-1.4):
+E     not expected: 'package#upload-a-package-file-3'
+E   assert {'package#lis...'ARRAY'}, ...} == {'package#lis...'ARRAY'}, ...}
+E     
+E     Omitting 13 identical items, use -vv to show
+E     Left contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mpackage#upload-a-package-file-3[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mFILE[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     Use -v to get more diff
+___ test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-3] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1701: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert refused == EXIT_REFUSED, (
+E   AssertionError: call ['package#upload-a-package-file-3', '--path', 'path=com/example/app/1.0', '--path', 'file_name=app-1.0.jar', '--file', 'file=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1837\\popen-gw1\\test_a_raw_upload_sends_the_by5\\upload.bin'] exits 2, got 0: a raw-body record takes no --file (design.md D5); stderr:
+E     
+E   assert 0 == 2
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1207: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: package#upload-a-package-file-3: the Param 'file' matches no row of the section's table
+E   assert not ["package#upload-a-package-file-3: the Param 'file' matches no row of the section's table"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-a-package-file-3]
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+================== 3 failed, 211 passed in 127.87s (0:02:07) ==================
+exit=1
+# restored src/payload/scripts/gitlab_api/families/package.py sha256 89c70ed9b1c5181aeab2cdadc2082d8678d5e569643ca5599e22e5c58d77455d  # pragma: allowlist secret

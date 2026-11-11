@@ -1,0 +1,47 @@
+# mutant pkg-dist-tag-octet-stream: one replacement in src/payload/scripts/gitlab_api/families/package.py
+# old:
+#           params=(Param(name="version", location=Location.QUERY, required=True),),
+#           content_type=CONTENT_TYPE_JSON,
+# new:
+#           params=(Param(name="version", location=Location.QUERY, required=True),),
+#           content_type=CONTENT_TYPE_OCTET_STREAM,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [214 items]
+
+..F...................................F................................. [ 33%]
+........................................................................ [ 67%]
+......................................................................   [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1473: in test_every_param_is_typed_as_its_row
+    assert raw_bodies == RAW_BODIES, "the records with a content_type are not the raw-body uploads (AC-4.2):\n" + (
+E   AssertionError: the records with a content_type are not the raw-body uploads (AC-4.2):
+E     'package#create-or-update-a-dist-tag': declared 'application/octet-stream', expected 'application/json'
+E   assert {'package#upl...-stream', ...} == {'package#upl...-stream', ...}
+E     
+E     Omitting 9 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mpackage#create-or-update-a-dist-tag[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mapplication/octet-stream[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mpackage#create-or-update-a-dist-tag[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mapplication/json[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-dist-tag] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1693: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert media_type(value=content_type) == case.content_type, f"the body's Content-Type: {content_type!r}"
+E   AssertionError: the body's Content-Type: 'application/octet-stream'
+E   assert 'application/octet-stream' == 'application/json'
+E     
+E     [0m[91m- application/json[39;49;00m[90m[39;49;00m
+E     [92m+ application/octet-stream[39;49;00m[90m[39;49;00m
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-dist-tag]
+================== 2 failed, 212 passed in 145.30s (0:02:25) ==================
+exit=1
+# restored src/payload/scripts/gitlab_api/families/package.py sha256 89c70ed9b1c5181aeab2cdadc2082d8678d5e569643ca5599e22e5c58d77455d  # pragma: allowlist secret

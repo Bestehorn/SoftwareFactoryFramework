@@ -1,0 +1,198 @@
+# mutant wave 1: registry.py, commands/call.py, families/package.py checked out from origin/main (70c4dba), wave-1 TEST files run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [68 items]
+
+.............................................FFF....FF.F.FFFFFFFFFF.     [100%]
+================================== FAILURES ===================================
+__________________ test_a_hyphenated_name_is_one_placeholder __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:734: in test_a_hyphenated_name_is_one_placeholder
+    assert named == HYPHEN_NAMES, (
+E   AssertionError: a name continues past a `-` that a name character follows, so `:module-name` is one placeholder; `:name-/` ends before its `-`, and `binary-:architecture`, `:package_name$:sha` and `:module_version.info` hold the names they hold on #40's base (design.md D1, AC-3.1, UB-4)
+E   assert {'upload-modu...ecture'), ...} == {'upload-modu...ecture'), ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mupload-module[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mid[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mmodule[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mmodule[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mmodule[39;49;00m[33m'[39;49;00m)}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mupload-module[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mid[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mmodule-name[39;49;00m[33m'[39;49;00m, [33m'[39...
+E     
+E     ...Full output truncated, use '-vv' to show
+_____________________ test_route_writes_the_chosen_prefix _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:748: in test_route_writes_the_chosen_prefix
+    record = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'route_prefixes'
+______________ test_a_prefix_record_is_sent_only_under_a_prefix _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:781: in test_a_prefix_record_is_sent_only_under_a_prefix
+    record = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'route_prefixes'
+________________ test_route_accepts_only_the_records_prefixes _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_api_properties.py:242: in test_route_accepts_only_the_records_prefixes
+    @given(prefix=st.text() | st.sampled_from(elements=NPM_ROUTE_PREFIXES))
+                   ^^^
+..\..\..\venv\Lib\site-packages\hypothesis\core.py:1730: in _raise_to_user
+    raise the_error_hypothesis_found
+test\test_gitlab_api_properties.py:252: in test_route_accepts_only_the_records_prefixes
+    operation = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'route_prefixes'
+E   (note: 3 other explicit examples also failed with this error; use Verbosity.verbose to view)
+E   Failing explicit example: test_route_accepts_only_the_records_prefixes(
+E       prefix='',
+E   )
+______________ test_a_section_is_read_as_the_reference_writes_it ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:895: in test_a_section_is_read_as_the_reference_writes_it
+    assert record_problems(record=record, section=sections.get(record.operation_id)) == [], record.operation_id
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+__________ test_the_method_rejects_a_call_that_differs[method-PATCH] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:978: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+_________ test_the_method_rejects_a_call_that_differs[path-geo_site] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:978: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+____ test_the_method_rejects_a_call_that_differs[body-site_name-for-name] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:978: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+___ test_the_method_rejects_a_call_that_differs[record-name-declared-query] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:978: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+_______ test_the_method_rejects_a_call_that_differs[name-in-the-query] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:978: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+________________ test_a_path_form_is_read_and_sent_as_written _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1045: in test_a_path_form_is_read_and_sent_as_written
+    assert record_problems(record=download, section=generic) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+_____ test_the_method_rejects_a_call_that_differs[record-member-as-param] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:978: in test_the_method_rejects_a_call_that_differs
+    assert record_problems(record=geo_site_record(registry=registry), section=geo_site) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+________ test_a_route_prefix_and_a_hyphenated_name_are_read_as_written ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1095: in test_a_route_prefix_and_a_hyphenated_name_are_read_as_written
+    dist_tags = registry.RestOperation(
+E   TypeError: RestOperation.__init__() got an unexpected keyword argument 'route_prefixes'
+__________ test_only_the_upload_module_path_holds_a_hyphenated_name ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1189: in test_only_the_upload_module_path_holds_a_hyphenated_name
+    assert not differing, differing
+E   AssertionError: {'PUT /projects/:id/packages/terraform/modules/:module-name/:module-system/:module-version/file -> package#upload-module': (('id', 'module', 'module', 'module'), ('id', 'module-name', 'module-system', 'module-version'))}
+E   assert not {'PUT /projects/:id/packages/terraform/modules/:module-name/:module-system/:module-version/file -> package#upload-module': (('id', 'module', 'module', 'module'), ('id', 'module-name', 'module-system', 'module-version'))}
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1205: in test_every_record_matches_its_reference_section
+    for problem in record_problems(record=record, section=sections.get(record.operation_id))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+___________ test_an_unreachable_call_matches_its_reference_section ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1284: in test_an_unreachable_call_matches_its_reference_section
+    assert record_problems(record=record, section=section) == []
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:538: in record_problems
+    problems.extend(prefix_problems(record=record, section=section))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:469: in prefix_problems
+    declared = tuple(record.route_prefixes)
+                     ^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'RestOperation' object has no attribute 'route_prefixes'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_hyphenated_name_is_one_placeholder
+FAILED src/payload/test/test_gitlab_api_registry.py::test_route_writes_the_chosen_prefix
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_prefix_record_is_sent_only_under_a_prefix
+FAILED test/test_gitlab_api_properties.py::test_route_accepts_only_the_records_prefixes
+FAILED test/test_gitlab_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[method-PATCH]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[path-geo_site]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[body-site_name-for-name]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[record-name-declared-query]
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[name-in-the-query]
+FAILED test/test_gitlab_wrapper_contract.py::test_a_path_form_is_read_and_sent_as_written
+FAILED test/test_gitlab_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[record-member-as-param]
+FAILED test/test_gitlab_wrapper_contract.py::test_a_route_prefix_and_a_hyphenated_name_are_read_as_written
+FAILED test/test_gitlab_wrapper_contract.py::test_only_the_upload_module_path_holds_a_hyphenated_name
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_an_unreachable_call_matches_its_reference_section
+================== 16 failed, 52 passed in 118.42s (0:01:58) ==================
+exit=1

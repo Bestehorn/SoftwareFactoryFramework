@@ -1,0 +1,33 @@
+# mutant expand-takes-unrouted-prefix: one replacement in src/payload/scripts/gitlab_api/registry.py
+# old:
+#       if takes_route_prefix(path=operation.path):
+#           raise ValueError(
+#               f"{operation.operation_id!r}: its path starts with {ROUTE_PREFIX}{SEGMENT_SEPARATOR}, so it is expanded "
+#               "only once route has written one of its route prefixes"
+#           )
+# new:
+#   (removed)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [214 items]
+
+........................................................................ [ 33%]
+....................F................................................... [ 67%]
+......................................................................   [100%]
+================================== FAILURES ===================================
+______________ test_a_prefix_record_is_sent_only_under_a_prefix _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:784: in test_a_prefix_record_is_sent_only_under_a_prefix
+    with pytest.raises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_prefix_record_is_sent_only_under_a_prefix
+================== 1 failed, 213 passed in 134.46s (0:02:14) ==================
+exit=1
+# restored src/payload/scripts/gitlab_api/registry.py sha256 9f1656b155c155aaef8d6de2ec605be07ec27049ac49b456f1065619b8220154  # pragma: allowlist secret

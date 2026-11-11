@@ -1,0 +1,1331 @@
+# mutant send-routes-after-encode: one replacement in src/payload/scripts/gitlab_api/registry.py
+# old:
+#       operation = route(operation=operation, prefix=prefix)
+#       if operation.content_type is None and data is not None:
+#           raise ValueError(f"{operation_id!r} declares no content_type, so send sends no raw body for it")
+#       given: Mapping[str, Any] = values or {}
+#       encoded = encode(operation=operation, values=given)
+# new:
+#       if operation.content_type is None and data is not None:
+#           raise ValueError(f"{operation_id!r} declares no content_type, so send sends no raw body for it")
+#       given: Mapping[str, Any] = values or {}
+#       encoded = encode(operation=operation, values=given)
+#       operation = route(operation=operation, prefix=prefix)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [214 items]
+
+...................................FFFF.........................F...FF.. [ 33%]
+F.F..................................................................... [ 67%]
+....................................................................F.   [100%]
+================================== FAILURES ===================================
+______ test_a_prefix_record_is_sent_under_each_of_its_values[npm-group] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1577: in test_a_prefix_record_is_sent_under_each_of_its_values
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#list-all-dist-tags: 'id' is neither a path parameter nor a declared attribute
+_ test_a_prefix_record_is_sent_under_each_of_its_values[npm-group-full-path-one-encoded-segment] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1577: in test_a_prefix_record_is_sent_under_each_of_its_values
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#list-all-dist-tags: 'id' is neither a path parameter nor a declared attribute
+_ test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-dist-tag] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1687: in test_a_raw_upload_sends_the_bytes_as_its_body
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#create-or-update-a-dist-tag: 'id' is neither a path parameter nor a declared attribute
+_ test_a_prefix_record_is_sent_under_each_of_its_values[npm-project-the-configured-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1577: in test_a_prefix_record_is_sent_under_each_of_its_values
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#list-all-dist-tags: 'id' is neither a path parameter nor a declared attribute
+_ test_a_prefix_record_is_sent_under_each_of_its_values[debian-project-the-configured-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1577: in test_a_prefix_record_is_sent_under_each_of_its_values
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#download-a-distribution-release-file: 'id' is neither a path parameter nor a declared attribute
+______________ test_a_prefix_record_is_sent_only_under_a_prefix _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:810: in test_a_prefix_record_is_sent_only_under_a_prefix
+    registry.send(
+src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: synthetic#list-all-dist-tags: 'id' is neither a path parameter nor a declared attribute
+_____ test_a_prefix_record_is_sent_under_each_of_its_values[debian-group] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1577: in test_a_prefix_record_is_sent_under_each_of_its_values
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#download-a-distribution-release-file: 'id' is neither a path parameter nor a declared attribute
+_____ test_a_prefix_record_is_sent_under_each_of_its_values[nuget-group] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1577: in test_a_prefix_record_is_sent_under_each_of_its_values
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#search-for-packages: 'id' is neither a path parameter nor a declared attribute
+_ test_a_prefix_record_is_sent_under_each_of_its_values[nuget-project-the-configured-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1577: in test_a_prefix_record_is_sent_under_each_of_its_values
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\test_gitlab_api_package.py:1293: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#search-for-packages: 'id' is neither a path parameter nor a declared attribute
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\test\test_gitlab_wrapper_contract.py:1250: in test_every_record_is_sent_as_its_section_documents
+    code = fixtures.run_main(wrapper=wrapper, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:361: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_wrapper.py:346: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:511: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\commands\call.py:490: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:569: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:502: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-43\src\payload\scripts\gitlab_api\registry.py:458: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: package#download-a-distribution-release-file: 'id' is neither a path parameter nor a declared attribute
+---------------------------- Captured stdout call -----------------------------
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+[]
+[]
+[]
+[]
+[]
+[]
+[]
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+[]
+{}
+[]
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+[]
+[]
+[]
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[npm-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[npm-group-full-path-one-encoded-segment]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-dist-tag]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[npm-project-the-configured-project]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[debian-project-the-configured-project]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_prefix_record_is_sent_only_under_a_prefix
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[debian-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[nuget-group]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_prefix_record_is_sent_under_each_of_its_values[nuget-project-the-configured-project]
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+================== 10 failed, 204 passed in 73.23s (0:01:13) ==================
+exit=1
+# restored src/payload/scripts/gitlab_api/registry.py sha256 9f1656b155c155aaef8d6de2ec605be07ec27049ac49b456f1065619b8220154  # pragma: allowlist secret

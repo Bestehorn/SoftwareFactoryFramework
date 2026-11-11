@@ -32,15 +32,15 @@ suites (design D1 to D5). Every Run line and every diff of § Final is read on t
 
 Run: `python scripts/run_tests.py src/payload/test/test_gitlab_*.py test/test_gitlab_*.py`
 
-- [ ] 1.1 TEST: R — `test_a_hyphenated_name_is_one_placeholder`, `test_route_writes_the_chosen_prefix` and
+- [x] 1.1 TEST: R — `test_a_hyphenated_name_is_one_placeholder`, `test_route_writes_the_chosen_prefix` and
   `test_a_prefix_record_is_sent_only_under_a_prefix`, on synthetic records as R builds them. Red: `placeholders` reads
   `:module-name` as `module` (assertion), and `RestOperation` takes no `route_prefixes` (`TypeError`). — Files:
   src/payload/test/test_gitlab_api_registry.py — Validates: AC-2.2, AC-2.4, AC-3.1, UB-4
-- [ ] 1.2 TEST: P — the property `test_route_accepts_only_the_records_prefixes` (`prefix` drawn from `st.text() |
+- [x] 1.2 TEST: P — the property `test_route_accepts_only_the_records_prefixes` (`prefix` drawn from `st.text() |
   st.sampled_from(elements=<the npm values, a literal tuple>)`, its `@example` cases, `@settings(deadline=None)`) and
   the module docstring's sentence naming it. Red: `RestOperation` takes no `route_prefixes` (`TypeError`). — Files:
   test/test_gitlab_api_properties.py — Validates: AC-2.4, UB-2
-- [ ] 1.3 TEST: N per D4 — `PATH_PLACEHOLDER`'s `name` group widened as D1's; `glob_names` replaced by
+- [x] 1.3 TEST: N per D4 — `PATH_PLACEHOLDER`'s `name` group widened as D1's; `glob_names` replaced by
   `path_names(*, path)`, the names of either sigil, in `record_problems`' rule for a row the record lacks;
   `Section.route_prefixes` and `page_sections` reading a page's `<route-prefix>` line; `prefix_problems(*, record,
   section)` in `record_problems`; `call_prefix(*, record, section)`, `record_call`'s `prefix=None` (the argv gains
@@ -52,7 +52,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_*.py test/test_gi
   `route_prefixes` inside N's existing record tests, and `registry.placeholders` gives `module` for the
   `package#upload-module` row (assertion). — Files: test/test_gitlab_wrapper_contract.py — Validates: AC-1.5, AC-2.1,
   AC-3.1, AC-4.3, UB-4
-- [ ] 1.4 IMPL: `registry.py` per D1 and D2 — `PLACEHOLDER`'s `name` group and its comment;
+- [x] 1.4 IMPL: `registry.py` per D1 and D2 — `PLACEHOLDER`'s `name` group and its comment;
   `RestOperation.route_prefixes: Tuple[str, ...] = ()` after `content_type`; `ROUTE_PREFIX`; `takes_route_prefix(*,
   path)`; `route(*, operation, prefix)` by D2's table (`dataclasses.replace` writing the record's own value; each
   `ValueError` naming the ID and either the text given, as `json.dumps` renders it, with the record's values, or that
@@ -67,7 +67,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_*.py test/test_gi
 
 Run: `python scripts/run_tests.py src/payload/test/test_gitlab_*.py test/test_gitlab_*.py`
 
-- [ ] 2.1 TEST: F per D7 — built as `test_gitlab_api_no_stage_assigned.py` is: fx's fake host and socket guard
+- [x] 2.1 TEST: F per D7 — built as `test_gitlab_api_no_stage_assigned.py` is: fx's fake host and socket guard
   autouse, `config/gitlab.json` in `tmp_path`, each call `main(argv=["call", …])` through `fx.run_main`; literal tables
   transcribed from the index and the entries (`KEPT`, `OPERATION_IDS`, `FIRST_ENDPOINTS`, `KINDS`, `REQUIRED`,
   `RAW_BODIES`, the paged IDs, the prefix tuples, and the argv and sent rows of design AC-2.2, AC-3.2 and AC-4.2).
@@ -82,11 +82,11 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_*.py test/test_gi
   `package#upload-a-package-file-3` is asserted inside that record's case, after its `--input` send, so that case is
   red on the send. — Files: src/payload/test/test_gitlab_api_package.py — Validates: AC-1.1, AC-1.2, AC-1.3, AC-1.4,
   AC-1.5, AC-1.6, AC-1.7, AC-2.1, AC-2.2, AC-2.3, AC-2.5, AC-3.1, AC-3.2, AC-3.3, AC-4.1, AC-4.2, AC-4.4
-- [ ] 2.2 TEST: K — `test_a_route_prefix_the_record_does_not_list_is_refused` (its cases, `graphql#syntheticProject`
+- [x] 2.2 TEST: K — `test_a_route_prefix_the_record_does_not_list_is_refused` (its cases, `graphql#syntheticProject`
   installed as K installs it) and `test_a_hyphenated_name_is_documented_and_required`. Red: `registry.lookup` refuses
   the `package#` IDs and argparse refuses `--route-prefix` as unrecognized, so each case fails on its log-record
   assertion. — Files: src/payload/test/test_gitlab_api_call.py — Validates: AC-2.4, AC-2.5, AC-3.1
-- [ ] 2.3 IMPL: `families/package.py` per D5 and D6 — `DEBIAN_ROUTE_PREFIXES`, `NPM_ROUTE_PREFIXES` and
+- [x] 2.3 IMPL: `families/package.py` per D5 and D6 — `DEBIAN_ROUTE_PREFIXES`, `NPM_ROUTE_PREFIXES` and
   `NUGET_ROUTE_PREFIXES`, each `Tuple[str, ...]` under a comment naming its page; `OPERATIONS: Tuple[RestOperation,
   ...]`, one record per pending key but D6's kept keys, in the page order of `rest/package.md`, each under a comment
   naming its `##` and `###` headings and written by D6's table; D5's raw-body records with `content_type`
@@ -95,7 +95,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_*.py test/test_gi
   take `--file` and which `--input`, and that a record whose path starts with `/<route-prefix>/` takes
   `--route-prefix`. — Files: src/payload/scripts/gitlab_api/families/package.py — Validates: AC-1.1, AC-1.2, AC-1.3,
   AC-1.4, AC-1.5, AC-1.6, AC-1.7, AC-2.1, AC-4.2
-- [ ] 2.4 IMPL: `commands/call.py` per D3 — `OPTION_ROUTE_PREFIX`, `ARG_ROUTE_PREFIX` (default `None`) and
+- [x] 2.4 IMPL: `commands/call.py` per D3 — `OPTION_ROUTE_PREFIX`, `ARG_ROUTE_PREFIX` (default `None`) and
   `METAVAR_PREFIX`; the `--route-prefix` option in `register` (argparse `store`) with D3's help text; `prepare_call`'s
   step `operation = registry.route(operation=operation, prefix=args.route_prefix)` right after `registry.lookup` and
   `refuse_raw_body`, its `ValueError` a refusal as #41 D4's; `PreparedCall.prefix: Optional[str] = None`, which
@@ -109,13 +109,13 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_*.py test/test_gi
 
 Run: `python scripts/run_tests.py src/payload/test/test_gitlab_wrapper_compat.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py`
 
-- [ ] 3.1 IMPL: the entry script's module docstring only, per D3 — its `call` usage lines name `--route-prefix PREFIX`
+- [x] 3.1 IMPL: the entry script's module docstring only, per D3 — its `call` usage lines name `--route-prefix PREFIX`
   and its refusal, every text of C's `USAGE_CALL_TEXTS` kept (C `test_the_usage_names_the_operation_call`). — Files:
   src/payload/scripts/gitlab_wrapper.py — Validates: UB-1
-- [ ] 3.2 IMPL: the map's `src/payload/scripts/gitlab_api/` bullet per D3 — its option list names `--route-prefix`;
+- [x] 3.2 IMPL: the map's `src/payload/scripts/gitlab_api/` bullet per D3 — its option list names `--route-prefix`;
   "Not installed here" stays last; the map under its cap (`test_llm_map_within_cap`). — Files:
   docs/forLLMConsumption.md — Validates: none (D3 documentation)
-- [ ] 3.3 IMPL: the Residuals' rows per D8 — one for each of the first three requirements Residuals (more than one key
+- [x] 3.3 IMPL: the Residuals' rows per D8 — one for each of the first three requirements Residuals (more than one key
   under one Reference, the registry host, the project update) and one for each design Residual after the first (Git
   Bash's rewrite of `/packages/npm`, the uploads through Workhorse's catch-all `proxy`, the package routes no header of
   the transport authenticates), each written with `python scripts/memory_compile.py ledger add`. — Files:
@@ -123,16 +123,16 @@ Run: `python scripts/run_tests.py src/payload/test/test_gitlab_wrapper_compat.py
 
 ## Final
 
-- [ ] F.1 E2E: the real-forge check is #11's real-instance run on an ephemeral `sff-test-*` project (requirements "Out
+- [x] F.1 E2E: the real-forge check is #11's real-instance run on an ephemeral `sff-test-*` project (requirements "Out
   of scope"). Until it exists, N calls every record of this change, a prefix record under its page's first value, and
   F the prefix, hyphenated, glob, list and upload forms, through `main`'s argv against the fake host up to the API
   boundary, in the `verify` job of `.github/workflows/ci.yml`, matrix leg `tests` (`python scripts/run_checks.py
   --group tests`); for a record #41 D5 calls unreachable (the Debian pages, Go Proxy, Ruby gems, Protected packages)
   N's two record tests are the whole proof (AC-4.3). — Files: none
-- [ ] F.2 VERIFY: the branch's diff from its merge base with `origin/main` (`git diff --name-only origin/main...HEAD`)
+- [x] F.2 VERIFY: the branch's diff from its merge base with `origin/main` (`git diff --name-only origin/main...HEAD`)
   names no file of UB-3, and `src/payload/test/test_github_api_*.py` and `src/payload/test/test_wrapper_delivery.py`
   pass in CI's `tests` leg on the pushed SHA. — Files: none (read-only) — Validates: UB-3
-- [ ] F.3 VERIFY: outside the spec directory, that diff names only D8's files; it changes no line of fx, V, C, T,
+- [x] F.3 VERIFY: outside the spec directory, that diff names only D8's files; it changes no line of fx, V, C, T,
   `transport.py`, `commands/_common.py` or a `commands/` module but `call.py`, no existing assertion, no existing test
   function but the loop of N's `test_every_record_is_sent_as_its_section_documents` (D4), and no `GATED_OPERATIONS`
   entry. C `test_load_config_refusals` and `test_environment_token_ignored`, K `test_call_takes_no_token_option`,
