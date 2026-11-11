@@ -53,3 +53,12 @@
 **Evidence:** change.md (7,993 bytes).
 **Supersedes:** none
 **Artifacts touched:** change.md
+
+## DL-007 — 2026-11-11T04:12:08Z — issue-work-orchestrator — phase:FIX
+
+**Decision:** Accept IMPL-7's `GATED_NOT_SENT`: the `pulls/merge-async` refusal names `merge-pr` without ", which sends it", because `merge-pr` sends `pulls/merge`, not the async operation.
+**Driver:** AC-6 (name the subcommand to use); `commands/pulls.py` `OP_PULLS_MERGE` is the only id `merge-pr` sends.
+**Alternatives considered:** reuse the existing message (rejected: it would state a falsehood).
+**Evidence:** src/payload/scripts/github_api/commands/call.py `refuse_gated`, `GATED_NOT_SENT`; evidence/green/wave-1.txt.
+**Supersedes:** none
+**Artifacts touched:** src/payload/scripts/github_api/commands/call.py

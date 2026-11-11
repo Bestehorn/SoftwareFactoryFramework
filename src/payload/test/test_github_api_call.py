@@ -1,5 +1,5 @@
 """Tests of the GitHub wrapper's operation call, ``call <operation-id>`` (``github_api/commands/call.py``; design D2 to
-D4; AC-1.1 to AC-1.7, AC-2.1 to AC-2.3).
+D4; AC-1.1 to AC-1.7, AC-2.1 to AC-2.3; issue #32 AC-6).
 
 Installed from ``src/payload/test/test_github_api_call.py`` to ``test/test_github_api_call.py``, beside
 ``scripts/github_wrapper.py`` and ``scripts/github_api/``. Every row of ``CALL_CASES`` is a golden case whose argv is
@@ -100,7 +100,8 @@ OP_ISSUES_REMOVE_LABEL = "issues/remove-label"
 OP_ISSUES_CREATE = "issues/create"
 OP_PULLS_GET = "pulls/get"
 OP_PULLS_MERGE = "pulls/merge"
-OP_PULLS_LIST = "pulls/list"  # on the PENDING of ``families/pulls.py``: indexed, no record
+OP_PULLS_MERGE_ASYNC = "pulls/merge-async"  # gated to ``merge-pr``: its body can merge directly (issue #32 AC-6)
+OP_PULLS_UPDATE_BRANCH = "pulls/update-branch"  # on the PENDING of ``families/pulls.py``: indexed, no record
 OP_NOT_IN_THE_INDEX = "issues/levitate"  # in no row of ``operations-index.md``
 OP_GET_WORKFLOW_RUN = "actions/get-workflow-run"
 OP_LIST_WORKFLOW_RUNS_FOR_REPO = "actions/list-workflow-runs-for-repo"
@@ -162,6 +163,24 @@ FIELD_TITLE = "title"
 LABEL_BUG = "bug"
 LABEL_UI = "ui"
 UPDATED_TITLE = "T"
+
+# Issue #32 AC-6: a value for each body parameter ``rest/pulls.md`` "Merge a pull request asynchronously" documents,
+# the strings with ``-f`` and the boolean with ``-F``. Every name is documented, so only the gate can refuse the call:
+# an ungated record would send its ``PUT``, which no route answers.
+FIELD_COMMIT_TITLE = "commit_title"
+FIELD_MERGE_ACTION = "merge_action"
+FIELD_BYPASS_RULES = "bypass_rules"
+MERGE_COMMIT_MESSAGE = "Merge the wrapper rewrite"
+MERGE_METHOD_SQUASH = "squash"
+MERGE_ACTION_DIRECT_MERGE = "direct_merge"
+MERGE_ASYNC_TEXT_MEMBERS: Tuple[Tuple[str, str], ...] = (
+    (FIELD_COMMIT_TITLE, UPDATED_TITLE),
+    (fx.FIELD_COMMIT_MESSAGE, MERGE_COMMIT_MESSAGE),
+    (fx.FIELD_SHA, fx.HEAD_SHA),
+    (fx.FIELD_MERGE_METHOD, MERGE_METHOD_SQUASH),
+    (FIELD_MERGE_ACTION, MERGE_ACTION_DIRECT_MERGE),
+)
+MERGE_ASYNC_JSON_MEMBERS: Tuple[Tuple[str, str], ...] = ((FIELD_BYPASS_RULES, json.dumps(obj=True)),)
 
 RUN_7 = fx.run_entry(run_id=7, outcome=(fx.RUN_COMPLETED, fx.CONCLUSION_SUCCESS))
 REMAINING_LABELS = fx.label_list(names=(fx.LABEL_ENHANCEMENT,))
@@ -435,14 +454,30 @@ def _sent_calls() -> Tuple[SentCall, ...]:
 SENT_CALLS = _sent_calls()
 
 
+def _member_arguments(*, option: str, members: Sequence[Tuple[str, str]]) -> Tuple[str, ...]:
+    """``option NAME=VALUE`` for each ``(NAME, VALUE)`` of ``members``, in order."""
+    return tuple(argument for name, value in members for argument in (option, f"{name}={value}"))
+
+
 def _gated_cases() -> Tuple[Any, ...]:
-    """AC-1.1: the two records a gated compatibility subcommand sends are refused, naming that subcommand."""
+    """AC-1.1: the records a gated compatibility subcommand sends are refused, naming that subcommand; issue #32 AC-6
+    adds ``pulls/merge-async``, called with a value for each documented body parameter."""
+    merge_async_body = (
+        *_member_arguments(option=OPTION_RAW_FIELD, members=MERGE_ASYNC_TEXT_MEMBERS),
+        *_member_arguments(option=OPTION_FIELD, members=MERGE_ASYNC_JSON_MEMBERS),
+    )
     return (
         _refusal(
             criterion=AC_1_1,
             slug="pulls-merge-is-merge-pr",
             argv=(CALL, OP_PULLS_MERGE, OPTION_PATH, "pull_number=1"),
             patterns=(named(name=OP_PULLS_MERGE), re.escape(SUBCOMMAND_MERGE_PR)),
+        ),
+        _refusal(
+            criterion=AC_1_1,
+            slug="pulls-merge-async-is-merge-pr",
+            argv=(CALL, OP_PULLS_MERGE_ASYNC, OPTION_PATH, "pull_number=1", *merge_async_body),
+            patterns=(named(name=OP_PULLS_MERGE_ASYNC), re.escape(SUBCOMMAND_MERGE_PR)),
         ),
         _refusal(
             criterion=AC_1_1,
@@ -587,8 +622,8 @@ def _unknown_cases() -> Tuple[Any, ...]:
         _refusal(
             criterion=AC_2_1,
             slug="pending-id",
-            argv=(CALL, OP_PULLS_LIST),
-            patterns=(named(name=OP_PULLS_LIST),),
+            argv=(CALL, OP_PULLS_UPDATE_BRANCH),
+            patterns=(named(name=OP_PULLS_UPDATE_BRANCH),),
         ),
         _refusal(
             criterion=AC_2_1,
@@ -838,8 +873,9 @@ def test_a_gated_operation_names_its_subcommand(
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """AC-1.1: ``pulls/merge`` and ``issues/create`` are refused (exit 2, no request), and the log record names the
-    operation ID and the compatibility subcommand that sends it (``merge-pr``, ``create-issue``)."""
+    """AC-1.1, issue #32 AC-6: ``pulls/merge``, ``pulls/merge-async`` and ``issues/create`` are refused (exit 2, no
+    request), and the log record names the operation ID and the compatibility subcommand to use (``merge-pr``,
+    ``create-issue``)."""
     _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
 
 
