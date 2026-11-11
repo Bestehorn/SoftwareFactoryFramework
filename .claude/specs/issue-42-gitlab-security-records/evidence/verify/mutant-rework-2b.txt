@@ -1,0 +1,913 @@
+# group body2: mutants applied by single-occurrence anchors, run through scripts/run_tests.py, then restored byte for byte (sha256 and mtime checked against the pre-run baseline).
+# baseline security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_factory.py sha256 ef8bc4cb6b5bc90e0568916e34e7151c35cfb44815a5b462a2716ffd808cf7cd CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_software_supply_chain_security.py sha256 3fb4c4d713b411f109fb1a89eb54dfa6165691af97bfddafa8e36546b0207e89 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_platform.py sha256 c1d1a60a1003e6179a011ba191da8220f9f5352338bc5c6d90c176d99eb8dfd4 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_risk_management.py sha256 779b9f959370956260c26d396de2af50862c2602ff94165a25e824cd87c0cff7 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_governance.py sha256 e12f2f77c50a6f06ac623699fd286cd966a2c5bc00c4afd537d980fba954a1c1 CRLF=0 bareCR=0  # pragma: allowlist secret
+# mutant V2: security_platform.py, near-variant: fixed=(("per_page", "100"),) on paged security-platform#list-all-projects-in-a-cicd-job-token-allowlist (same URL the transport builds)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+............................................F........................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:361: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-platform#list-all-projects-in-a-cicd-job-token-allowlist: body <BodyFormat.JSON: 'json'>, fixed (('per_page', '100'),)
+E   assert ["security-pl...e', '100'),)"] == []
+E     
+E     Left contains one more item: "security-platform#list-all-projects-in-a-cicd-job-token-allowlist: body <BodyFormat.JSON: 'json'>, fixed (('per_page', '100'),)"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 74.43s (0:01:14) ===================
+exit=1
+# restored security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5, equal to the baseline: True  # pragma: allowlist secret
+# mutant P2: security_platform.py, body=BodyFormat.FORM on security-platform#update-the-cicd-job-token-access-settings-for-a-project
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+............................................F........................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:361: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-platform#update-the-cicd-job-token-access-settings-for-a-project: body <BodyFormat.FORM: 'form'>, fixed ()
+E   assert ["security-pl...'>, fixed ()"] == []
+E     
+E     Left contains one more item: "security-platform#update-the-cicd-job-token-access-settings-for-a-project: body <BodyFormat.FORM: 'form'>, fixed ()"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 67.38s (0:01:07) ===================
+exit=1
+# restored security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5, equal to the baseline: True  # pragma: allowlist secret
+# mutant R1: security_risk_management.py, body=BodyFormat.FORM on security-risk-management#create-an-organization-policy
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+.........................................................F.............. [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:451: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-risk-management#create-an-organization-policy: body <BodyFormat.FORM: 'form'>, fixed ()
+E   assert ["security-ri...'>, fixed ()"] == []
+E     
+E     Left contains one more item: "security-risk-management#create-an-organization-policy: body <BodyFormat.FORM: 'form'>, fixed ()"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 86.73s (0:01:26) ===================
+exit=1
+# restored security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51, equal to the baseline: True  # pragma: allowlist secret
+# mutant V3: security_risk_management.py, near-variant: fixed=(("per_page", "100"),) on paged security-risk-management#list-all-group-policies
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+..........................................................F............. [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:451: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-risk-management#list-all-group-policies: body <BodyFormat.JSON: 'json'>, fixed (('per_page', '100'),)
+E   assert ["security-ri...e', '100'),)"] == []
+E     
+E     Left contains one more item: "security-risk-management#list-all-group-policies: body <BodyFormat.JSON: 'json'>, fixed (('per_page', '100'),)"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 108.53s (0:01:48) ==================
+exit=1
+# restored security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51, equal to the baseline: True  # pragma: allowlist secret
+# mutant G2: security_governance.py, fixed=(("secret_push_protection_enabled", "true"),) on security-governance#update-group-security-settings
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+........................................................................ [ 28%]
+............F........................................................... [ 56%]
+........................................................................ [ 84%]
+.....................F..............F..                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:176: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-governance#update-group-security-settings: body <BodyFormat.JSON: 'json'>, fixed (('secret_push_protection_enabled', 'true'),)
+E   assert ["security-go...', 'true'),)"] == []
+E     
+E     Left contains one more item: "security-governance#update-group-security-settings: body <BodyFormat.JSON: 'json'>, fixed (('secret_push_protection_enabled', 'true'),)"
+E     Use -v to get more diff
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:879: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: security-governance#update-group-security-settings: the fixed name 'secret_push_protection_enabled' is not a query row
+E   assert not ["security-governance#update-group-security-settings: the fixed name 'secret_push_protection_enabled' is not a query row"]
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\test\test_gitlab_wrapper_contract.py:932: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, "\n".join(problems)
+E   AssertionError: security-governance#update-group-security-settings: the query name 'secret_push_protection_enabled' (read as 'secret_push_protection_enabled') is not documented in the query
+E   assert not ["security-governance#update-group-security-settings: the query name 'secret_push_protection_enabled' (read as 'secret_push_protection_enabled') is not documented in the query"]
+---------------------------- Captured stdout call -----------------------------
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+[]
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_every_body_is_json_and_unfixed
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+================== 3 failed, 252 passed in 78.03s (0:01:18) ===================
+exit=1
+# restored security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab, equal to the baseline: True  # pragma: allowlist secret
+# final security_factory.py bytes and mtime equal to the baseline: True
+# final software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final security_platform.py bytes and mtime equal to the baseline: True
+# final security_risk_management.py bytes and mtime equal to the baseline: True
+# final security_governance.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_factory.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_platform.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_risk_management.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_governance.py bytes and mtime equal to the baseline: True

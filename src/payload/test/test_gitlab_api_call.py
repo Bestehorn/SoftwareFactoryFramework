@@ -80,7 +80,6 @@ GRAPHQL_ONLY = "graphql_only"
 FAMILIES = "families"
 OPERATIONS = "OPERATIONS"
 PLAN = "plan"
-VERIFY = "verify"
 
 # The keys of config/gitlab.json (templates/config/gitlab.json.template; #13 design.md D7).
 FIELD_HOSTNAME = "hostname"
@@ -168,6 +167,8 @@ OP_CREATE_ISSUE = "plan#create-an-issue"
 OP_MERGE_MR = "ai-coding#merge-a-merge-request"
 OP_DELETE_BRANCH = "create#delete-repository-branch"
 OP_JOB_TRACE = "verify#retrieve-a-log-file-for-a-job"
+# The verify record of issue #37 (families/verify.py; rest/verify.md "Download job artifacts by job ID").
+OP_DOWNLOAD_ARTIFACTS = "verify#download-job-artifacts-by-job-id"
 # `plan#clone-an-issue`, the Reference of the index row `POST /projects/:id/issues/:issue_iid/clone`, a key only on
 # plan's PENDING (issue #39 keeps it pending); and an ID the reference does not hold (AC-2.1).
 OP_PENDING_ONLY = "plan#clone-an-issue"
@@ -180,7 +181,6 @@ OP_UPLOAD_RECORD = "plan#synthetic-upload-a-file"
 OP_PROJECT_RECORD = "plan#synthetic-retrieve-a-project"
 OP_GROUP_LABELS_RECORD = "plan#synthetic-list-group-labels"
 OP_KEYSET_ISSUES = "plan#synthetic-keyset-issues"
-OP_DOWNLOAD_ARTIFACTS = "verify#download-job-artifacts-by-job-id"
 OP_GRAPHQL_PROJECT = "graphql#syntheticProject"
 OP_GRAPHQL_ISSUES = "graphql#syntheticProjectIssues"
 SYNTHETIC_CAPABILITY = "Synthetic project lookup"
@@ -548,20 +548,6 @@ def keyset_issues_record(*, registry: ModuleType) -> Any:
     )
 
 
-def artifacts_record(*, registry: ModuleType) -> Any:
-    """``verify#download-job-artifacts-by-job-id`` as a slice writes it (rest/verify.md "Download job artifacts by job
-    ID"): its two query attributes."""
-    return registry.RestOperation(
-        operation_id=OP_DOWNLOAD_ARTIFACTS,
-        method=METHOD_GET,
-        path="/projects/:id/jobs/:job_id/artifacts",
-        params=(
-            registry.Param(name="file_type", location=registry.Location.QUERY),
-            registry.Param(name="job_token", location=registry.Location.QUERY),
-        ),
-    )
-
-
 def project_query_record(*, registry: ModuleType) -> Any:
     """A GraphQL record without a connection: ``Transport.graphql``, its ``data`` printed."""
     return registry.GraphQLOperation(
@@ -585,7 +571,6 @@ UPLOAD_RECORD = Synthetic(module=PLAN, build=upload_record)
 PROJECT_RECORD = Synthetic(module=PLAN, build=project_record)
 GROUP_LABELS_RECORD = Synthetic(module=PLAN, build=group_labels_record)
 KEYSET_ISSUES_RECORD = Synthetic(module=PLAN, build=keyset_issues_record)
-ARTIFACTS_RECORD = Synthetic(module=VERIFY, build=artifacts_record)
 GRAPHQL_PROJECT_RECORD = Synthetic(module=GRAPHQL_ONLY, build=project_query_record)
 GRAPHQL_ISSUES_RECORD = Synthetic(module=GRAPHQL_ONLY, build=issues_connection_record)
 
@@ -1159,7 +1144,6 @@ class RawCase(NamedTuple):
                     ),
                 ),
                 printed=ZIP_BYTES,
-                synthetic=(ARTIFACTS_RECORD,),
                 uncredentialed=(STORAGE_URL,),
             ),
             id="artifacts-after-a-redirect",
