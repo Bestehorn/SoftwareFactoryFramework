@@ -26,3 +26,6 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api issues | issues/get-issue-artifact prints one page of versions | issue-32 change.md Residuals | paging a list inside an object needs a record field | open |
 | 2026-11-11 | github_api pulls | pulls/update-branch stays pending (writes the PR head branch) | issue-32 DL-002 | gating needs #27's None mapping; one entry once it lands | open |
 | 2026-11-11 | gitlab_api call | integration secrets passed with -f are visible in process arguments | issue-36 change.md Residuals; #41 design Residuals | no non-argv text input; guarding is a new mechanism | open |
+| 2026-11-11 | github_api graphql | discussion comments and Projects v2 items the wrapper did not create have no id source among the records | issue-30 design.md Residuals | REST projects records pending | open |
+| 2026-11-11 | github_api graphql | a mutation answered with errors and partial data exits 1 printing only errors; its effect may have applied | issue-30 design.md Residuals; AC-2.4 | conventions.md Errors; no failure seen | open |
+| 2026-11-11 | github_api graphql | the contract test compares selection names and types, not what an input object holds | issue-30 design.md Residuals | GitHub validates inputs (exit 1); #10's fixture covers the rest | open |
