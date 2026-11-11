@@ -1,0 +1,53 @@
+# mutant gate-names-a-subcommand (AC-3): both new GATED_OPERATIONS entries map to "merge-pr" instead of None
+diff --git a/src/payload/scripts/github_api/commands/call.py b/src/payload/scripts/github_api/commands/call.py
+index 8bf8102..e6331c8 100644
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -146,8 +146,8 @@ GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
+         "repos/delete-file": None,
+         "git/create-ref": None,
+         "git/update-ref": None,
+-        "pulls/update-branch": None,
+-        "code-scanning/commit-autofix": None,
++        "pulls/update-branch": "merge-pr",
++        "code-scanning/commit-autofix": "merge-pr",
+         "agent-tasks/create-task-in-repo": None,
+         "agent-merge/put-agent-merge-enrollment": None,
+         "agent-automations/create-repo-automation": None,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+.........F........F..................................................... [ 54%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+____ test_a_branch_writing_record_is_refused[code-scanning/commit-autofix] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\test_github_api_code_scanning.py:420: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: #14 AC-3/exit-2/code-scanning/commit-autofix: no log record matches every one of ['"code\\-scanning/commit\\-autofix"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "code-scanning/commit-autofix": use the merge-pr subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:459 call refuses the GitHub operation "code-scanning/commit-autofix": use the merge-pr subcommand, which sends it
+___________________ test_a_branch_writing_record_is_refused ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\test_github_api_pulls.py:307: in test_a_branch_writing_record_is_refused
+    fx.assert_log(case=UPDATE_BRANCH_REFUSED, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-14/AC-3/exit-2/pulls/update-branch: no log record matches every one of ['"pulls/update\\-branch"', '(?i)\\bno\\b[\\w\\s-]*\\bsubcommand\\b[\\w\\s-]*\\bsends\\b']: ['call refuses the GitHub operation "pulls/update-branch": use the merge-pr subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:459 call refuses the GitHub operation "pulls/update-branch": use the merge-pr subcommand, which sends it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_code_scanning.py::test_a_branch_writing_record_is_refused[code-scanning/commit-autofix]
+FAILED src/payload/test/test_github_api_pulls.py::test_a_branch_writing_record_is_refused
+================== 2 failed, 131 passed in 126.04s (0:02:06) ==================
+exit=1

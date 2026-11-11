@@ -1,0 +1,43 @@
+# mutant call-any-body-reverted (AC-4): commands/call.py _undocumented's body set ignores takes_any_body_name (the pre-change line)
+diff --git a/src/payload/scripts/github_api/commands/call.py b/src/payload/scripts/github_api/commands/call.py
+index 8bf8102..2f7c30d 100644
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -317,7 +317,7 @@ def _undocumented(
+     path = {name for name in path_names if name not in documented_path}
+     query = {name for name in query_names if registry.query_name(name=name) not in operation.query_params}
+     takes_any_body_name = registry.ANY_BODY_NAME in operation.body_params
+-    body = {name for name in body_names if not takes_any_body_name and name not in operation.body_params}
++    body = {name for name in body_names if name not in operation.body_params}
+     return [(KIND_PATH, sorted(path)), (KIND_QUERY, sorted(query)), (KIND_BODY, sorted(body))]
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+................F....................................................... [ 54%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+_______________ test_the_content_exclusion_map_is_sent_as_given _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\test_github_api_copilot.py:338: in test_the_content_exclusion_map_is_sent_as_given
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2810: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2713: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-14-AC-4/exit-0/copilot/set-copilot-content-exclusion-for-organization: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:459 The GitHub operation "copilot/set-copilot-content-exclusion-for-organization" documents no body parameter ["octo-docs", "octo-repo"]; its path parameters are ["org"], its query parameters are [], its body parameters are ["*"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_map_is_sent_as_given
+================== 1 failed, 132 passed in 178.36s (0:02:58) ==================
+exit=1

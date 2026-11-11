@@ -14,3 +14,9 @@ Incident narratives belong in docs/archive/incidents/<date>-<slug>.md, never her
 - Lesson: Take a decision-log timestamp from date -u in the same step that writes the entry; never type one
 - Enforced-by: none
 - Scope: agent-state-convention decision log
+
+## 2026-11-11 — Run no git operation in a worktree while a delegate tests or
+- Date: 2026-11-11
+- Lesson: Run no git operation in a worktree while a delegate tests or mutates there; it owns the tree until its report
+- Enforced-by: none
+- Scope: issue-work-orchestrator worktrees

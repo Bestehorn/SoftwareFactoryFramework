@@ -358,6 +358,23 @@ def test_every_record_sends_the_default_version_and_media_type() -> None:
     assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
 
 
+def test_the_branch_writing_record_has_no_item_key_and_no_content_type() -> None:
+    """#14 AC-1: the one record of ``code-scanning/commit-autofix`` in ``OPERATIONS``, found by its ID as a literal, has
+    ``item_key`` ``None`` (its section has no ``Paging:`` line) and ``content_type`` ``None`` (its section reads
+    "Request body (`application/json`, optional)": a JSON body)."""
+    operation_id = "code-scanning/commit-autofix"
+    matches = [record for record in code_scanning_family().OPERATIONS if record.operation_id == operation_id]
+    assert len(matches) == 1, f"{operation_id}: {FAMILY_FILE.name} declares {len(matches)} records, one expected"
+    record = matches[0]
+    problems = []
+    if record.item_key is not None:
+        problems.append(f"item_key {record.item_key!r}, None expected")
+    if record.content_type is not None:
+        problems.append(f"content_type {record.content_type!r}, None expected")
+
+    assert not problems, f"{json.dumps(obj=operation_id)}: " + "; ".join(problems)
+
+
 def test_the_multi_segment_parameters_are_the_sections() -> None:
     """AC-3: each record's ``multi_segment`` is its section's parameters whose row reads "may contain `/`
     (multi-segment path)", which is none for every ``code-scanning/`` ID; an ID without a record counts as a

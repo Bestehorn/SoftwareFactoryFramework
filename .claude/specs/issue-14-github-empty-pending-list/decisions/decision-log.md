@@ -35,3 +35,12 @@
 **Evidence:** review/iteration-01.md; change.md AC-3, Files.
 **Supersedes:** none
 **Artifacts touched:** change.md
+
+## DL-005 — 2026-11-11T14:01:37Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Answer the verifier's REFUTED (REF-1, REF-2, both test gaps) with tests only: copilot F gains a `registry.send` query refusal and a `call` path refusal for the any-body record, code_scanning and pulls F pin `item_key` and `content_type` `None`; no product file changes; a delta re-verification follows.
+**Driver:** evidence/verify/refutation-report.md REF-1 (UB-3), REF-2 (AC-1) and its path-name observation.
+**Alternatives considered:** none (the code holds; only the proof was missing).
+**Evidence:** evidence/green/rework-1.txt (109 passed); each new test failed under its mutant (implementer reports).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_github_api_copilot.py, test_github_api_code_scanning.py, test_github_api_pulls.py

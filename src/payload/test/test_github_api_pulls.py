@@ -1,5 +1,5 @@
-"""Tests of the ``pulls`` family's records (``github_api/families/pulls.py``; issue #32 AC-3, AC-4; issue #14 AC-2,
-AC-3).
+"""Tests of the ``pulls`` family's records (``github_api/families/pulls.py``; issue #32 AC-3, AC-4; issue #14 AC-1,
+AC-2, AC-3).
 
 Installed from ``src/payload/test/test_github_api_pulls.py`` to ``test/test_github_api_pulls.py``, beside
 ``scripts/github_wrapper.py`` and ``scripts/github_api/``. Every expected value here is transcribed from
@@ -271,6 +271,21 @@ def test_the_records_follow_the_transcription_rules() -> None:
         problems.extend(_record_problems(record=record, transport=transport))
 
     assert problems == [], f"families/{FAMILY_NAME}.py breaks AC-3: {problems}"
+
+
+def test_the_branch_writing_record_has_no_item_key_and_no_content_type() -> None:
+    """Issue #14 AC-1: the one record of ``pulls/update-branch`` in ``OPERATIONS``, found by its ID as a literal, has
+    ``content_type`` ``None`` (its section reads "Request body (`application/json`, optional)": a JSON body) and
+    ``item_key`` ``None`` (its section has no ``Paging:`` line)."""
+    operation_id = "pulls/update-branch"
+    record = _record_of(operation_id=operation_id)
+    problems = []
+    if record.content_type is not None:
+        problems.append(f"content_type {record.content_type!r}, None expected")
+    if record.item_key is not None:
+        problems.append(f"item_key {record.item_key!r}, None expected")
+
+    assert problems == [], f"{json.dumps(obj=operation_id)}: {problems}"
 
 
 @pytest.mark.parametrize(argnames="case", argvalues=PAGED_CASES, ids=fx.case_name)

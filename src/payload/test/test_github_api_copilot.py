@@ -15,12 +15,14 @@ below is transcribed from ``docs/api-reference/github/operations-index.md``, ``r
 
 ``test_a_paged_record_prints_every_page`` runs one golden case per paged section with
 ``github_wrapper_fixtures.run_product_case`` (loaded by path, as ``test_github_api_call.py`` loads it): ``call <id>``
-with ``--path org=...`` and ``--query per_page=1``, against a fake host serving two items, one per page. The two
-content-exclusion tests run ``call copilot/set-copilot-content-exclusion-for-organization`` the same way: its section's
-only body row is ``*`` ("any key"), so every ``-F`` member given is sent as given (issue #14 AC-4), while an
-undocumented ``--query`` name is still refused before any request, in a log record judged by ``fx.assert_log`` on
-``caplog.records`` (issue #14 UB-3). The structural tests read the family module imported from the ``scripts``
-directory beside this suite. No test opens a connection.
+with ``--path org=...`` and ``--query per_page=1``, against a fake host serving two items, one per page. The three
+content-exclusion ``call`` tests run ``call copilot/set-copilot-content-exclusion-for-organization`` the same way: its
+section's only body row is ``*`` ("any key"), so every ``-F`` member given is sent as given (issue #14 AC-4), while an
+undocumented ``--query`` or ``--path`` name is still refused before any request, in a log record judged by
+``fx.assert_log`` on ``caplog.records`` (issue #14 UB-3). ``registry.send`` refuses that record's undocumented query
+name too, with ``ValueError``, before a ``Transport`` on the fake host of ``fx.FakeGitHub`` sends anything (issue #14
+UB-3). The structural tests read the family module imported from the ``scripts`` directory beside this suite. No test
+opens a connection.
 
 Run: ``python scripts/run_tests.py test/test_github_api_copilot.py`` (no network).
 """
@@ -115,6 +117,14 @@ EXCLUSION_SET = {fx.FIELD_MESSAGE: "Content exclusion rules updated"}
 #: ``check_call``: ``documents no query parameter ["sort"]``).
 UNDOCUMENTED_QUERY_NAME = "sort"
 KIND_QUERY = "query"
+#: A path name the section does not document (its path names ``org`` alone), and the kind a refusal names it with
+#: (``check_call``: ``documents no path parameter ["enterprise"]``).
+UNDOCUMENTED_PATH_NAME = "enterprise"
+KIND_PATH = "path"
+#: The body ``registry.send`` is given beside the undocumented query name: the official page's example, one member.
+EXAMPLE_MAP: Dict[str, Any] = {REPOSITORY_OF_PATHS: ["/src/some-dir/kernel.rs"]}
+#: The token the ``registry.send`` case's ``Transport`` carries to the fake host.
+TOKEN = "copilot-test-token"  # pragma: allowlist secret
 #: ``run_product_case`` reads standard error along with standard output; no case here withholds a value, so
 #: ``fx.assert_log`` judges the log records alone.
 STDERR_READ_BY_THE_RUN = ""
@@ -377,3 +387,68 @@ def test_the_content_exclusion_call_checks_its_query(
     fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
 
     fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+
+
+def test_the_content_exclusion_call_checks_its_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #14 UB-3: the record takes any body name, yet ``call`` still refuses an undocumented ``--path`` name: with
+    ``--path org=acme``, ``--path enterprise=acme-corp`` and one ``-F`` member it exits 2 with nothing on standard
+    output and no request, and a log record names the record's ID and ``enterprise`` as a path parameter."""
+    case = fx.GoldenCase(
+        name=f"{ISSUE_14_UB_3}/exit-2/undocumented-path/{CONTENT_EXCLUSION_ID}",
+        argv=(
+            CALL,
+            CONTENT_EXCLUSION_ID,
+            OPTION_PATH,
+            f"{PARAM_ORG}={ORG}",
+            OPTION_PATH,
+            f"{UNDOCUMENTED_PATH_NAME}=acme-corp",
+            OPTION_FIELD_SHORT,
+            MEMBER_OF_PATHS,
+        ),
+        stdout="",
+        exit_code=fx.EXIT_REFUSED,
+        log=fx.LogExpectation(
+            refusal=(
+                named(name=CONTENT_EXCLUSION_ID),
+                named_with_kind(kind=KIND_PATH, name=UNDOCUMENTED_PATH_NAME),
+            ),
+            withheld=(),
+        ),
+    )
+    caplog.set_level(level=logging.DEBUG)
+
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+
+
+def test_the_registry_refuses_the_content_exclusion_query(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Issue #14 UB-3: ``registry.send`` of ``copilot/set-copilot-content-exclusion-for-organization``, whose body
+    takes any key, with ``org=acme``, one documented body member and the undocumented query name ``sort`` raises
+    ``ValueError`` naming ``sort`` as a query parameter, and its ``Transport`` sends the fake host nothing."""
+    registry = fx.import_api_module(name=REGISTRY)
+    transport = fx.import_api_module(name=TRANSPORT)
+    host = fx.FakeGitHub()
+    host.install(monkeypatch=monkeypatch)
+    sender = transport.Transport(token=TOKEN)
+
+    with pytest.raises(ValueError) as raised:
+        registry.send(
+            transport=sender,
+            operation_id=CONTENT_EXCLUSION_ID,
+            path_params={PARAM_ORG: ORG},
+            query={UNDOCUMENTED_QUERY_NAME: "name"},
+            body=EXAMPLE_MAP,
+        )
+
+    message = str(raised.value)
+    assert re.search(pattern=named_with_kind(kind=KIND_QUERY, name=UNDOCUMENTED_QUERY_NAME), string=message), (
+        f"the refusal does not name {UNDOCUMENTED_QUERY_NAME!r} as a query parameter: {message}"
+    )
+    sent = [f"{request.method} {request.url}" for request in host.requests]
+    assert sent == [], f"an undocumented query name is refused before any request; sent {sent}"

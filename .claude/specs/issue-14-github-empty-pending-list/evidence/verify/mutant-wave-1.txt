@@ -1,0 +1,123 @@
+# mutant wave-1: the five implementation files of the wave (IMPL-1..IMPL-5) reset to the merge base 7ec47d1; tests at HEAD
+ src/payload/scripts/github_api/commands/call.py    | 26 ++++++++--------------
+ .../scripts/github_api/families/code_scanning.py   | 23 ++++---------------
+ src/payload/scripts/github_api/families/copilot.py | 21 ++++-------------
+ src/payload/scripts/github_api/families/pulls.py   | 21 +++--------------
+ src/payload/scripts/github_api/registry.py         | 12 ++--------
+ 5 files changed, 22 insertions(+), 81 deletions(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+F.....FFF.......FFFFF..F................................................ [ 54%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:249: in test_nothing_is_pending
+    assert family.PENDING == frozenset(), (
+E   AssertionError: families/pulls.py still has pending IDs ['pulls/update-branch']; none expected
+E   assert frozenset({'p...date-branch'}) == frozenset()
+E     
+E     Extra items in the left set:
+E     'pulls/update-branch'
+E     Use -v to get more diff
+____ test_a_branch_writing_record_is_refused[code-scanning/commit-autofix] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:413: in test_a_branch_writing_record_is_refused
+    assert branch_writing.operation_id in records, f"{branch_writing.operation_id} has no record in {FAMILY_FILE.name}"
+E   AssertionError: code-scanning/commit-autofix has no record in code_scanning.py
+E   assert 'code-scanning/commit-autofix' in {'code-scanning/get-ai-scan-enablement-for-org': RestOperation(operation_id='code-scanning/get-ai-scan-enablement-for-...api_version='2022-11-28', accept='application/vnd.github+json', root='https://api.github.com', content_type=None), ...}
+E    +  where 'code-scanning/commit-autofix' = BranchWritingCall(operation_id='code-scanning/commit-autofix', arguments=('--path', 'alert_number=42', '--raw-field', 'target_ref=refs/heads/main', '--raw-field', 'message=Fix the code scanning alert')).operation_id
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_copilot.py:277: in test_nothing_is_pending
+    assert pending == frozenset(), f"{FAMILY_MODULE}.PENDING holds {sorted(pending)}; nothing is to stay pending"
+E   AssertionError: github_api.families.copilot.PENDING holds ['copilot/set-copilot-content-exclusion-for-organization']; nothing is to stay pending
+E   assert frozenset({'c...rganization'}) == frozenset()
+E     
+E     Extra items in the left set:
+E     'copilot/set-copilot-content-exclusion-for-organization'
+E     Use -v to get more diff
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_copilot.py:289: in test_the_records_follow_the_transcription_rules
+    assert declared == sorted(RECORDED_IDS), (
+E   AssertionError: github_api.families.copilot declares ['copilot/add-copilot-seats-for-teams', 'copilot/add-copilot-seats-for-users', 'copilot/add-organizations-to-enterprise-coding-agent-policy', 'copilot/cancel-copilot-seat-assignment-for-teams', 'copilot/cancel-copilot-seat-assignment-for-users', 'copilot/copilot-content-exclusion-for-organization', 'copilot/copilot-enterprise-one-day-usage-metrics', 'copilot/copilot-enterprise-repos-one-day-report', 'copilot/copilot-enterprise-usage-metrics', 'copilot/copilot-enterprise-user-teams-one-day-report', 'copilot/copilot-organization-one-day-usage-metrics', 'copilot/copilot-organization-repos-one-day-report', 'copilot/copilot-organization-usage-metrics', 'copilot/copilot-organization-user-teams-one-day-report', 'copilot/copilot-organization-users-one-day-usage-metrics', 'copilot/copilot-organization-users-usage-metrics', 'copilot/copilot-users-one-day-usage-metrics', 'copilot/copilot-users-usage-metrics', 'copilot/delete-copilot-team-customizations', 'copilot/disable-copilot-coding-agent-for-repository-in-organization', 'copilot/enable-copilot-coding-agent-for-repository-in-organization', 'copilot/get-copilot-cloud-agent-configuration', 'copilot/get-copilot-coding-agent-permissions-organization', 'copilot/get-copilot-organization-details', 'copilot/get-copilot-seat-details-for-user', 'copilot/get-copilot-team-customizations', 'copilot/get-enterprise-code-review-policy', 'copilot/get-organization-code-review-policy', 'copilot/get-organization-code-review-runner', 'copilot/get-organization-code-review-settings', 'copilot/get-repository-code-review-settings', 'copilot/list-copilot-coding-agent-selected-repositories-for-organization', 'copilot/list-copilot-seats', 'copilot/remove-organizations-from-enterprise-coding-agent-policy', 'copilot/set-copilot-coding-agent-permissions-organization', 'copilot/set-copilot-coding-agent-selected-repositories-for-organization', 'copilot/set-copilot-team-customizations', 'copilot/set-enterprise-code-review-policy', 'copilot/set-enterprise-coding-agent-policy', 'copilot/set-organization-code-review-policy', 'copilot/set-organization-code-review-runner', 'copilot/update-organization-code-review-settings', 'copilot/update-repository-code-review-settings'], its sections are ['copilot/add-copilot-seats-for-teams', 'copilot/add-copilot-seats-for-users', 'copilot/add-organizations-to-enterprise-coding-agent-policy', 'copilot/cancel-copilot-seat-assignment-for-teams', 'copilot/cancel-copilot-seat-assignment-for-users', 'copilot/copilot-content-exclusion-for-organization', 'copilot/copilot-enterprise-one-day-usage-metrics', 'copilot/copilot-enterprise-repos-one-day-report', 'copilot/copilot-enterprise-usage-metrics', 'copilot/copilot-enterprise-user-teams-one-day-report', 'copilot/copilot-organization-one-day-usage-metrics', 'copilot/copilot-organization-repos-one-day-report', 'copilot/copilot-organization-usage-metrics', 'copilot/copilot-organization-user-teams-one-day-report', 'copilot/copilot-organization-users-one-day-usage-metrics', 'copilot/copilot-organization-users-usage-metrics', 'copilot/copilot-users-one-day-usage-metrics', 'copilot/copilot-users-usage-metrics', 'copilot/delete-copilot-team-customizations', 'copilot/disable-copilot-coding-agent-for-repository-in-organization', 'copilot/enable-copilot-coding-agent-for-repository-in-organization', 'copilot/get-copilot-cloud-agent-configuration', 'copilot/get-copilot-coding-agent-permissions-organization', 'copilot/get-copilot-organization-details', 'copilot/get-copilot-seat-details-for-user', 'copilot/get-copilot-team-customizations', 'copilot/get-enterprise-code-review-policy', 'copilot/get-organization-code-review-policy', 'copilot/get-organization-code-review-runner', 'copilot/get-organization-code-review-settings', 'copilot/get-repository-code-review-settings', 'copilot/list-copilot-coding-agent-selected-repositories-for-organization', 'copilot/list-copilot-seats', 'copilot/remove-organizations-from-enterprise-coding-agent-policy', 'copilot/set-copilot-coding-agent-permissions-organization', 'copilot/set-copilot-coding-agent-selected-repositories-for-organization', 'copilot/set-copilot-content-exclusion-for-organization', 'copilot/set-copilot-team-customizations', 'copilot/set-enterprise-code-review-policy', 'copilot/set-enterprise-coding-agent-policy', 'copilot/set-organization-code-review-policy', 'copilot/set-organization-code-review-runner', 'copilot/update-organization-code-review-settings', 'copilot/update-repository-code-review-settings']
+E   assert ['copilot/add...ization', ...] == ['copilot/add...ization', ...]
+E     
+E     At index 36 diff: 'copilot/set-copilot-team-customizations' != 'copilot/set-copilot-content-exclusion-for-organization'
+E     Right contains one more item: 'copilot/update-repository-code-review-settings'
+E     Use -v to get more diff
+___________________ test_a_branch_writing_record_is_refused ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:300: in test_a_branch_writing_record_is_refused
+    declared = _record_of(operation_id=OP_UPDATE_BRANCH)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_pulls.py:238: in _record_of
+    assert len(matches) == 1, (
+E   AssertionError: "pulls/update-branch": families/pulls.py declares 0 records with this ID, one expected
+E   assert 0 == 1
+E    +  where 0 = len([])
+_______________ test_the_content_exclusion_map_is_sent_as_given _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\test_github_api_copilot.py:338: in test_the_content_exclusion_map_is_sent_as_given
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2810: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2713: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-14-AC-4/exit-0/copilot/set-copilot-content-exclusion-for-organization: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:451 No GitHub operation record declares "copilot/set-copilot-content-exclusion-for-organization"
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:338: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 1 IDs: ['code-scanning/commit-autofix']
+E     1 IDs have no record: ['code-scanning/commit-autofix']
+E   assert not ["PENDING still holds 1 IDs: ['code-scanning/commit-autofix']", "1 IDs have no record: ['code-scanning/commit-autofix']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:358: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 1 problems:
+E     "code-scanning/commit-autofix": no record
+E   assert not ['"code-scanning/commit-autofix": no record']
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:371: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 records differ from their sections:
+E     "code-scanning/commit-autofix": declared None, the section documents frozenset()
+E   assert not ['"code-scanning/commit-autofix": declared None, the section documents frozenset()']
+______________ test_the_content_exclusion_call_checks_its_query _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\test_github_api_copilot.py:379: in test_the_content_exclusion_call_checks_its_query
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-14-UB-3/exit-2/copilot/set-copilot-content-exclusion-for-organization: no log record matches every one of ['"copilot/set\\-copilot\\-content\\-exclusion\\-for\\-organization"', '\\bquery parameters?[^"\\[\\]\\n;]*\\[?(?:"[^"]*",\\s*)*"sort"']: ['No GitHub operation record declares "copilot/set-copilot-content-exclusion-for-organization"']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:451 No GitHub operation record declares "copilot/set-copilot-content-exclusion-for-organization"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_pulls.py::test_nothing_is_pending - A...
+FAILED src/payload/test/test_github_api_code_scanning.py::test_a_branch_writing_record_is_refused[code-scanning/commit-autofix]
+FAILED src/payload/test/test_github_api_copilot.py::test_nothing_is_pending
+FAILED src/payload/test/test_github_api_copilot.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_pulls.py::test_a_branch_writing_record_is_refused
+FAILED src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_map_is_sent_as_given
+FAILED src/payload/test/test_github_api_code_scanning.py::test_nothing_is_pending
+FAILED src/payload/test/test_github_api_code_scanning.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_code_scanning.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_call_checks_its_query
+================= 10 failed, 123 passed in 122.17s (0:02:02) ==================
+exit=1

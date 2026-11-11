@@ -1,0 +1,85 @@
+# mutant pending-restored (AC-2): each family's ID put back on its PENDING (records kept)
+diff --git a/src/payload/scripts/github_api/families/code_scanning.py b/src/payload/scripts/github_api/families/code_scanning.py
+index 77df86d..f9b2351 100644
+--- a/src/payload/scripts/github_api/families/code_scanning.py
++++ b/src/payload/scripts/github_api/families/code_scanning.py
+@@ -413,4 +413,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[str] = frozenset()
++PENDING: FrozenSet[str] = frozenset({"code-scanning/commit-autofix"})
+diff --git a/src/payload/scripts/github_api/families/copilot.py b/src/payload/scripts/github_api/families/copilot.py
+index a10d2c2..e367558 100644
+--- a/src/payload/scripts/github_api/families/copilot.py
++++ b/src/payload/scripts/github_api/families/copilot.py
+@@ -562,4 +562,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[str] = frozenset()
++PENDING: FrozenSet[str] = frozenset({"copilot/set-copilot-content-exclusion-for-organization"})
+diff --git a/src/payload/scripts/github_api/families/pulls.py b/src/payload/scripts/github_api/families/pulls.py
+index 4c91dfd..fe8ca44 100644
+--- a/src/payload/scripts/github_api/families/pulls.py
++++ b/src/payload/scripts/github_api/families/pulls.py
+@@ -451,4 +451,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[str] = frozenset()
++PENDING: FrozenSet[str] = frozenset({"pulls/update-branch"})
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+F.......F..........F.................................................... [ 54%]
+......................................................F......            [100%]
+================================== FAILURES ===================================
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:249: in test_nothing_is_pending
+    assert family.PENDING == frozenset(), (
+E   AssertionError: families/pulls.py still has pending IDs ['pulls/update-branch']; none expected
+E   assert frozenset({'p...date-branch'}) == frozenset()
+E     
+E     Extra items in the left set:
+E     'pulls/update-branch'
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_copilot.py:277: in test_nothing_is_pending
+    assert pending == frozenset(), f"{FAMILY_MODULE}.PENDING holds {sorted(pending)}; nothing is to stay pending"
+E   AssertionError: github_api.families.copilot.PENDING holds ['copilot/set-copilot-content-exclusion-for-organization']; nothing is to stay pending
+E   assert frozenset({'c...rganization'}) == frozenset()
+E     
+E     Extra items in the left set:
+E     'copilot/set-copilot-content-exclusion-for-organization'
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:338: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 1 IDs: ['code-scanning/commit-autofix']
+E   assert not ["PENDING still holds 1 IDs: ['code-scanning/commit-autofix']"]
+_____________ test_one_module_per_family_holding_only_its_own_ids _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:668: in test_one_module_per_family_holding_only_its_own_ids
+    assert not problems, "the family and capability modules break D2's contract:\n" + "\n".join(problems)
+E   AssertionError: the family and capability modules break D2's contract:
+E     github_api.families.code_scanning: 'code-scanning/commit-autofix' is both covered and pending
+E     github_api.families.copilot: 'copilot/set-copilot-content-exclusion-for-organization' is both covered and pending
+E     github_api.families.pulls: 'pulls/update-branch' is both covered and pending
+E   assert not ["github_api.families.code_scanning: 'code-scanning/commit-autofix' is both covered and pending", "github_api.families...nization' is both covered and pending", "github_api.families.pulls: 'pulls/update-branch' is both covered and pending"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_pulls.py::test_nothing_is_pending - A...
+FAILED src/payload/test/test_github_api_copilot.py::test_nothing_is_pending
+FAILED src/payload/test/test_github_api_code_scanning.py::test_nothing_is_pending
+FAILED test/test_github_wrapper_coverage.py::test_one_module_per_family_holding_only_its_own_ids
+================== 4 failed, 129 passed in 123.62s (0:02:03) ==================
+exit=1
