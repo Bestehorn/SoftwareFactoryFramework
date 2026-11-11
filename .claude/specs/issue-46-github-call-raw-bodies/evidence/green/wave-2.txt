@@ -1,0 +1,25 @@
+# tasks: 2.5 2.6
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_actions.py src/payload/test/test_github_api_activity.py src/payload/test/test_github_api_apps.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_checks.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_dependabot.py src/payload/test/test_github_api_gists.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_issues.py src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_reactions.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_search.py src/payload/test/test_github_api_secret_scanning.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_transport.py src/payload/test/test_github_api_users.py src/payload/test/test_github_wrapper_compat.py test/test_github_api_call_properties.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [951 items]
+
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 22%]
+........................................................................ [ 30%]
+........................................................................ [ 37%]
+........................................................................ [ 45%]
+........................................................................ [ 52%]
+........................................................................ [ 60%]
+........................................................................ [ 68%]
+........................................................................ [ 75%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 98%]
+...............                                                          [100%]
+======================= 951 passed in 120.00s (0:02:00) =======================
