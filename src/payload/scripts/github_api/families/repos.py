@@ -1,5 +1,4 @@
-"""The ``repos`` family of the GitHub operations index: one record per ``repos/`` operation ID of the reference but
-``repos/upload-release-asset``.
+"""The ``repos`` family of the GitHub operations index: one record per ``repos/`` operation ID of the reference.
 
 Each record is its section of ``docs/api-reference/github/rest/<category>.md`` (``branches``, ``collaborators``,
 ``commits``, ``deploy-keys``, ``deployments``, ``metrics``, ``orgs``, ``pages``, ``releases``, ``repos``), in the order
@@ -17,8 +16,8 @@ does not. ``repos/get-commit`` and ``repos/compare-commits`` name two keys (``pa
 ``repos/get-combined-status-for-ref`` is the record ``get-pr-checks`` sends. The records whose call commits to,
 creates, moves or renames a branch (``repos/merge``, ``repos/merge-upstream``, ``repos/rename-branch``,
 ``repos/create-or-update-file-contents``, ``repos/delete-file``) are declared, and ``call`` refuses them by
-``commands/call.py`` ``GATED_OPERATIONS``. ``repos/upload-release-asset`` stays on ``PENDING``: its body is the
-asset's bytes, sent to the upload origin, which ``call`` does not send (issue #27, DL-002).
+``commands/call.py`` ``GATED_OPERATIONS``. ``repos/upload-release-asset`` is sent to ``UPLOAD_ORIGIN``, its section's
+``Host:``, with the asset's bytes from ``call --input`` as its ``CONTENT_TYPE_OCTET_STREAM`` body; ``PENDING`` is empty.
 """
 
 from __future__ import annotations
@@ -26,7 +25,7 @@ from __future__ import annotations
 from typing import FrozenSet, Tuple
 
 from github_api.registry import Paging, RestOperation
-from github_api.transport import ACCEPT_JSON, API_VERSION_DEFAULT
+from github_api.transport import ACCEPT_JSON, API_VERSION_DEFAULT, CONTENT_TYPE_OCTET_STREAM, UPLOAD_ORIGIN
 
 FAMILY = "repos"
 
@@ -1551,6 +1550,20 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         api_version=API_VERSION_DEFAULT,
         accept=ACCEPT_JSON,
     ),
+    RestOperation(
+        operation_id="repos/upload-release-asset",
+        method="POST",
+        path="/repos/{owner}/{repo}/releases/{release_id}/assets",
+        query_params=frozenset({"name", "label"}),
+        body_params=frozenset(),
+        multi_segment=frozenset(),
+        paging=Paging.NONE,
+        item_key=None,
+        api_version=API_VERSION_DEFAULT,
+        accept=ACCEPT_JSON,
+        root=UPLOAD_ORIGIN,
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+    ),
     # rest/releases.md "releases"
     RestOperation(
         operation_id="repos/list-releases",
@@ -2649,4 +2662,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[str] = frozenset({"repos/upload-release-asset"})
+PENDING: FrozenSet[str] = frozenset()

@@ -10,6 +10,9 @@ imports the package itself, so while a module is not written the test fails on t
 ``send``, ``path_parameters`` and a query name spelled ``<name>[]`` are issue #28's registry additions (its design
 D2; AC-1.2, AC-2.3).
 
+A record's ``root`` and ``content_type`` and ``send``'s ``data`` are issue #46's (its design D2; AC-1.2): the record
+that carries them is built inside its test and added to the synthetic family for that test alone.
+
 Run: ``python scripts/run_tests.py test/test_github_api_registry.py`` (no network).
 """
 
@@ -600,6 +603,99 @@ def test_a_query_name_ending_in_brackets_is_sent_as_written(
     _assert_sent(requests=fake.requests, documented=case)
     written = _without_paging(query=fx.query_of(values=case.query))
     assert [_without_paging(query=request.query) for request in fake.requests] == [written] * len(fake.requests)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AC-1.2 (issue #46, design D2) — send sends a record whose body is not JSON to its root, as given, with its media type
+# ---------------------------------------------------------------------------------------------------------------------
+
+METHOD_POST = "POST"
+PARAM_RELEASE_ID = "release_id"
+PARAM_LABEL = "label"
+#: A synthetic upload: ``rest/releases.md`` "Upload a release asset"'s path and query under a synthetic family's ID.
+SYNTHETIC_UPLOAD = "synthetic/upload-release-asset"
+UPLOAD_PATH_TEMPLATE = "/repos/{owner}/{repo}/releases/{release_id}/assets"
+UPLOAD_PATH_PARAMS = {**OWNER_REPO, PARAM_RELEASE_ID: 3}
+UPLOAD_SENT_PATH = "/repos/o/r/releases/3/assets"
+UPLOAD_QUERY = {PARAM_NAME: "dist.zip", PARAM_LABEL: "Build"}
+#: The upload origin as ``conventions.md`` "Hosts and base URLs" names it; the test's own, not the transport's.
+UPLOAD_HOST = "https://uploads.github.com"
+#: A media type neither of the transport's raw-body constants names, so a request carrying it carries the record's.
+MEDIA_TYPE_ZIP = "application/zip"
+#: Bytes that are not UTF-8 (``0x89`` and ``0xff`` start no UTF-8 sequence), holding a ``\r\n`` and a NUL byte.
+RAW_BODY = b"PK\x03\x04\x89\xff\x00\r\n"
+STATUS_CREATED = 201
+UPLOADED_ASSET = {FIELD_ID: 9, FIELD_NAME: "dist.zip"}
+
+
+def add_record(*, record: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Add ``record`` to the installed synthetic family's ``OPERATIONS``, for the test."""
+    family = importlib.import_module(name=SYNTHETIC_MODULE)
+    monkeypatch.setattr(target=family, name="OPERATIONS", value=(*family.OPERATIONS, record))
+
+
+def test_send_sends_a_raw_record_to_its_origin(
+    fake: Any, family_directory: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC-1.2 (issue #46 design D2): a record whose ``root`` is the upload origin and whose ``content_type`` is set is
+    sent by ``send(..., data=...)`` to that origin, with ``data`` as its body, unchanged, under the record's media type,
+    API version and ``Accept``; the same ``data`` for a record whose ``content_type`` is ``None`` raises ``ValueError``
+    before anything is sent."""
+    api = load_api()
+    install_synthetic_family(directory=family_directory, monkeypatch=monkeypatch)
+    upload = api.registry.RestOperation(
+        operation_id=SYNTHETIC_UPLOAD,
+        method=METHOD_POST,
+        path=UPLOAD_PATH_TEMPLATE,
+        query_params=frozenset(UPLOAD_QUERY),
+        body_params=frozenset(),
+        multi_segment=frozenset(),
+        paging=api.registry.Paging.NONE,
+        item_key=None,
+        api_version=api.transport.API_VERSION_DEFAULT,
+        accept=api.transport.ACCEPT_JSON,
+        root=api.transport.UPLOAD_ORIGIN,
+        content_type=MEDIA_TYPE_ZIP,
+    )
+    add_record(record=upload, monkeypatch=monkeypatch)
+    transport = api.transport.Transport(token=TOKEN)
+    json_record = api.registry.lookup(operation_id=UPDATE_ISSUE.operation_id)
+    assert json_record.content_type is None, f"{UPDATE_ISSUE.operation_id}'s body is JSON: it has no content_type"
+
+    with pytest.raises(ValueError):
+        api.registry.send(
+            transport=transport,
+            operation_id=UPDATE_ISSUE.operation_id,
+            path_params=UPDATE_ISSUE_CALL.path_params,
+            data=RAW_BODY,
+        )
+    assert fake.requests == [], "data for a record whose body is JSON is refused before any request"
+
+    fake.route(
+        method=METHOD_POST,
+        url=f"{UPLOAD_HOST}{UPLOAD_SENT_PATH}",
+        query=UPLOAD_QUERY,
+        replies=[fx.Reply(status=STATUS_CREATED, body=UPLOADED_ASSET)],
+    )
+    response = api.registry.send(
+        transport=transport,
+        operation_id=SYNTHETIC_UPLOAD,
+        path_params=UPLOAD_PATH_PARAMS,
+        query=UPLOAD_QUERY,
+        data=RAW_BODY,
+    )
+
+    assert response.status == STATUS_CREATED
+    assert response.json() == UPLOADED_ASSET
+    (request,) = fake.requests
+    assert request.method == METHOD_POST
+    assert fx.Endpoint.of(url=request.url) == fx.Endpoint.of(url=f"{UPLOAD_HOST}{UPLOAD_SENT_PATH}"), request.url
+    assert request.query == fx.query_of(values=UPLOAD_QUERY)
+    assert request.body == RAW_BODY
+    assert request.header(name=fx.HEADER_CONTENT_TYPE) == MEDIA_TYPE_ZIP
+    assert request.header(name=api.transport.HEADER_API_VERSION) == upload.api_version
+    assert request.header(name=api.transport.HEADER_ACCEPT) == upload.accept
+    assert request.header(name=fx.HEADER_AUTHORIZATION) is not None, "the credential goes to the record's root"
 
 
 # ---------------------------------------------------------------------------------------------------------------------
