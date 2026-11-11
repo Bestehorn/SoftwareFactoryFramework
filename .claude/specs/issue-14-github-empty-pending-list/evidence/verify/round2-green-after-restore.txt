@@ -1,0 +1,40 @@
+# round 2 green after restore: the delta's paired set (F pulls/code_scanning/copilot, K, R, N, V) after the ten mutants
+2026-11-11T14:19:46Z
+HEAD 0ffd759c41545d948ebcbbbc37c998b2d5bb575c  # pragma: allowlist secret
+sha256 against the pre-mutant digests:
+src/payload/scripts/github_api/registry.py: OK
+src/payload/scripts/github_api/commands/call.py: OK
+src/payload/scripts/github_api/families/pulls.py: OK
+src/payload/scripts/github_api/families/code_scanning.py: OK
+src/payload/scripts/github_api/families/copilot.py: OK
+src/payload/test/test_github_api_copilot.py: OK
+src/payload/test/test_github_api_code_scanning.py: OK
+src/payload/test/test_github_api_pulls.py: OK
+git diff --stat HEAD (empty = no tracked change):
+git status --porcelain:
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-green-after-restore.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-autofix-content-type.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-autofix-item-key.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-call-any-body-skips-path-and-query.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-call-any-body-skips-path.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-records-both-fields.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-empty-query-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-every-kind.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-keyed-on-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-send-skips-query.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-update-branch-content-type.txt
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [137 items]
+
+........................................................................ [ 52%]
+.................................................................        [100%]
+======================= 137 passed in 194.42s (0:03:14) =======================
+exit=0
+2026-11-11T14:23:08Z

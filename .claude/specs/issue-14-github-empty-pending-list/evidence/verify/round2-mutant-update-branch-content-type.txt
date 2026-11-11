@@ -1,0 +1,61 @@
+# round 2 mutant M6 update-branch-content-type (REF-2, AC-1; near-variant): content_type octet-stream on pulls/update-branch only
+2026-11-11T14:15:10Z
+ M src/payload/scripts/github_api/families/pulls.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-records-both-fields.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-empty-query-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-every-kind.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-keyed-on-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-send-skips-query.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-update-branch-content-type.txt
+diff --git a/src/payload/scripts/github_api/families/pulls.py b/src/payload/scripts/github_api/families/pulls.py
+index 4c91dfd..475aa57 100644
+--- a/src/payload/scripts/github_api/families/pulls.py
++++ b/src/payload/scripts/github_api/families/pulls.py
+@@ -305,6 +305,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         item_key=None,
+         api_version=API_VERSION_DEFAULT,
+         accept=ACCEPT_JSON,
++        content_type="application/octet-stream",
+     ),
+     # rest/pulls.md "Get all requested reviewers for a pull request": one object and no ``Paging:`` line; one request.
+     RestOperation(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [109 items]
+
+.....F.................................................................. [ 66%]
+.....................................                                    [100%]
+================================== FAILURES ===================================
+_____ test_the_branch_writing_record_has_no_item_key_and_no_content_type ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:288: in test_the_branch_writing_record_has_no_item_key_and_no_content_type
+    assert problems == [], f"{json.dumps(obj=operation_id)}: {problems}"
+E   AssertionError: "pulls/update-branch": ["content_type 'application/octet-stream', None expected"]
+E   assert ['content_typ...one expected'] == []
+E     
+E     Left contains one more item: "content_type 'application/octet-stream', None expected"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_pulls.py::test_the_branch_writing_record_has_no_item_key_and_no_content_type
+======================= 1 failed, 108 passed in 13.95s ========================
+exit=1
+restored; sha256 against the pre-mutant digests:
+src/payload/scripts/github_api/registry.py: OK
+src/payload/scripts/github_api/commands/call.py: OK
+src/payload/scripts/github_api/families/pulls.py: OK
+src/payload/scripts/github_api/families/code_scanning.py: OK
+src/payload/scripts/github_api/families/copilot.py: OK
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-records-both-fields.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-empty-query-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-every-kind.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-keyed-on-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-send-skips-query.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-update-branch-content-type.txt
+2026-11-11T14:15:28Z

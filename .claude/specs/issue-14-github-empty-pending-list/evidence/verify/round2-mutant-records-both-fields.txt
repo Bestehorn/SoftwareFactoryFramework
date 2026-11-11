@@ -1,0 +1,97 @@
+# round 2 mutant M5 records-both-fields (REF-2, AC-1; round 1 R4 widened): item_key 'items' and content_type octet-stream on code-scanning/commit-autofix and on pulls/update-branch
+2026-11-11T14:14:23Z
+ M src/payload/scripts/github_api/families/code_scanning.py
+ M src/payload/scripts/github_api/families/pulls.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-records-both-fields.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-empty-query-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-every-kind.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-keyed-on-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-send-skips-query.txt
+diff --git a/src/payload/scripts/github_api/families/code_scanning.py b/src/payload/scripts/github_api/families/code_scanning.py
+index 77df86d..d07bcf8 100644
+--- a/src/payload/scripts/github_api/families/code_scanning.py
++++ b/src/payload/scripts/github_api/families/code_scanning.py
+@@ -207,9 +207,10 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         body_params=frozenset({"target_ref", "message"}),
+         multi_segment=frozenset(),
+         paging=Paging.NONE,
+-        item_key=None,
++        item_key="items",
+         api_version=API_VERSION_DEFAULT,
+         accept=ACCEPT_JSON,
++        content_type="application/octet-stream",
+     ),
+     # rest/code-scanning.md "List instances of a code scanning alert": 200 with an array, so it pages by ``link`` with
+     # no item key.
+diff --git a/src/payload/scripts/github_api/families/pulls.py b/src/payload/scripts/github_api/families/pulls.py
+index 4c91dfd..ed406d1 100644
+--- a/src/payload/scripts/github_api/families/pulls.py
++++ b/src/payload/scripts/github_api/families/pulls.py
+@@ -302,9 +302,10 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         body_params=frozenset({"expected_head_sha"}),
+         multi_segment=frozenset(),
+         paging=Paging.NONE,
+-        item_key=None,
++        item_key="items",
+         api_version=API_VERSION_DEFAULT,
+         accept=ACCEPT_JSON,
++        content_type="application/octet-stream",
+     ),
+     # rest/pulls.md "Get all requested reviewers for a pull request": one object and no ``Paging:`` line; one request.
+     RestOperation(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [109 items]
+
+.F.F.F.................................................................. [ 66%]
+.....................................                                    [100%]
+================================== FAILURES ===================================
+_____ test_the_branch_writing_record_has_no_item_key_and_no_content_type ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_code_scanning.py:375: in test_the_branch_writing_record_has_no_item_key_and_no_content_type
+    assert not problems, f"{json.dumps(obj=operation_id)}: " + "; ".join(problems)
+E   AssertionError: "code-scanning/commit-autofix": item_key 'items', None expected; content_type 'application/octet-stream', None expected
+E   assert not ["item_key 'items', None expected", "content_type 'application/octet-stream', None expected"]
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:273: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"families/{FAMILY_NAME}.py breaks AC-3: {problems}"
+E   AssertionError: families/pulls.py breaks AC-3: ['"pulls/update-branch": item_key \'items\', None expected']
+E   assert ['"pulls/upda...one expected'] == []
+E     
+E     Left contains one more item: '"pulls/update-branch": item_key \'items\', None expected'
+E     Use -v to get more diff
+_____ test_the_branch_writing_record_has_no_item_key_and_no_content_type ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:288: in test_the_branch_writing_record_has_no_item_key_and_no_content_type
+    assert problems == [], f"{json.dumps(obj=operation_id)}: {problems}"
+E   AssertionError: "pulls/update-branch": ["content_type 'application/octet-stream', None expected", "item_key 'items', None expected"]
+E   assert ['content_typ...one expected"] == []
+E     
+E     Left contains 2 more items, first extra item: "content_type 'application/octet-stream', None expected"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_code_scanning.py::test_the_branch_writing_record_has_no_item_key_and_no_content_type
+FAILED src/payload/test/test_github_api_pulls.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_pulls.py::test_the_branch_writing_record_has_no_item_key_and_no_content_type
+======================= 3 failed, 106 passed in 10.09s ========================
+exit=1
+restored; sha256 against the pre-mutant digests:
+src/payload/scripts/github_api/registry.py: OK
+src/payload/scripts/github_api/commands/call.py: OK
+src/payload/scripts/github_api/families/pulls.py: OK
+src/payload/scripts/github_api/families/code_scanning.py: OK
+src/payload/scripts/github_api/families/copilot.py: OK
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-records-both-fields.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-empty-query-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-every-kind.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-keyed-on-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-send-skips-query.txt
+2026-11-11T14:14:36Z
