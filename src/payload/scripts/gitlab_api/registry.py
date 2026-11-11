@@ -2,9 +2,10 @@
 
 A ``RestOperation`` is one row of ``docs/api-reference/gitlab/operations-index.md``, transcribed from the attribute
 table of its ``rest/<family>.md`` section: the method, the path verbatim (``/projects/:id/issues/:issue_iid``), and one
-``Param`` per query or body attribute, the table's Type column as a ``Kind``. A ``GraphQLOperation`` is a GraphQL-only
-capability (``gitlab_api/graphql_only.py``), named by the first cell of the "Only in GraphQL" row it serves (issue #41,
-design.md D2). The REST records live in the endpoint family modules of
+``Param`` per query or body attribute, the table's Type column as a ``Kind``. A ``GraphQLOperation`` is one query or
+mutation of a GraphQL-only capability (``gitlab_api/graphql_only.py``), which it names by the first cell of the "Only in
+GraphQL" row it serves (issue #41, design.md D2); several records may serve one capability (issue #44, design.md D1).
+The REST records live in the endpoint family modules of
 ``gitlab_api.families``, each holding ``FAMILY`` (its file stem), ``OPERATIONS`` and ``PENDING`` (the
 ``(method, path)`` keys of the family's index rows that no record maps yet); ``discover_families`` finds them by
 scanning the package, so no file lists them.
@@ -14,7 +15,10 @@ scanning the package, so no file lists them.
 - ``encode`` turns the other values into the query pairs, form pairs, JSON body and files of a request, arrays and
   hashes in GitLab's bracket form (AC-2.3; ``conventions.md`` "Arrays, hashes and arrays of hashes").
 - ``attribute_name`` names the ``Param`` of a reference table name (``iids[]`` is ``iids``); ``variables`` names the
-  variables a GraphQL record's document defines (issue #41, design.md D2).
+  variables a GraphQL record's document defines (issue #41, design.md D2), and ``upload_variables`` those of them
+  whose type is ``Upload`` or a list of ``Upload``, each mapped to whether it is a list (issue #44, design.md D4).
+- ``split_uploads`` takes the files out of a GraphQL call's variables, leaving ``None`` where each one goes, and pairs
+  each file with the operations path it fills, for ``Transport.graphql``'s multipart request (issue #44, design.md D4).
 - ``send`` sends one call of a REST record through a ``gitlab_api.transport.Transport`` and returns its ``Response``;
   ``call`` sends one call of any record and returns its value; ``pages`` returns the items of every page of a REST list
   record. Each looks the record up and encodes its values before anything is sent, so a value the record does not
@@ -48,6 +52,16 @@ GROUP_NAME = "name"
 # A GraphQL variable definition: `$`, a Name, then `:` after any white space (`VariableDefinition : Variable : Type`).
 # A use of the variable (`fullPath: $fullPath)`) has no `:` after it.
 VARIABLE_DEFINITION = re.compile(r"\$(?P<name>[_A-Za-z][_0-9A-Za-z]*)\s*:")
+# The Type of a variable definition, read where a VARIABLE_DEFINITION match ends (`Type : NamedType | ListType |
+# NonNullType`): white space, then any `[` and white space, a Name, and any `]`, `!` and white space (`[Upload!]!`).
+TYPE_REFERENCE = re.compile(pattern=r"\s*(?P<type>[\[\s]*[_A-Za-z][_0-9A-Za-z]*[\]!\s]*)")
+GROUP_TYPE = "type"
+# What `upload_variables` removes from a Type before comparing it with UPLOAD_TYPE.
+TYPE_DECORATION = re.compile(pattern=r"[\[\]!\s]")
+UPLOAD_TYPE = "Upload"
+LIST_TYPE_START = "["
+# Joins the parts of an operations path: `variables`, the variable name and, for a list item, its index.
+OPERATIONS_PATH_SEPARATOR = "."
 # None of these is one segment once a URL's dot segments are resolved (RFC 3986 section 5.2.4).
 REFUSED_SEGMENTS = frozenset({"", ".", ".."})
 ARRAY_SUFFIX = "[]"
@@ -117,8 +131,9 @@ class RestOperation:
 
 @dataclass(frozen=True)
 class GraphQLOperation:
-    """One GraphQL-only capability: the first cell of the "Only in GraphQL" row it serves, verbatim, its document and,
-    for a paged connection, the key path to it under ``data``."""
+    """One query or mutation of a GraphQL-only capability: the first cell of the "Only in GraphQL" row it serves,
+    verbatim, its document and, for a paged connection, the key path to it under ``data``. Several records may serve
+    one capability (issue #44, design.md D1)."""
 
     operation_id: str
     capability: str
@@ -250,6 +265,24 @@ def variables(*, operation: GraphQLOperation) -> Tuple[str, ...]:
     return tuple(name for name in defined if name != FIELD_AFTER)
 
 
+def upload_variables(*, operation: GraphQLOperation) -> Dict[str, bool]:
+    """Each variable the record's document defines whose type, with ``[``, ``]``, ``!`` and white space removed, is
+    ``Upload``, mapped to whether that type is a list (it begins with ``[``): ``$files: [Upload!]!`` is ``True``,
+    ``$file: Upload`` is ``False`` (issue #44, design.md D4).
+
+    The types are read from the ``$name: Type`` definitions where ``variables`` reads the names; a variable of any
+    other type is left out."""
+    uploads: Dict[str, bool] = {}
+    for definition in VARIABLE_DEFINITION.finditer(string=operation.document):
+        reference = TYPE_REFERENCE.match(string=operation.document, pos=definition.end())
+        if reference is None:
+            continue
+        type_text = reference.group(GROUP_TYPE)
+        if TYPE_DECORATION.sub(repl="", string=type_text) == UPLOAD_TYPE:
+            uploads[definition.group(GROUP_NAME)] = type_text.startswith(LIST_TYPE_START)
+    return uploads
+
+
 # --- Value encoding ---------------------------------------------------------------------------------------------
 
 
@@ -339,6 +372,35 @@ def encode(*, operation: RestOperation, values: Mapping[str, Any]) -> EncodedReq
     return EncodedRequest(query=query, json_body=body or None)
 
 
+def split_uploads(*, values: Mapping[str, Any]) -> Tuple[Dict[str, Any], Tuple[Tuple[str, Path], ...]]:
+    """The variables of a GraphQL call with its files taken out, and the files (issue #44, design.md D4).
+
+    Each ``pathlib.Path`` value, and each ``Path`` item of a list, is replaced by ``None``, the ``null`` the
+    ``operations`` part of a multipart request holds where a file goes; every other value is unchanged. The files follow
+    in the order of the values and of each list, each with the operations path it fills: ``variables.<name>``, or
+    ``variables.<name>.<index>`` for a list item. ``Transport.graphql`` sends them in one multipart request."""
+    # Imported here, not at the top: gitlab_api.transport imports this module.
+    from gitlab_api.transport import FIELD_VARIABLES
+
+    sent: Dict[str, Any] = {}
+    files: List[Tuple[str, Path]] = []
+    for name, value in values.items():
+        operations_path = f"{FIELD_VARIABLES}{OPERATIONS_PATH_SEPARATOR}{name}"
+        if isinstance(value, Path):
+            files.append((operations_path, value))
+            sent[name] = None
+        elif _is_array(value) and any(isinstance(item, Path) for item in value):
+            files.extend(
+                (f"{operations_path}{OPERATIONS_PATH_SEPARATOR}{index}", item)
+                for index, item in enumerate(value)
+                if isinstance(item, Path)
+            )
+            sent[name] = [None if isinstance(item, Path) else item for item in value]
+        else:
+            sent[name] = value
+    return sent, tuple(files)
+
+
 # --- Calls ------------------------------------------------------------------------------------------------------
 
 
@@ -369,14 +431,17 @@ def call(transport: Transport, operation_id: str, *, values: Optional[Mapping[st
 
     A ``RestOperation`` is sent with ``send`` and its ``Response.value`` returned. A ``GraphQLOperation`` sends its
     document with ``values`` as the variables, through ``transport.graphql_nodes`` when it names a connection and
-    ``transport.graphql`` otherwise. The record is found with this module's ``lookup``."""
+    ``transport.graphql`` otherwise; without a connection the files are first taken out of the values with
+    ``split_uploads`` and sent as ``transport.graphql``'s ``files`` (issue #44, design.md D4), so no ``Path`` is
+    written into the JSON of the request. The record is found with this module's ``lookup``."""
     operation = lookup(operation_id=operation_id)
     if isinstance(operation, RestOperation):
         return send(transport=transport, operation_id=operation_id, values=values).value
     given: Mapping[str, Any] = values or {}
     if operation.connection:
         return transport.graphql_nodes(document=operation.document, variables=given, connection=operation.connection)
-    return transport.graphql(document=operation.document, variables=given)
+    sent, files = split_uploads(values=given)
+    return transport.graphql(document=operation.document, variables=sent, files=files)
 
 
 def pages(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Iterator[Any]:

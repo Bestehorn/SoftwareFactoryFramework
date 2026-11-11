@@ -48,3 +48,7 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api markdown | markdown/render-raw always sends text/plain; no per-call media type | issue-46 design.md Residuals | #28 requirements residual | open |
 | 2026-11-11 | github_api transport | REST_ROOTS holds github.com roots only; GHES upload hosts are outside it | issue-46 design.md Residuals | conventions.md Hosts and base URLs; no GHES caller | open |
 | 2026-11-11 | github_api call | no guard refuses an --input path naming the credentials file; the 307 re-send is not logged | issue-46 design.md Security Considerations, Residuals | no failure seen; a guard is a mechanism | open |
+| 2026-11-11 | gitlab_api graphql | branchRuleUpdate and branchRuleDelete stay callable and can lift trunk protection | issue-44 DL-002; design.md Residuals | gate_merge_steward enforces; refusing is its own change | open |
+| 2026-11-11 | gitlab_api graphql | a mutation with errors beside partial data exits 1 printing nothing; its effect may have applied | issue-44 design.md Residuals | conventions.md Errors and partial data; no failure seen | open |
+| 2026-11-11 | gitlab_api graphql | nested connections print their first page; WorkItem.widgets prints three widgets in full | issue-44 design.md Residuals | a record pages one connection | open |
+| 2026-11-11 | gitlab_api graphql | designManagementUpload (18.6) and workItemExport (18.0) are deprecated; a regeneration dropping them fails Q | issue-44 design.md Residuals | Q flags it when the reference changes | open |

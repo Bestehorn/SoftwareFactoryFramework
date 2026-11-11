@@ -48,8 +48,11 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   wrapper calls any declared record by its operation ID:
   `python scripts/gitlab_wrapper.py call plan#retrieve-a-project-issue --path issue_iid=5` (`--path`, `--query`,
   `-f/--raw-field`, `-F/--field`, `--file`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2).
-  `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. Not installed
-  here: the repository is on GitHub (`config/toolchain.json`).
+  `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. A GraphQL-only
+  capability is a record of `graphql_only.py`, called the same way:
+  `python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project` (`-f`/`-F` give the
+  document's variables, `--file NAME=PATH` an `Upload` variable's file). `test/test_gitlab_graphql_contract.py` checks
+  each document against `graphql/`. Not installed here: the repository is on GitHub (`config/toolchain.json`).
 - `templates/` — config skeletons, CI templates, git hooks, `docs/` shipped verbatim. No Python.
 - `docs/reports/`, `docs/design/agents/` — this repository's own records; `docs/README.md` maps the old layout.
 - `test/` — this repository's own tests: `test_layout.py` (layout guard), `test_toolchain_integrity.py`,

@@ -1,0 +1,57 @@
+# Whole-suite verdict for issue #44 (PR #61), read through scripts/github_wrapper.py from the main checkout
+# worktree HEAD (git rev-parse HEAD): fd5d66c61a6b92e20cd9fe762b4829fe55cca8ee  # pragma: allowlist secret
+# merge base with origin/main (git merge-base HEAD origin/main): 5c5544848eb33d872c1843b553b4ed9e11aadee0  # pragma: allowlist secret
+# command: python scripts/github_wrapper.py get-run 42997687589 (exit 0); the run's own fields, verbatim:
+  "id": 42997687589,
+  "name": "ci",
+  "head_branch": "issue-44-gitlab-graphql-capabilities",
+  "head_sha": "fd5d66c61a6b92e20cd9fe762b4829fe55cca8ee",  # pragma: allowlist secret
+  "path": ".github/workflows/ci.yml",
+  "display_title": "Declare the GitLab GraphQL-only capability records on call",
+  "run_number": 87,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  pull_requests[0]: "number": 61,
+        "head": { "ref": "issue-44-gitlab-graphql-capabilities",
+        "sha": "fd5d66c61a6b92e20cd9fe762b4829fe55cca8ee",  # pragma: allowlist secret
+      "base": { "ref": "main",
+        "sha": "5c5544848eb33d872c1843b553b4ed9e11aadee0",  # pragma: allowlist secret
+  "run_attempt": 1,
+  "run_started_at": "2026-11-11T09:44:21Z",
+  "updated_at": "2026-11-11T09:46:33Z",
+  head_commit: "id": "fd5d66c61a6b92e20cd9fe762b4829fe55cca8ee",  # pragma: allowlist secret
+    "message": "Record the GitLab GraphQL change's residuals in the findings ledger",
+# command: python scripts/github_wrapper.py get-jobs 42997687589 (exit 0), complete output:
+130445762588   completed    success      verify (security)
+130445762857   completed    success      verify (tests)
+130445762951   completed    success      verify (lint)
+130445763077   completed    success      verify (types)
+130446679572   completed    success      report
+# command: python scripts/github_wrapper.py get-job-logs 130445762857 (exit 0, 745 lines), searched whole for
+# passed|failed|FAILED|skipped|SKIPPED|xfail|XFAIL|xpass|XPASS|ERROR|HEAD is now|run_tests:|TOTAL|CHECK SUMMARY and the
+# coverage rows of the changed product modules; every matching line of those kinds:
+2026-11-11T09:44:26.4032384Z HEAD is now at 3877ed8 Merge fd5d66c61a6b92e20cd9fe762b4829fe55cca8ee into 5c5544848eb33d872c1843b553b4ed9e11aadee0  # pragma: allowlist secret
+2026-11-11T09:44:44.5659132Z run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+2026-11-11T09:44:56.2957594Z testpaths: src/hooks/tests, src/payload/test, test
+2026-11-11T09:44:56.2959890Z 4 workers [3123 items]
+2026-11-11T09:46:06.8454993Z src/payload/scripts/gitlab_api/commands/call.py                               193      0   100%
+2026-11-11T09:46:06.8493012Z src/payload/scripts/gitlab_api/graphql_only.py                                 33      0   100%
+2026-11-11T09:46:06.8494310Z src/payload/scripts/gitlab_api/registry.py                                    215      4    98%   224, 279, 456, 460
+2026-11-11T09:46:06.8495708Z src/payload/scripts/gitlab_api/transport.py                                   373     15    96%   210-211, 240, 281-282, 323, 340, 431, 461-462, 471, 567, 579, 706-709
+2026-11-11T09:46:06.8497080Z src/payload/scripts/gitlab_wrapper.py                                         120      7    94%   114, 167-169, 173, 338, 361-362
+2026-11-11T09:46:06.8571317Z TOTAL                                                                       23530   1944    92%
+2026-11-11T09:46:07.0270465Z Required test coverage of 80% reached. Total coverage: 91.74%
+2026-11-11T09:46:07.0271232Z ======================= 3123 passed in 81.89s (0:01:21) ========================
+2026-11-11T09:46:07.1955517Z --- PASS tests/pytest (82.8s, exit 0)
+2026-11-11T09:46:14.5163641Z 1053 passed in 7.07s
+2026-11-11T09:46:14.5960122Z --- PASS tests/hook-suite (7.4s, exit 0)
+2026-11-11T09:46:14.5965556Z CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+# No FAILED, SKIPPED, XFAIL, XPASS or ERROR line in the log (pytest -ra lists each). 5c55448 is the merge base and an
+# ancestor of fd5d66c, so the test merge 3877ed8 holds fd5d66c's tree.
+# The new-side hunks of the product diff (git diff -U0 origin/main...HEAD -- src/payload/scripts): registry.py 5-8,
+# 18-21, 55-64, 134-136, 268-285, 375-403, 434-436, 443-444; transport.py 17-19, 130-132, 585-591, 594-600, 604-612,
+# 616-617; gitlab_wrapper.py 49-67; call.py and graphql_only.py at 100%. Of the misses above only registry.py 279
+# (`continue` in `upload_variables`, the branch for a definition whose type TYPE_REFERENCE does not match) lies in a
+# hunk; transport.py's and gitlab_wrapper.py's misses and registry.py 224, 456, 460 lie in none.
+# Verdict: GREEN on fd5d66c, the worktree HEAD.

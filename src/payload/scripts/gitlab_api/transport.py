@@ -14,7 +14,9 @@ operation record:
   retries are spent (AC-3.2 to AC-3.4); any other error status raises ``GitLabAPIError`` carrying the status, the raw
   body and the text of the body's shape (AC-3.5);
 - ``graphql`` POSTs ``{"query", "variables"}`` to ``/api/graphql`` and raises on GraphQL errors at HTTP ``200``;
-  ``graphql_nodes`` pages a connection by ``pageInfo.endCursor`` (AC-4.1 to AC-4.3).
+  ``graphql_nodes`` pages a connection by ``pageInfo.endCursor`` (AC-4.1 to AC-4.3);
+- ``graphql`` given files sends the multipart GraphQL request of ``graphql/conventions.md`` "File uploads", one
+  ``multipart/form-data`` POST: the parts ``operations`` and ``map``, then one part per file (issue #44 D4, AC-3.1).
 
 The token never enters a URL, a log record or an exception message. It comes from ``config/gitlab.json`` through
 ``Transport.from_config`` (the config keys are the ``FIELD_*`` constants below); nothing here reads the process
@@ -125,6 +127,9 @@ FIELD_PAGE_INFO = "pageInfo"
 FIELD_HAS_NEXT_PAGE = "hasNextPage"
 FIELD_END_CURSOR = "endCursor"
 FIELD_AFTER = "after"
+# graphql/conventions.md "File uploads": the form parts before the files, the i-th file's part named `str(i)`.
+PART_OPERATIONS = "operations"
+PART_MAP = "map"
 # A document whose operation is a mutation: its keyword first, after the insignificant characters and comments of the
 # GraphQL grammar (white space, commas, the byte order mark, `#` comments).
 MUTATION_DOCUMENT = re.compile(pattern=r"\A(?:[\s,\ufeff]|#[^\n\r]*)*mutation\b")
@@ -577,19 +582,39 @@ class Transport:
 
     # --- GraphQL ---
 
-    def graphql(self, *, document: str, variables: Optional[Mapping[str, Any]] = None) -> Any:
+    def graphql(
+        self,
+        *,
+        document: str,
+        variables: Optional[Mapping[str, Any]] = None,
+        files: Sequence[Tuple[str, Path]] = (),
+    ) -> Any:
         """POST ``document`` and ``variables`` to ``/api/graphql`` with ``Authorization: Bearer`` and return ``data``.
 
-        A job token raises before anything is sent (``graphql/conventions.md`` "Credentials"); top-level ``errors``,
-        or a mutation payload's non-empty ``errors``, raise ``GitLabGraphQLResponseError`` (AC-4.3)."""
+        ``files`` pairs an operations path (``variables.files.0``) with the file that fills it. Without files the body
+        is the JSON ``{"query", "variables"}``; with files it is the ``multipart/form-data`` body of
+        ``graphql/conventions.md`` "File uploads": ``operations`` (that JSON, each file's variable ``null``), ``map``
+        (each part name ``str(i)`` to a list holding the i-th file's operations path), then the i-th file as the part
+        ``str(i)`` (issue #44 D4). A job token raises before a file is read or anything is sent
+        (``graphql/conventions.md`` "Credentials"), a file that cannot be read before anything is sent; top-level
+        ``errors``, or a mutation payload's non-empty ``errors``, raise ``GitLabGraphQLResponseError`` (AC-4.3)."""
         if self.token_type is TokenType.JOB:
             raise GitLabAPIError("job tokens cannot authenticate GraphQL requests (graphql/conventions.md)")
         payload = {FIELD_QUERY: document, FIELD_VARIABLES: dict(variables or {})}
+        if files:
+            file_map = {str(index): [operations_path] for index, (operations_path, _) in enumerate(files)}
+            data, content_type = request_body(
+                form=((PART_OPERATIONS, json.dumps(obj=payload)), (PART_MAP, json.dumps(obj=file_map))),
+                json_body=None,
+                files=tuple((str(index), path) for index, (_, path) in enumerate(files)),
+            )
+        else:
+            data, content_type = json.dumps(obj=payload).encode(encoding=TEXT_ENCODING), CONTENT_TYPE_JSON
         response = self._send(
             method=METHOD_POST,
             url=self._graphql_url,
-            data=json.dumps(obj=payload).encode(encoding=TEXT_ENCODING),
-            content_type=CONTENT_TYPE_JSON,
+            data=data,
+            content_type=content_type,
             credential=(HEADER_AUTHORIZATION, BEARER_PREFIX + self._token),
         )
         body = response.value

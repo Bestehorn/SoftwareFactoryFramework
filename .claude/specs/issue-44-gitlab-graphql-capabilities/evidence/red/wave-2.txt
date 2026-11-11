@@ -1,0 +1,432 @@
+# tasks: 2.1 2.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_wrapper_contract.py test/test_gitlab_api_properties.py test/test_gitlab_api_call_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [320 items]
+
+FFFF..F......F.................F.............F..F..F..F..F.F..F..F..F.F. [ 22%]
+.F..F..F.F..F..F.FF.F....FF..F.FF.F.F.FF.F.FF.F.F.F..................... [ 45%]
+........................................................................ [ 67%]
+........................................................................ [ 90%]
+................................                                         [100%]
+================================== FAILURES ===================================
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:617: in test_every_record_is_called_through_main
+    assert called, (
+E   AssertionError: graphql_only.OPERATIONS holds no record outside REFUSED_IDS, so no GraphQL call was proven (AC-2.5): []
+E   assert []
+___________________ test_every_record_id_is_looked_up_once ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:643: in test_every_record_id_is_looked_up_once
+    assert records, "graphql_only.OPERATIONS holds no record, so no GraphQL record's ID is proven (AC-1.4)"
+E   AssertionError: graphql_only.OPERATIONS holds no record, so no GraphQL record's ID is proven (AC-1.4)
+E   assert ()
+__________________ test_every_member_a_row_names_is_selected __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1432: in test_every_member_a_row_names_is_selected
+    assert not problems, "members a row names that no record of its capability selects:\n" + "\n".join(problems)
+E   AssertionError: members a row names that no record of its capability selects:
+E     "Work items": no record of the capability selects "workItem"
+E     "Work items": no record of the capability selects "workItemsByReference"
+E     "Work items": no record of the capability selects "Project.workItems"
+E     "Work items": no record of the capability selects "Group.workItems"
+E     "Work items": no record of the capability selects "Namespace.workItems"
+E     "Work items": no record of the capability selects "workItemCreate"
+E     "Work items": no record of the capability selects "workItemUpdate"
+E     "Work items": no record of the capability selects "workItemDelete"
+E     "Work items": no record of the capability selects "workItemExport"
+E     "Epics with new features (assignees, health status, links to other item types)": no record of the capability selects "WorkItem"
+E     "Epics with new features (assignees, health status, links to other item types)": no record of the capability selects "WorkItem.widgets"
+E     "Branch rules": no record of the capability selects "Project.branchRules"
+E     "Branch rules": no record of the capability selects "branchRuleCreate"
+E     "Branch rules": no record of the capability selects "branchRuleUpdate"
+E     "Branch rules": no record of the capability selects "branchRuleDelete"
+E     "Group-wide and instance-wide vulnerability lists": no record of the capability selects "Group.vulnerabilities"
+E     "Group-wide and instance-wide vulnerability lists": no record of the capability selects "Query.vulnerabilities"
+E     "Group-wide and instance-wide vulnerability lists": no record of the capability selects "Query.vulnerability"
+E     "Design uploads": no record of the capability selects "designManagementUpload"
+E     "Asynchronous pipeline creation": no record of the capability selects "pipelineCreate"
+E     "Asynchronous pipeline creation": no record of the capability selects "Project.ciPipelineCreationRequest"
+E     "Work item CSV import": no record of the capability selects "workItemsCsvImport"
+E     "Query cost introspection": no record of the capability selects "queryComplexity"
+E   assert not ['"Work items": no record of the capability selects "workItem"', '"Work items": no record of the capability selects "w...e capability selects "Namespace.workItems"', '"Work items": no record of the capability selects "workItemCreate"', ...]
+______________ test_a_variable_holds_the_given_json_value[text] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:709: in test_a_variable_holds_the_given_json_value
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#workItemUpdate exits 2, not 0; logged: ["unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it
+_____________ test_a_variable_holds_the_given_json_value[number] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:709: in test_a_variable_holds_the_given_json_value
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#workItemUpdate exits 2, not 0; logged: ["unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it
+_____________ test_a_variable_holds_the_given_json_value[boolean] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:709: in test_a_variable_holds_the_given_json_value
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#workItemUpdate exits 2, not 0; logged: ["unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it
+______________ test_a_variable_holds_the_given_json_value[array] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:709: in test_a_variable_holds_the_given_json_value
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#workItemUpdate exits 2, not 0; logged: ["unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it
+_____________ test_a_variable_holds_the_given_json_value[object] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:709: in test_a_variable_holds_the_given_json_value
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#workItemUpdate exits 2, not 0; logged: ["unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it
+______________ test_a_variable_holds_the_given_json_value[null] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:709: in test_a_variable_holds_the_given_json_value
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#workItemUpdate exits 2, not 0; logged: ["unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it
+___________________ test_a_work_item_list_prints_every_node ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:762: in test_a_work_item_list_prints_every_node
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#Project.workItems exits 2, not 0; logged: ["unknown operation id 'graphql#Project.workItems': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#Project.workItems': no family module and no graphql_only record declares it
+____ test_a_graphql_failure_exits_1_with_its_details[errors-without-data] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItem exits 2, not 1; logged: ["unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it
+______ test_a_graphql_failure_exits_1_with_its_details[errors-with-data] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItem exits 2, not 1; logged: ["unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it
+__ test_a_graphql_failure_exits_1_with_its_details[mutation-payload-errors] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItemUpdate exits 2, not 1; logged: ["unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItemUpdate': no family module and no graphql_only record declares it
+__________ test_a_graphql_failure_exits_1_with_its_details[http-502] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItem exits 2, not 1; logged: ["unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it
+_____ test_a_graphql_failure_exits_1_with_its_details[spent-429-retries] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItem exits 2, not 1; logged: ["unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it
+________ test_a_graphql_failure_exits_1_with_its_details[no-response] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItem exits 2, not 1; logged: ["unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it
+_ test_a_graphql_failure_exits_1_with_its_details[body-that-is-no-json-object] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItem exits 2, not 1; logged: ["unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it
+_____ test_a_graphql_failure_exits_1_with_its_details[absent-connection] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#Project.workItems exits 2, not 1; logged: ["unknown operation id 'graphql#Project.workItems': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#Project.workItems': no family module and no graphql_only record declares it
+_ test_a_graphql_failure_exits_1_with_its_details[next-page-without-end-cursor] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#Project.workItems exits 2, not 1; logged: ["unknown operation id 'graphql#Project.workItems': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#Project.workItems': no family module and no graphql_only record declares it
+_________ test_a_graphql_failure_exits_1_with_its_details[job-token] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#workItem exits 2, not 1; logged: ["unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#workItem': no family module and no graphql_only record declares it
+__ test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:974: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#designManagementUpload exits 2, not 1; logged: ["unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it"]
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1052: in test_a_design_upload_sends_each_file_as_a_part
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#designManagementUpload exits 2, not 0; logged: ["unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1052: in test_a_design_upload_sends_each_file_as_a_part
+    assert code == EXIT_OK, (
+E   AssertionError: call graphql#designManagementUpload exits 2, not 0; logged: ["unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it"]
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it
+________ test_a_refused_mutation_sends_nothing[graphql#workItemCreate] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1110: in test_a_refused_mutation_sends_nothing
+    assert declared, (
+E   AssertionError: graphql#workItemCreate of REFUSED_IDS names no record of graphql_only.OPERATIONS, so its refusal proves nothing (AC-4.3): []
+E   assert []
+______ test_a_refused_mutation_sends_nothing[graphql#workItemsCsvImport] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1110: in test_a_refused_mutation_sends_nothing
+    assert declared, (
+E   AssertionError: graphql#workItemsCsvImport of REFUSED_IDS names no record of graphql_only.OPERATIONS, so its refusal proves nothing (AC-4.3): []
+E   assert []
+___________ test_a_file_for_a_variable_that_is_no_upload_is_refused ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1163: in test_a_file_for_a_variable_that_is_no_upload_is_refused
+    assert any(NOT_AN_UPLOAD_REFUSAL in message for message in messages), (
+E   AssertionError: a log record names "projectPath" given with --file (UB-1.2, design.md D3 step 4); logged: ["unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it"]
+E   assert False
+E    +  where False = any(<generator object test_a_file_for_a_variable_that_is_no_upload_is_refused.<locals>.<genexpr> at 0x0000020E4FC3D490>)
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'graphql#designManagementUpload': no family module and no graphql_only record declares it
+____________________ test_the_reference_is_read_as_written ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1361: in test_the_reference_is_read_as_written
+    widgets = _record(records=_records(), operation_id=WORK_ITEM_WIDGETS)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#WorkItem.widgets', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+___________________ test_every_record_matches_the_reference ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1372: in test_every_record_matches_the_reference
+    assert records, f"{GRAPHQL_ONLY}.{ATTRIBUTE_OPERATIONS} holds no record to hold to the reference"
+E   AssertionError: graphql_only.OPERATIONS holds no record to hold to the reference
+E   assert []
+___ test_the_method_rejects_a_document_that_differs[a_field_the_type_lacks] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#workItem', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+__ test_the_method_rejects_a_document_that_differs[since_in_place_of_after] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#Project.workItems', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_the_method_rejects_a_document_that_differs[a_variable_of_another_type] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#Project.branchRules', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_____ test_the_method_rejects_a_document_that_differs[another_input_type] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#workItemUpdate', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_____ test_the_method_rejects_a_document_that_differs[an_unused_variable] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#Query.vulnerability', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+__ test_the_method_rejects_a_document_that_differs[an_integer_for_a_boolean] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#pipelineCreate', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_the_method_rejects_a_document_that_differs[a_field_the_input_type_lacks] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#designManagementUpload', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_the_method_rejects_a_document_that_differs[a_fragment_on_a_type_that_is_no_widget] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#WorkItem.widgets', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_the_method_rejects_a_document_that_differs[a_connection_short_of_the_path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#Project.workItems', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+______ test_the_method_rejects_a_document_that_differs[errors_left_out] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#branchRuleDelete', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_the_method_rejects_a_document_that_differs[the_creating_document_in_the_updating_record] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#workItemUpdate', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_ test_the_method_rejects_a_document_that_differs[async_false_for_the_row_s_async_true] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1388: in test_the_method_rejects_a_document_that_differs
+    record = _record(records=records, operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_graphql_contract.py:1116: in _record
+    assert len(found) == 1, (
+E   AssertionError: graphql_only.OPERATIONS holds 0 records with the ID 'graphql#pipelineCreate', expected one
+E   assert 0 == 1
+E    +  where 0 = len([])
+_____________________ test_every_capability_has_a_record ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1410: in test_every_capability_has_a_record
+    assert not missing, "capabilities no record serves:\n" + "\n".join(missing)
+E   AssertionError: capabilities no record serves:
+E     Work items
+E     Epics with new features (assignees, health status, links to other item types)
+E     Branch rules
+E     Group-wide and instance-wide vulnerability lists
+E     Design uploads
+E     Asynchronous pipeline creation
+E     Work item CSV import
+E     Query cost introspection
+E   assert not ['Work items', 'Epics with new features (assignees, health status, links to other item types)', 'Branch rules', 'Group-wide and instance-wide vulnerability lists', 'Design uploads', 'Asynchronous pipeline creation', ...]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_id_is_looked_up_once
+FAILED test/test_gitlab_graphql_contract.py::test_every_member_a_row_names_is_selected
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_variable_holds_the_given_json_value[text]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_variable_holds_the_given_json_value[number]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_variable_holds_the_given_json_value[boolean]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_variable_holds_the_given_json_value[array]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_variable_holds_the_given_json_value[object]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_variable_holds_the_given_json_value[null]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_work_item_list_prints_every_node
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[errors-without-data]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[errors-with-data]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[mutation-payload-errors]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[http-502]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[spent-429-retries]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[no-response]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[body-that-is-no-json-object]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[absent-connection]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[next-page-without-end-cursor]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[job-token]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_refused_mutation_sends_nothing[graphql#workItemCreate]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_refused_mutation_sends_nothing[graphql#workItemsCsvImport]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_file_for_a_variable_that_is_no_upload_is_refused
+FAILED test/test_gitlab_graphql_contract.py::test_the_reference_is_read_as_written
+FAILED test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_field_the_type_lacks]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[since_in_place_of_after]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_variable_of_another_type]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[another_input_type]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[an_unused_variable]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[an_integer_for_a_boolean]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_field_the_input_type_lacks]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_fragment_on_a_type_that_is_no_widget]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_connection_short_of_the_path]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[errors_left_out]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[the_creating_document_in_the_updating_record]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[async_false_for_the_row_s_async_true]
+FAILED test/test_gitlab_graphql_contract.py::test_every_capability_has_a_record
+================== 41 failed, 279 passed in 74.40s (0:01:14) ==================
+exit=1
