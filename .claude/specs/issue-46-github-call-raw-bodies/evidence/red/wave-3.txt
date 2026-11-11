@@ -1,0 +1,31 @@
+# tasks: 3.1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py src/payload/test/test_github_api_call.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [562 items]
+
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+........................................................................ [ 38%]
+..............F......................................................... [ 51%]
+........................................................................ [ 64%]
+........................................................................ [ 76%]
+........................................................................ [ 89%]
+..........................................................               [100%]
+================================== FAILURES ===================================
+___________________ test_the_usage_names_the_raw_body_input ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_wrapper_compat.py:327: in test_the_usage_names_the_raw_body_input
+    assert missing == [], f"the usage of {ENTRY_SCRIPT} does not name: {missing}"
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['call markdown/render-raw --input', '--input FILE', 'standard input', 'repos/upload-release-asset', 'uploads.github.com', 'with -f/-F']
+E   assert ['call markdo... 'with -f/-F'] == []
+E     
+E     Left contains 6 more items, first extra item: [0m[33m'[39;49;00m[33mcall markdown/render-raw --input[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+================== 1 failed, 561 passed in 62.81s (0:01:02) ===================
