@@ -89,3 +89,12 @@
 **Evidence:** both tasks-iteration-01.md Verdict lines.
 **Supersedes:** none
 **Artifacts touched:** tasks.md
+
+## DL-011 — 2026-11-11T13:16:59Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Pin the verifier's two surviving mutants with tests before the merge (K `test_a_raw_body_beside_a_field_is_refused_first`, T `test_a_raw_body_answered_429_is_retried`), no product file changed; M1.03/M1.04 stay as equivalent mutants and wave 3's text needs no pin.
+**Driver:** refutation-report.md rows M2.03 and M1.25 (D5 "first" and `request_raw` through `_send` pinned by no test); issue-filing-discipline.md branch 2 (small and clear, fix now).
+**Alternatives considered:** ledger rows (rejected: a few lines of test, no design choice).
+**Evidence:** evidence/green/rework-1.txt (285 passed); each test failed under its mutant (implementer report).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_call.py, src/payload/test/test_gitlab_api_transport.py

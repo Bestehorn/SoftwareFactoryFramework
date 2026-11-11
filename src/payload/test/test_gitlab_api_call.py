@@ -1971,3 +1971,44 @@ def test_a_raw_body_the_call_cannot_send_is_refused(
     assert any(rendered in message for message in messages), (
         f"the usage error names the path as json.dumps renders it, {rendered} (design.md D5): {messages}"
     )
+
+
+OPTION_INPUT = "--input"
+# A gated ID `GATED_OPERATIONS` maps to no subcommand (graphql_only.py, issue #44 design.md D6).
+OP_WORK_ITEM_CREATE = "graphql#workItemCreate"
+# The text only the refusal of a raw body beside `-f` or `-F` writes (design.md D5 step 1); the gate's refusal and the
+# lookup's name the ID and neither input.
+BOTH_BODIES_REFUSED = "--input together with -f/--raw-field or -F/--field"
+
+
+@pytest.mark.parametrize(
+    argnames="operation_id",
+    argvalues=[
+        pytest.param(OP_MERGE_MR, id="gated-to-a-subcommand"),
+        pytest.param(OP_WORK_ITEM_CREATE, id="gated-to-no-subcommand"),
+        pytest.param(OP_UNDECLARED, id="not-in-the-reference"),
+    ],
+)
+def test_a_raw_body_beside_a_field_is_refused_first(
+    operation_id: str,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #40 AC-3.2 (design.md D5 step 1, "first"): ``call <id> -f title=T --input <file>`` of a gated ID, of each
+    form ``refuse_gated`` writes, and of an ID no record declares, exits 2 with no request although the next request
+    would be answered; one log record holds ``--input together with -f/--raw-field or -F/--field`` and no log record
+    names the ID: the refusal of both bodies comes before the gate and the lookup, whose messages name the ID."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=(operation_id, OPTION_RAW_FIELD, "title=T", OPTION_INPUT, UPLOAD_MARK))
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    assert any(BOTH_BODIES_REFUSED in message for message in messages), (
+        f"one log record holds {BOTH_BODIES_REFUSED!r}: a raw body beside -f or -F is refused first (design.md D5 "
+        f"step 1); logged: {messages!r}"
+    )
+    naming_the_id = [message for message in messages if operation_id in message]
+    assert naming_the_id == [], (
+        f"no log record names {operation_id!r}: the gate and the lookup, whose refusals name it, come after the "
+        f"refusal of both bodies (design.md D5 step 1); logged: {naming_the_id!r}"
+    )

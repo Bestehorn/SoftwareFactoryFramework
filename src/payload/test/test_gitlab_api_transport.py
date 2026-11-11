@@ -1155,3 +1155,40 @@ def test_a_raw_body_is_sent_unchanged(fake_gitlab: Any, sleeper: RecordingSleep,
     assert credentials_sent(request=empty) == EXPECTED_CREDENTIAL[token_type], (
         f"token type {token_type!r} sends exactly its one credential header with no body (AC-2.1)"
     )
+
+
+def test_a_raw_body_answered_429_is_retried(
+    fake_gitlab: Any, sleeper: RecordingSleep, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Issue #40 design.md D5: ``request_raw`` returns what ``_send`` returns, so a raw-body request answered ``429``
+    with ``Retry-After: 3`` and then ``200`` waits three seconds, is sent again with the same bytes and
+    ``Content-Type``, and returns the ``200``, as ``request`` does (#13 AC-3.2)."""
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    caplog.set_level(level=logging.DEBUG)
+    fake_gitlab.script(
+        method="PUT", url=RAW_UPLOAD_URL, status=429, headers=[(HEADER_RETRY_AFTER, "3")], body=RATE_LIMITED_BODY
+    )
+    fake_gitlab.script(method="PUT", url=RAW_UPLOAD_URL, status=200, body=RAW_UPLOAD_ANSWER)
+
+    response = client.request_raw(
+        method="PUT",
+        path=RAW_UPLOAD_PATH,
+        query=RAW_UPLOAD_QUERY,
+        data=RAW_BODY_BYTES,
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+    )
+
+    assert response.status == 200, f"the retried raw-body request's answer is returned, got {response.status}"
+    assert response.value == RAW_UPLOAD_ANSWER, "the 200's body is returned, decoded as request's is"
+    assert sleeper.calls == [3], "a 429 with Retry-After waits that many seconds, once (#13 AC-3.2)"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("PUT", RAW_UPLOAD_URL)] * 2, (
+        "the same raw-body request is sent again after the 429"
+    )
+    assert [request.body for request in fake_gitlab.requests] == [RAW_BODY_BYTES] * 2, (
+        "the retry carries the same bytes, unchanged"
+    )
+    assert [request.header(name=HEADER_CONTENT_TYPE) for request in fake_gitlab.requests] == [
+        CONTENT_TYPE_OCTET_STREAM
+    ] * 2, "the retry carries the same Content-Type"
+    assert TOKEN not in caplog.text, "no log record carries the token"
