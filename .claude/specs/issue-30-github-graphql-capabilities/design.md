@@ -203,9 +203,9 @@ Every REST record named here is declared in its family module on the trunk.
   - Its message names the ID, which holds the mutation's name (AC-3.1's log), and either `merge-pr` or "no subcommand
     sends it" (AC-3.2).
   - Step 1 runs before the look-up, so a refused record is never sent.
-- #32 (branch `issue-32-issues-pulls-records`, not on the trunk) adds `GATED_NOT_SENT`: the gated IDs that their
-  subcommand does not send, whose refusal leaves out "which sends it". `graphql/enablePullRequestAutoMerge` joins it
-  once the rebased trunk has it (Residuals).
+- #32 (PR #48, merged as `6fd2f64`, an ancestor of `origin/main`) added `GATED_NOT_SENT`: the gated IDs that their
+  subcommand does not send, whose refusal leaves out "which sends it". `graphql/enablePullRequestAutoMerge` joins it,
+  because `merge-pr` never sends it.
 - The refused records stay declared (DL-002): they are covered and documented, but never sent.
 
 ### D6 — Proving the calls (AC-1.1, AC-1.3, AC-2.6, AC-3.3)
@@ -322,7 +322,7 @@ variables). `test/test_github_graphql_contract.py` checks each document against 
 |---|---|
 | `src/payload/scripts/github_api/registry.py` | `GraphQLOperation.operation_id` (first field) and the `connection` default `()`; `GRAPHQL_ID_PREFIX`, `graphql_lookup`, `declared_variables` and `graphql_call`; the docstring |
 | `src/payload/scripts/github_api/graphql_only.py` | D1's records in `OPERATIONS`; `PENDING_CAPABILITIES` empty; the docstring |
-| `src/payload/scripts/github_api/commands/call.py` | D5's `GATED_OPERATIONS` entries (and the `GATED_NOT_SENT` entry once on the trunk); `cmd_call`'s GraphQL branch; `check_graphql_call`; the docstring |
+| `src/payload/scripts/github_api/commands/call.py` | D5's `GATED_OPERATIONS` entries and its `GATED_NOT_SENT` entry; `cmd_call`'s GraphQL branch; `check_graphql_call`; the docstring |
 | `src/payload/scripts/github_wrapper.py` | the module docstring only (D7) |
 | `src/payload/test/test_github_api_graphql_only.py` | new (G) |
 | `src/payload/test/test_github_api_registry.py` | adds `test_variables_are_the_documents_definitions` and `test_graphql_lookup_finds_one_record` |
@@ -434,8 +434,9 @@ Each entry gives the test kind and its oracle.
 - **AC-2.6** — Structural: G `test_every_record_is_called_through_main`.
 - **AC-3.1, AC-3.3** — Parametrized, G `test_a_refused_mutation_sends_nothing`, over AC-3.1's IDs with `-F input={}`.
   Oracle: exit 2, no request, and a log record naming the ID.
-- **AC-3.2** — The same test: the record for `graphql/enablePullRequestAutoMerge` names `merge-pr`; each other record
-  holds "no subcommand sends it".
+- **AC-3.2** — The same test: the record for `graphql/enablePullRequestAutoMerge` names `merge-pr` and does not hold
+  "which sends it", as K's `pulls-merge-async-is-merge-pr` case judges `pulls/merge-async`; each other record holds
+  "no subcommand sends it".
 - **Q's method** (AC-1.1's proof; for AC-3.1, that a refused ID is the mutation its document runs):
   - Structural, `test_every_record_matches_the_reference`: `document_problems` is empty for every record; it fails
     when it finds no record.
@@ -538,8 +539,6 @@ Test files:
 
 ## Residuals
 
-- **The `merge-pr` refusal's wording.** If this change lands before #32, `graphql/enablePullRequestAutoMerge`'s
-  refusal reads #27's "use the merge-pr subcommand, which sends it"; whichever lands second adds it to `GATED_NOT_SENT`.
 - **Objects this wrapper did not create.** A discussion comment or a Projects v2 project that this wrapper did not
   create has no ID source among the records: the REST `projects/get-for-*` and `projects/list-for-*` records are
   pending, and selecting `comments` or `ProjectV2` connections is outside the rows' members.
