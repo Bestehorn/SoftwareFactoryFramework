@@ -420,6 +420,96 @@ def test_an_asset_is_uploaded_to_the_upload_url(
 
 
 # ---------------------------------------------------------------------------------------------------------------------
+# #46 AC-1.2, AC-2.2 — a raw body is sent unchanged to its root, and only a root in REST_ROOTS receives one
+# ---------------------------------------------------------------------------------------------------------------------
+
+MEDIA_TYPE_OCTET_STREAM = "application/octet-stream"
+MEDIA_TYPE_TEXT = "text/plain"
+MEDIA_TYPE_HTML = "text/html; charset=utf-8"
+MARKDOWN_RAW_PATH = "/markdown/raw"
+MARKDOWN_BYTES = b"# Title\r\n\r\nA byte that is not UTF-8: \xff\n"
+RENDERED_HTML = b"<h1>Title</h1>\n<p>A byte that is not UTF-8: \xef\xbf\xbd</p>\n"
+ASSETS_PATH = "/repos/o/r/releases/3/assets"
+RAW_ASSET_BYTES = b"PK\x03\x04\xff\xfe\x00\x80 release asset bytes"
+#: Roots outside REST_ROOTS: another host, the API host over http and on another port, and another upload host.
+FOREIGN_ROOTS = (
+    "https://api.github.com.example.net",
+    "http://api.github.com",
+    "https://api.github.com:8443",
+    "https://uploads.example.com",
+)
+
+
+@dataclass(frozen=True)
+class RawCase:
+    """A body ``request_raw`` sends as given: its root, path, query, bytes and media type, and the host's answer."""
+
+    name: str
+    root: str
+    path: str
+    query: Tuple[Tuple[str, str], ...]
+    data: bytes
+    media_type: str
+    answer: Any  # a ``fx.Reply``
+
+
+RAW_CASES = (
+    RawCase(
+        name="markdown-on-the-api-root",
+        root=API,
+        path=MARKDOWN_RAW_PATH,
+        query=(),
+        data=MARKDOWN_BYTES,
+        media_type=MEDIA_TYPE_TEXT,
+        answer=fx.Reply(body=RENDERED_HTML, headers={HEADER_CONTENT_TYPE: MEDIA_TYPE_HTML}),
+    ),
+    RawCase(
+        name="asset-on-the-upload-origin",
+        root=UPLOADS,
+        path=ASSETS_PATH,
+        query=((FIELD_NAME, ASSET_NAME),),
+        data=RAW_ASSET_BYTES,
+        media_type=MEDIA_TYPE_OCTET_STREAM,
+        answer=fx.Reply(status=201, body={FIELD_ID: 1, FIELD_NAME: ASSET_NAME}),
+    ),
+)
+
+
+@pytest.mark.parametrize("case", RAW_CASES, ids=lambda case: case.name)
+def test_a_raw_body_is_sent_unchanged_to_its_root(case: RawCase, fake: Any, sleep: RecordingSleep) -> None:
+    api = load_api()
+    transport = make_transport(api=api, sleep=sleep)
+    assert set(api.transport.REST_ROOTS) == {API, UPLOADS}, "the API root and the upload origin, and no other"
+    for foreign in FOREIGN_ROOTS:
+        with pytest.raises(ValueError):
+            transport.request_raw(
+                method=METHOD_POST, root=foreign, path=case.path, data=case.data, content_type=case.media_type
+            )
+    assert fake.requests == [], "a root outside REST_ROOTS is refused before anything is sent"
+
+    fake.route(method=METHOD_POST, url=f"{case.root}{case.path}", query=dict(case.query), replies=[case.answer])
+    query = dict(case.query) or None
+    response = transport.request_raw(
+        method=METHOD_POST, root=case.root, path=case.path, query=query, data=case.data, content_type=case.media_type
+    )
+    transport.request_raw(
+        method=METHOD_POST, root=case.root, path=case.path, query=query, data=None, content_type=case.media_type
+    )
+
+    for request in fake.requests:
+        assert request.method == METHOD_POST
+        assert request.url.split("?")[0] == f"{case.root}{case.path}", "the path under the root as given"
+        assert request.query == {name: [value] for name, value in case.query}
+        assert request.header(name=HEADER_AUTHORIZATION) == BEARER, "the credential, on that root's origin"
+    with_data, without_data = fake.requests
+    assert with_data.body == case.data, "the bytes as given"
+    assert with_data.header(name=HEADER_CONTENT_TYPE) == case.media_type, "the media type as given"
+    assert without_data.body is None, "data=None sends no body"
+    assert without_data.header(name=HEADER_CONTENT_TYPE) is None, "data=None sends no Content-Type"
+    assert (response.status, response.body) == (case.answer.status, case.answer.encoded()), "the host's answer"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
 # AC-3.1 — a redirect to another origin drops the credential
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -520,6 +610,148 @@ def test_a_cross_origin_redirect_drops_the_credential(case: RedirectCase, fake: 
     assert fake.urls() == [f"{API}{LOGS_PATH}", *(location for _, location in reached)]
     carried = [request.header(name=HEADER_AUTHORIZATION) for request in fake.requests]
     assert carried == [BEARER, *(BEARER if keep else None for keep in case.keeps)]
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# #46 AC-3.1, AC-3.2, UB-2.2 — a same-origin 307 of a PATCH or DELETE is re-sent once; another origin's is not followed
+# ---------------------------------------------------------------------------------------------------------------------
+
+METHOD_PATCH = "PATCH"
+METHOD_DELETE = "DELETE"
+TEMPORARY_REDIRECT = 307
+NO_CONTENT = 204
+FIELD_DESCRIPTION = "description"
+REPOSITORY_URL = f"{API}{REPO_PATH}"
+MOVED_PATH = "/repositories/42"
+MOVED_URL = f"{API}{MOVED_PATH}"
+MOVED_ON_THE_DEFAULT_PORT = f"{API}:443{MOVED_PATH}"
+MOVED_AGAIN_URL = f"{API}/repositories/43"
+UPDATE_BODY = {FIELD_DESCRIPTION: "d"}
+UPDATED = {FIELD_ID: 42, FIELD_FULL_NAME: "o/r", FIELD_DESCRIPTION: "d"}
+
+
+@dataclass(frozen=True)
+class ResendCase:
+    """``method`` on ``REPO_PATH`` (with ``body`` as JSON) answered ``307`` with ``location``; ``target`` is that
+    location resolved against the request's URL, where the re-sent request is answered ``status`` with ``answer``."""
+
+    name: str
+    method: str
+    body: Optional[Dict[str, str]]
+    location: str
+    target: str
+    status: int
+    answer: Any
+
+
+RESEND_CASES = (
+    ResendCase(
+        name="patch-absolute-location",
+        method=METHOD_PATCH,
+        body=UPDATE_BODY,
+        location=MOVED_URL,
+        target=MOVED_URL,
+        status=200,
+        answer=UPDATED,
+    ),
+    ResendCase(
+        name="patch-relative-location",
+        method=METHOD_PATCH,
+        body=UPDATE_BODY,
+        location=MOVED_PATH,
+        target=MOVED_URL,
+        status=200,
+        answer=UPDATED,
+    ),
+    ResendCase(
+        name="patch-location-with-the-default-port",
+        method=METHOD_PATCH,
+        body=UPDATE_BODY,
+        location=MOVED_ON_THE_DEFAULT_PORT,
+        target=MOVED_ON_THE_DEFAULT_PORT,
+        status=200,
+        answer=UPDATED,
+    ),
+    ResendCase(
+        name="delete-without-a-body",
+        method=METHOD_DELETE,
+        body=None,
+        location=MOVED_URL,
+        target=MOVED_URL,
+        status=NO_CONTENT,
+        answer=None,
+    ),
+)
+
+
+def _as_sent(*, request: Any) -> Tuple[str, Optional[bytes], Optional[str], Optional[str]]:
+    """What a re-sent request repeats: its method, its body bytes, its ``content-type`` and its ``authorization``."""
+    return (
+        request.method,
+        request.body,
+        request.header(name=HEADER_CONTENT_TYPE),
+        request.header(name=HEADER_AUTHORIZATION),
+    )
+
+
+@pytest.mark.parametrize("case", RESEND_CASES, ids=lambda case: case.name)
+def test_a_same_origin_307_is_re_sent_once(case: ResendCase, fake: Any, sleep: RecordingSleep) -> None:
+    api = load_api()
+    transport = make_transport(api=api, sleep=sleep)
+    redirected = fx.redirect(status=TEMPORARY_REDIRECT, location=case.location)
+    fake.route(method=case.method, url=REPO_PATH, replies=[redirected])
+    fake.route(method=case.method, url=case.target, replies=[fx.Reply(status=case.status, body=case.answer)])
+
+    response = transport.request(method=case.method, path=REPO_PATH, body=case.body)
+    assert fake.urls() == [REPOSITORY_URL, case.target], "the request, then one re-send to the resolved Location"
+    first, resent = fake.requests
+    assert first.json() == case.body, "the request's own JSON body, or none"
+    assert first.header(name=HEADER_AUTHORIZATION) == BEARER
+    assert _as_sent(request=resent) == _as_sent(request=first), "the same method, body, content-type and credential"
+    assert (response.status, response.json()) == (case.status, case.answer), "the re-sent request's answer"
+
+
+@pytest.mark.parametrize(
+    ("method", "body"), [(METHOD_PATCH, UPDATE_BODY), (METHOD_DELETE, None)], ids=["patch", "delete"]
+)
+def test_a_second_307_ends_as_an_http_error(
+    method: str, body: Optional[Dict[str, str]], fake: Any, sleep: RecordingSleep
+) -> None:
+    api = load_api()
+    transport = make_transport(api=api, sleep=sleep)
+    fake.route(method=method, url=REPO_PATH, replies=[fx.redirect(status=TEMPORARY_REDIRECT, location=MOVED_URL)])
+    fake.route(method=method, url=MOVED_URL, replies=[fx.redirect(status=TEMPORARY_REDIRECT, location=MOVED_AGAIN_URL)])
+    # Reached only by a transport that re-sends a second time.
+    fake.route(method=method, url=MOVED_AGAIN_URL, replies=[fx.Reply(body=UPDATED)])
+
+    with pytest.raises(api.errors.GitHubAPIError) as raised:
+        transport.request(method=method, path=REPO_PATH, body=body)
+    assert raised.value.status_code == TEMPORARY_REDIRECT, "the second 307, as an HTTP error"
+    assert fake.urls() == [REPOSITORY_URL, MOVED_URL], "the request and its one re-send; the second 307 is not followed"
+
+
+FOREIGN_307_LOCATIONS = [
+    pytest.param("https://api.github.com.example.net/repositories/42", id="another-host"),
+    pytest.param("http://api.github.com/repositories/42", id="the-api-host-over-http"),
+    pytest.param("https://api.github.com:8443/repositories/42", id="the-api-host-on-another-port"),
+    pytest.param(f"{UPLOADS}/repositories/42", id="the-upload-origin"),
+]
+
+
+# UB-2.2: green before the re-send exists, since urllib refuses every 307 of a PATCH. A re-send that skips the origin
+# comparison sends the body and the credential to the routed foreign target, whose 200 then raises nothing.
+@pytest.mark.parametrize("location", FOREIGN_307_LOCATIONS)
+def test_a_cross_origin_307_is_not_followed(location: str, fake: Any, sleep: RecordingSleep) -> None:
+    api = load_api()
+    transport = make_transport(api=api, sleep=sleep)
+    fake.route(method=METHOD_PATCH, url=REPO_PATH, replies=[fx.redirect(status=TEMPORARY_REDIRECT, location=location)])
+    # Reached only by a transport that follows a 307 to another origin.
+    fake.route(method=METHOD_PATCH, url=location, replies=[fx.Reply(body=UPDATED)])
+
+    with pytest.raises(api.errors.GitHubAPIError) as raised:
+        transport.request(method=METHOD_PATCH, path=REPO_PATH, body=UPDATE_BODY)
+    assert raised.value.status_code == TEMPORARY_REDIRECT, "the 307, as an HTTP error"
+    assert fake.urls() == [REPOSITORY_URL], "only the original request: nothing is sent to another origin"
 
 
 # ---------------------------------------------------------------------------------------------------------------------

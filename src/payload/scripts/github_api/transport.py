@@ -2,10 +2,15 @@
 
 ``Transport`` sends every request through ``_send``, which refuses a URL off the origin the credential belongs to,
 sets the headers ``conventions.md`` "Headers, media types and API versions" requires, waits out a rate limit a bounded
-number of times, and turns every failure into a ``GitHubAPIError``. ``CredentialStrippingRedirectHandler`` follows a
-redirect and drops ``Authorization`` when the target is on another origin (``origin``: scheme, host and port, parsed as
-urllib connects with them), so a storage host never receives the token. Waiting is the injected ``sleep`` and time the
-injected ``clock``, so a test waits for nothing.
+number of times, and turns every failure into a ``GitHubAPIError``. ``request`` sends a JSON body to ``API_ROOT``;
+``request_raw`` sends a body that is not JSON, its bytes unchanged under the given ``Content-Type``, to a root of
+``REST_ROOTS`` (``API_ROOT`` or ``UPLOAD_ORIGIN``), and refuses any other root with ``ValueError`` before anything is
+sent. ``CredentialStrippingRedirectHandler`` follows a redirect and drops ``Authorization`` when the target is on
+another origin (``origin``: scheme, host and port, parsed as urllib connects with them), so a storage host never
+receives the token. A ``307`` answering a ``PATCH`` or ``DELETE`` (``RESENT_METHODS``), which urllib refuses, is re-sent
+once with the same method, body, ``Content-Type`` and credential when its ``Location`` is on the request's own origin;
+a ``307`` to another origin, or one answering the re-sent request (a ``ResentRequest``), ends as an HTTP error. Waiting
+is the injected ``sleep`` and time the injected ``clock``, so a test waits for nothing.
 
 Every value a response supplied that a message or a log line names (a URL, a bucket, a GraphQL error message) is
 rendered with ``json.dumps``, and every URL a message names has its userinfo replaced first, so no credential and no
@@ -30,8 +35,13 @@ from github_api.errors import GitHubAPIError, GitHubGraphQLResponseError, GitHub
 API_ROOT = "https://api.github.com"
 GRAPHQL_URL = f"{API_ROOT}/graphql"
 UPLOAD_ORIGIN = "https://uploads.github.com"  # conventions.md "Hosts and base URLs": the one other origin
+#: The roots a REST record's path is sent under; ``request_raw`` refuses any other.
+REST_ROOTS = (API_ROOT, UPLOAD_ORIGIN)
 ACCEPT_JSON = "application/vnd.github+json"
 CONTENT_TYPE_JSON = "application/json"
+#: The media types of the two bodies that are not JSON (``conventions.md`` "Request encoding").
+CONTENT_TYPE_OCTET_STREAM = "application/octet-stream"
+CONTENT_TYPE_TEXT = "text/plain"
 USER_AGENT = "software-factory-github-wrapper/1.0"
 API_VERSION_DEFAULT = "2022-11-28"
 API_VERSION_NEXT = "2026-03-10"
@@ -73,6 +83,12 @@ QUERY_LABEL = "label"
 
 METHOD_GET = "GET"
 METHOD_POST = "POST"
+METHOD_PATCH = "PATCH"
+METHOD_DELETE = "DELETE"
+#: ``conventions.md`` "Downloads and redirects": the ``307`` that ``PATCH``/``DELETE /repos/{owner}/{repo}`` declare.
+STATUS_TEMPORARY_REDIRECT = 307
+#: The methods whose same-origin ``307`` is re-sent once; urllib follows a ``307`` of ``GET`` and ``HEAD`` only.
+RESENT_METHODS = frozenset({METHOD_PATCH, METHOD_DELETE})
 PATH_ROOT = "/"
 PATH_PROTOCOL_RELATIVE = "//"
 URI_TEMPLATE_START = "{"
@@ -185,10 +201,15 @@ def origin(url: str) -> Origin:
     return Origin(scheme=scheme, host=host.lower(), port=DEFAULT_PORTS.get(scheme) if port is None else port)
 
 
+class ResentRequest(urllib.request.Request):
+    """A request the redirect handler re-sent after a same-origin ``307``; a redirect answering it is not re-sent."""
+
+
 class CredentialStrippingRedirectHandler(urllib.request.HTTPRedirectHandler):
     """Follow a redirect as urllib does, removing every ``CREDENTIAL_HEADERS`` name when the target is on another
     origin than the request that received the redirect. A redirected request copies the headers of the hop it follows,
-    so a credential removed once stays removed on every later hop, back on the API host too."""
+    so a credential removed once stays removed on every later hop, back on the API host too. A ``307`` answering a
+    ``RESENT_METHODS`` request is re-sent once, as a ``ResentRequest``, when its target is on the request's origin."""
 
     def redirect_request(
         self,
@@ -199,6 +220,22 @@ class CredentialStrippingRedirectHandler(urllib.request.HTTPRedirectHandler):
         headers: http.client.HTTPMessage,
         newurl: str,
     ) -> Optional[urllib.request.Request]:
+        if (
+            code == STATUS_TEMPORARY_REDIRECT
+            and req.get_method() in RESENT_METHODS
+            and not isinstance(req, ResentRequest)
+            and origin(url=newurl) == origin(url=req.full_url)
+        ):
+            # The same method, body and headers (``Content-Type`` and the credential among them, each added with
+            # ``add_header``); urllib computes ``Content-Length`` for the body again.
+            return ResentRequest(
+                url=newurl,
+                data=req.data,
+                headers=dict(req.headers),
+                method=req.get_method(),
+                origin_req_host=req.origin_req_host,
+                unverifiable=True,
+            )
         redirected = super().redirect_request(req=req, fp=fp, code=code, msg=msg, headers=headers, newurl=newurl)
         # The origin of the request's own URL, never ``req.host``, which ``ProxyHandler`` rewrites to the proxy's.
         if redirected is not None and origin(url=redirected.full_url) != origin(url=req.full_url):
@@ -219,12 +256,12 @@ def _check_api_version(*, api_version: str) -> None:
         raise ValueError(f"Unsupported GitHub API version {json.dumps(api_version)}: use one of {list(API_VERSIONS)}")
 
 
-def _api_url(*, path: str, query: Optional[Mapping[str, Any]]) -> str:
-    """``API_ROOT`` + ``path``, plus ``query`` urlencoded; a path not root-relative raises ``GitHubAPIError``."""
+def _api_url(*, path: str, query: Optional[Mapping[str, Any]], root: str = API_ROOT) -> str:
+    """``root`` + ``path``, plus ``query`` urlencoded; a path not root-relative raises ``GitHubAPIError``."""
     if not path.startswith(PATH_ROOT) or path.startswith(PATH_PROTOCOL_RELATIVE):
         raise GitHubAPIError(message=f"Refusing a GitHub API path that is not root-relative: {render_url(url=path)}")
     encoded = urlencode(query=query, doseq=True) if query else ""
-    return f"{API_ROOT}{path}?{encoded}" if encoded else f"{API_ROOT}{path}"
+    return f"{root}{path}?{encoded}" if encoded else f"{root}{path}"
 
 
 def _headers_of(*, message: Any) -> Dict[str, str]:
@@ -392,6 +429,32 @@ class Transport:
             headers[HEADER_CONTENT_TYPE] = CONTENT_TYPE_JSON
         return self._send(
             method=method, url=url, data=data, headers=headers, api_version=api_version, allowed_origin=API_ROOT
+        )
+
+    def request_raw(
+        self,
+        *,
+        method: str,
+        root: str,
+        path: str,
+        query: Optional[Mapping[str, Any]] = None,
+        data: Optional[bytes] = None,
+        content_type: str,
+        api_version: str = API_VERSION_DEFAULT,
+        accept: str = ACCEPT_JSON,
+    ) -> Response:
+        """One REST call to ``root`` + ``path`` with ``data`` as its body, unchanged, and ``content_type`` as its
+        ``Content-Type``; ``data`` ``None`` sends no body and no ``Content-Type``. A ``root`` outside ``REST_ROOTS``
+        raises ``ValueError`` before anything is sent, and only ``root``'s origin receives the token."""
+        if root not in REST_ROOTS:
+            raise ValueError(f"Refusing the GitHub REST root {render_url(url=root)}: use one of {list(REST_ROOTS)}")
+        _check_api_version(api_version=api_version)
+        url = _api_url(root=root, path=path, query=query)
+        headers = {HEADER_ACCEPT: accept}
+        if data is not None:
+            headers[HEADER_CONTENT_TYPE] = content_type
+        return self._send(
+            method=method, url=url, data=data, headers=headers, api_version=api_version, allowed_origin=root
         )
 
     def pages(

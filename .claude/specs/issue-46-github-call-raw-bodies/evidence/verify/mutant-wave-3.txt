@@ -1,0 +1,230 @@
+# Wave 3 mutants — issue #46 verification, 2026-11-11T09:02:22
+worktree HEAD 10a22235371adeb3e4d1195fea1f0d8ab5dcde86  # pragma: allowlist secret
+paired tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+git status --porcelain before:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## W3-01 — usage drops 'call markdown/render-raw --input'
+file src/payload/scripts/github_wrapper.py sha256 before e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290  # pragma: allowlist secret
+edit src/payload/scripts/github_wrapper.py: 'call markdown/render-raw --input README.md' -> 'call markdown/render-raw README.md'
+file src/payload/scripts/github_wrapper.py sha256 mutated 0e8e2f4e631dd819f1c520f09d56eb0a0840166e1383f3bbe412a5aa3f28d968  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_wrapper.py sha256 restored e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 247 items / 244 deselected / 3 selected
+
+src\payload\test\test_github_wrapper_compat.py .F                        [ 66%]
+test\test_instruction_corpus_budget.py .                                 [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['call markdown/render-raw --input']
+    assert ['call markdo...-raw --input'] == []
+      
+      Left contains one more item: 'call markdown/render-raw --input'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_wrapper_compat.py:327: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['call markdown/render-raw --input']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+================= 1 failed, 2 passed, 244 deselected in 1.08s =================
+
+--- exit 1; summary: 1 failed, 2 passed, 244 deselected in 1.08s
+VERDICT W3-01: KILLED (1 failing ids)
+
+## W3-02 — usage drops '--input FILE'
+file src/payload/scripts/github_wrapper.py sha256 before e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290  # pragma: allowlist secret
+edit src/payload/scripts/github_wrapper.py: '# --input FILE (- reads' -> '# --input (- reads'
+file src/payload/scripts/github_wrapper.py sha256 mutated a20adea94aeaecd27045eee6e779cff0eb5e3289fb157d7616d88371f5f2131f  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_wrapper.py sha256 restored e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 247 items / 244 deselected / 3 selected
+
+src\payload\test\test_github_wrapper_compat.py .F                        [ 66%]
+test\test_instruction_corpus_budget.py .                                 [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['--input FILE']
+    assert ['--input FILE'] == []
+      
+      Left contains one more item: '--input FILE'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_wrapper_compat.py:327: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['--input FILE']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+================= 1 failed, 2 passed, 244 deselected in 1.19s =================
+
+--- exit 1; summary: 1 failed, 2 passed, 244 deselected in 1.19s
+VERDICT W3-02: KILLED (1 failing ids)
+
+## W3-03 — usage drops 'standard input'
+file src/payload/scripts/github_wrapper.py sha256 before e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290  # pragma: allowlist secret
+edit src/payload/scripts/github_wrapper.py: '(- reads standard input)' -> '(- reads stdin)'
+file src/payload/scripts/github_wrapper.py sha256 mutated 2818f683e9f5ca7e835a774aea1263cdfb7c7d2d16a1674a1800a6bb3cecb0ed  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_wrapper.py sha256 restored e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 247 items / 244 deselected / 3 selected
+
+src\payload\test\test_github_wrapper_compat.py .F                        [ 66%]
+test\test_instruction_corpus_budget.py .                                 [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['standard input']
+    assert ['standard input'] == []
+      
+      Left contains one more item: 'standard input'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_wrapper_compat.py:327: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['standard input']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+================= 1 failed, 2 passed, 244 deselected in 1.36s =================
+
+--- exit 1; summary: 1 failed, 2 passed, 244 deselected in 1.36s
+VERDICT W3-03: KILLED (1 failing ids)
+
+## W3-04 — usage drops 'repos/upload-release-asset'
+file src/payload/scripts/github_wrapper.py sha256 before e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290  # pragma: allowlist secret
+edit src/payload/scripts/github_wrapper.py: 'type, for repos/upload-release-asset (sent' -> 'type, for the upload (sent'
+file src/payload/scripts/github_wrapper.py sha256 mutated ad04f95759e498b4441cb686045441853ba0b45f3d7e2a4eee28a00c76add5da  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_wrapper.py sha256 restored e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 247 items / 244 deselected / 3 selected
+
+src\payload\test\test_github_wrapper_compat.py .F                        [ 66%]
+test\test_instruction_corpus_budget.py .                                 [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['repos/upload-release-asset']
+    assert ['repos/upload-release-asset'] == []
+      
+      Left contains one more item: 'repos/upload-release-asset'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_wrapper_compat.py:327: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['repos/upload-release-asset']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+================= 1 failed, 2 passed, 244 deselected in 1.41s =================
+
+--- exit 1; summary: 1 failed, 2 passed, 244 deselected in 1.41s
+VERDICT W3-04: KILLED (1 failing ids)
+
+## W3-05 — usage drops 'uploads.github.com'
+file src/payload/scripts/github_wrapper.py sha256 before e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290  # pragma: allowlist secret
+edit src/payload/scripts/github_wrapper.py: '(sent to uploads.github.com)' -> '(sent to the upload host)'
+file src/payload/scripts/github_wrapper.py sha256 mutated f5ea8c6e9b6e0cb0920c56b268ca192987266012e9acf1ce365f9904d62dab3a  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_wrapper.py sha256 restored e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 247 items / 244 deselected / 3 selected
+
+src\payload\test\test_github_wrapper_compat.py .F                        [ 66%]
+test\test_instruction_corpus_budget.py .                                 [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['uploads.github.com']
+    assert ['uploads.github.com'] == []
+      
+      Left contains one more item: 'uploads.github.com'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_wrapper_compat.py:327: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['uploads.github.com']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+================= 1 failed, 2 passed, 244 deselected in 1.56s =================
+
+--- exit 1; summary: 1 failed, 2 passed, 244 deselected in 1.56s
+VERDICT W3-05: KILLED (1 failing ids)
+
+## W3-06 — usage drops 'with -f/-F'
+file src/payload/scripts/github_wrapper.py sha256 before e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290  # pragma: allowlist secret
+edit src/payload/scripts/github_wrapper.py: 'or together with -f/-F,' -> 'or beside -f/-F,'
+file src/payload/scripts/github_wrapper.py sha256 mutated 9487a7769dabec409b0cd3f775fb24cbc4c1876dcd0a46232d63a9a91023739d  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_wrapper.py sha256 restored e04a3e42697e405d3d262038daa012e08702b33dd3afa8e452a20948a3dfa290 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 247 items / 244 deselected / 3 selected
+
+src\payload\test\test_github_wrapper_compat.py .F                        [ 66%]
+test\test_instruction_corpus_budget.py .                                 [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['with -f/-F']
+    assert ['with -f/-F'] == []
+      
+      Left contains one more item: 'with -f/-F'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_wrapper_compat.py:327: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_wrapper.py does not name: ['with -f/-F']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+================= 1 failed, 2 passed, 244 deselected in 2.11s =================
+
+--- exit 1; summary: 1 failed, 2 passed, 244 deselected in 2.11s
+VERDICT W3-06: KILLED (1 failing ids)
+
+## Re-confirm green on the restored tree
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_wrapper_compat.py test/test_instruction_corpus_budget.py -k usage_names_the_raw_body_input or usage_names_the_operation_call or llm_map_within_cap -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 247 items / 244 deselected / 3 selected
+
+src\payload\test\test_github_wrapper_compat.py ..                        [ 66%]
+test\test_instruction_corpus_budget.py .                                 [100%]
+
+====================== 3 passed, 244 deselected in 1.71s ======================
+
+--- exit 0; summary: 3 passed, 244 deselected in 1.71s
+GREEN-AFTER-RESTORE: yes
+git status --porcelain after:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## Summary
+W3-01 KILLED exit=1 :: 1 failed, 2 passed, 244 deselected in 1.08s
+    FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+W3-02 KILLED exit=1 :: 1 failed, 2 passed, 244 deselected in 1.19s
+    FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+W3-03 KILLED exit=1 :: 1 failed, 2 passed, 244 deselected in 1.36s
+    FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+W3-04 KILLED exit=1 :: 1 failed, 2 passed, 244 deselected in 1.41s
+    FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+W3-05 KILLED exit=1 :: 1 failed, 2 passed, 244 deselected in 1.56s
+    FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input
+W3-06 KILLED exit=1 :: 1 failed, 2 passed, 244 deselected in 2.11s
+    FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_raw_body_input

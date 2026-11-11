@@ -33,3 +33,8 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | gitlab_api plan | emoji combined path row declared as written; giving it sends a stray attribute | issue-39 change.md Residuals | N needs the row; no failure seen | open |
 | 2026-11-11 | gitlab_api plan | the clone quick action runs from saved issue notes and descriptions (part 1, update-an-issue-note) | issue-39 review iteration-01 C3 | quick actions run server-side; guarding is a mechanism | open |
 | 2026-11-11 | gitlab_api call | integration secrets passed with -f are visible in process arguments | issue-36 change.md Residuals; #41 design Residuals | no non-argv text input; guarding is a new mechanism | open |
+| 2026-11-11 | github_api call | a secret body value given with -f/-F still shows on the command line; --input carries no JSON body | issue-46 design.md Residuals | needs #28 D4's name check over a parsed input | open |
+| 2026-11-11 | github_api repos | release-asset upload sends octet-stream and builds its URL from the record; Transport.upload has no caller | issue-46 design.md Residuals | per-asset media type is a requirements residual | open |
+| 2026-11-11 | github_api markdown | markdown/render-raw always sends text/plain; no per-call media type | issue-46 design.md Residuals | #28 requirements residual | open |
+| 2026-11-11 | github_api transport | REST_ROOTS holds github.com roots only; GHES upload hosts are outside it | issue-46 design.md Residuals | conventions.md Hosts and base URLs; no GHES caller | open |
+| 2026-11-11 | github_api call | no guard refuses an --input path naming the credentials file; the 307 re-send is not logged | issue-46 design.md Security Considerations, Residuals | no failure seen; a guard is a mechanism | open |
