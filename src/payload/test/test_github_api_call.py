@@ -22,6 +22,12 @@ such a row as ``run_product_case`` does and returns its standard error, which mu
 the option and the name as ``json.dumps`` renders it, and must not hold the value (Security Considerations
 "Command-line input").
 
+Issue #46's rows are named ``issue-46/<criterion>/…`` and are not in ``CALL_CASES``, whose rows ``rows_of`` keys by
+issue #28's criterion ids, which #46's repeat; each runs with ``run_product_case`` as a row of ``CALL_CASES`` does:
+
+- AC-3.1: ``call repos/update`` answered ``307`` with a relative ``Location`` and then ``200`` sends its ``PATCH``
+  again, once, with the same body bytes, to the resolved ``Location``, and prints the second answer.
+
 The fork has no ``call``, so ``CASES`` holds none of these rows and the fork parity test never runs them. No test opens
 a connection.
 
@@ -1029,3 +1035,61 @@ def test_a_malformed_argument_is_refused_without_its_value(
     assert any(rendered in message for message in messages), f"{name}: no usage error names {rendered}: {messages}"
     leaking = [value for value in malformed.withheld if value in stderr]
     assert leaking == [], f"{name}: standard error holds the value {leaking}: {stderr!r}"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Issue #46 AC-3.1 — a repository update answered 307 is sent again, once, to the resolved Location
+# ---------------------------------------------------------------------------------------------------------------------
+
+ISSUE_46 = "issue-46"
+ISSUE_46_AC_3_1 = "AC-3.1"
+OP_REPOS_UPDATE = "repos/update"
+#: ``conventions.md`` "Downloads and redirects": the ``307`` GitHub answers a ``PATCH`` of a renamed or transferred
+#: repository with.
+STATUS_TEMPORARY_REDIRECT = 307
+MOVED_REPOSITORY_PATH = "/repositories/42"
+FIELD_DESCRIPTION = "description"
+FIELD_FULL_NAME = "full_name"
+UPDATED_DESCRIPTION = "d"
+UPDATED_REPOSITORY_BODY = {FIELD_DESCRIPTION: UPDATED_DESCRIPTION}
+UPDATED_REPOSITORY = {
+    fx.FIELD_ID: 42,
+    FIELD_FULL_NAME: f"{fx.OWNER}/{fx.REPOSITORY}",
+    FIELD_DESCRIPTION: UPDATED_DESCRIPTION,
+}
+REPOSITORY_UPDATE_AFTER_A_307 = fx.GoldenCase(
+    name=f"{ISSUE_46}/{ISSUE_46_AC_3_1}/exit-0/repository-update-follows-its-307",
+    argv=(CALL, OP_REPOS_UPDATE, OPTION_RAW_FIELD, f"{FIELD_DESCRIPTION}={UPDATED_DESCRIPTION}"),
+    stdout=fx.printed_json(value=UPDATED_REPOSITORY),
+    exit_code=fx.EXIT_OK,
+    routes=(
+        fx.StaticRouteSpec(
+            method=fx.METHOD_PATCH,
+            url=fx.REPOSITORY_PATH,
+            replies=(fx.redirect(status=STATUS_TEMPORARY_REDIRECT, location=MOVED_REPOSITORY_PATH),),
+        ),
+        fx.StaticRouteSpec(
+            method=fx.METHOD_PATCH, url=MOVED_REPOSITORY_PATH, replies=(fx.Reply(body=UPDATED_REPOSITORY),)
+        ),
+    ),
+    writes=(
+        fx.NonGetRequest(method=fx.METHOD_PATCH, path=fx.REPOSITORY_PATH, body=UPDATED_REPOSITORY_BODY),
+        fx.NonGetRequest(method=fx.METHOD_PATCH, path=MOVED_REPOSITORY_PATH, body=UPDATED_REPOSITORY_BODY),
+    ),
+)
+
+
+def test_a_repository_update_follows_its_307(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #46 AC-3.1: ``call repos/update --raw-field description=d``, answered ``307`` with the relative
+    ``Location`` ``/repositories/42`` and then ``200``, prints the second answer's JSON and exits 0; its writes are two
+    ``PATCH`` requests with the same body, the second to the ``Location`` resolved against the first one's URL."""
+    requests = fx.run_product_case(
+        case=REPOSITORY_UPDATE_AFTER_A_307, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys
+    )
+
+    assert [request.method for request in requests] == [fx.METHOD_PATCH, fx.METHOD_PATCH]
+    first, second = requests
+    assert second.url == f"{fx.API_ORIGIN}{MOVED_REPOSITORY_PATH}"
+    assert second.body == first.body, "the re-sent PATCH carries the first one's body bytes"
