@@ -1,0 +1,793 @@
+# issue #44 round-2 verification, group variants
+# command (in the worktree): D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+
+## baseline green run, unmutated tree
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+........................................................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+============================ 228 passed in 11.78s =============================
+# exit=0 (228 passed in 11.78s)
+
+## mutant 2j-a: graphql#Query.vulnerabilities loses its connection
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         connection=(FIELD_VULNERABILITIES,),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+....................................................F................... [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+___________ test_every_paging_record_names_its_designed_connection ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:718: in test_every_paging_record_names_its_designed_connection
+    assert not problems, "records whose connection is not design D1's:\n" + "\n".join(problems)
+E   AssertionError: records whose connection is not design D1's:
+E     graphql#Query.vulnerabilities: its connection is (), design D1's ('vulnerabilities',)
+E   assert not ["graphql#Query.vulnerabilities: its connection is (), design D1's ('vulnerabilities',)"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+======================= 1 failed, 227 passed in 11.58s ========================
+# exit=1; KILLED (1 failed, 227 passed in 11.58s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2j-b: graphql#workItemsByReference loses its connection
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         connection=(FIELD_WORK_ITEMS_BY_REFERENCE,),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+....................................................F................... [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+___________ test_every_paging_record_names_its_designed_connection ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:718: in test_every_paging_record_names_its_designed_connection
+    assert not problems, "records whose connection is not design D1's:\n" + "\n".join(problems)
+E   AssertionError: records whose connection is not design D1's:
+E     graphql#workItemsByReference: its connection is (), design D1's ('workItemsByReference',)
+E   assert not ["graphql#workItemsByReference: its connection is (), design D1's ('workItemsByReference',)"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+======================= 1 failed, 227 passed in 11.48s ========================
+# exit=1; KILLED (1 failed, 227 passed in 11.48s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2j-c: graphql#Project.branchRules pages at (branchRules,), not (project, branchRules)
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         connection=(FIELD_PROJECT, FIELD_BRANCH_RULES),
++         connection=(FIELD_BRANCH_RULES,),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+....................................................F................... [ 31%]
+........................................................F............... [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+___________ test_every_paging_record_names_its_designed_connection ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:718: in test_every_paging_record_names_its_designed_connection
+    assert not problems, "records whose connection is not design D1's:\n" + "\n".join(problems)
+E   AssertionError: records whose connection is not design D1's:
+E     graphql#Project.branchRules: its connection is ('branchRules',), design D1's ('project', 'branchRules')
+E   assert not ["graphql#Project.branchRules: its connection is ('branchRules',), design D1's ('project', 'branchRules')"]
+___________________ test_every_record_matches_the_reference ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1405: in test_every_record_matches_the_reference
+    assert not problems, "records that depart from the GraphQL reference:\n" + "\n".join(problems)
+E   AssertionError: records that depart from the GraphQL reference:
+E     graphql#Project.branchRules: the connection ["branchRules"] is not the selected path ["project", "branchRules"]
+E   assert not ['graphql#Project.branchRules: the connection ["branchRules"] is not the selected path ["project", "branchRules"]']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+FAILED test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+======================= 2 failed, 226 passed in 11.57s ========================
+# exit=1; KILLED (2 failed, 226 passed in 11.57s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+#   failed: test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2j-d: graphql#Query.vulnerability, a single result, gains a connection
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         document=f"query($id: VulnerabilityID!) {{ vulnerability(id: $id) {{ {VULNERABILITY_FIELDS} }} }}",
++         document=f"query($id: VulnerabilityID!) {{ vulnerability(id: $id) {{ {VULNERABILITY_FIELDS} }} }}",
++         connection=("vulnerability",),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+....................................................F................... [ 31%]
+.........................................................F.............. [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+___________ test_every_paging_record_names_its_designed_connection ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:718: in test_every_paging_record_names_its_designed_connection
+    assert not problems, "records whose connection is not design D1's:\n" + "\n".join(problems)
+E   AssertionError: records whose connection is not design D1's:
+E     graphql#Query.vulnerability: its connection is ('vulnerability',), design D1's ()
+E   assert not ["graphql#Query.vulnerability: its connection is ('vulnerability',), design D1's ()"]
+___________________ test_every_record_matches_the_reference ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1405: in test_every_record_matches_the_reference
+    assert not problems, "records that depart from the GraphQL reference:\n" + "\n".join(problems)
+E   AssertionError: records that depart from the GraphQL reference:
+E     graphql#Query.vulnerability: the connection's last field "vulnerability" has no argument after: $after
+E     graphql#Query.vulnerability: "vulnerability" does not select both nodes and pageInfo { hasNextPage endCursor }
+E     graphql#Query.vulnerability: the variable "$after" is declared null, not String
+E   assert not ['graphql#Query.vulnerability: the connection\'s last field "vulnerability" has no argument after: $after', 'graphql#Q...pageInfo { hasNextPage endCursor }', 'graphql#Query.vulnerability: the variable "$after" is declared null, not String']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+FAILED test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+======================= 2 failed, 226 passed in 11.49s ========================
+# exit=1; KILLED (2 failed, 226 passed in 11.49s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_paging_record_names_its_designed_connection
+#   failed: test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2k-a: graphql#workItemExport writes {projectPath: $projectPath} inline instead of $input
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-     _input_mutation(
+-         capability=CAPABILITY_WORK_ITEMS,
+-         name="workItemExport",
+-         input_type="WorkItemExportInput",
+-         selection="message",
+-     ),
++     GraphQLOperation(
++         operation_id=f"{GRAPHQL_ID_PREFIX}workItemExport",
++         capability=CAPABILITY_WORK_ITEMS,
++         document=(
++             "mutation($projectPath: ID!) { workItemExport(input: {projectPath: $projectPath}) { "
++             "message errors } }"
++         ),
++     ),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+......................................................F................. [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_every_mutation_document_has_the_designed_shape _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:823: in test_every_mutation_document_has_the_designed_shape
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
+E   AssertionError: mutation documents without design D1's shape:
+E     graphql#workItemExport: the document is not mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }: mutation($projectPath: ID!) { workItemExport(input: {projectPath: $projectPath}) { message errors } }
+E   assert not ['graphql#workItemExport: the document is not mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }: mutation($projectPath: ID!) { workItemExport(input: {projectPath: $projectPath}) { message errors } }']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+======================= 1 failed, 227 passed in 11.36s ========================
+# exit=1; KILLED (1 failed, 227 passed in 11.36s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2k-b: graphql#branchRuleCreate's one variable is $in, not $input
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-     _input_mutation(
+-         capability=CAPABILITY_BRANCH_RULES,
+-         name="branchRuleCreate",
+-         input_type="BranchRuleCreateInput",
+-         selection="branchRule { id name }",
+-     ),
++     GraphQLOperation(
++         operation_id=f"{GRAPHQL_ID_PREFIX}branchRuleCreate",
++         capability=CAPABILITY_BRANCH_RULES,
++         document="mutation($in: BranchRuleCreateInput!) { branchRuleCreate(input: $in) { branchRule { id name } errors } }",
++     ),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+......................................................F................. [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_every_mutation_document_has_the_designed_shape _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:823: in test_every_mutation_document_has_the_designed_shape
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
+E   AssertionError: mutation documents without design D1's shape:
+E     graphql#branchRuleCreate: the document is not mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }: mutation($in: BranchRuleCreateInput!) { branchRuleCreate(input: $in) { branchRule { id name } errors } }
+E   assert not ['graphql#branchRuleCreate: the document is not mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }: mutation($in: BranchRuleCreateInput!) { branchRuleCreate(input: $in) { branchRule { id name } errors } }']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+======================= 1 failed, 227 passed in 11.29s ========================
+# exit=1; KILLED (1 failed, 227 passed in 11.29s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2k-c: graphql#pipelineCreate takes $input (async: true lost)
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         document=(
+-             "mutation($projectPath: ID!, $ref: String!, $variables: [CiVariableInput!], $inputs: [CiInputsInput!], "
+-             "$mergeRequestIid: String) { pipelineCreate(input: {projectPath: $projectPath, ref: $ref, "
+-             "variables: $variables, inputs: $inputs, mergeRequestIid: $mergeRequestIid, async: true}) { "
+-             "requestId pipeline { id iid status } errors } }"
+-         ),
++         document="mutation($input: PipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }",
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+.....................................................F.................. [ 31%]
+................................................................F....... [ 63%]
+......F....F............................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_every_mutation_document_has_the_designed_shape _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:823: in test_every_mutation_document_has_the_designed_shape
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
+E   AssertionError: mutation documents without design D1's shape:
+E     graphql#pipelineCreate: design D1 writes its input object into the document, not $input: mutation($input: PipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }
+E     graphql#pipelineCreate: no input object is written into the document as (input: {...}): mutation($input: PipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }
+E   assert not ['graphql#pipelineCreate: design D1 writes its input object into the document, not $input: mutation($input: PipelineCr...ation($input: PipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }']
+__ test_the_method_rejects_a_document_that_differs[an_integer_for_a_boolean] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1418: in test_the_method_rejects_a_document_that_differs
+    assert altered != record, f"the change {change.case} leaves {change.operation_id} as it is: {record}"
+E   AssertionError: the change an_integer_for_a_boolean leaves graphql#pipelineCreate as it is: GraphQLOperation(operation_id='graphql#pipelineCreate', capability='Asynchronous pipeline creation', document='mutation($input: PipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }', connection=())
+E   assert GraphQLOperation(operation_id='graphql#pipelineCreate', capability='Asynchronous pipeline creation', document='mutatio...ipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }', connection=()) != GraphQLOperation(operation_id='graphql#pipelineCreate', capability='Asynchronous pipeline creation', document='mutatio...ipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }', connection=())
+_ test_the_method_rejects_a_document_that_differs[async_false_for_the_row_s_async_true] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1418: in test_the_method_rejects_a_document_that_differs
+    assert altered != record, f"the change {change.case} leaves {change.operation_id} as it is: {record}"
+E   AssertionError: the change async_false_for_the_row_s_async_true leaves graphql#pipelineCreate as it is: GraphQLOperation(operation_id='graphql#pipelineCreate', capability='Asynchronous pipeline creation', document='mutation($input: PipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }', connection=())
+E   assert GraphQLOperation(operation_id='graphql#pipelineCreate', capability='Asynchronous pipeline creation', document='mutatio...ipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }', connection=()) != GraphQLOperation(operation_id='graphql#pipelineCreate', capability='Asynchronous pipeline creation', document='mutatio...ipelineCreateInput!) { pipelineCreate(input: $input) { requestId pipeline { id iid status } errors } }', connection=())
+__________________ test_every_member_a_row_names_is_selected __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1460: in test_every_member_a_row_names_is_selected
+    assert not problems, "members a row names that no record of its capability selects:\n" + "\n".join(problems)
+E   AssertionError: members a row names that no record of its capability selects:
+E     "Asynchronous pipeline creation": no record of the capability passes "async" as true at "pipelineCreate"
+E   assert not ['"Asynchronous pipeline creation": no record of the capability passes "async" as true at "pipelineCreate"']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[an_integer_for_a_boolean]
+FAILED test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[async_false_for_the_row_s_async_true]
+FAILED test/test_gitlab_graphql_contract.py::test_every_member_a_row_names_is_selected
+======================= 4 failed, 224 passed in 10.99s ========================
+# exit=1; KILLED (4 failed, 224 passed in 10.99s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+#   failed: test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[an_integer_for_a_boolean]
+#   failed: test/test_gitlab_graphql_contract.py::test_the_method_rejects_a_document_that_differs[async_false_for_the_row_s_async_true]
+#   failed: test/test_gitlab_graphql_contract.py::test_every_member_a_row_names_is_selected
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2k-d: graphql#branchRuleUpdate's document runs a second root field, branchRuleDelete
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         name="branchRuleUpdate",
+-         input_type="BranchRuleUpdateInput",
+-         selection="branchRule { id name }",
++         name="branchRuleUpdate",
++         input_type="BranchRuleUpdateInput",
++         selection="branchRule { id name } } branchRuleDelete(input: $input) { branchRule { id }",
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+.....................................................F.................. [ 31%]
+...........................................................F............ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_every_mutation_document_has_the_designed_shape _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:823: in test_every_mutation_document_has_the_designed_shape
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
+E   AssertionError: mutation documents without design D1's shape:
+E     graphql#branchRuleUpdate: the document selects more than one root field, or leaves a brace open: mutation($input: BranchRuleUpdateInput!) { branchRuleUpdate(input: $input) { branchRule { id name } } branchRuleDelete(input: $input) { branchRule { id } errors } }
+E   assert not ['graphql#branchRuleUpdate: the document selects more than one root field, or leaves a brace open: mutation($input: Br...chRuleUpdate(input: $input) { branchRule { id name } } branchRuleDelete(input: $input) { branchRule { id } errors } }']
+___________________ test_every_record_matches_the_reference ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1405: in test_every_record_matches_the_reference
+    assert not problems, "records that depart from the GraphQL reference:\n" + "\n".join(problems)
+E   AssertionError: records that depart from the GraphQL reference:
+E     graphql#branchRuleUpdate: the variable "$input" is declared "BranchRuleUpdateInput!", but the argument "input" of "Mutation.branchRuleDelete" is "BranchRuleDeleteInput!"
+E     graphql#branchRuleUpdate: the mutation has 2 root selections, not one field
+E   assert not ['graphql#branchRuleUpdate: the variable "$input" is declared "BranchRuleUpdateInput!", but the argument "input" of "M...uleDelete" is "BranchRuleDeleteInput!"', 'graphql#branchRuleUpdate: the mutation has 2 root selections, not one field']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+FAILED test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+======================= 2 failed, 226 passed in 11.21s ========================
+# exit=1; KILLED (2 failed, 226 passed in 11.21s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+#   failed: test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2k-e: graphql#workItemDelete's $input is nullable (WorkItemDeleteInput, no !)
+# src/payload/scripts/gitlab_api/graphql_only.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-     _input_mutation(
+-         capability=CAPABILITY_WORK_ITEMS,
+-         name="workItemDelete",
+-         input_type="WorkItemDeleteInput",
+-         selection="namespace { fullPath }",
+-     ),
++     GraphQLOperation(
++         operation_id=f"{GRAPHQL_ID_PREFIX}workItemDelete",
++         capability=CAPABILITY_WORK_ITEMS,
++         document="mutation($input: WorkItemDeleteInput) { workItemDelete(input: $input) { namespace { fullPath } errors } }",
++     ),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+....................................................F................... [ 31%]
+..........................................................F............. [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_____________ test_every_mutation_document_has_the_designed_shape _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:823: in test_every_mutation_document_has_the_designed_shape
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
+E   AssertionError: mutation documents without design D1's shape:
+E     graphql#workItemDelete: the document is not mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }: mutation($input: WorkItemDeleteInput) { workItemDelete(input: $input) { namespace { fullPath } errors } }
+E   assert not ['graphql#workItemDelete: the document is not mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }: mutation($input: WorkItemDeleteInput) { workItemDelete(input: $input) { namespace { fullPath } errors } }']
+___________________ test_every_record_matches_the_reference ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1405: in test_every_record_matches_the_reference
+    assert not problems, "records that depart from the GraphQL reference:\n" + "\n".join(problems)
+E   AssertionError: records that depart from the GraphQL reference:
+E     graphql#workItemDelete: the variable "$input" is declared "WorkItemDeleteInput", but the argument "input" of "Mutation.workItemDelete" is "WorkItemDeleteInput!"
+E   assert not ['graphql#workItemDelete: the variable "$input" is declared "WorkItemDeleteInput", but the argument "input" of "Mutation.workItemDelete" is "WorkItemDeleteInput!"']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+FAILED test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+======================= 2 failed, 226 passed in 11.32s ========================
+# exit=1; KILLED (2 failed, 226 passed in 11.32s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+#   failed: test/test_gitlab_graphql_contract.py::test_every_record_matches_the_reference
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 2r-a: call_values: a -f/-F value wins over the --file of a LIST Upload of the same name
+# src/payload/scripts/gitlab_api/commands/call.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         return {**fields, **file_values(operation=operation, args=args)}
++         return {**fields, **{key: value for key, value in file_values(operation=operation, args=args).items() if not (isinstance(value, list) and key in fields)}}
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+........................................................................ [ 31%]
+...........................F.F.......................................... [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+__ test_a_file_replaces_a_field_of_the_same_name[json-field-before-the-file] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1323: in test_a_file_replaces_a_field_of_the_same_name
+    assert media == expected_media, (
+E   AssertionError: the --file replaces the -F value of files, so the body is multipart/form-data, not application/json (design.md D4): {'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'g/p', 'iid': '5', 'files': ['given-with-field.png']}}
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     - multipart/form-data
+E     + application/json
+___ test_a_file_replaces_a_field_of_the_same_name[raw-field-after-the-file] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1323: in test_a_file_replaces_a_field_of_the_same_name
+    assert media == expected_media, (
+E   AssertionError: the --file replaces the -f value of files, so the body is multipart/form-data, not application/json (design.md D4): {'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'g/p', 'iid': '5', 'files': 'given-as-text.png'}}
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     - multipart/form-data
+E     + application/json
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_file_replaces_a_field_of_the_same_name[json-field-before-the-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_file_replaces_a_field_of_the_same_name[raw-field-after-the-file]
+======================= 2 failed, 226 passed in 13.44s ========================
+# exit=1; KILLED (2 failed, 226 passed in 13.44s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_file_replaces_a_field_of_the_same_name[json-field-before-the-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_file_replaces_a_field_of_the_same_name[raw-field-after-the-file]
+# restored src/payload/scripts/gitlab_api/commands/call.py: sha256 identical=True
+
+## mutant 2r-b: call_values: a -F JSON list is concatenated with the --file list of the same name
+# src/payload/scripts/gitlab_api/commands/call.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         return {**fields, **file_values(operation=operation, args=args)}
++         return {**fields, **{key: ([*fields[key], *value] if isinstance(value, list) and isinstance(fields.get(key), list) else value) for key, value in file_values(operation=operation, args=args).items()}}
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+........................................................................ [ 31%]
+............................F........................................... [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+__ test_a_file_replaces_a_field_of_the_same_name[json-field-before-the-file] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1327: in test_a_file_replaces_a_field_of_the_same_name
+    assert body == expected_parts, (
+E   AssertionError: operations holds files [null], map names variables.files.0, and part 0 is the file (AC-3.1): (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'g/p', 'iid': '5', 'files': ['given-with-field.png', None]}}), Part(name='map', filename=None, content={'0': ['variables.files.1']}), Part(name='0', filename='first-design.png', content=b'\x89PNG\r\n\x1a\n\x00\xff first design\r\n'))
+E   assert (Part(name='o... design\r\n')) == (Part(name='o... design\r\n'))
+E     
+E     At index 0 diff: Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'g/p', 'iid': '5', 'files': ['given-with-field.png', None]}}) != Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, fil...
+E     
+E     ...Full output truncated, use '-vv' to show
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_file_replaces_a_field_of_the_same_name[json-field-before-the-file]
+======================= 1 failed, 227 passed in 12.99s ========================
+# exit=1; KILLED (1 failed, 227 passed in 12.99s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_file_replaces_a_field_of_the_same_name[json-field-before-the-file]
+# restored src/payload/scripts/gitlab_api/commands/call.py: sha256 identical=True
+
+## mutant 3f-a: the refusal sentence drops graphql#workItemsCsvImport
+# src/payload/scripts/gitlab_wrapper.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
++         # graphql#workItemCreate is refused before any request: exit 2.
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+..F..................................................................... [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_______________ test_the_usage_says_which_mutations_are_refused _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1551: in test_the_usage_says_which_mutations_are_refused
+    assert REFUSAL_SENTENCE in entry, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py does not hold design D8's refusal sentence 'graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.' (AC-5.1); the entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemCreate is refused before any request: exit 2.
+E   assert 'graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.' in 'python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAM...Import Query cost introspection: graphql#queryComplexity graphql#workItemCreate is refused before any request: exit 2.'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_says_which_mutations_are_refused
+======================= 1 failed, 227 passed in 12.50s ========================
+# exit=1; KILLED (1 failed, 227 passed in 12.50s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_says_which_mutations_are_refused
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3f-b: the refusal sentence drops graphql#workItemCreate
+# src/payload/scripts/gitlab_wrapper.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
++         # graphql#workItemsCsvImport is refused before any request: exit 2.
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+..F..................................................................... [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_______________ test_the_usage_says_which_mutations_are_refused _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1551: in test_the_usage_says_which_mutations_are_refused
+    assert REFUSAL_SENTENCE in entry, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py does not hold design D8's refusal sentence 'graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.' (AC-5.1); the entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemsCsvImport is refused before any request: exit 2.
+E   assert 'graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.' in 'python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAM...rt Query cost introspection: graphql#queryComplexity graphql#workItemsCsvImport is refused before any request: exit 2.'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_says_which_mutations_are_refused
+======================= 1 failed, 227 passed in 12.63s ========================
+# exit=1; KILLED (1 failed, 227 passed in 12.63s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_says_which_mutations_are_refused
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3f-c: the refusal sentence says exit 1
+# src/payload/scripts/gitlab_wrapper.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
++         # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 1.
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+.FF..................................................................... [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1527: in test_the_usage_names_every_graphql_record
+    assert not problems, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py:
+E     'exit 2' is not in the entry
+E     The entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 1.
+E   assert not ["'exit 2' is not in the entry"]
+_______________ test_the_usage_says_which_mutations_are_refused _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1551: in test_the_usage_says_which_mutations_are_refused
+    assert REFUSAL_SENTENCE in entry, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py does not hold design D8's refusal sentence 'graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.' (AC-5.1); the entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 1.
+E   assert 'graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.' in 'python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAM... graphql#queryComplexity graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 1.'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_says_which_mutations_are_refused
+======================= 2 failed, 226 passed in 13.04s ========================
+# exit=1; KILLED (2 failed, 226 passed in 13.04s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_says_which_mutations_are_refused
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 1o-a: upload_variables stops at an untyped definition (continue -> break)
+# src/payload/scripts/gitlab_api/registry.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         if reference is None:
+-             continue
+-         type_text = reference.group(GROUP_TYPE)
++         if reference is None:
++             break
++         type_text = reference.group(GROUP_TYPE)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+...........................F............................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_________ test_upload_variables_leave_out_a_definition_without_a_type _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:459: in test_upload_variables_leave_out_a_definition_without_a_type
+    assert registry.upload_variables(operation=operation) == ALL_UPLOADS, (
+E   AssertionError: a definition without a type, $broken, is left out, and the Upload variables around it are still mapped to whether each is a list (design.md D4, AC-3.1)
+E   assert {'files': True} == {'files': True, 'file': False}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 1 more item:
+E     {'file': False}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+======================= 1 failed, 227 passed in 14.68s ========================
+# exit=1; KILLED (1 failed, 227 passed in 14.68s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1o-b: upload_variables has no guard for an untyped definition
+# src/payload/scripts/gitlab_api/registry.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         if reference is None:
+-             continue
+-         type_text = reference.group(GROUP_TYPE)
++         type_text = reference.group(GROUP_TYPE)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+...........................F............................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_________ test_upload_variables_leave_out_a_definition_without_a_type _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:459: in test_upload_variables_leave_out_a_definition_without_a_type
+    assert registry.upload_variables(operation=operation) == ALL_UPLOADS, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\registry.py:278: in upload_variables
+    type_text = reference.group(GROUP_TYPE)
+                ^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'group'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+======================= 1 failed, 227 passed in 12.21s ========================
+# exit=1; KILLED (1 failed, 227 passed in 12.21s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1o-c: upload_variables maps an untyped definition to a non-list Upload
+# src/payload/scripts/gitlab_api/registry.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         if reference is None:
+-             continue
+-         type_text = reference.group(GROUP_TYPE)
++         if reference is None:
++             uploads[definition.group(GROUP_NAME)] = False
++             continue
++         type_text = reference.group(GROUP_TYPE)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+...........................F............................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_________ test_upload_variables_leave_out_a_definition_without_a_type _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:459: in test_upload_variables_leave_out_a_definition_without_a_type
+    assert registry.upload_variables(operation=operation) == ALL_UPLOADS, (
+E   AssertionError: a definition without a type, $broken, is left out, and the Upload variables around it are still mapped to whether each is a list (design.md D4, AC-3.1)
+E   assert {'files': Tru...'file': False} == {'files': True, 'file': False}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'broken': False}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+======================= 1 failed, 227 passed in 13.70s ========================
+# exit=1; KILLED (1 failed, 227 passed in 13.70s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1o-d: upload_variables forgets the uploads read before an untyped definition
+# src/payload/scripts/gitlab_api/registry.py: sha256 equal to the pre-run baseline before the edit; exact-once edit in CRLF bytes
+-         if reference is None:
+-             continue
+-         type_text = reference.group(GROUP_TYPE)
++         if reference is None:
++             uploads.clear()
++             continue
++         type_text = reference.group(GROUP_TYPE)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+...........................F............................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+================================== FAILURES ===================================
+_________ test_upload_variables_leave_out_a_definition_without_a_type _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:459: in test_upload_variables_leave_out_a_definition_without_a_type
+    assert registry.upload_variables(operation=operation) == ALL_UPLOADS, (
+E   AssertionError: a definition without a type, $broken, is left out, and the Upload variables around it are still mapped to whether each is a list (design.md D4, AC-3.1)
+E   assert {'file': False} == {'files': True, 'file': False}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 1 more item:
+E     {'files': True}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+======================= 1 failed, 227 passed in 14.24s ========================
+# exit=1; KILLED (1 failed, 227 passed in 14.24s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_leave_out_a_definition_without_a_type
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## final green run, restored tree
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+........................................................................ [ 31%]
+........................................................................ [ 63%]
+........................................................................ [ 94%]
+............                                                             [100%]
+============================ 228 passed in 12.94s =============================
+# exit=0 (228 passed in 12.94s)
+
+## verdicts
+# 2j-a KILLED (1 failed, 227 passed in 11.58s); restored identical=True
+# 2j-b KILLED (1 failed, 227 passed in 11.48s); restored identical=True
+# 2j-c KILLED (2 failed, 226 passed in 11.57s); restored identical=True
+# 2j-d KILLED (2 failed, 226 passed in 11.49s); restored identical=True
+# 2k-a KILLED (1 failed, 227 passed in 11.36s); restored identical=True
+# 2k-b KILLED (1 failed, 227 passed in 11.29s); restored identical=True
+# 2k-c KILLED (4 failed, 224 passed in 10.99s); restored identical=True
+# 2k-d KILLED (2 failed, 226 passed in 11.21s); restored identical=True
+# 2k-e KILLED (2 failed, 226 passed in 11.32s); restored identical=True
+# 2r-a KILLED (2 failed, 226 passed in 13.44s); restored identical=True
+# 2r-b KILLED (1 failed, 227 passed in 12.99s); restored identical=True
+# 3f-a KILLED (1 failed, 227 passed in 12.50s); restored identical=True
+# 3f-b KILLED (1 failed, 227 passed in 12.63s); restored identical=True
+# 3f-c KILLED (2 failed, 226 passed in 13.04s); restored identical=True
+# 1o-a KILLED (1 failed, 227 passed in 14.68s); restored identical=True
+# 1o-b KILLED (1 failed, 227 passed in 12.21s); restored identical=True
+# 1o-c KILLED (1 failed, 227 passed in 13.70s); restored identical=True
+# 1o-d KILLED (1 failed, 227 passed in 14.24s); restored identical=True
+# final src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/commands/call.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+# final src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
