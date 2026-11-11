@@ -62,3 +62,12 @@
 **Evidence:** review/*/iteration-02.md; tasks.md Waves 1-2.
 **Supersedes:** none
 **Artifacts touched:** design.md, tasks.md
+
+## DL-008 — 2026-11-11T08:30:52Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** Approve tasks.md after tasks review iteration 01: both lanes READY (0 A, 0 B); the spec lane's D1 (the legend names H's source, design § Testing Strategy) applied by the conductor as the reviewer's sentence.
+**Driver:** review/test-architect/tasks-iteration-01.md; review/spec-review-agent/tasks-iteration-01.md.
+**Alternatives considered:** none
+**Evidence:** both tasks-iteration-01.md Verdict lines.
+**Supersedes:** none
+**Artifacts touched:** tasks.md
