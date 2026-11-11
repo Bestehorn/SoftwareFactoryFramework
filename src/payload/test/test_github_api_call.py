@@ -16,6 +16,12 @@ routed. Each test takes the rows of its criterion (``rows_of``) and adds that cr
 - AC-1.7, AC-1.1, AC-2: the log records (``fx.assert_log`` on ``caplog.records``), which the entry script's
   ``__main__`` sends to standard error. A name the caller gave is matched as ``json.dumps`` renders it (design D4).
 
+The rows of ``MALFORMED_ARGUMENTS`` (AC-1.2, AC-1.3, design D2 "Parsing") are not in ``CALL_CASES``: each gives one
+``NAME=VALUE`` with no ``=``, an empty name, or ``-F`` text that is not JSON. ``run_reading_stderr`` runs and judges
+such a row as ``run_product_case`` does and returns its standard error, which must be argparse's usage message naming
+the option and the name as ``json.dumps`` renders it, and must not hold the value (Security Considerations
+"Command-line input").
+
 The fork has no ``call``, so ``CASES`` holds none of these rows and the fork parity test never runs them. No test opens
 a connection.
 
@@ -82,6 +88,8 @@ OPTION_PATH = "--path"
 OPTION_QUERY = "--query"
 OPTION_RAW_FIELD = "--raw-field"
 OPTION_FIELD = "--field"
+OPTION_RAW_FIELD_SHORT = "-f"
+OPTION_FIELD_SHORT = "-F"
 OPERATION_ID_INDEX = 1  # argv is ``call <operation-id> …``
 
 OP_ISSUES_GET = "issues/get"
@@ -136,8 +144,8 @@ ACCEPT_FULL_JSON = "application/vnd.github.full+json"
 #: The two records AC-1.2 runs on copies whose ``api_version`` is ``API_VERSION_NEXT`` and ``accept``
 #: ``ACCEPT_FULL_JSON``: one that does not page and one that pages by ``link``.
 COPIED_OPERATIONS = frozenset({OP_ISSUES_GET, OP_ISSUES_LIST_COMMENTS})
-#: ``run_product_case`` reads standard error along with standard output; no row here withholds a value, so
-#: ``fx.assert_log`` judges the log records alone.
+#: ``run_product_case`` reads standard error along with standard output; no row of ``CALL_CASES`` withholds a value,
+#: so ``fx.assert_log`` judges the log records alone.
 STDERR_READ_BY_THE_RUN = ""
 
 OTHER_OWNER = "x"
@@ -667,6 +675,129 @@ def rows_of(*, criterion: str) -> Tuple[Any, ...]:
     return rows
 
 
+# D2 "Parsing" (AC-1.2, AC-1.3): one malformed ``NAME=VALUE`` on ``issues/update``, whose path is otherwise complete.
+USAGE_PREFIX = "usage: "
+#: The option as argparse's usage error names it: its option strings joined with ``/``.
+NAMED_RAW_FIELD = f"{OPTION_RAW_FIELD_SHORT}/{OPTION_RAW_FIELD}"
+NAMED_FIELD = f"{OPTION_FIELD_SHORT}/{OPTION_FIELD}"
+NAME_WITHOUT_A_VALUE = "noequals"
+EMPTY_NAME = ""
+EMPTY_NAME_QUERY_VALUE = "created"
+EMPTY_NAME_MEMBER_VALUE = "secret"
+#: ``-F`` text that ``json.loads`` refuses (``call.py`` refuses its constants), each with its slug.
+NOT_JSON_TEXTS: Tuple[Tuple[str, str], ...] = (
+    ("nan", "NaN"),
+    ("infinity", "Infinity"),
+    ("negative-infinity", "-Infinity"),
+    ("not-json", "nope"),
+)
+
+
+@dataclass(frozen=True)
+class MalformedArgument:
+    """A row of ``MALFORMED_ARGUMENTS``: its golden case (exit 2, nothing on standard output, no request), the option
+    as argparse's usage error names it, the name of the malformed argument (the text before its first ``=``, all of
+    it when there is none), and each value text standard error must not hold."""
+
+    case: Any
+    option: str
+    name: str
+    withheld: Tuple[str, ...]
+
+
+def malformed_argument_name(malformed: MalformedArgument) -> str:
+    """The test id of a ``MALFORMED_ARGUMENTS`` row."""
+    return str(fx.case_name(case=malformed.case))
+
+
+def argument_named(*, option: str) -> str:
+    """The start of argparse's usage error for ``option``: ``error: argument <option>: `` and then the message."""
+    return f"error: argument {option}: "
+
+
+def _malformed(
+    *, criterion: str, slug: str, argument: Tuple[str, str], option: str, name: str, withheld: Tuple[str, ...]
+) -> MalformedArgument:
+    """``call issues/update --path issue_number=5`` and then ``argument``, which argparse refuses."""
+    return MalformedArgument(
+        case=fx.GoldenCase(
+            name=f"{criterion}/exit-2/{slug}",
+            argv=(CALL, OP_ISSUES_UPDATE, OPTION_PATH, "issue_number=5", *argument),
+            stdout="",
+            exit_code=fx.EXIT_REFUSED,
+        ),
+        option=option,
+        name=name,
+        withheld=withheld,
+    )
+
+
+def _malformed_arguments() -> Tuple[MalformedArgument, ...]:
+    """D2's three usage errors: ``-F`` text that is not JSON, ``NaN`` and the infinities included (AC-1.3); a
+    ``--path`` with no ``=``, and a ``--query`` and a ``-f`` with an empty name (AC-1.2)."""
+    not_json = tuple(
+        _malformed(
+            criterion=AC_1_3,
+            slug=f"field-{slug}",
+            argument=(OPTION_FIELD_SHORT, f"{FIELD_TITLE}={text}"),
+            option=NAMED_FIELD,
+            name=FIELD_TITLE,
+            withheld=(text,),
+        )
+        for slug, text in NOT_JSON_TEXTS
+    )
+    return (
+        *not_json,
+        _malformed(
+            criterion=AC_1_2,
+            slug="path-without-an-equals-sign",
+            argument=(OPTION_PATH, NAME_WITHOUT_A_VALUE),
+            option=OPTION_PATH,
+            name=NAME_WITHOUT_A_VALUE,
+            withheld=(),
+        ),
+        _malformed(
+            criterion=AC_1_2,
+            slug="query-with-an-empty-name",
+            argument=(OPTION_QUERY, f"={EMPTY_NAME_QUERY_VALUE}"),
+            option=OPTION_QUERY,
+            name=EMPTY_NAME,
+            withheld=(EMPTY_NAME_QUERY_VALUE,),
+        ),
+        _malformed(
+            criterion=AC_1_2,
+            slug="raw-field-with-an-empty-name",
+            argument=(OPTION_RAW_FIELD_SHORT, f"={EMPTY_NAME_MEMBER_VALUE}"),
+            option=NAMED_RAW_FIELD,
+            name=EMPTY_NAME,
+            withheld=(EMPTY_NAME_MEMBER_VALUE,),
+        ),
+    )
+
+
+MALFORMED_ARGUMENTS = _malformed_arguments()
+
+
+def run_reading_stderr(
+    *, case: Any, root: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> str:
+    """Run ``case`` as ``fx.run_product_case`` does (the product entry script's ``main(argv=...)`` in ``case.project``
+    against a fresh fake host holding ``case.routes``), judge it by ``fx.assert_outcome`` and
+    ``assert_every_request_routed``, and return its standard error, which ``run_product_case`` reads and drops."""
+    host = fx.enter_project(project=case.project, root=root, monkeypatch=monkeypatch, routes=case.routes)
+    wrapper = fx.load_script(path=fx.PRODUCT_SCRIPT, name=fx.PRODUCT_MODULE, monkeypatch=monkeypatch)
+    try:
+        exit_code = wrapper.main(argv=list(case.argv))
+    except SystemExit as exc:
+        exit_code = fx.exit_code_of(exc=exc)
+    captured = capsys.readouterr()
+    fx.assert_outcome(
+        case=case, outcome=fx.Outcome(stdout=captured.out, exit_code=exit_code, requests=tuple(host.requests))
+    )
+    host.assert_every_request_routed()
+    return str(captured.err)
+
+
 def _set_copies(*, monkeypatch: pytest.MonkeyPatch) -> None:
     """Put copies of ``COPIED_OPERATIONS`` whose ``api_version`` is ``API_VERSION_NEXT`` and whose ``accept`` is
     ``ACCEPT_FULL_JSON`` into ``github_api.families.issues.OPERATIONS`` in place of the originals, for this test."""
@@ -829,3 +960,25 @@ def test_a_missing_path_parameter_is_refused(
     """AC-2.3: ``call issues/get`` without ``issue_number`` exits 2 with no request, and the log record names
     ``issue_number`` and the record's path parameters ``owner``, ``repo`` and ``issue_number``."""
     _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+
+
+@pytest.mark.parametrize(argnames="malformed", argvalues=MALFORMED_ARGUMENTS, ids=malformed_argument_name)
+def test_a_malformed_argument_is_refused_without_its_value(
+    malformed: MalformedArgument, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC-1.2, AC-1.3 (design D2 "Parsing"): a ``NAME=VALUE`` with no ``=`` or an empty name, or ``-F`` text that
+    ``json.loads`` refuses (``NaN`` and the infinities included), exits 2 with no request, and standard error is
+    argparse's usage message, whose error names the option and then the name as ``json.dumps`` renders it, and holds
+    no value (Security Considerations "Command-line input")."""
+    name = malformed.case.name
+    stderr = run_reading_stderr(case=malformed.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+
+    lines = stderr.splitlines()
+    assert any(line.startswith(USAGE_PREFIX) for line in lines), f"{name}: standard error holds no usage: {stderr!r}"
+    named_option = argument_named(option=malformed.option)
+    messages = [line.split(named_option, 1)[1] for line in lines if named_option in line]
+    assert messages, f"{name}: no usage error names the option {malformed.option}: {stderr!r}"
+    rendered = json.dumps(obj=malformed.name)
+    assert any(rendered in message for message in messages), f"{name}: no usage error names {rendered}: {messages}"
+    leaking = [value for value in malformed.withheld if value in stderr]
+    assert leaking == [], f"{name}: standard error holds the value {leaking}: {stderr!r}"

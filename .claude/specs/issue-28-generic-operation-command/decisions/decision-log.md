@@ -62,3 +62,12 @@
 **Evidence:** 586 passed across both wrappers' suites on the rebased tree; product run_checks lint/types/security 5 passed.
 **Supersedes:** none
 **Artifacts touched:** docs/forLLMConsumption.md
+
+## DL-008 — 2026-11-11T02:36:32Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's REFUTED AC-1.2 AC-1.3 (the argparse refusals of `_split` and `json_member` never run) as a test gap; add K `test_a_malformed_argument_is_refused_without_its_value` (7 cases, exit 2, no request, the option and name on stderr, no value); then one push and a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md rows 23-24 (combined mutant: 592 passed).
+**Alternatives considered:** none (small, clear, test-only).
+**Evidence:** evidence/green/rework-1.txt; the new test fails 7 of 7 under the combined mutant.
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_github_api_call.py
