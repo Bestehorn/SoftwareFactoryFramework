@@ -36,7 +36,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_api_registry.py s
 
 Run: `python scripts/run_tests.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py test/test_github_api_call_properties.py test/test_github_wrapper_contract.py`
 
-- [ ] 2.1 TEST: the fixtures module gains `PRODUCT_SCRIPT` and `run_product_case(*, case, root, monkeypatch, capsys)`
+- [x] 2.1 TEST: the fixtures module gains `PRODUCT_SCRIPT` and `run_product_case(*, case, root, monkeypatch, capsys)`
   per D8 (enters the project, runs the product's `main(argv=...)`, a `SystemExit` giving its code, calls
   `assert_outcome` and `assert_every_request_routed`, returns the recorded requests); `CASES` untouched. K:
   `CALL_CASES`, `GoldenCase` rows with argv `call …` run with `fx.run_product_case` against the fixture project
@@ -52,12 +52,12 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_api_call.py src/p
   `test_an_undocumented_parameter_is_refused`, `test_a_missing_path_parameter_is_refused`. — Files:
   src/payload/test/github_wrapper_fixtures.py, src/payload/test/test_github_api_call.py — Validates: AC-1.1, AC-1.2,
   AC-1.3, AC-1.4, AC-1.5, AC-1.6, AC-1.7, AC-2.1, AC-2.2, AC-2.3
-- [ ] 2.2 TEST: H — a `scripts_on_path` fixture putting `src/payload/scripts` on `sys.path` as V does, applied with
+- [x] 2.2 TEST: H — a `scripts_on_path` fixture putting `src/payload/scripts` on `sys.path` as V does, applied with
   `@pytest.mark.usefixtures("scripts_on_path")`; `test_any_json_value_becomes_the_body_member`, AC-1.3's property over
   design's `json_values` strategy and a name from `[a-z_][a-z0-9_]*`, with `body_of(members=[])` `None`. It imports
   `github_api.commands.call` inside the test after asserting the file exists, as V's `_import_package_module` does, so
   a missing `call.py` is red on an assertion. — Files: test/test_github_api_call_properties.py — Validates: AC-1.3
-- [ ] 2.3 TEST: N per D5 — `is_unreachable(operation_id, path)`; the reference half, `reference_sections(rest_dir)`
+- [x] 2.3 TEST: N per D5 — `is_unreachable(operation_id, path)`; the reference half, `reference_sections(rest_dir)`
   (each `rest/<category>.md` read once, sections keyed by operation ID, D5's row rules for path, query and body names)
   and `record_problems(record, section)`; the call half, `CallShape(method, path, query_names, body_names)`,
   `expected_call(section, values)`, `sent_call(request)` and `call_problems(expected, sent)`. Tests:
@@ -69,7 +69,7 @@ Run: `python scripts/run_tests.py src/payload/test/test_github_api_call.py src/p
   `GATED_OPERATIONS` inside the test after asserting the file exists, as 2.2 does; it builds its project with
   `fx.enter_project` and loads the entry script with `fx.load_script`, as C does, not with `run_product_case`, which
   2.1 writes in the same wave. — Files: test/test_github_wrapper_contract.py — Validates: AC-1.1, AC-3.1, AC-3.2
-- [ ] 2.4 IMPL: `commands/_common.py` — `EXIT_REFUSED` (2) and `print_bytes` (flush `sys.stdout`, then
+- [x] 2.4 IMPL: `commands/_common.py` — `EXIT_REFUSED` (2) and `print_bytes` (flush `sys.stdout`, then
   `sys.stdout.buffer.write`, no line end added); `commands/call.py` per D2–D4 and D7 — the module docstring (D2's
   grammar, D3's print forms), `register(subparsers)` adding `call` with D2's options (`action="append"`, default
   `None`, `--raw-field` and `--field` sharing one `dest`, no option string containing `token`), `assignment` and

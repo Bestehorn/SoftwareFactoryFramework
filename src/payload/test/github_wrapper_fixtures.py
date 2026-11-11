@@ -2741,3 +2741,65 @@ def refuse_connections(*, monkeypatch: pytest.MonkeyPatch) -> None:
     """Fail the test on any socket connection, until it ends: requests reach the fake host inside urllib."""
     monkeypatch.setattr(target=socket.socket, name="connect", value=_refuse_connection)
     monkeypatch.setattr(target=socket.socket, name="connect_ex", value=_refuse_connection)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Running a case the fork has no counterpart for: the ``call`` rows of ``test_github_api_call.py`` and of each slice's
+# ``test_github_api_<family>.py`` (design D8). These rows are not in ``CASES``, so the fork parity test never runs them.
+# ---------------------------------------------------------------------------------------------------------------------
+
+#: The product's entry script, beside its ``github_api`` package (``src/payload/scripts/github_wrapper.py`` here,
+#: ``scripts/github_wrapper.py`` where this module is installed).
+PRODUCT_SCRIPT = SCRIPTS_DIR / "github_wrapper.py"
+PRODUCT_MODULE = "github_wrapper_product"
+#: How ``run_product_case`` reads the bytes ``capsysbinary`` captured: every byte outside a UTF-8 sequence becomes a
+#: lone surrogate, so the text encodes back to the same bytes and two outputs compare equal exactly when their bytes do.
+BINARY_STDOUT_ENCODING = "utf-8"
+BINARY_STDOUT_ERRORS = "surrogateescape"
+
+
+def binary_stdout(*, data: bytes) -> str:
+    """The ``stdout`` of a case run with ``capsysbinary`` whose standard output is ``data``: the bytes as
+    ``run_product_case`` reads them, so the golden comparison is of the bytes themselves."""
+    return data.decode(encoding=BINARY_STDOUT_ENCODING, errors=BINARY_STDOUT_ERRORS)
+
+
+def _exit_code_of_main(*, wrapper: ModuleType, argv: Sequence[str]) -> int:
+    """The exit code of ``wrapper.main(argv=argv)``: its return value, or the code of the ``SystemExit`` it raises."""
+    main = getattr(wrapper, "main", None)
+    assert callable(main), f"{PRODUCT_SCRIPT} defines no main"
+    try:
+        result = main(argv=list(argv))
+    except SystemExit as exc:
+        return exit_code_of(exc=exc)
+    assert isinstance(result, int), f"main(argv={list(argv)}) returned {result!r}, not an exit code"
+    return result
+
+
+def run_product_case(
+    *,
+    case: GoldenCase,
+    root: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: Union[pytest.CaptureFixture[str], pytest.CaptureFixture[bytes]],
+) -> Tuple[RecordedRequest, ...]:
+    """Run ``case`` through the product entry script's ``main(argv=...)`` and return every request the host received,
+    in order.
+
+    The project is ``case.project`` built under ``root`` (``enter_project``), the host a fresh fake one holding
+    ``case.routes``, and the entry script ``PRODUCT_SCRIPT`` freshly loaded by path (``load_script``); a ``SystemExit``
+    gives its code (``exit_code_of``). The run is judged by ``assert_outcome`` (its exit code, its standard output
+    exactly, its requests other than ``GET``, and no request at all for a refusal) and by
+    ``assert_every_request_routed``. ``capsys`` is pytest's ``capsys``, or ``capsysbinary`` for a case whose output is
+    bytes: those are read with ``binary_stdout``'s decoding, so such a case's ``stdout`` is ``binary_stdout(data=...)``
+    of the bytes expected. ``assert_log`` is left to the caller, which holds ``caplog``.
+    """
+    host = enter_project(project=case.project, root=root, monkeypatch=monkeypatch, routes=case.routes)
+    wrapper = load_script(path=PRODUCT_SCRIPT, name=PRODUCT_MODULE, monkeypatch=monkeypatch)
+    exit_code = _exit_code_of_main(wrapper=wrapper, argv=case.argv)
+    captured = capsys.readouterr()
+    written = captured.out
+    stdout = written if isinstance(written, str) else binary_stdout(data=written)
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+    host.assert_every_request_routed()
+    return tuple(host.requests)

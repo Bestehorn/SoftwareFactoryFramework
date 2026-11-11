@@ -1,0 +1,452 @@
+# tasks: 2.1 2.2 2.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py test/test_github_api_call_properties.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [586 items]
+
+.......F.F....F.F..F..F...F..F.F.....F.F..F....F.F..F....F.F.F..F..F...F [ 12%]
+..F..F...F..F..F.F....F.F..F.F..F.F...F................................. [ 24%]
+........................................................................ [ 36%]
+........................................................................ [ 49%]
+........................................................................ [ 61%]
+........................................................................ [ 73%]
+........................................................................ [ 86%]
+........................................................................ [ 98%]
+..FF.F....                                                               [100%]
+================================== FAILURES ===================================
+_ test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-is-merge-pr] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:712: in test_a_gated_operation_names_its_subcommand
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.1/exit-2/pulls-merge-is-merge-pr: no log record matches every one of ['"pulls/merge"', 'merge\\-pr']: []
+_ test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/issues-create-is-create-issue] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:712: in test_a_gated_operation_names_its_subcommand
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.1/exit-2/issues-create-is-create-issue: no log record matches every one of ['"issues/create"', 'create\\-issue']: []
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-parameter-and-the-origin-repository] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/path-parameter-and-the-origin-repository: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/owner-and-repo-given] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/owner-and-repo-given: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-slash] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/path-value-with-a-slash: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-space] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/path-value-with-a-space: exit code 2, the golden is 0; stdout ''
+___ test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-parameter] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/query-parameter: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/string-and-json-body-members] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/string-and-json-body-members: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-name-given-twice] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/query-name-given-twice: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/array-query-name-sent-as-written] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/array-query-name-sent-as-written: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/the-record-version-and-media-type: exit code 2, the golden is 0; stdout ''
+_ test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type-on-every-page] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:725: in test_an_operation_call_sends_its_record
+    requests = fx.run_product_case(case=sent.case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.2/exit-0/the-record-version-and-media-type-on-every-page: exit code 2, the golden is 0; stdout ''
+_____ test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/string] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:744: in test_a_body_member_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.3/exit-0/string: exit code 2, the golden is 0; stdout ''
+_____ test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/number] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:744: in test_a_body_member_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.3/exit-0/number: exit code 2, the golden is 0; stdout ''
+____ test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/boolean] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:744: in test_a_body_member_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.3/exit-0/boolean: exit code 2, the golden is 0; stdout ''
+_____ test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/array] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:744: in test_a_body_member_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.3/exit-0/array: exit code 2, the golden is 0; stdout ''
+_____ test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/object] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:744: in test_a_body_member_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.3/exit-0/object: exit code 2, the golden is 0; stdout ''
+______ test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/null] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:744: in test_a_body_member_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.3/exit-0/null: exit code 2, the golden is 0; stdout ''
+_ test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/bare-list-by-the-next-target-as-given] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:759: in test_a_list_prints_every_page_as_one_array
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.4/exit-0/bare-list-by-the-next-target-as-given: exit code 2, the golden is 0; stdout ''
+_ test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/items-under-the-item-key] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:759: in test_a_list_prints_every_page_as_one_array
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.4/exit-0/items-under-the-item-key: exit code 2, the golden is 0; stdout ''
+___ test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/json-body] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:768: in test_a_json_or_empty_body_prints_as_documented
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.5/exit-0/json-body: exit code 2, the golden is 0; stdout ''
+__ test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/empty-body] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:768: in test_a_json_or_empty_body_prints_as_documented
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.5/exit-0/empty-body: exit code 2, the golden is 0; stdout ''
+_ test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/archive-after-a-redirect-to-storage] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:777: in test_a_body_that_is_not_json_is_written_unchanged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsysbinary)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.6/exit-0/archive-after-a-redirect-to-storage: exit code 2, the golden is 0; stdout ''
+____ test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/diff] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:777: in test_a_body_that_is_not_json_is_written_unchanged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsysbinary)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.6/exit-0/diff: exit code 2, the golden is 0; stdout ''
+____ test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/html] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:777: in test_a_body_that_is_not_json_is_written_unchanged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsysbinary)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.6/exit-0/html: exit code 2, the golden is 0; stdout ''
+_ test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/bytes-that-are-not-utf-8] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:777: in test_a_body_that_is_not_json_is_written_unchanged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsysbinary)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.6/exit-0/bytes-that-are-not-utf-8: exit code 2, the golden is 0; stdout ''
+_____ test_an_api_error_exits_1_with_its_details[AC-1.7/exit-1/not-found] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:790: in test_an_api_error_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:698: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.7/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_______ test_an_unknown_operation_is_refused[AC-2.1/exit-2/pending-id] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:805: in test_an_unknown_operation_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-2/pending-id: no log record matches every one of ['"pulls/list"']: []
+___ test_an_unknown_operation_is_refused[AC-2.1/exit-2/id-not-in-the-index] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:805: in test_an_unknown_operation_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-2/id-not-in-the-index: no log record matches every one of ['"issues/levitate"']: []
+_____ test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/path-name] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:818: in test_an_undocumented_parameter_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.2/exit-2/path-name: no log record matches every one of ['\\bpath parameters?[^"\\[\\]\\n;]*\\[?(?:"[^"]*",\\s*)*"number"', '"owner"', '"repo"', '"issue_number"']: []
+_____ test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/query-name] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:818: in test_an_undocumented_parameter_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.2/exit-2/query-name: no log record matches every one of ['\\bquery parameters?[^"\\[\\]\\n;]*\\[?(?:"[^"]*",\\s*)*"sort"', '"owner"', '"repo"', '"issue_number"']: []
+_____ test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/body-name] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:818: in test_an_undocumented_parameter_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.2/exit-2/body-name: no log record matches every one of ['\\bbody parameters?[^"\\[\\]\\n;]*\\[?(?:"[^"]*",\\s*)*"color"', '"owner"', '"repo"', '"issue_number"', '"title"', '"body"', '"assignee"', '"state"', '"state_reason"', '"duplicate_issue_id"', '"milestone"', '"labels"', '"assignees"', '"issue_field_values"', '"type"']: []
+_ test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/one-of-each-kind-in-one-message] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:818: in test_an_undocumented_parameter_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.2/exit-2/one-of-each-kind-in-one-message: no log record matches every one of ['\\bpath parameters?[^"\\[\\]\\n;]*\\[?(?:"[^"]*",\\s*)*"number"', '\\bquery parameters?[^"\\[\\]\\n;]*\\[?(?:"[^"]*",\\s*)*"sort"', '\\bbody parameters?[^"\\[\\]\\n;]*\\[?(?:"[^"]*",\\s*)*"color"', '"owner"', '"repo"', '"issue_number"', '"title"', '"body"', '"assignee"', '"state"', '"state_reason"', '"duplicate_issue_id"', '"milestone"', '"labels"', '"assignees"', '"issue_field_values"', '"type"']: []
+_ test_a_missing_path_parameter_is_refused[AC-2.3/exit-2/path-parameter-without-a-value] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:831: in test_a_missing_path_parameter_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\test_github_api_call.py:699: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.3/exit-2/path-parameter-without-a-value: no log record matches every one of ['"owner"', '"repo"', '"issue_number"']: []
+_________________ test_any_json_value_becomes_the_body_member _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_api_call_properties.py:67: in test_any_json_value_becomes_the_body_member
+    ???
+test\test_github_api_call_properties.py:75: in test_any_json_value_becomes_the_body_member
+    call = _import_call_module()
+           ^^^^^^^^^^^^^^^^^^^^^
+test\test_github_api_call_properties.py:59: in _import_call_module
+    assert CALL_FILE.is_file(), f"{PACKAGE}/{COMMANDS}/{CALL}.py is not written: {CALL_FILE} does not exist"
+E   AssertionError: github_api/commands/call.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\scripts\github_api\commands\call.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-28/src/payload/scripts/github_api/commands/call.py').is_file
+E   Failing test case: test_any_json_value_becomes_the_body_member(
+E       name='_',
+E       value=None,
+E   )
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:813: in test_every_record_is_sent_as_its_section_documents
+    gated = _import_product_module(name=CALL_COMMAND).GATED_OPERATIONS
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_contract.py:472: in _import_product_module
+    assert path.is_file(), f"{path.relative_to(SCRIPTS_DIR).as_posix()} is not written: {path} does not exist"
+E   AssertionError: github_api/commands/call.py is not written: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\src\payload\scripts\github_api\commands\call.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-28/src/payload/scripts/github_api/commands/call.py').is_file
+___________ test_an_unreachable_call_matches_its_reference_section ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28\test\test_github_wrapper_contract.py:882: in test_an_unreachable_call_matches_its_reference_section
+    assert exit_code == fx.EXIT_OK, f"exit {exit_code}; log {caplog.messages}; stderr {stderr!r}"
+E   AssertionError: exit 2; log []; stderr "usage: -c [-h]\n          {enqueue-pr,dequeue-pr,queue-status,list-workflows,list-runs,get-run,get-logs,wait-run,claim-check,start-issue,release-issue,label-add,label-remove,assign,issue,list-issues,get-issue,get-issue-comments,comment-issue,update-issue,create-issue,reopen-issue,checklist,create-pr,get-pr,get-pr-checks,approve-pr,merge-pr,delete-remote-branch} ...\n-c: error: argument command: invalid choice: 'call' (choose from enqueue-pr, dequeue-pr, queue-status, list-workflows, list-runs, get-run, get-logs, wait-run, claim-check, start-issue, release-issue, label-add, label-remove, assign, issue, list-issues, get-issue, get-issue-comments, comment-issue, update-issue, create-issue, reopen-issue, checklist, create-pr, get-pr, get-pr-checks, approve-pr, merge-pr, delete-remote-branch)\n"
+E   assert 2 == 0
+E    +  where 0 = fx.EXIT_OK
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-is-merge-pr]
+FAILED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/issues-create-is-create-issue]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-parameter-and-the-origin-repository]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/owner-and-repo-given]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-slash]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-space]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-parameter]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/string-and-json-body-members]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-name-given-twice]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/array-query-name-sent-as-written]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type]
+FAILED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type-on-every-page]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/string]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/number]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/boolean]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/array]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/object]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/null]
+FAILED src/payload/test/test_github_api_call.py::test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/bare-list-by-the-next-target-as-given]
+FAILED src/payload/test/test_github_api_call.py::test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/items-under-the-item-key]
+FAILED src/payload/test/test_github_api_call.py::test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/json-body]
+FAILED src/payload/test/test_github_api_call.py::test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/empty-body]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/archive-after-a-redirect-to-storage]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/diff]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/html]
+FAILED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/bytes-that-are-not-utf-8]
+FAILED src/payload/test/test_github_api_call.py::test_an_api_error_exits_1_with_its_details[AC-1.7/exit-1/not-found]
+FAILED src/payload/test/test_github_api_call.py::test_an_unknown_operation_is_refused[AC-2.1/exit-2/pending-id]
+FAILED src/payload/test/test_github_api_call.py::test_an_unknown_operation_is_refused[AC-2.1/exit-2/id-not-in-the-index]
+FAILED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/path-name]
+FAILED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/query-name]
+FAILED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/body-name]
+FAILED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/one-of-each-kind-in-one-message]
+FAILED src/payload/test/test_github_api_call.py::test_a_missing_path_parameter_is_refused[AC-2.3/exit-2/path-parameter-without-a-value]
+FAILED test/test_github_api_call_properties.py::test_any_json_value_becomes_the_body_member
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+FAILED test/test_github_wrapper_contract.py::test_an_unreachable_call_matches_its_reference_section
+================== 37 failed, 549 passed in 69.83s (0:01:09) ==================
