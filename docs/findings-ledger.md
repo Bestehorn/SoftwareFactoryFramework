@@ -26,3 +26,8 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api issues | issues/get-issue-artifact prints one page of versions | issue-32 change.md Residuals | paging a list inside an object needs a record field | open |
 | 2026-11-11 | github_api pulls | pulls/update-branch stays pending (writes the PR head branch) | issue-32 DL-002 | gating needs #27's None mapping; one entry once it lands | open |
 | 2026-11-11 | gitlab_api call | integration secrets passed with -f are visible in process arguments | issue-36 change.md Residuals; #41 design Residuals | no non-argv text input; guarding is a new mechanism | open |
+| 2026-11-11 | github_api call | a secret body value given with -f/-F still shows on the command line; --input carries no JSON body | issue-46 design.md Residuals | needs #28 D4's name check over a parsed input | open |
+| 2026-11-11 | github_api repos | release-asset upload sends octet-stream and builds its URL from the record; Transport.upload has no caller | issue-46 design.md Residuals | per-asset media type is a requirements residual | open |
+| 2026-11-11 | github_api markdown | markdown/render-raw always sends text/plain; no per-call media type | issue-46 design.md Residuals | #28 requirements residual | open |
+| 2026-11-11 | github_api transport | REST_ROOTS holds github.com roots only; GHES upload hosts are outside it | issue-46 design.md Residuals | conventions.md Hosts and base URLs; no GHES caller | open |
+| 2026-11-11 | github_api call | no guard refuses an --input path naming the credentials file; the 307 re-send is not logged | issue-46 design.md Security Considerations, Residuals | no failure seen; a guard is a mechanism | open |
