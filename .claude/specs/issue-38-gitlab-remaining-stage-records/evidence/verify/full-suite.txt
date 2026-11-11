@@ -1,0 +1,37 @@
+# Whole-suite verdict for issue #38, read through the wrapper (no local full suite)
+
+command: "D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe" scripts/github_wrapper.py get-run 42997031572   (cwd D:\Code Workspace\CodingProjectSetupPrompt)
+exit: 0
+fields of the answer:
+  "id": 42997031572
+  "name": "ci"
+  "head_branch": "issue-38-gitlab-remaining-stage-records"
+  "head_sha": "b7424e9ab9359057791381fd231ce57431f3ab8a"  # pragma: allowlist secret
+  "path": ".github/workflows/ci.yml"
+  "display_title": "Cover the remaining 13 GitLab stage groups on call"
+  "run_number": 86
+  "event": "pull_request"
+  "status": "completed"
+  "conclusion": "success"
+  "pull_requests[0].number": 60
+  "pull_requests[0].base.sha": "5c5544848eb33d872c1843b553b4ed9e11aadee0"  # pragma: allowlist secret
+  "run_attempt": 1
+  "run_started_at": "2026-11-11T09:39:36Z"
+  "updated_at": "2026-11-11T09:42:20Z"
+  "head_commit.message": "Add the records of the remaining 13 GitLab stage groups"
+
+command: "D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe" scripts/github_wrapper.py get-jobs 42997031572
+exit: 0
+130443571425   completed    success      verify (tests)
+130443571678   completed    success      verify (security)
+130443571682   completed    success      verify (types)
+130443571790   completed    success      verify (lint)
+130444733560   completed    success      report
+
+tree check: git -C .claude/worktrees/issue-38 rev-parse HEAD
+b7424e9ab9359057791381fd231ce57431f3ab8a  # pragma: allowlist secret
+git -C .claude/worktrees/issue-38 merge-base origin/main HEAD
+5c5544848eb33d872c1843b553b4ed9e11aadee0  # pragma: allowlist secret
+git -C .claude/worktrees/issue-38 status --porcelain: (empty before verification)
+
+verdict: CI run 42997031572 is completed/success on head_sha = the tree's HEAD, base = the tree's merge base; all 5 jobs success.
