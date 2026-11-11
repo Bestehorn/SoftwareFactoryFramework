@@ -1,0 +1,70 @@
+# mutant m09: path :id encoding: registry._segment quote(safe="") -> quote(safe="/") (the g/sub case)
+line ending kept: CRLF
+edit: 'return quote(string=text, safe="")' -> 'return quote(string=text, safe="/")' (anchor None)
+target: src/payload/scripts/gitlab_api/registry.py
+sha256 original: 7e61e27d38a11659b679544b75b86fe6cd6892eae4ccf359c8a9fc7b6674c9f7  # pragma: allowlist secret
+sha256 mutated (on disk): 184ecc3ecd96f1348088ebc8ae33db871ec43061f2aef09e348e57fda2ad4498  # pragma: allowlist secret
+sha256 restored: 7e61e27d38a11659b679544b75b86fe6cd6892eae4ccf359c8a9fc7b6674c9f7  # pragma: allowlist secret
+restore: byte-identical to the original (sha256 equal), mtime restored
+tests: src/payload/test/test_gitlab_api_no_stage_assigned.py
+verdict: KILLED
+run_tests exit code: 1
+--- complete run_tests output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_no_stage_assigned.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [6 items]
+
+....F.                                                                   [100%]
+================================== FAILURES ===================================
+_____ test_a_list_record_prints_every_page[group-id-one-encoded-segment] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\test_gitlab_api_no_stage_assigned.py:786: in test_a_list_record_prints_every_page
+    code = run_call(root=project, argv=case.argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\test_gitlab_api_no_stage_assigned.py:652: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_wrapper.py:336: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_wrapper.py:321: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\commands\call.py:381: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\commands\call.py:362: in send_call
+    print_json(value=list(prepared.items))
+                     ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\transport.py:552: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\transport.py:652: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\scripts\gitlab_api\transport.py:675: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/groups/g/sub/integrations?per_page=100 (still scripted: [('GET', 'https://gitlab.example.com/api/v4/groups/g%2Fsub/integrations?per_page=100'), ('GET', 'https://gitlab.example.com/api/v4/groups/g%2Fsub/integrations?per_page=100&page=2')])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_no_stage_assigned.py::test_a_list_record_prints_every_page[group-id-one-encoded-segment]
+========================= 1 failed, 5 passed in 3.92s =========================

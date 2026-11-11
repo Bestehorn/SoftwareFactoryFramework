@@ -1,0 +1,359 @@
+# mutant m10: GCP get path /integration/ -> /integrations/: get-google-cloud-identity-and-access-management
+line ending kept: CRLF
+edit: 'path="/groups/:id/integration/google-cloud-platform-workload-identity-federation",' -> 'path="/groups/:id/integrations/google-cloud-platform-workload-identity-federation",' (anchor 'operation_id="no-stage-assigned#get-google-cloud-identity-and-access-management",')
+target: src/payload/scripts/gitlab_api/families/no_stage_assigned.py
+sha256 original: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+sha256 mutated (on disk): a517824784078f861b1895220915914ff03b933c14610e9b2281323790ba97d6  # pragma: allowlist secret
+sha256 restored: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+restore: byte-identical to the original (sha256 equal), mtime restored
+tests: src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+verdict: KILLED
+run_tests exit code: 1
+--- complete run_tests output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [30 items]
+
+................FF.....F....F.                                           [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:879: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: no-stage-assigned#get-google-cloud-identity-and-access-management: GET /groups/:id/integrations/google-cloud-platform-workload-identity-federation is none of the section's endpoints [('GET', '/groups/:id/integration/google-cloud-platform-workload-identity-federation')]
+E   assert not ["no-stage-assigned#get-google-cloud-identity-and-access-management: GET /groups/:id/integrations/google-cloud-platfor...ne of the section's endpoints [('GET', '/groups/:id/integration/google-cloud-platform-workload-identity-federation')]"]
+__________________ test_every_index_row_is_mapped_or_pending __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:589: in test_every_index_row_is_mapped_or_pending
+    assert not gaps, gap_report(gaps=gaps)
+E   AssertionError: 1 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+E     families/no_stage_assigned.py:
+E         ('GET', '/groups/:id/integration/google-cloud-platform-workload-identity-federation'),  # rest/no-stage-assigned.md#get-google-cloud-identity-and-access-management
+E   assert not [IndexRow(method='GET', path='/groups/:id/integration/google-cloud-platform-workload-identity-federation', reference='rest/no-stage-assigned.md#get-google-cloud-identity-and-access-management')]
+__________________ test_every_declared_key_is_in_its_family ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:694: in test_every_declared_key_is_in_its_family
+    assert not problems, "declarations the operations index does not bear out:\n" + "\n".join(problems)
+E   AssertionError: declarations the operations index does not bear out:
+E     families/no_stage_assigned.py: the record 'no-stage-assigned#get-google-cloud-identity-and-access-management' declares ('GET', '/groups/:id/integrations/google-cloud-platform-workload-identity-federation'); the rows of its Reference carry [('GET', '/groups/:id/integration/google-cloud-platform-workload-identity-federation')]
+E   assert not ["families/no_stage_assigned.py: the record 'no-stage-assigned#get-google-cloud-identity-and-access-management' declar...e rows of its Reference carry [('GET', '/groups/:id/integration/google-cloud-platform-workload-identity-federation')]"]
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\test\test_gitlab_wrapper_contract.py:932: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, "\n".join(problems)
+E   AssertionError: no-stage-assigned#get-google-cloud-identity-and-access-management: the path '/groups/v1/integrations/google-cloud-platform-workload-identity-federation' is none of the section's paths with the values ['/groups/v1/integration/google-cloud-platform-workload-identity-federation']
+E   assert not ["no-stage-assigned#get-google-cloud-identity-and-access-management: the path '/groups/v1/integrations/google-cloud-pl... of the section's paths with the values ['/groups/v1/integration/google-cloud-platform-workload-identity-federation']"]
+---------------------------- Captured stdout call -----------------------------
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+[]
+{}
+[]
+{}
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_index_row_is_mapped_or_pending
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_declared_key_is_in_its_family
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 4 failed, 26 passed in 36.05s ========================
