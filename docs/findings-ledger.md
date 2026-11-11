@@ -26,3 +26,6 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api issues | issues/get-issue-artifact prints one page of versions | issue-32 change.md Residuals | paging a list inside an object needs a record field | open |
 | 2026-11-11 | github_api pulls | pulls/update-branch stays pending (writes the PR head branch) | issue-32 DL-002 | gating needs #27's None mapping; one entry once it lands | open |
 | 2026-11-11 | gitlab_api call | integration secrets passed with -f are visible in process arguments | issue-36 change.md Residuals; #41 design Residuals | no non-argv text input; guarding is a new mechanism | open |
+| 2026-11-11 | gitlab_api verify | artifact glob routes, the merge-train add, later endpoints of multi-endpoint References stay pending | issue-37 DL-003 | no glob form; no no-subcommand gate; one record per id | open |
+| 2026-11-11 | gitlab_api verify | variable values and runner, trigger, job tokens go as -f or query text; query tokens reach error and 429 logs | issue-37 change.md Residuals | #41 Residuals; no failure seen | open |
+| 2026-11-11 | gitlab_api verify | deletes, token resets, deployment approvals, pipeline and job runs, release tag creation are callable ungated | issue-37 change.md Residuals | #41 Security: outside the gated class | open |
