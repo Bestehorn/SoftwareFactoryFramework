@@ -11,6 +11,10 @@ A `*name` glob keeps each `/` of its value (issue #40, AC-2.1 and AC-2.2): `test
 `expand` write each `/`-separated part as one such segment, and `test_a_glob_value_with_a_refused_part_is_refused` has
 it refuse a value with an empty, `.` or `..` part, a leading, trailing or doubled `/` among them.
 
+A record whose path starts with `/<route-prefix>/` is routed only under a value of its page (issue #43, AC-2.4 and
+UB-2): `test_route_accepts_only_the_records_prefixes` has `route` write each declared npm value in place of
+`/<route-prefix>` and refuse any other text with `ValueError`.
+
 The properties live in this repository's own `test/`, where Hypothesis is a dev extra; the shipped `src/payload/test/`
 stays pytest-only. `src/payload/scripts` is put on `sys.path`, and `gitlab_api` is imported inside each test, so the
 module collects whether or not the package exists yet.
@@ -80,6 +84,15 @@ GLOB_PARTS = st.lists(
     min_size=1,
 )
 REFUSED_PARTS = ("", ".", "..")
+
+# The route-prefix property (issue #43, design.md "Correctness Properties" AC-2.4 and UB-2): the synthetic npm record
+# of R's `test_route_writes_the_chosen_prefix`, its path `/<route-prefix>` followed by the dist-tags suffix, and its
+# route prefixes the values of the npm page's `<route-prefix>` line (`docs/api-reference/gitlab/rest/package.md`), in
+# the line's order.
+ROUTE_PREFIX_TEMPLATE = "/<route-prefix>"
+DIST_TAGS_SUFFIX = "/-/package/:package_name/dist-tags"
+DIST_TAGS_TEMPLATE = ROUTE_PREFIX_TEMPLATE + DIST_TAGS_SUFFIX
+NPM_ROUTE_PREFIXES = ("/packages/npm", "/projects/:id/packages/npm", "/groups/:id/-/packages/npm")
 
 # The UB-2 scan: the entry script and every module under the package, named by their paths below `SCRIPTS`.
 PACKAGE_NAME = "gitlab_api"
@@ -223,6 +236,32 @@ def test_a_glob_value_with_a_refused_part_is_refused(parts: list[str]) -> None:
 
     with pytest.raises(expected_exception=errors.GitLabAPIError):
         registry.expand(operation=operation, values={GLOB_PARAMETER: PART_SEPARATOR.join(parts)})
+
+
+@settings(deadline=None)  # the first example also pays for importing the package
+@given(prefix=st.text() | st.sampled_from(elements=NPM_ROUTE_PREFIXES))
+@example(prefix="/packages/npm/")
+@example(prefix="//packages/npm")
+@example(prefix="https://other.example/packages/npm")
+@example(prefix="")
+def test_route_accepts_only_the_records_prefixes(prefix: str) -> None:
+    """AC-2.4 and UB-2: `route` gives a declared npm value the path of that value followed by the dist-tags suffix,
+    and refuses any other text — a trailing or doubled `/`, another origin, the empty text — with `ValueError`, so no
+    text but a declared value reaches the path."""
+    registry = load_registry()
+    operation = registry.RestOperation(
+        operation_id=OPERATION_ID_PREFIX + "route-prefix",
+        method=METHOD_GET,
+        path=DIST_TAGS_TEMPLATE,
+        route_prefixes=NPM_ROUTE_PREFIXES,
+    )
+
+    if prefix in NPM_ROUTE_PREFIXES:
+        routed = registry.route(operation=operation, prefix=prefix)
+        assert routed.path == prefix + DIST_TAGS_SUFFIX, routed.path
+    else:
+        with pytest.raises(expected_exception=ValueError):
+            registry.route(operation=operation, prefix=prefix)
 
 
 def scanned_sources() -> dict[str, str]:

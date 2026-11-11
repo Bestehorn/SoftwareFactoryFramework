@@ -22,6 +22,12 @@ refusing an empty, ``.`` or ``..`` part (AC-2.1, AC-2.2), an optional ``(...)`` 
 value (AC-2.3), and an escaped ``\\(`` or ``\\)`` as its parenthesis (AC-2.5); ``send`` sends a raw-body record the
 bytes it is given as its body, and refuses bytes for any other record with nothing sent (AC-3.2).
 
+Issue #43 (``design.md`` D1, D2) adds: ``placeholders`` reads a name that continues past a ``-`` a name character
+follows as one name (``:module-name``), and ``expand`` writes it as one segment, while the in-segment forms hold the
+names they hold on #40's base (AC-3.1, UB-4); ``route`` writes the prefix value a call names in place of a record's
+``/<route-prefix>``, and returns a record with no route prefix, given none, as itself (AC-2.2); ``expand`` and ``send``
+refuse a prefix record no prefix was written into, with nothing sent (AC-2.4).
+
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
 fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
@@ -169,6 +175,53 @@ TERRAFORM_STATE_VALUES = {"id": 1, "name": "production"}
 TERRAFORM_STATE_SENT_PATH = "/projects/1/terraform/state/production"
 RAW_MEDIA_TYPE = "application/octet-stream"
 RAW_BYTES = b"terraform state\r\nserial \xff\x00"
+# The hyphenated name of issue #43 (design.md D1, § Correctness Properties AC-3.1 and UB-4): the reference path of
+# `package#upload-module` as its operations-index.md row writes it, two synthetic paths that show where a hyphenated
+# name ends, and the in-segment forms of three package.md rows, which hold the names they hold on #40's base.
+UPLOAD_MODULE_OPERATION_ID = "synthetic#upload-module"
+UPLOAD_MODULE_PATH = "/projects/:id/packages/terraform/modules/:module-name/:module-system/:module-version/file"
+UPLOAD_MODULE_VALUES = {"id": 1, "module-name": "infra", "module-system": "aws", "module-version": "1.0.0"}
+UPLOAD_MODULE_WRITTEN = "/projects/1/packages/terraform/modules/infra/aws/1.0.0/file"
+HYPHEN_CASES = {
+    "upload-module": UPLOAD_MODULE_PATH,
+    "hyphen-before-a-slash": "/a/:name-/b",
+    "hyphens-between-name-characters": "/a/:a-b-c",
+    "hyphen-before-the-sigil": "/<route-prefix>/dists/*distribution/:component/binary-:architecture/Packages",
+    "dollar-between-names": "/group/:id/-/packages/composer/:package_name$:sha",
+    "dot-after-a-name": "/projects/:id/packages/go/:module_name/@v/:module_version.info",
+}
+HYPHEN_NAMES = {
+    "upload-module": ("id", "module-name", "module-system", "module-version"),
+    "hyphen-before-a-slash": ("name",),
+    "hyphens-between-name-characters": ("a-b-c",),
+    "hyphen-before-the-sigil": ("distribution", "component", "architecture"),
+    "dollar-between-names": ("id", "package_name", "sha"),
+    "dot-after-a-name": ("id", "module_name", "module_version"),
+}
+# The route prefix of issue #43 (design.md D2, § Correctness Properties AC-2.2, AC-2.4 and UB-4): a synthetic record on
+# the reference path of `package#list-all-dist-tags` with the values of the npm page's `<route-prefix>` line
+# (rest/package.md "npm API"), in the line's order, and the path each value gives; a synthetic record on the path of
+# `package#download-a-debugging-symbol-file-pdb`, which holds `:file_name` twice, with the NuGet page's values.
+DIST_TAGS_OPERATION_ID = "synthetic#list-all-dist-tags"
+DIST_TAGS_PATH = "/<route-prefix>/-/package/:package_name/dist-tags"
+NPM_PREFIX_VALUES = ("/packages/npm", "/projects/:id/packages/npm", "/groups/:id/-/packages/npm")
+DIST_TAGS_ROUTED_PATHS = {
+    "/packages/npm": "/packages/npm/-/package/:package_name/dist-tags",
+    "/projects/:id/packages/npm": "/projects/:id/packages/npm/-/package/:package_name/dist-tags",
+    "/groups/:id/-/packages/npm": "/groups/:id/-/packages/npm/-/package/:package_name/dist-tags",
+}
+# Every value of the unrouted path, so a refusal of it is the prefix's and never `encode`'s refusal of an `id` the
+# unrouted path does not hold.
+DIST_TAGS_VALUES = {"package_name": "pkg"}
+GROUP_NPM_PREFIX = "/groups/:id/-/packages/npm"
+GROUP_NPM_VALUES = {"id": 7, "package_name": "pkg"}
+GROUP_NPM_SENT_PATH = "/groups/7/-/packages/npm/-/package/pkg/dist-tags"
+SYMBOL_FILE_OPERATION_ID = "synthetic#download-a-debugging-symbol-file-pdb"
+SYMBOL_FILE_PATH = "/<route-prefix>/symbolfiles/:file_name/:signature/:file_name"
+NUGET_PREFIX_VALUES = ("/groups/:id/-/packages/nuget", "/projects/:id/packages/nuget")
+PROJECT_NUGET_PREFIX = "/projects/:id/packages/nuget"
+SYMBOL_FILE_VALUES = {"id": 1, "file_name": "a.pdb", "signature": "s"}
+SYMBOL_FILE_WRITTEN = "/projects/1/packages/nuget/symbolfiles/a.pdb/s/a.pdb"
 
 
 def load_fixtures() -> ModuleType:
@@ -672,4 +725,92 @@ def test_send_sends_a_raw_record_its_bytes(monkeypatch: pytest.MonkeyPatch, fake
         )
     assert fake_gitlab.requests == sent_before, (
         "bytes given for a record with no media type are refused with no request (design.md D5)"
+    )
+
+
+def test_a_hyphenated_name_is_one_placeholder() -> None:
+    registry = gitlab_module(name="registry")
+    named = {case: registry.placeholders(path=path) for case, path in HYPHEN_CASES.items()}
+    assert named == HYPHEN_NAMES, (
+        "a name continues past a `-` that a name character follows, so `:module-name` is one placeholder; `:name-/` "
+        "ends before its `-`, and `binary-:architecture`, `:package_name$:sha` and `:module_version.info` hold the "
+        "names they hold on #40's base (design.md D1, AC-3.1, UB-4)"
+    )
+    operation = registry.RestOperation(operation_id=UPLOAD_MODULE_OPERATION_ID, method="PUT", path=UPLOAD_MODULE_PATH)
+    assert registry.expand(operation=operation, values=UPLOAD_MODULE_VALUES) == UPLOAD_MODULE_WRITTEN, (
+        "each hyphenated name is written as one segment, from the value given under the name with its hyphens "
+        "(design.md D1, AC-3.1)"
+    )
+
+
+def test_route_writes_the_chosen_prefix() -> None:
+    registry = gitlab_module(name="registry")
+    record = registry.RestOperation(
+        operation_id=DIST_TAGS_OPERATION_ID, method="GET", path=DIST_TAGS_PATH, route_prefixes=NPM_PREFIX_VALUES
+    )
+    routed = {prefix: registry.route(operation=record, prefix=prefix) for prefix in DIST_TAGS_ROUTED_PATHS}
+    expected = {
+        prefix: registry.RestOperation(
+            operation_id=DIST_TAGS_OPERATION_ID, method="GET", path=path, route_prefixes=NPM_PREFIX_VALUES
+        )
+        for prefix, path in DIST_TAGS_ROUTED_PATHS.items()
+    }
+    assert routed == expected, (
+        "each prefix value the record lists gives the record with `/<route-prefix>` replaced by that value, every "
+        "other field unchanged (design.md D2, AC-2.2)"
+    )
+
+    plain = registry.RestOperation(operation_id=SEND_OPERATION_ID, method="DELETE", path=SEND_PATH)
+    assert registry.route(operation=plain, prefix=None) is plain, (
+        "a record with no route prefix, given none, is returned itself (design.md D2)"
+    )
+
+    symbol_file = registry.RestOperation(
+        operation_id=SYMBOL_FILE_OPERATION_ID, method="GET", path=SYMBOL_FILE_PATH, route_prefixes=NUGET_PREFIX_VALUES
+    )
+    routed_symbol_file = registry.route(operation=symbol_file, prefix=PROJECT_NUGET_PREFIX)
+    assert registry.expand(operation=routed_symbol_file, values=SYMBOL_FILE_VALUES) == SYMBOL_FILE_WRITTEN, (
+        "the prefix's `:id` is written as one segment, and `:file_name`, which the path holds twice, takes its one "
+        "value at both places (design.md D2, UB-4)"
+    )
+
+
+def test_a_prefix_record_is_sent_only_under_a_prefix(monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any) -> None:
+    registry = gitlab_module(name="registry")
+    transport_module = gitlab_module(name="transport")
+    record = registry.RestOperation(
+        operation_id=DIST_TAGS_OPERATION_ID, method="GET", path=DIST_TAGS_PATH, route_prefixes=NPM_PREFIX_VALUES
+    )
+    with pytest.raises(ValueError):
+        registry.expand(operation=record, values=DIST_TAGS_VALUES)
+
+    serve_families(
+        monkeypatch=monkeypatch,
+        registry=registry,
+        families=[synthetic_family(name="synthetic", operations=[record])],
+    )
+    sent_url = f"{fixtures.REST_BASE}{GROUP_NPM_SENT_PATH}"
+    fake_gitlab.script(method="GET", url=sent_url)
+    # Any request `send` would send without a prefix is answered too, so sending one fails this test on its oracle
+    # below rather than on the fake's unscripted-request error.
+    fake_gitlab.script_next()
+    sleeps: List[float] = []
+    transport = transport_module.Transport(
+        host=fixtures.HOST,
+        token="registry-test-token",
+        token_type=TOKEN_TYPE_PRIVATE,
+        sleep=sleeps.append,
+        clock=lambda: FIXED_CLOCK_SECONDS,
+    )
+
+    with pytest.raises(ValueError):
+        registry.send(transport=transport, operation_id=DIST_TAGS_OPERATION_ID, values=DIST_TAGS_VALUES)
+    assert fake_gitlab.requests == [], "a prefix record called with no prefix is refused with no request (AC-2.4)"
+
+    registry.send(
+        transport=transport, operation_id=DIST_TAGS_OPERATION_ID, values=GROUP_NPM_VALUES, prefix=GROUP_NPM_PREFIX
+    )
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("GET", sent_url)], (
+        "send sends the record's one request under the prefix it is given, the prefix's `:id` written in (design.md "
+        "D2, AC-2.2)"
     )
