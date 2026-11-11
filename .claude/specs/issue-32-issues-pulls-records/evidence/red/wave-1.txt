@@ -1,0 +1,1130 @@
+# tasks: TEST-1 TEST-2 TEST-3 TEST-4 TEST-5 TEST-6 TEST-7 TEST-8
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_issues.py src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_reactions.py src/payload/test/test_github_api_search.py src/payload/test/test_github_api_activity.py src/payload/test/test_github_api_gists.py src/payload/test/test_github_api_call.py src/hooks/tests/test_gate_filing.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [205 items]
+
+FFFFFFFF.FFFFFFFFFFFFFFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FF.F..F. [ 35%]
+.F..F..F..F..F..F...F.FF.F..F.............................F............. [ 70%]
+.............................................................            [100%]
+================================== FAILURES ===================================
+___________________ test_only_the_residual_ids_are_pending ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_issues.py:271: in test_only_the_residual_ids_are_pending
+    assert family.PENDING == RESIDUAL_IDS, (
+E   AssertionError: families/issues.py still has pending IDs: ['issues/add-blocked-by-dependency', 'issues/add-issue-field-values', 'issues/add-relates-to', 'issues/add-sub-issue', 'issues/approve-suggestion', 'issues/check-user-can-be-assigned', 'issues/check-user-can-be-assigned-to-issue', 'issues/create-issue-artifact', 'issues/create-label', 'issues/create-milestone', 'issues/delete-comment', 'issues/delete-issue-artifact', 'issues/delete-issue-field-value', 'issues/delete-label', 'issues/delete-milestone', 'issues/dismiss-suggestion', 'issues/get-comment', 'issues/get-event', 'issues/get-issue-artifact', 'issues/get-label', 'issues/get-milestone', 'issues/get-parent', 'issues/list', 'issues/list-assignees', 'issues/list-comments-for-repo', 'issues/list-dependencies-blocked-by', 'issues/list-dependencies-blocking', 'issues/list-events', 'issues/list-events-for-repo', 'issues/list-events-for-timeline', 'issues/list-for-authenticated-user', 'issues/list-for-org', 'issues/list-issue-artifacts', 'issues/list-issue-field-values-for-issue', 'issues/list-labels-for-milestone', 'issues/list-labels-for-repo', 'issues/list-labels-on-issue', 'issues/list-milestones', 'issues/list-relates-to', 'issues/list-sub-issues', 'issues/list-suggestions', 'issues/lock', 'issues/pin-comment', 'issues/remove-all-labels', 'issues/remove-dependency-blocked-by', 'issues/remove-relates-to', 'issues/remove-sub-issue', 'issues/reprioritize-sub-issue', 'issues/set-issue-field-values', 'issues/set-labels', 'issues/unlock', 'issues/unpin-comment', 'issues/update-comment', 'issues/update-issue-artifact', 'issues/update-label', 'issues/update-milestone']
+E   assert frozenset({'i...signed', ...}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m[33m'[39;49;00m[33missues/create-label[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33missues/list-issue-artifacts[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33missues/get-parent[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33missues/remove-sub-issue[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33missues/check-user-can-be-assigned-to-issue[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_issues.py:297: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"families/{FAMILY_NAME}.py breaks AC-3: {problems}"
+E   AssertionError: families/issues.py breaks AC-3: ["Paging.LINK records missing ['issues/list', 'issues/list-assignees', 'issues/list-comments-for-repo', 'issues/list-dependencies-blocked-by', 'issues/list-dependencies-blocking', 'issues/list-events', 'issues/list-events-for-repo', 'issues/list-events-for-timeline', 'issues/list-for-authenticated-user', 'issues/list-for-org', 'issues/list-issue-artifacts', 'issues/list-issue-field-values-for-issue', 'issues/list-labels-for-milestone', 'issues/list-labels-for-repo', 'issues/list-labels-on-issue', 'issues/list-milestones', 'issues/list-relates-to', 'issues/list-sub-issues', 'issues/list-suggestions'] and unexpected []; rest/issues.md pages ['issues/list', 'issues/list-assignees', 'issues/list-comments', 'issues/list-comments-for-repo', 'issues/list-dependencies-blocked-by', 'issues/list-dependencies-blocking', 'issues/list-events', 'issues/list-events-for-repo', 'issues/list-events-for-timeline', 'issues/list-for-authenticated-user', 'issues/list-for-org', 'issues/list-for-repo', 'issues/list-issue-artifacts', 'issues/list-issue-field-values-for-issue', 'issues/list-labels-for-milestone', 'issues/list-labels-for-repo', 'issues/list-labels-on-issue', 'issues/list-milestones', 'issues/list-relates-to', 'issues/list-sub-issues', 'issues/list-suggestions']", '"issues/get-issue-artifact": families/issues.py declares 0 records with this ID, one expected']
+E   assert ["Paging.LINK...one expected'] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mPaging.LINK records missing [[39;49;00m[33m'[39;49;00m[33missues/list[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33missues/list-assignees[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33missues/list-comments-for-repo[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33missues/list-de...ls-on-issue[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33missues/list-milestones[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33missues/list-relates...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments-for-repo] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_pulls.py:238: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pulls/list-review-comments-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/list-review-comments-for-repo"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-issue-artifacts] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-issue-artifacts: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-issue-artifacts"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_pulls.py:238: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pulls/list-review-comments: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/list-review-comments"
+__ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-assignees] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-assignees: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-assignees"
+________ test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_pulls.py:238: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pulls/list: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/list"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-comments-for-repo] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-comments-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-comments-for-repo"
+____ test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-commits] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_pulls.py:238: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pulls/list-commits: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/list-commits"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-events-for-repo] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-events-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-events-for-repo"
+_____ test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-files] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_pulls.py:238: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pulls/list-files: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/list-files"
+____ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-events] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-events: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-events"
+____ test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-reviews] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_pulls.py:238: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pulls/list-reviews: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/list-reviews"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-dependencies-blocked-by] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-dependencies-blocked-by: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-dependencies-blocked-by"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-comments-for-review] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_pulls.py:238: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/pulls/list-comments-for-review: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/list-comments-for-review"
+___________________ test_only_the_residual_ids_are_pending ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_reactions.py:205: in test_only_the_residual_ids_are_pending
+    assert pending == RESIDUAL_PENDING, f"{FAMILY_MODULE}.PENDING still holds {sorted(pending - RESIDUAL_PENDING)}"
+E   AssertionError: github_api.families.reactions.PENDING still holds ['reactions/create-for-commit-comment', 'reactions/create-for-issue', 'reactions/create-for-issue-comment', 'reactions/create-for-pull-request-review-comment', 'reactions/create-for-release', 'reactions/delete-for-commit-comment', 'reactions/delete-for-issue', 'reactions/delete-for-issue-comment', 'reactions/delete-for-pull-request-comment', 'reactions/delete-for-release', 'reactions/list-for-commit-comment', 'reactions/list-for-issue', 'reactions/list-for-issue-comment', 'reactions/list-for-pull-request-review-comment', 'reactions/list-for-release']
+E   assert frozenset({'r...omment', ...}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m[33m'[39;49;00m[33mreactions/delete-for-commit-comment[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mreactions/create-for-release[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mreactions/delete-for-release[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mreactions/create-for-issue[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mreactions/create-for-commit-comment[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_reactions.py:217: in test_the_records_follow_the_transcription_rules
+    assert declared == sorted(FAMILY_IDS), f"{FAMILY_MODULE} declares {declared}, its sections are {sorted(FAMILY_IDS)}"
+E   AssertionError: github_api.families.reactions declares [], its sections are ['reactions/create-for-commit-comment', 'reactions/create-for-issue', 'reactions/create-for-issue-comment', 'reactions/create-for-pull-request-review-comment', 'reactions/create-for-release', 'reactions/delete-for-commit-comment', 'reactions/delete-for-issue', 'reactions/delete-for-issue-comment', 'reactions/delete-for-pull-request-comment', 'reactions/delete-for-release', 'reactions/list-for-commit-comment', 'reactions/list-for-issue', 'reactions/list-for-issue-comment', 'reactions/list-for-pull-request-review-comment', 'reactions/list-for-release']
+E   assert [] == ['reactions/c...comment', ...]
+E     
+E     Right contains 15 more items, first extra item: [0m[33m'[39;49;00m[33mreactions/create-for-commit-comment[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-dependencies-blocking] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-dependencies-blocking: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-dependencies-blocking"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-commit-comment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_reactions.py:230: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/reactions/list-for-commit-comment: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "reactions/list-for-commit-comment"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-issue-field-values-for-issue] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-issue-field-values-for-issue: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-issue-field-values-for-issue"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-issue-comment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_reactions.py:230: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/reactions/list-for-issue-comment: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "reactions/list-for-issue-comment"
+_______ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-issue] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_reactions.py:230: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/reactions/list-for-issue: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "reactions/list-for-issue"
+___ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-for-org] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-for-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-for-org"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-pull-request-review-comment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_reactions.py:230: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/reactions/list-for-pull-request-review-comment: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "reactions/list-for-pull-request-review-comment"
+__ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-relates-to] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-relates-to: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-relates-to"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-release] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_reactions.py:230: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/reactions/list-for-release: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "reactions/list-for-release"
+___________________ test_only_the_residual_ids_are_pending ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_search.py:176: in test_only_the_residual_ids_are_pending
+    assert pending == RESIDUAL_PENDING, f"{FAMILY_MODULE}.PENDING still holds {sorted(pending - RESIDUAL_PENDING)}"
+E   AssertionError: github_api.families.search.PENDING still holds ['search/code', 'search/commits', 'search/issues-and-pull-requests', 'search/labels', 'search/repos', 'search/topics', 'search/users']
+E   assert frozenset({'s...topics', ...}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m[33m'[39;49;00m[33msearch/repos[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msearch/commits[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msearch/users[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msearch/labels[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33msearch/topics[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_search.py:188: in test_the_records_follow_the_transcription_rules
+    assert declared == sorted(FAMILY_IDS), f"{FAMILY_MODULE} declares {declared}, its sections are {sorted(FAMILY_IDS)}"
+E   AssertionError: github_api.families.search declares [], its sections are ['search/code', 'search/commits', 'search/issues-and-pull-requests', 'search/labels', 'search/repos', 'search/topics', 'search/users']
+E   assert [] == ['search/code.../topics', ...]
+E     
+E     Right contains 7 more items, first extra item: [0m[33m'[39;49;00m[33msearch/code[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-suggestions] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-suggestions: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-suggestions"
+_______ test_a_paged_record_prints_every_page[AC-4/exit-0/search/code] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/code: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "search/code"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-for-authenticated-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-for-authenticated-user"
+______ test_a_paged_record_prints_every_page[AC-4/exit-0/search/commits] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/commits: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "search/commits"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-labels-on-issue] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-labels-on-issue: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-labels-on-issue"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/search/issues-and-pull-requests] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/issues-and-pull-requests: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "search/issues-and-pull-requests"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-labels-for-repo] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-labels-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-labels-for-repo"
+______ test_a_paged_record_prints_every_page[AC-4/exit-0/search/labels] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/labels: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "search/labels"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-labels-for-milestone] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-labels-for-milestone: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-labels-for-milestone"
+_______ test_a_paged_record_prints_every_page[AC-4/exit-0/search/repos] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/repos: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "search/repos"
+__ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-milestones] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-milestones: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-milestones"
+______ test_a_paged_record_prints_every_page[AC-4/exit-0/search/topics] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/topics: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "search/topics"
+__ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-sub-issues] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-sub-issues: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-sub-issues"
+_______ test_a_paged_record_prints_every_page[AC-4/exit-0/search/users] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/users: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "search/users"
+___________________ test_only_the_residual_ids_are_pending ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_activity.py:278: in test_only_the_residual_ids_are_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 34 IDs, [] expected: ['activity/check-repo-is-starred-by-authenticated-user', 'activity/delete-repo-subscription', 'activity/delete-thread-subscription', 'activity/get-feeds', 'activity/get-repo-subscription', 'activity/get-stargazer-count-for-repo', 'activity/get-stargazer-history-for-repo', 'activity/get-thread', 'activity/get-thread-subscription-for-authenticated-user', 'activity/list-events-for-authenticated-user', 'activity/list-notifications-for-authenticated-user', 'activity/list-org-events-for-authenticated-user', 'activity/list-public-events', 'activity/list-public-events-for-repo-network', 'activity/list-public-events-for-user', 'activity/list-public-org-events', 'activity/list-received-events-for-user', 'activity/list-received-public-events-for-user', 'activity/list-repo-events', 'activity/list-repo-notifications-for-authenticated-user', 'activity/list-repos-starred-by-authenticated-user', 'activity/list-repos-starred-by-user', 'activity/list-repos-watched-by-user', 'activity/list-stargazers-for-repo', 'activity/list-watched-repos-for-authenticated-user', 'activity/list-watchers-for-repo', 'activity/mark-notifications-as-read', 'activity/mark-repo-notifications-as-read', 'activity/mark-thread-as-done', 'activity/mark-thread-as-read', 'activity/set-repo-subscription', 'activity/set-thread-subscription', 'activity/star-repo-for-authenticated-user', 'activity/unstar-repo-for-authenticated-user']
+E     34 IDs have no record: ['activity/check-repo-is-starred-by-authenticated-user', 'activity/delete-repo-subscription', 'activity/delete-thread-subscription', 'activity/get-feeds', 'activity/get-repo-subscription', 'activity/get-stargazer-count-for-repo', 'activity/get-stargazer-history-for-repo', 'activity/get-thread', 'activity/get-thread-subscription-for-authenticated-user', 'activity/list-events-for-authenticated-user', 'activity/list-notifications-for-authenticated-user', 'activity/list-org-events-for-authenticated-user', 'activity/list-public-events', 'activity/list-public-events-for-repo-network', 'activity/list-public-events-for-user', 'activity/list-public-org-events', 'activity/list-received-events-for-user', 'activity/list-received-public-events-for-user', 'activity/list-repo-events', 'activity/list-repo-notifications-for-authenticated-user', 'activity/list-repos-starred-by-authenticated-user', 'activity/list-repos-starred-by-user', 'activity/list-repos-watched-by-user', 'activity/list-stargazers-for-repo', 'activity/list-watched-repos-for-authenticated-user', 'activity/list-watchers-for-repo', 'activity/mark-notifications-as-read', 'activity/mark-repo-notifications-as-read', 'activity/mark-thread-as-done', 'activity/mark-thread-as-read', 'activity/set-repo-subscription', 'activity/set-thread-subscription', 'activity/star-repo-for-authenticated-user', 'activity/unstar-repo-for-authenticated-user']
+E   assert not ["PENDING holds 34 IDs, [] expected: ['activity/check-repo-is-starred-by-authenticated-user', 'activity/delete-repo-su...set-thread-subscription', 'activity/star-repo-for-authenticated-user', 'activity/unstar-repo-for-authenticated-user']"]
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_activity.py:312: in test_the_records_follow_the_transcription_rules
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 35 problems:
+E     Paging.LINK records without a paged case: []; paged cases without a Paging.LINK record: ['activity/get-stargazer-history-for-repo', 'activity/list-events-for-authenticated-user', 'activity/list-notifications-for-authenticated-user', 'activity/list-org-events-for-authenticated-user', 'activity/list-public-events', 'activity/list-public-events-for-repo-network', 'activity/list-public-events-for-user', 'activity/list-public-org-events', 'activity/list-received-events-for-user', 'activity/list-received-public-events-for-user', 'activity/list-repo-events', 'activity/list-repo-notifications-for-authenticated-user', 'activity/list-repos-starred-by-authenticated-user', 'activity/list-repos-starred-by-user', 'activity/list-repos-watched-by-user', 'activity/list-stargazers-for-repo', 'activity/list-watched-repos-for-authenticated-user', 'activity/list-watchers-for-repo']
+E     "activity/check-repo-is-starred-by-authenticated-user": no record
+E     "activity/delete-repo-subscription": no record
+E     "activity/delete-thread-subscription": no record
+E     "activity/get-feeds": no record
+E     "activity/get-repo-subscription": no record
+E     "activity/get-stargazer-count-for-repo": no record
+E     "activity/get-stargazer-history-for-repo": no record
+E     "activity/get-thread": no record
+E     "activity/get-thread-subscription-for-authenticated-user": no record
+E     "activity/list-events-for-authenticated-user": no record
+E     "activity/list-notifications-for-authenticated-user": no record
+E     "activity/list-org-events-for-authenticated-user": no record
+E     "activity/list-public-events": no record
+E     "activity/list-public-events-for-repo-network": no record
+E     "activity/list-public-events-for-user": no record
+E     "activity/list-public-org-events": no record
+E     "activity/list-received-events-for-user": no record
+E     "activity/list-received-public-events-for-user": no record
+E     "activity/list-repo-events": no record
+E     "activity/list-repo-notifications-for-authenticated-user": no record
+E     "activity/list-repos-starred-by-authenticated-user": no record
+E     "activity/list-repos-starred-by-user": no record
+E     "activity/list-repos-watched-by-user": no record
+E     "activity/list-stargazers-for-repo": no record
+E     "activity/list-watched-repos-for-authenticated-user": no record
+E     "activity/list-watchers-for-repo": no record
+E     "activity/mark-notifications-as-read": no record
+E     "activity/mark-repo-notifications-as-read": no record
+E     "activity/mark-thread-as-done": no record
+E     "activity/mark-thread-as-read": no record
+E     "activity/set-repo-subscription": no record
+E     "activity/set-thread-subscription": no record
+E     "activity/star-repo-for-authenticated-user": no record
+E     "activity/unstar-repo-for-authenticated-user": no record
+E   assert not ["Paging.LINK records without a paged case: []; paged cases without a Paging.LINK record: ['activity/get-stargazer-his...hread-subscription": no record', '"activity/get-feeds": no record', '"activity/get-repo-subscription": no record', ...]
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-events-for-timeline] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_issues.py:306: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/issues/list-events-for-timeline: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "issues/list-events-for-timeline"
+___________________ test_only_the_residual_ids_are_pending ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:205: in test_only_the_residual_ids_are_pending
+    assert family.PENDING == RESIDUAL_IDS, (
+E   AssertionError: families/pulls.py has pending IDs ['pulls/check-if-merged', 'pulls/create-reply-for-review-comment', 'pulls/create-review-comment', 'pulls/delete-pending-review', 'pulls/delete-review-comment', 'pulls/dismiss-review', 'pulls/get-merge-async-result', 'pulls/get-review', 'pulls/get-review-comment', 'pulls/list', 'pulls/list-comments-for-review', 'pulls/list-commits', 'pulls/list-files', 'pulls/list-requested-reviewers', 'pulls/list-review-comments', 'pulls/list-review-comments-for-repo', 'pulls/list-reviews', 'pulls/merge-async', 'pulls/remove-requested-reviewers', 'pulls/request-copilot-code-review', 'pulls/request-reviewers', 'pulls/rerequest-reviewers', 'pulls/submit-review', 'pulls/update', 'pulls/update-branch', 'pulls/update-review', 'pulls/update-review-comment']; only ['pulls/update-branch'] expected
+E   assert frozenset({'p...review', ...}) == frozenset({'p...date-branch'})
+E     
+E     Extra items in the left set:
+E     [0m[33m'[39;49;00m[33mpulls/create-review-comment[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mpulls/remove-requested-reviewers[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mpulls/update[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mpulls/update-review[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mpulls/get-merge-async-result[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_pulls.py:229: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"families/{FAMILY_NAME}.py breaks AC-3: {problems}"
+E   AssertionError: families/pulls.py breaks AC-3: ["Paging.LINK records missing ['pulls/list', 'pulls/list-comments-for-review', 'pulls/list-commits', 'pulls/list-files', 'pulls/list-review-comments', 'pulls/list-review-comments-for-repo', 'pulls/list-reviews'] and unexpected []; rest/pulls.md pages ['pulls/list', 'pulls/list-comments-for-review', 'pulls/list-commits', 'pulls/list-files', 'pulls/list-review-comments', 'pulls/list-review-comments-for-repo', 'pulls/list-reviews']"]
+E   assert ["Paging.LINK...st-reviews']"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mPaging.LINK records missing [[39;49;00m[33m'[39;49;00m[33mpulls/list[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33mpulls/list-comments-for-review[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33mpulls/list-commits[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33mpulls/list-files[39;49;00m[33m'[39;49;00m[33m...mmits[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33mpulls/list-files[39;49;00m[33m'[39;49;00m[33m, [39;49;00m[33m'[39;49;00m[33mpulls/list-revie...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-events] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-public-events: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-public-events"
+________ test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_gists.py:281: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/gists/list: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "gists/list"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-events-for-repo-network] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-public-events-for-repo-network: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-public-events-for-repo-network"
+____ test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-public] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_gists.py:281: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/gists/list-public: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "gists/list-public"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-org-events] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-public-org-events: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-public-org-events"
+____ test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-starred] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_gists.py:281: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/gists/list-starred: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "gists/list-starred"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repo-events] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-repo-events: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-repo-events"
+____ test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-commits] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_gists.py:281: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/gists/list-commits: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "gists/list-commits"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-events-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-events-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-events-for-authenticated-user"
+_____ test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-forks] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_gists.py:281: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/gists/list-forks: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "gists/list-forks"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-org-events-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-org-events-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-org-events-for-authenticated-user"
+___ test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-for-user] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_gists.py:281: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/gists/list-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "gists/list-for-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-events-for-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-public-events-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-public-events-for-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-received-events-for-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-received-events-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-received-events-for-user"
+_ test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-async-is-merge-pr] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:879: in test_a_gated_operation_names_its_subcommand
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:865: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.1/exit-2/pulls-merge-async-is-merge-pr: no log record matches every one of ['"pulls/merge\\-async"', 'merge\\-pr']: ['No GitHub operation record declares "pulls/merge-async"']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "pulls/merge-async"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-received-public-events-for-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-received-public-events-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-received-public-events-for-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-notifications-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-notifications-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-notifications-for-authenticated-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repo-notifications-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-repo-notifications-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-repo-notifications-for-authenticated-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-stargazers-for-repo] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-stargazers-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-stargazers-for-repo"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/get-stargazer-history-for-repo] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/get-stargazer-history-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/get-stargazer-history-for-repo"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repos-starred-by-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-repos-starred-by-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-repos-starred-by-authenticated-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repos-starred-by-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-repos-starred-by-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-repos-starred-by-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-watchers-for-repo] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-watchers-for-repo: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-watchers-for-repo"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-watched-repos-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-watched-repos-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-watched-repos-for-authenticated-user"
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repos-watched-by-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_activity.py:322: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/activity/list-repos-watched-by-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "activity/list-repos-watched-by-user"
+___________________ test_only_the_residual_ids_are_pending ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_gists.py:237: in test_only_the_residual_ids_are_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 20 IDs, [] expected: ['gists/check-is-starred', 'gists/create', 'gists/create-comment', 'gists/delete', 'gists/delete-comment', 'gists/fork', 'gists/get', 'gists/get-comment', 'gists/get-revision', 'gists/list', 'gists/list-comments', 'gists/list-commits', 'gists/list-for-user', 'gists/list-forks', 'gists/list-public', 'gists/list-starred', 'gists/star', 'gists/unstar', 'gists/update', 'gists/update-comment']
+E     20 IDs have no record: ['gists/check-is-starred', 'gists/create', 'gists/create-comment', 'gists/delete', 'gists/delete-comment', 'gists/fork', 'gists/get', 'gists/get-comment', 'gists/get-revision', 'gists/list', 'gists/list-comments', 'gists/list-commits', 'gists/list-for-user', 'gists/list-forks', 'gists/list-public', 'gists/list-starred', 'gists/star', 'gists/unstar', 'gists/update', 'gists/update-comment']
+E   assert not ["PENDING holds 20 IDs, [] expected: ['gists/check-is-starred', 'gists/create', 'gists/create-comment', 'gists/delete'...ks', 'gists/list-public', 'gists/list-starred', 'gists/star', 'gists/unstar', 'gists/update', 'gists/update-comment']"]
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_gists.py:271: in test_the_records_follow_the_transcription_rules
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 21 problems:
+E     Paging.LINK records without a paged case: []; paged cases without a Paging.LINK record: ['gists/list', 'gists/list-comments', 'gists/list-commits', 'gists/list-for-user', 'gists/list-forks', 'gists/list-public', 'gists/list-starred']
+E     "gists/check-is-starred": no record
+E     "gists/create": no record
+E     "gists/create-comment": no record
+E     "gists/delete": no record
+E     "gists/delete-comment": no record
+E     "gists/fork": no record
+E     "gists/get": no record
+E     "gists/get-comment": no record
+E     "gists/get-revision": no record
+E     "gists/list": no record
+E     "gists/list-comments": no record
+E     "gists/list-commits": no record
+E     "gists/list-for-user": no record
+E     "gists/list-forks": no record
+E     "gists/list-public": no record
+E     "gists/list-starred": no record
+E     "gists/star": no record
+E     "gists/unstar": no record
+E     "gists/update": no record
+E     "gists/update-comment": no record
+E   assert not ["Paging.LINK records without a paged case: []; paged cases without a Paging.LINK record: ['gists/list', 'gists/list-c...no record', '"gists/create-comment": no record', '"gists/delete": no record', '"gists/delete-comment": no record', ...]
+___ test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-comments] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_gists.py:281: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/gists/list-comments: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:259 No GitHub operation record declares "gists/list-comments"
+_ test_a_command_that_creates_nothing_is_allowed_without_a_note[call-create-issue-artifact] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\hooks\tests\test_gate_filing.py:196: in test_a_command_that_creates_nothing_is_allowed_without_a_note
+    assert decision.exit_code == ALLOW, decision.stderr
+E   AssertionError: BLOCKED by issue-filing-gate: this issue body is missing required provenance line(s): Origin: Subject: Filing-rationale:
+E     
+E     First re-run the fix-first evaluation (.claude/rules/issue-filing-discipline.md):
+E       1. Blocking the current task?  -> fix it in the current change, do not file.
+E       2. Small and clear (a few lines, no design choice, no new dependency)?
+E          -> FIX IT NOW and do not file. This is the expected outcome for most
+E             defects noticed in passing.
+E       3. Needs extensive RESEARCH, an evaluation of DESIGN-OPTIONS, or is
+E          OUT-OF-SCOPE for the current task (or a human asked: HUMAN-REQUEST)?
+E          -> file it, and say which one.
+E       4. None of the above? -> one line in docs/findings-ledger.md, then move on.
+E          Filing nothing is a valid and expected outcome.
+E     
+E     If the evaluation still says FILE, put these lines in the issue body (prefer
+E     delegating the filing to the issue-intake agent, which emits them):
+E       Origin: human-request|spawned-discovery|spawned-residual|agent-sweep
+E       Subject: product|process
+E       Spawned-from: #<N>            (only when Origin is spawned-*)
+E       Filing-rationale: RESEARCH|DESIGN-OPTIONS|OUT-OF-SCOPE|HUMAN-REQUEST — <why>
+E     
+E   assert 2 == 0
+E    +  where 2 = Decision(exit_code=2, stdout='', stderr='BLOCKED by issue-filing-gate: this issue body is missing required provenance ...    (only when Origin is spawned-*)\n  Filing-rationale: RESEARCH|DESIGN-OPTIONS|OUT-OF-SCOPE|HUMAN-REQUEST — <why>\n').exit_code
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_issues.py::test_only_the_residual_ids_are_pending
+FAILED src/payload/test/test_github_api_issues.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments-for-repo]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-issue-artifacts]
+FAILED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-assignees]
+FAILED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-comments-for-repo]
+FAILED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-commits]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-events-for-repo]
+FAILED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-files]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-events]
+FAILED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-reviews]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-dependencies-blocked-by]
+FAILED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-comments-for-review]
+FAILED src/payload/test/test_github_api_reactions.py::test_only_the_residual_ids_are_pending
+FAILED src/payload/test/test_github_api_reactions.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-dependencies-blocking]
+FAILED src/payload/test/test_github_api_reactions.py::test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-commit-comment]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-issue-field-values-for-issue]
+FAILED src/payload/test/test_github_api_reactions.py::test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-issue-comment]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list]
+FAILED src/payload/test/test_github_api_reactions.py::test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-issue]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-for-org]
+FAILED src/payload/test/test_github_api_reactions.py::test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-pull-request-review-comment]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-relates-to]
+FAILED src/payload/test/test_github_api_reactions.py::test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-release]
+FAILED src/payload/test/test_github_api_search.py::test_only_the_residual_ids_are_pending
+FAILED src/payload/test/test_github_api_search.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-suggestions]
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/code]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-for-authenticated-user]
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/commits]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-labels-on-issue]
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/issues-and-pull-requests]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-labels-for-repo]
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/labels]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-labels-for-milestone]
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/repos]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-milestones]
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/topics]
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-sub-issues]
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/users]
+FAILED src/payload/test/test_github_api_activity.py::test_only_the_residual_ids_are_pending
+FAILED src/payload/test/test_github_api_activity.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_issues.py::test_a_paged_record_prints_every_page[AC-4/exit-0/issues/list-events-for-timeline]
+FAILED src/payload/test/test_github_api_pulls.py::test_only_the_residual_ids_are_pending
+FAILED src/payload/test/test_github_api_pulls.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-events]
+FAILED src/payload/test/test_github_api_gists.py::test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-events-for-repo-network]
+FAILED src/payload/test/test_github_api_gists.py::test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-public]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-org-events]
+FAILED src/payload/test/test_github_api_gists.py::test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-starred]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repo-events]
+FAILED src/payload/test/test_github_api_gists.py::test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-commits]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-events-for-authenticated-user]
+FAILED src/payload/test/test_github_api_gists.py::test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-forks]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-org-events-for-authenticated-user]
+FAILED src/payload/test/test_github_api_gists.py::test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-for-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-public-events-for-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-received-events-for-user]
+FAILED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-async-is-merge-pr]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-received-public-events-for-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-notifications-for-authenticated-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repo-notifications-for-authenticated-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-stargazers-for-repo]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/get-stargazer-history-for-repo]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repos-starred-by-authenticated-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repos-starred-by-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-watchers-for-repo]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-watched-repos-for-authenticated-user]
+FAILED src/payload/test/test_github_api_activity.py::test_a_paged_record_prints_every_page[AC-4/exit-0/activity/list-repos-watched-by-user]
+FAILED src/payload/test/test_github_api_gists.py::test_only_the_residual_ids_are_pending
+FAILED src/payload/test/test_github_api_gists.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_gists.py::test_a_paged_record_prints_every_page[AC-4/exit-0/gists/list-comments]
+FAILED src/hooks/tests/test_gate_filing.py::test_a_command_that_creates_nothing_is_allowed_without_a_note[call-create-issue-artifact]
+======================= 77 failed, 128 passed in 13.20s =======================

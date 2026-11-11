@@ -1,0 +1,54 @@
+# mutant M07: refuse_gated reverted to .get(...) (None-mapped IDs pass)
+# file: src/payload/scripts/github_api/commands/call.py
+# sha256 original: a6615a18f6ac07aee8770c0abf84b0bbf670de425c897c4c6f512b0a14f97aa4  # pragma: allowlist secret
+# sha256 mutated:  f49f67fb9c4c8e1d5c5c582f898b86ae95b0fd4636bff686bc1cc8bf8c4858b7  # pragma: allowlist secret
+# sha256 restored: a6615a18f6ac07aee8770c0abf84b0bbf670de425c897c4c6f512b0a14f97aa4  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_pulls.py test/test_github_wrapper_contract.py src/payload/test/test_github_wrapper_compat.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_call.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_pulls.py test/test_github_wrapper_contract.py src/payload/test/test_github_wrapper_compat.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [367 items]
+
+........................................................................ [ 19%]
+..............F.F.F.F.F...................F..F.......................... [ 39%]
+........................................................................ [ 58%]
+........................................................................ [ 78%]
+........................................................................ [ 98%]
+.......                                                                  [100%]
+================================== FAILURES ===================================
+____________ test_a_branch_writing_record_is_refused[repos/merge] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/merges
+________ test_a_branch_writing_record_is_refused[repos/merge-upstream] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/merge-upstream
+________ test_a_branch_writing_record_is_refused[repos/rename-branch] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/branches/issue-17-wrapper/rename
+_ test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PUT https://api.github.com/repos/o/r/contents/docs/guide/intro.md
+_________ test_a_branch_writing_record_is_refused[repos/delete-file] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for DELETE https://api.github.com/repos/o/r/contents/docs/guide/intro.md
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/git/refs
+_____ test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/git/refs/heads/topic
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/merge-upstream]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/rename-branch]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/create-or-update-file-contents]
+FAILED src/payload/test/test_github_api_repos.py::test_a_branch_writing_record_is_refused[repos/delete-file]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/create-ref]
+FAILED src/payload/test/test_github_api_git.py::test_a_branch_writing_record_is_refused[AC-7/exit-2/git/update-ref]
+======================= 7 failed, 360 passed in 44.35s ========================

@@ -1,0 +1,30 @@
+# mutant M06-full: GATED_NOT_SENT ending flipped
+# file: src/payload/scripts/github_api/commands/call.py
+# sha256 original: a6615a18f6ac07aee8770c0abf84b0bbf670de425c897c4c6f512b0a14f97aa4  # pragma: allowlist secret
+# sha256 mutated:  4882dfa8f5c32aff3fe907856e51c4ee280e44c625efca303b398078e009bb51  # pragma: allowlist secret
+# sha256 restored: a6615a18f6ac07aee8770c0abf84b0bbf670de425c897c4c6f512b0a14f97aa4  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 0 -> SURVIVED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_issues.py src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_reactions.py src/payload/test/test_github_api_search.py src/payload/test/test_github_api_activity.py src/payload/test/test_github_api_gists.py src/payload/test/test_github_api_call.py src/hooks/tests/test_gate_filing.py src/hooks/tests/test_dispatcher.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_contract.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py test/test_github_api_call_properties.py src/payload/test/test_wrapper_delivery.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_issues.py src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_reactions.py src/payload/test/test_github_api_search.py src/payload/test/test_github_api_activity.py src/payload/test/test_github_api_gists.py src/payload/test/test_github_api_call.py src/hooks/tests/test_gate_filing.py src/hooks/tests/test_dispatcher.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_contract.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py test/test_github_api_call_properties.py src/payload/test/test_wrapper_delivery.py src/payload/test/test_github_api_repos.py src/payload/test/test_github_api_git.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [814 items]
+
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 26%]
+........................................................................ [ 35%]
+........................................................................ [ 44%]
+........................................................................ [ 53%]
+........................................................................ [ 61%]
+........................................................................ [ 70%]
+........................................................................ [ 79%]
+........................................................................ [ 88%]
+........................................................................ [ 97%]
+......................                                                   [100%]
+======================= 814 passed in 93.34s (0:01:33) ========================

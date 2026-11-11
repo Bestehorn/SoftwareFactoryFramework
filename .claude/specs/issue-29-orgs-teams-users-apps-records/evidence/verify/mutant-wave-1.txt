@@ -1,0 +1,1337 @@
+# mutant: wave-1
+# purpose: revert all four family modules to origin/main (the wave's whole implementation)
+# sha256 before apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197  # pragma: allowlist secret
+# sha256 before orgs.py: 441fa37c711dd644cd7332d49f11b9a2a49216fb579d131d73aa1a9927383058  # pragma: allowlist secret
+# sha256 before teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c  # pragma: allowlist secret
+# sha256 before users.py: 1d2d04ff949c21ac7d02c6807a239d2b39cab9ae593e0dc129ec2ba918cf5623  # pragma: allowlist secret
+# sha256 mutant apps.py: 68620a500c72504ab678f29ae23ab0de0f833dd402179c44902ce0c97cf706af  # pragma: allowlist secret
+# sha256 mutant orgs.py: 563ef38f968f407d8f65451ad8c9368fb1d08f6c2b3db9b1c486dfe0204a50c1  # pragma: allowlist secret
+# sha256 mutant teams.py: c9375dced4bbb01326aee26df7938571f4c31163db48f7edad32b94f65cf1828  # pragma: allowlist secret
+# sha256 mutant users.py: 7d1debafe120f8b0f2da49110535f1ed49f830e8e8811f8447c6c767d7d943d0  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_users.py src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197 MATCH  # pragma: allowlist secret
+# sha256 restored orgs.py: 441fa37c711dd644cd7332d49f11b9a2a49216fb579d131d73aa1a9927383058 MATCH  # pragma: allowlist secret
+# sha256 restored teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c MATCH  # pragma: allowlist secret
+# sha256 restored users.py: 1d2d04ff949c21ac7d02c6807a239d2b39cab9ae593e0dc129ec2ba918cf5623 MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_orgs.py::test_nothing_is_pending - As...
+# FAILED src/payload/test/test_github_api_orgs.py::test_every_record_sends_the_default_version_and_media_type
+# FAILED src/payload/test/test_github_api_orgs.py::test_the_multi_segment_parameters_are_the_sections
+# FAILED src/payload/test/test_github_api_orgs.py::test_every_list_record_has_a_case
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/custom-properties-for-repos-get-organization-values]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-for-user]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/get-immutable-releases-settings-repositories]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-invitation-teams]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/get-org-ruleset-history]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-members]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-memberships-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-app-installations]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-org-role-teams]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-attestation-repositories]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-org-role-users]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-attestations]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-outside-collaborators]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-blocked-users]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grant-repositories]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-failed-invitations]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grant-request-repositories]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-public-members]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grant-requests]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-webhook-deliveries]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grants]
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-webhooks]
+# FAILED src/payload/test/test_github_api_teams.py::test_nothing_is_pending - A...
+# FAILED src/payload/test/test_github_api_teams.py::test_every_record_sends_the_default_version_and_media_type
+# FAILED src/payload/test/test_github_api_teams.py::test_every_list_record_has_a_case
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pending-invitations]
+# FAILED src/payload/test/test_github_api_users.py::test_every_record_sends_the_default_version_and_media_type
+# FAILED src/payload/test/test_github_api_users.py::test_the_multi_segment_parameters_are_the_sections
+# FAILED src/payload/test/test_github_api_users.py::test_every_list_record_has_a_case
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-pending-invitations-in-org]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-members-in-org]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-attestations]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-pending-invitations-legacy]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-blocked-by-authenticated-user]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-members-legacy]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-emails-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-followed-by-authenticated-user]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-repos-in-org]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-followers-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-child-in-org]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-followers-for-user]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-repos-legacy]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-following-for-user]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-child-legacy]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-gpg-keys-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_users.py::test_nothing_is_pending - A...
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-gpg-keys-for-user]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-public-keys-for-user]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-public-emails-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-public-ssh-keys-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installation-requests-for-authenticated-app]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-social-accounts-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installations]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-social-accounts-for-user]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-ssh-signing-keys-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-repos-accessible-to-installation]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installations-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-ssh-signing-keys-for-user]
+# FAILED src/payload/test/test_github_api_apps.py::test_nothing_is_pending - As...
+# FAILED src/payload/test/test_github_api_apps.py::test_every_record_sends_the_default_version_and_media_type
+# FAILED src/payload/test/test_github_api_apps.py::test_every_list_record_has_a_case
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installation-repos-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-accounts-for-plan-stubbed]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-plans]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-subscriptions-for-authenticated-user]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-accounts-for-plan]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-subscriptions-for-authenticated-user-stubbed]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-plans-stubbed]
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-webhook-deliveries]
+# ======================= 78 failed, 26 passed in 25.63s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_users.py src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [104 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.F [ 69%]
+FFFFFFFF........................                                         [100%]
+================================== FAILURES ===================================
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_orgs.py:497: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 107 IDs: ['orgs/add-security-manager-team', 'orgs/assign-team-to-org-role', 'orgs/assign-user-to-org-role', 'orgs/block-user', 'orgs/cancel-invitation', 'orgs/check-blocked-user', 'orgs/check-membership-for-user', 'orgs/check-public-membership-for-user', 'orgs/convert-member-to-outside-collaborator', 'orgs/create-artifact-deployment-record', 'orgs/create-artifact-storage-record', 'orgs/create-cluster-deployment-records-job', 'orgs/create-invitation', 'orgs/create-issue-field', 'orgs/create-issue-type', 'orgs/create-webhook', 'orgs/custom-properties-for-repos-create-or-update-organization-definition', 'orgs/custom-properties-for-repos-create-or-update-organization-definitions', 'orgs/custom-properties-for-repos-create-or-update-organization-values', 'orgs/custom-properties-for-repos-delete-organization-definition', 'orgs/custom-properties-for-repos-get-organization-definition', 'orgs/custom-properties-for-repos-get-organization-definitions', 'orgs/custom-properties-for-repos-get-organization-values', 'orgs/delete', 'orgs/delete-attestations-bulk', 'orgs/delete-attestations-by-id', 'orgs/delete-attestations-by-subject-digest', 'orgs/delete-issue-field', 'orgs/delete-issue-type', 'orgs/delete-webhook', 'orgs/disable-selected-repository-immutable-releases-organization', 'orgs/enable-or-disable-security-product-on-all-org-repos', 'orgs/enable-selected-repository-immutable-releases-organization', 'orgs/external-properties-for-repos-create-or-update-organization-values', 'orgs/external-properties-for-repos-create-or-update-values-for-organization-property', 'orgs/external-properties-for-repos-delete-organization-values', 'orgs/external-properties-for-repos-get-organization-app-installations', 'orgs/external-properties-for-repos-get-organization-definitions', 'orgs/external-properties-for-repos-register-organization-app-installation', 'orgs/get', 'orgs/get-cluster-deployment-records-job', 'orgs/get-immutable-releases-settings', 'orgs/get-immutable-releases-settings-repositories', 'orgs/get-membership-for-authenticated-user', 'orgs/get-membership-for-user', 'orgs/get-org-role', 'orgs/get-org-ruleset-history', 'orgs/get-org-ruleset-version', 'orgs/get-webhook', 'orgs/get-webhook-config-for-org', 'orgs/get-webhook-delivery', 'orgs/list', 'orgs/list-app-installations', 'orgs/list-artifact-deployment-records', 'orgs/list-artifact-storage-records', 'orgs/list-attestation-repositories', 'orgs/list-attestations', 'orgs/list-attestations-bulk', 'orgs/list-blocked-users', 'orgs/list-failed-invitations', 'orgs/list-for-authenticated-user', 'orgs/list-for-user', 'orgs/list-invitation-teams', 'orgs/list-issue-fields', 'orgs/list-issue-types', 'orgs/list-members', 'orgs/list-memberships-for-authenticated-user', 'orgs/list-org-role-teams', 'orgs/list-org-role-users', 'orgs/list-org-roles', 'orgs/list-outside-collaborators', 'orgs/list-pat-grant-repositories', 'orgs/list-pat-grant-request-repositories', 'orgs/list-pat-grant-requests', 'orgs/list-pat-grants', 'orgs/list-pending-invitations', 'orgs/list-public-members', 'orgs/list-security-manager-teams', 'orgs/list-webhook-deliveries', 'orgs/list-webhooks', 'orgs/ping-webhook', 'orgs/redeliver-webhook-delivery', 'orgs/remove-member', 'orgs/remove-membership-for-user', 'orgs/remove-outside-collaborator', 'orgs/remove-public-membership-for-authenticated-user', 'orgs/remove-security-manager-team', 'orgs/review-pat-grant-request', 'orgs/review-pat-grant-requests-in-bulk', 'orgs/revoke-all-org-roles-team', 'orgs/revoke-all-org-roles-user', 'orgs/revoke-org-role-team', 'orgs/revoke-org-role-user', 'orgs/set-cluster-deployment-records', 'orgs/set-immutable-releases-settings', 'orgs/set-immutable-releases-settings-repositories', 'orgs/set-membership-for-user', 'orgs/set-public-membership-for-authenticated-user', 'orgs/unblock-user', 'orgs/update', 'orgs/update-issue-field', 'orgs/update-issue-type', 'orgs/update-membership-for-authenticated-user', 'orgs/update-pat-access', 'orgs/update-pat-accesses', 'orgs/update-webhook', 'orgs/update-webhook-config-for-org']
+E     107 IDs have no record: ['orgs/add-security-manager-team', 'orgs/assign-team-to-org-role', 'orgs/assign-user-to-org-role', 'orgs/block-user', 'orgs/cancel-invitation', 'orgs/check-blocked-user', 'orgs/check-membership-for-user', 'orgs/check-public-membership-for-user', 'orgs/convert-member-to-outside-collaborator', 'orgs/create-artifact-deployment-record', 'orgs/create-artifact-storage-record', 'orgs/create-cluster-deployment-records-job', 'orgs/create-invitation', 'orgs/create-issue-field', 'orgs/create-issue-type', 'orgs/create-webhook', 'orgs/custom-properties-for-repos-create-or-update-organization-definition', 'orgs/custom-properties-for-repos-create-or-update-organization-definitions', 'orgs/custom-properties-for-repos-create-or-update-organization-values', 'orgs/custom-properties-for-repos-delete-organization-definition', 'orgs/custom-properties-for-repos-get-organization-definition', 'orgs/custom-properties-for-repos-get-organization-definitions', 'orgs/custom-properties-for-repos-get-organization-values', 'orgs/delete', 'orgs/delete-attestations-bulk', 'orgs/delete-attestations-by-id', 'orgs/delete-attestations-by-subject-digest', 'orgs/delete-issue-field', 'orgs/delete-issue-type', 'orgs/delete-webhook', 'orgs/disable-selected-repository-immutable-releases-organization', 'orgs/enable-or-disable-security-product-on-all-org-repos', 'orgs/enable-selected-repository-immutable-releases-organization', 'orgs/external-properties-for-repos-create-or-update-organization-values', 'orgs/external-properties-for-repos-create-or-update-values-for-organization-property', 'orgs/external-properties-for-repos-delete-organization-values', 'orgs/external-properties-for-repos-get-organization-app-installations', 'orgs/external-properties-for-repos-get-organization-definitions', 'orgs/external-properties-for-repos-register-organization-app-installation', 'orgs/get', 'orgs/get-cluster-deployment-records-job', 'orgs/get-immutable-releases-settings', 'orgs/get-immutable-releases-settings-repositories', 'orgs/get-membership-for-authenticated-user', 'orgs/get-membership-for-user', 'orgs/get-org-role', 'orgs/get-org-ruleset-history', 'orgs/get-org-ruleset-version', 'orgs/get-webhook', 'orgs/get-webhook-config-for-org', 'orgs/get-webhook-delivery', 'orgs/list', 'orgs/list-app-installations', 'orgs/list-artifact-deployment-records', 'orgs/list-artifact-storage-records', 'orgs/list-attestation-repositories', 'orgs/list-attestations', 'orgs/list-attestations-bulk', 'orgs/list-blocked-users', 'orgs/list-failed-invitations', 'orgs/list-for-authenticated-user', 'orgs/list-for-user', 'orgs/list-invitation-teams', 'orgs/list-issue-fields', 'orgs/list-issue-types', 'orgs/list-members', 'orgs/list-memberships-for-authenticated-user', 'orgs/list-org-role-teams', 'orgs/list-org-role-users', 'orgs/list-org-roles', 'orgs/list-outside-collaborators', 'orgs/list-pat-grant-repositories', 'orgs/list-pat-grant-request-repositories', 'orgs/list-pat-grant-requests', 'orgs/list-pat-grants', 'orgs/list-pending-invitations', 'orgs/list-public-members', 'orgs/list-security-manager-teams', 'orgs/list-webhook-deliveries', 'orgs/list-webhooks', 'orgs/ping-webhook', 'orgs/redeliver-webhook-delivery', 'orgs/remove-member', 'orgs/remove-membership-for-user', 'orgs/remove-outside-collaborator', 'orgs/remove-public-membership-for-authenticated-user', 'orgs/remove-security-manager-team', 'orgs/review-pat-grant-request', 'orgs/review-pat-grant-requests-in-bulk', 'orgs/revoke-all-org-roles-team', 'orgs/revoke-all-org-roles-user', 'orgs/revoke-org-role-team', 'orgs/revoke-org-role-user', 'orgs/set-cluster-deployment-records', 'orgs/set-immutable-releases-settings', 'orgs/set-immutable-releases-settings-repositories', 'orgs/set-membership-for-user', 'orgs/set-public-membership-for-authenticated-user', 'orgs/unblock-user', 'orgs/update', 'orgs/update-issue-field', 'orgs/update-issue-type', 'orgs/update-membership-for-authenticated-user', 'orgs/update-pat-access', 'orgs/update-pat-accesses', 'orgs/update-webhook', 'orgs/update-webhook-config-for-org']
+E   assert not ["PENDING holds 107 IDs: ['orgs/add-security-manager-team', 'orgs/assign-team-to-org-role', 'orgs/assign-user-to-org-r...', 'orgs/update-pat-access', 'orgs/update-pat-accesses', 'orgs/update-webhook', 'orgs/update-webhook-config-for-org']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_orgs.py:516: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 107 problems:
+E     "orgs/add-security-manager-team": no record
+E     "orgs/assign-team-to-org-role": no record
+E     "orgs/assign-user-to-org-role": no record
+E     "orgs/block-user": no record
+E     "orgs/cancel-invitation": no record
+E     "orgs/check-blocked-user": no record
+E     "orgs/check-membership-for-user": no record
+E     "orgs/check-public-membership-for-user": no record
+E     "orgs/convert-member-to-outside-collaborator": no record
+E     "orgs/create-artifact-deployment-record": no record
+E     "orgs/create-artifact-storage-record": no record
+E     "orgs/create-cluster-deployment-records-job": no record
+E     "orgs/create-invitation": no record
+E     "orgs/create-issue-field": no record
+E     "orgs/create-issue-type": no record
+E     "orgs/create-webhook": no record
+E     "orgs/custom-properties-for-repos-create-or-update-organization-definition": no record
+E     "orgs/custom-properties-for-repos-create-or-update-organization-definitions": no record
+E     "orgs/custom-properties-for-repos-create-or-update-organization-values": no record
+E     "orgs/custom-properties-for-repos-delete-organization-definition": no record
+E     "orgs/custom-properties-for-repos-get-organization-definition": no record
+E     "orgs/custom-properties-for-repos-get-organization-definitions": no record
+E     "orgs/custom-properties-for-repos-get-organization-values": no record
+E     "orgs/delete": no record
+E     "orgs/delete-attestations-bulk": no record
+E     "orgs/delete-attestations-by-id": no record
+E     "orgs/delete-attestations-by-subject-digest": no record
+E     "orgs/delete-issue-field": no record
+E     "orgs/delete-issue-type": no record
+E     "orgs/delete-webhook": no record
+E     "orgs/disable-selected-repository-immutable-releases-organization": no record
+E     "orgs/enable-or-disable-security-product-on-all-org-repos": no record
+E     "orgs/enable-selected-repository-immutable-releases-organization": no record
+E     "orgs/external-properties-for-repos-create-or-update-organization-values": no record
+E     "orgs/external-properties-for-repos-create-or-update-values-for-organization-property": no record
+E     "orgs/external-properties-for-repos-delete-organization-values": no record
+E     "orgs/external-properties-for-repos-get-organization-app-installations": no record
+E     "orgs/external-properties-for-repos-get-organization-definitions": no record
+E     "orgs/external-properties-for-repos-register-organization-app-installation": no record
+E     "orgs/get": no record
+E     "orgs/get-cluster-deployment-records-job": no record
+E     "orgs/get-immutable-releases-settings": no record
+E     "orgs/get-immutable-releases-settings-repositories": no record
+E     "orgs/get-membership-for-authenticated-user": no record
+E     "orgs/get-membership-for-user": no record
+E     "orgs/get-org-role": no record
+E     "orgs/get-org-ruleset-history": no record
+E     "orgs/get-org-ruleset-version": no record
+E     "orgs/get-webhook": no record
+E     "orgs/get-webhook-config-for-org": no record
+E     "orgs/get-webhook-delivery": no record
+E     "orgs/list": no record
+E     "orgs/list-app-installations": no record
+E     "orgs/list-artifact-deployment-records": no record
+E     "orgs/list-artifact-storage-records": no record
+E     "orgs/list-attestation-repositories": no record
+E     "orgs/list-attestations": no record
+E     "orgs/list-attestations-bulk": no record
+E     "orgs/list-blocked-users": no record
+E     "orgs/list-failed-invitations": no record
+E     "orgs/list-for-authenticated-user": no record
+E     "orgs/list-for-user": no record
+E     "orgs/list-invitation-teams": no record
+E     "orgs/list-issue-fields": no record
+E     "orgs/list-issue-types": no record
+E     "orgs/list-members": no record
+E     "orgs/list-memberships-for-authenticated-user": no record
+E     "orgs/list-org-role-teams": no record
+E     "orgs/list-org-role-users": no record
+E     "orgs/list-org-roles": no record
+E     "orgs/list-outside-collaborators": no record
+E     "orgs/list-pat-grant-repositories": no record
+E     "orgs/list-pat-grant-request-repositories": no record
+E     "orgs/list-pat-grant-requests": no record
+E     "orgs/list-pat-grants": no record
+E     "orgs/list-pending-invitations": no record
+E     "orgs/list-public-members": no record
+E     "orgs/list-security-manager-teams": no record
+E     "orgs/list-webhook-deliveries": no record
+E     "orgs/list-webhooks": no record
+E     "orgs/ping-webhook": no record
+E     "orgs/redeliver-webhook-delivery": no record
+E     "orgs/remove-member": no record
+E     "orgs/remove-membership-for-user": no record
+E     "orgs/remove-outside-collaborator": no record
+E     "orgs/remove-public-membership-for-authenticated-user": no record
+E     "orgs/remove-security-manager-team": no record
+E     "orgs/review-pat-grant-request": no record
+E     "orgs/review-pat-grant-requests-in-bulk": no record
+E     "orgs/revoke-all-org-roles-team": no record
+E     "orgs/revoke-all-org-roles-user": no record
+E     "orgs/revoke-org-role-team": no record
+E     "orgs/revoke-org-role-user": no record
+E     "orgs/set-cluster-deployment-records": no record
+E     "orgs/set-immutable-releases-settings": no record
+E     "orgs/set-immutable-releases-settings-repositories": no record
+E     "orgs/set-membership-for-user": no record
+E     "orgs/set-public-membership-for-authenticated-user": no record
+E     "orgs/unblock-user": no record
+E     "orgs/update": no record
+E     "orgs/update-issue-field": no record
+E     "orgs/update-issue-type": no record
+E     "orgs/update-membership-for-authenticated-user": no record
+E     "orgs/update-pat-access": no record
+E     "orgs/update-pat-accesses": no record
+E     "orgs/update-webhook": no record
+E     "orgs/update-webhook-config-for-org": no record
+E   assert not ['"orgs/add-security-manager-team": no record', '"orgs/assign-team-to-org-role": no record', '"orgs/assign-user-to-org...d', '"orgs/block-user": no record', '"orgs/cancel-invitation": no record', '"orgs/check-blocked-user": no record', ...]
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_orgs.py:531: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 3 records differ from their sections:
+E     "orgs/delete-attestations-by-subject-digest": declared None, the section documents frozenset({'subject_digest'})
+E     "orgs/list-artifact-storage-records": declared None, the section documents frozenset({'subject_digest'})
+E     "orgs/list-attestations": declared None, the section documents frozenset({'subject_digest'})
+E   assert not ['"orgs/delete-attestations-by-subject-digest": declared None, the section documents frozenset({\'subject_digest\'})',...'subject_digest\'})', '"orgs/list-attestations": declared None, the section documents frozenset({\'subject_digest\'})']
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_orgs.py:556: in test_every_list_record_has_a_case
+    assert not problems, "\n".join(problems)
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['orgs/custom-properties-for-repos-get-organization-values', 'orgs/get-immutable-releases-settings-repositories', 'orgs/get-org-ruleset-history', 'orgs/list', 'orgs/list-app-installations', 'orgs/list-attestation-repositories', 'orgs/list-attestations', 'orgs/list-blocked-users', 'orgs/list-failed-invitations', 'orgs/list-for-authenticated-user', 'orgs/list-for-user', 'orgs/list-invitation-teams', 'orgs/list-members', 'orgs/list-memberships-for-authenticated-user', 'orgs/list-org-role-teams', 'orgs/list-org-role-users', 'orgs/list-outside-collaborators', 'orgs/list-pat-grant-repositories', 'orgs/list-pat-grant-request-repositories', 'orgs/list-pat-grant-requests', 'orgs/list-pat-grants', 'orgs/list-pending-invitations', 'orgs/list-public-members', 'orgs/list-webhook-deliveries', 'orgs/list-webhooks']
+E   assert not ["Paging.LINK records without a case: []; cases without a Paging.LINK record: ['orgs/custom-properties-for-repos-get-o...', 'orgs/list-pending-invitations', 'orgs/list-public-members', 'orgs/list-webhook-deliveries', 'orgs/list-webhooks']"]
+___ test_a_list_record_prints_every_item[orgs/list-for-authenticated-user] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-for-authenticated-user"
+_ test_a_list_record_prints_every_item[orgs/custom-properties-for-repos-get-organization-values] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/custom-properties-for-repos-get-organization-values: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/custom-properties-for-repos-get-organization-values"
+__________ test_a_list_record_prints_every_item[orgs/list-for-user] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-for-user"
+_ test_a_list_record_prints_every_item[orgs/get-immutable-releases-settings-repositories] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/get-immutable-releases-settings-repositories: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/get-immutable-releases-settings-repositories"
+______ test_a_list_record_prints_every_item[orgs/list-invitation-teams] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-invitation-teams: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-invitation-teams"
+_____ test_a_list_record_prints_every_item[orgs/get-org-ruleset-history] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/get-org-ruleset-history: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/get-org-ruleset-history"
+___________ test_a_list_record_prints_every_item[orgs/list-members] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-members: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-members"
+_______________ test_a_list_record_prints_every_item[orgs/list] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list"
+_ test_a_list_record_prints_every_item[orgs/list-memberships-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-memberships-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-memberships-for-authenticated-user"
+______ test_a_list_record_prints_every_item[orgs/list-app-installations] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-app-installations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-app-installations"
+_______ test_a_list_record_prints_every_item[orgs/list-org-role-teams] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-org-role-teams: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-org-role-teams"
+__ test_a_list_record_prints_every_item[orgs/list-attestation-repositories] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-attestation-repositories: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-attestation-repositories"
+_______ test_a_list_record_prints_every_item[orgs/list-org-role-users] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-org-role-users: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-org-role-users"
+________ test_a_list_record_prints_every_item[orgs/list-attestations] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-attestations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-attestations"
+____ test_a_list_record_prints_every_item[orgs/list-outside-collaborators] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-outside-collaborators: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-outside-collaborators"
+________ test_a_list_record_prints_every_item[orgs/list-blocked-users] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-blocked-users: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-blocked-users"
+___ test_a_list_record_prints_every_item[orgs/list-pat-grant-repositories] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-pat-grant-repositories: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-pat-grant-repositories"
+_____ test_a_list_record_prints_every_item[orgs/list-failed-invitations] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-failed-invitations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-failed-invitations"
+_ test_a_list_record_prints_every_item[orgs/list-pat-grant-request-repositories] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-pat-grant-request-repositories: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-pat-grant-request-repositories"
+_______ test_a_list_record_prints_every_item[orgs/list-public-members] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-public-members: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-public-members"
+_____ test_a_list_record_prints_every_item[orgs/list-pat-grant-requests] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-pat-grant-requests: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-pat-grant-requests"
+_____ test_a_list_record_prints_every_item[orgs/list-webhook-deliveries] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-webhook-deliveries: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-webhook-deliveries"
+_________ test_a_list_record_prints_every_item[orgs/list-pat-grants] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-pat-grants: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-pat-grants"
+__________ test_a_list_record_prints_every_item[orgs/list-webhooks] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-webhooks: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-webhooks"
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_teams.py:320: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 32 IDs: ['teams/add-member-legacy', 'teams/add-or-update-membership-for-user-in-org', 'teams/add-or-update-membership-for-user-legacy', 'teams/add-or-update-repo-permissions-in-org', 'teams/add-or-update-repo-permissions-legacy', 'teams/check-permissions-for-repo-in-org', 'teams/check-permissions-for-repo-legacy', 'teams/create', 'teams/delete-in-org', 'teams/delete-legacy', 'teams/get-by-name', 'teams/get-legacy', 'teams/get-member-legacy', 'teams/get-membership-for-user-in-org', 'teams/get-membership-for-user-legacy', 'teams/list', 'teams/list-child-in-org', 'teams/list-child-legacy', 'teams/list-for-authenticated-user', 'teams/list-members-in-org', 'teams/list-members-legacy', 'teams/list-pending-invitations-in-org', 'teams/list-pending-invitations-legacy', 'teams/list-repos-in-org', 'teams/list-repos-legacy', 'teams/remove-member-legacy', 'teams/remove-membership-for-user-in-org', 'teams/remove-membership-for-user-legacy', 'teams/remove-repo-in-org', 'teams/remove-repo-legacy', 'teams/update-in-org', 'teams/update-legacy']
+E     32 IDs have no record: ['teams/add-member-legacy', 'teams/add-or-update-membership-for-user-in-org', 'teams/add-or-update-membership-for-user-legacy', 'teams/add-or-update-repo-permissions-in-org', 'teams/add-or-update-repo-permissions-legacy', 'teams/check-permissions-for-repo-in-org', 'teams/check-permissions-for-repo-legacy', 'teams/create', 'teams/delete-in-org', 'teams/delete-legacy', 'teams/get-by-name', 'teams/get-legacy', 'teams/get-member-legacy', 'teams/get-membership-for-user-in-org', 'teams/get-membership-for-user-legacy', 'teams/list', 'teams/list-child-in-org', 'teams/list-child-legacy', 'teams/list-for-authenticated-user', 'teams/list-members-in-org', 'teams/list-members-legacy', 'teams/list-pending-invitations-in-org', 'teams/list-pending-invitations-legacy', 'teams/list-repos-in-org', 'teams/list-repos-legacy', 'teams/remove-member-legacy', 'teams/remove-membership-for-user-in-org', 'teams/remove-membership-for-user-legacy', 'teams/remove-repo-in-org', 'teams/remove-repo-legacy', 'teams/update-in-org', 'teams/update-legacy']
+E   assert not ["PENDING still holds 32 IDs: ['teams/add-member-legacy', 'teams/add-or-update-membership-for-user-in-org', 'teams/add...r-user-legacy', 'teams/remove-repo-in-org', 'teams/remove-repo-legacy', 'teams/update-in-org', 'teams/update-legacy']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_teams.py:339: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 32 problems:
+E     "teams/list-pending-invitations-in-org": no record
+E     "teams/list-members-in-org": no record
+E     "teams/get-membership-for-user-in-org": no record
+E     "teams/add-or-update-membership-for-user-in-org": no record
+E     "teams/remove-membership-for-user-in-org": no record
+E     "teams/list-pending-invitations-legacy": no record
+E     "teams/list-members-legacy": no record
+E     "teams/get-member-legacy": no record
+E     "teams/add-member-legacy": no record
+E     "teams/remove-member-legacy": no record
+E     "teams/get-membership-for-user-legacy": no record
+E     "teams/add-or-update-membership-for-user-legacy": no record
+E     "teams/remove-membership-for-user-legacy": no record
+E     "teams/list": no record
+E     "teams/create": no record
+E     "teams/get-by-name": no record
+E     "teams/update-in-org": no record
+E     "teams/delete-in-org": no record
+E     "teams/list-repos-in-org": no record
+E     "teams/check-permissions-for-repo-in-org": no record
+E     "teams/add-or-update-repo-permissions-in-org": no record
+E     "teams/remove-repo-in-org": no record
+E     "teams/list-child-in-org": no record
+E     "teams/get-legacy": no record
+E     "teams/update-legacy": no record
+E     "teams/delete-legacy": no record
+E     "teams/list-repos-legacy": no record
+E     "teams/check-permissions-for-repo-legacy": no record
+E     "teams/add-or-update-repo-permissions-legacy": no record
+E     "teams/remove-repo-legacy": no record
+E     "teams/list-child-legacy": no record
+E     "teams/list-for-authenticated-user": no record
+E   assert not ['"teams/list-pending-invitations-in-org": no record', '"teams/list-members-in-org": no record', '"teams/get-membershi...rd', '"teams/remove-membership-for-user-in-org": no record', '"teams/list-pending-invitations-legacy": no record', ...]
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_teams.py:378: in test_every_list_record_has_a_case
+    assert not problems, "\n".join(problems)
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['teams/list', 'teams/list-child-in-org', 'teams/list-child-legacy', 'teams/list-for-authenticated-user', 'teams/list-members-in-org', 'teams/list-members-legacy', 'teams/list-pending-invitations-in-org', 'teams/list-pending-invitations-legacy', 'teams/list-repos-in-org', 'teams/list-repos-legacy']
+E   assert not ["Paging.LINK records without a case: []; cases without a Paging.LINK record: ['teams/list', 'teams/list-child-in-org'...g-invitations-in-org', 'teams/list-pending-invitations-legacy', 'teams/list-repos-in-org', 'teams/list-repos-legacy']"]
+_____ test_a_list_record_prints_every_item[orgs/list-pending-invitations] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-pending-invitations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "orgs/list-pending-invitations"
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_users.py:406: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 46 problems:
+E     "users/add-email-for-authenticated-user": no record
+E     "users/add-social-account-for-authenticated-user": no record
+E     "users/block": no record
+E     "users/check-blocked": no record
+E     "users/check-following-for-user": no record
+E     "users/check-person-is-followed-by-authenticated": no record
+E     "users/create-gpg-key-for-authenticated-user": no record
+E     "users/create-public-ssh-key-for-authenticated-user": no record
+E     "users/create-ssh-signing-key-for-authenticated-user": no record
+E     "users/delete-attestations-bulk": no record
+E     "users/delete-attestations-by-id": no record
+E     "users/delete-attestations-by-subject-digest": no record
+E     "users/delete-email-for-authenticated-user": no record
+E     "users/delete-gpg-key-for-authenticated-user": no record
+E     "users/delete-public-ssh-key-for-authenticated-user": no record
+E     "users/delete-social-account-for-authenticated-user": no record
+E     "users/delete-ssh-signing-key-for-authenticated-user": no record
+E     "users/follow": no record
+E     "users/get-by-id": no record
+E     "users/get-by-username": no record
+E     "users/get-context-for-user": no record
+E     "users/get-gpg-key-for-authenticated-user": no record
+E     "users/get-public-ssh-key-for-authenticated-user": no record
+E     "users/get-ssh-signing-key-for-authenticated-user": no record
+E     "users/list": no record
+E     "users/list-attestations": no record
+E     "users/list-attestations-bulk": no record
+E     "users/list-blocked-by-authenticated-user": no record
+E     "users/list-emails-for-authenticated-user": no record
+E     "users/list-followed-by-authenticated-user": no record
+E     "users/list-followers-for-authenticated-user": no record
+E     "users/list-followers-for-user": no record
+E     "users/list-following-for-user": no record
+E     "users/list-gpg-keys-for-authenticated-user": no record
+E     "users/list-gpg-keys-for-user": no record
+E     "users/list-public-emails-for-authenticated-user": no record
+E     "users/list-public-keys-for-user": no record
+E     "users/list-public-ssh-keys-for-authenticated-user": no record
+E     "users/list-social-accounts-for-authenticated-user": no record
+E     "users/list-social-accounts-for-user": no record
+E     "users/list-ssh-signing-keys-for-authenticated-user": no record
+E     "users/list-ssh-signing-keys-for-user": no record
+E     "users/set-primary-email-visibility-for-authenticated-user": no record
+E     "users/unblock": no record
+E     "users/unfollow": no record
+E     "users/update-authenticated": no record
+E   assert not ['"users/add-email-for-authenticated-user": no record', '"users/add-social-account-for-authenticated-user": no record'...d', '"users/check-following-for-user": no record', '"users/check-person-is-followed-by-authenticated": no record', ...]
+_____________ test_the_multi_segment_parameters_are_the_sections ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_users.py:421: in test_the_multi_segment_parameters_are_the_sections
+    assert not problems, f"{len(problems)} records differ from their sections:\n" + "\n".join(problems)
+E   AssertionError: 2 records differ from their sections:
+E     "users/delete-attestations-by-subject-digest": declared None, the section documents frozenset({'subject_digest'})
+E     "users/list-attestations": declared None, the section documents frozenset({'subject_digest'})
+E   assert not ['"users/delete-attestations-by-subject-digest": declared None, the section documents frozenset({\'subject_digest\'})', '"users/list-attestations": declared None, the section documents frozenset({\'subject_digest\'})']
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_users.py:446: in test_every_list_record_has_a_case
+    assert not problems, "\n".join(problems)
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['users/list', 'users/list-attestations', 'users/list-blocked-by-authenticated-user', 'users/list-emails-for-authenticated-user', 'users/list-followed-by-authenticated-user', 'users/list-followers-for-authenticated-user', 'users/list-followers-for-user', 'users/list-following-for-user', 'users/list-gpg-keys-for-authenticated-user', 'users/list-gpg-keys-for-user', 'users/list-public-emails-for-authenticated-user', 'users/list-public-keys-for-user', 'users/list-public-ssh-keys-for-authenticated-user', 'users/list-social-accounts-for-authenticated-user', 'users/list-social-accounts-for-user', 'users/list-ssh-signing-keys-for-authenticated-user', 'users/list-ssh-signing-keys-for-user']
+E   assert not ["Paging.LINK records without a case: []; cases without a Paging.LINK record: ['users/list', 'users/list-attestations'...ial-accounts-for-user', 'users/list-ssh-signing-keys-for-authenticated-user', 'users/list-ssh-signing-keys-for-user']"]
+_ test_a_list_record_prints_every_item[teams/list-pending-invitations-in-org] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-pending-invitations-in-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-pending-invitations-in-org"
+______________ test_a_list_record_prints_every_item[users/list] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list"
+_______ test_a_list_record_prints_every_item[teams/list-members-in-org] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-members-in-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-members-in-org"
+________ test_a_list_record_prints_every_item[users/list-attestations] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-attestations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-attestations"
+_ test_a_list_record_prints_every_item[teams/list-pending-invitations-legacy] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-pending-invitations-legacy: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-pending-invitations-legacy"
+_ test_a_list_record_prints_every_item[users/list-blocked-by-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-blocked-by-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-blocked-by-authenticated-user"
+_______ test_a_list_record_prints_every_item[teams/list-members-legacy] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-members-legacy: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-members-legacy"
+_ test_a_list_record_prints_every_item[users/list-emails-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-emails-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-emails-for-authenticated-user"
+______________ test_a_list_record_prints_every_item[teams/list] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list"
+_ test_a_list_record_prints_every_item[users/list-followed-by-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-followed-by-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-followed-by-authenticated-user"
+________ test_a_list_record_prints_every_item[teams/list-repos-in-org] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-repos-in-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-repos-in-org"
+_ test_a_list_record_prints_every_item[users/list-followers-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-followers-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-followers-for-authenticated-user"
+________ test_a_list_record_prints_every_item[teams/list-child-in-org] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-child-in-org: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-child-in-org"
+_____ test_a_list_record_prints_every_item[users/list-followers-for-user] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-followers-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-followers-for-user"
+________ test_a_list_record_prints_every_item[teams/list-repos-legacy] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-repos-legacy: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-repos-legacy"
+_____ test_a_list_record_prints_every_item[users/list-following-for-user] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-following-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-following-for-user"
+________ test_a_list_record_prints_every_item[teams/list-child-legacy] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-child-legacy: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-child-legacy"
+_ test_a_list_record_prints_every_item[users/list-gpg-keys-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-gpg-keys-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-gpg-keys-for-authenticated-user"
+___ test_a_list_record_prints_every_item[teams/list-for-authenticated-user] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "teams/list-for-authenticated-user"
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_users.py:387: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING holds 46 IDs: ['users/add-email-for-authenticated-user', 'users/add-social-account-for-authenticated-user', 'users/block', 'users/check-blocked', 'users/check-following-for-user', 'users/check-person-is-followed-by-authenticated', 'users/create-gpg-key-for-authenticated-user', 'users/create-public-ssh-key-for-authenticated-user', 'users/create-ssh-signing-key-for-authenticated-user', 'users/delete-attestations-bulk', 'users/delete-attestations-by-id', 'users/delete-attestations-by-subject-digest', 'users/delete-email-for-authenticated-user', 'users/delete-gpg-key-for-authenticated-user', 'users/delete-public-ssh-key-for-authenticated-user', 'users/delete-social-account-for-authenticated-user', 'users/delete-ssh-signing-key-for-authenticated-user', 'users/follow', 'users/get-by-id', 'users/get-by-username', 'users/get-context-for-user', 'users/get-gpg-key-for-authenticated-user', 'users/get-public-ssh-key-for-authenticated-user', 'users/get-ssh-signing-key-for-authenticated-user', 'users/list', 'users/list-attestations', 'users/list-attestations-bulk', 'users/list-blocked-by-authenticated-user', 'users/list-emails-for-authenticated-user', 'users/list-followed-by-authenticated-user', 'users/list-followers-for-authenticated-user', 'users/list-followers-for-user', 'users/list-following-for-user', 'users/list-gpg-keys-for-authenticated-user', 'users/list-gpg-keys-for-user', 'users/list-public-emails-for-authenticated-user', 'users/list-public-keys-for-user', 'users/list-public-ssh-keys-for-authenticated-user', 'users/list-social-accounts-for-authenticated-user', 'users/list-social-accounts-for-user', 'users/list-ssh-signing-keys-for-authenticated-user', 'users/list-ssh-signing-keys-for-user', 'users/set-primary-email-visibility-for-authenticated-user', 'users/unblock', 'users/unfollow', 'users/update-authenticated']
+E     46 IDs have no record: ['users/add-email-for-authenticated-user', 'users/add-social-account-for-authenticated-user', 'users/block', 'users/check-blocked', 'users/check-following-for-user', 'users/check-person-is-followed-by-authenticated', 'users/create-gpg-key-for-authenticated-user', 'users/create-public-ssh-key-for-authenticated-user', 'users/create-ssh-signing-key-for-authenticated-user', 'users/delete-attestations-bulk', 'users/delete-attestations-by-id', 'users/delete-attestations-by-subject-digest', 'users/delete-email-for-authenticated-user', 'users/delete-gpg-key-for-authenticated-user', 'users/delete-public-ssh-key-for-authenticated-user', 'users/delete-social-account-for-authenticated-user', 'users/delete-ssh-signing-key-for-authenticated-user', 'users/follow', 'users/get-by-id', 'users/get-by-username', 'users/get-context-for-user', 'users/get-gpg-key-for-authenticated-user', 'users/get-public-ssh-key-for-authenticated-user', 'users/get-ssh-signing-key-for-authenticated-user', 'users/list', 'users/list-attestations', 'users/list-attestations-bulk', 'users/list-blocked-by-authenticated-user', 'users/list-emails-for-authenticated-user', 'users/list-followed-by-authenticated-user', 'users/list-followers-for-authenticated-user', 'users/list-followers-for-user', 'users/list-following-for-user', 'users/list-gpg-keys-for-authenticated-user', 'users/list-gpg-keys-for-user', 'users/list-public-emails-for-authenticated-user', 'users/list-public-keys-for-user', 'users/list-public-ssh-keys-for-authenticated-user', 'users/list-social-accounts-for-authenticated-user', 'users/list-social-accounts-for-user', 'users/list-ssh-signing-keys-for-authenticated-user', 'users/list-ssh-signing-keys-for-user', 'users/set-primary-email-visibility-for-authenticated-user', 'users/unblock', 'users/unfollow', 'users/update-authenticated']
+E   assert not ["PENDING holds 46 IDs: ['users/add-email-for-authenticated-user', 'users/add-social-account-for-authenticated-user', ...et-primary-email-visibility-for-authenticated-user', 'users/unblock', 'users/unfollow', 'users/update-authenticated']"]
+_____ test_a_list_record_prints_every_item[users/list-gpg-keys-for-user] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-gpg-keys-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-gpg-keys-for-user"
+____ test_a_list_record_prints_every_item[users/list-public-keys-for-user] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-public-keys-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-public-keys-for-user"
+_ test_a_list_record_prints_every_item[users/list-public-emails-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-public-emails-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-public-emails-for-authenticated-user"
+_ test_a_list_record_prints_every_item[users/list-public-ssh-keys-for-authenticated-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-public-ssh-keys-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-public-ssh-keys-for-authenticated-user"
+_ test_a_list_record_prints_every_item[apps/list-installation-requests-for-authenticated-app] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-installation-requests-for-authenticated-app: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-installation-requests-for-authenticated-app"
+_ test_a_list_record_prints_every_item[users/list-social-accounts-for-authenticated-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-social-accounts-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-social-accounts-for-authenticated-user"
+________ test_a_list_record_prints_every_item[apps/list-installations] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-installations: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-installations"
+__ test_a_list_record_prints_every_item[users/list-social-accounts-for-user] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-social-accounts-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-social-accounts-for-user"
+_ test_a_list_record_prints_every_item[users/list-ssh-signing-keys-for-authenticated-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-ssh-signing-keys-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-ssh-signing-keys-for-authenticated-user"
+_ test_a_list_record_prints_every_item[apps/list-repos-accessible-to-installation] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-repos-accessible-to-installation: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-repos-accessible-to-installation"
+_ test_a_list_record_prints_every_item[apps/list-installations-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-installations-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-installations-for-authenticated-user"
+_ test_a_list_record_prints_every_item[users/list-ssh-signing-keys-for-user] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-ssh-signing-keys-for-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "users/list-ssh-signing-keys-for-user"
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_apps.py:347: in test_nothing_is_pending
+    assert not problems, "\n".join(problems)
+E   AssertionError: PENDING still holds 37 IDs: ['apps/add-repo-to-installation-for-authenticated-user', 'apps/check-token', 'apps/create-from-manifest', 'apps/create-installation-access-token', 'apps/delete-authorization', 'apps/delete-installation', 'apps/delete-token', 'apps/get-authenticated', 'apps/get-by-slug', 'apps/get-installation', 'apps/get-org-installation', 'apps/get-repo-installation', 'apps/get-subscription-plan-for-account', 'apps/get-subscription-plan-for-account-stubbed', 'apps/get-user-installation', 'apps/get-webhook-config-for-app', 'apps/get-webhook-delivery', 'apps/list-accounts-for-plan', 'apps/list-accounts-for-plan-stubbed', 'apps/list-installation-repos-for-authenticated-user', 'apps/list-installation-requests-for-authenticated-app', 'apps/list-installations', 'apps/list-installations-for-authenticated-user', 'apps/list-plans', 'apps/list-plans-stubbed', 'apps/list-repos-accessible-to-installation', 'apps/list-subscriptions-for-authenticated-user', 'apps/list-subscriptions-for-authenticated-user-stubbed', 'apps/list-webhook-deliveries', 'apps/redeliver-webhook-delivery', 'apps/remove-repo-from-installation-for-authenticated-user', 'apps/reset-token', 'apps/revoke-installation-access-token', 'apps/scope-token', 'apps/suspend-installation', 'apps/unsuspend-installation', 'apps/update-webhook-config-for-app']
+E     37 IDs have no record: ['apps/add-repo-to-installation-for-authenticated-user', 'apps/check-token', 'apps/create-from-manifest', 'apps/create-installation-access-token', 'apps/delete-authorization', 'apps/delete-installation', 'apps/delete-token', 'apps/get-authenticated', 'apps/get-by-slug', 'apps/get-installation', 'apps/get-org-installation', 'apps/get-repo-installation', 'apps/get-subscription-plan-for-account', 'apps/get-subscription-plan-for-account-stubbed', 'apps/get-user-installation', 'apps/get-webhook-config-for-app', 'apps/get-webhook-delivery', 'apps/list-accounts-for-plan', 'apps/list-accounts-for-plan-stubbed', 'apps/list-installation-repos-for-authenticated-user', 'apps/list-installation-requests-for-authenticated-app', 'apps/list-installations', 'apps/list-installations-for-authenticated-user', 'apps/list-plans', 'apps/list-plans-stubbed', 'apps/list-repos-accessible-to-installation', 'apps/list-subscriptions-for-authenticated-user', 'apps/list-subscriptions-for-authenticated-user-stubbed', 'apps/list-webhook-deliveries', 'apps/redeliver-webhook-delivery', 'apps/remove-repo-from-installation-for-authenticated-user', 'apps/reset-token', 'apps/revoke-installation-access-token', 'apps/scope-token', 'apps/suspend-installation', 'apps/unsuspend-installation', 'apps/update-webhook-config-for-app']
+E   assert not ["PENDING still holds 37 IDs: ['apps/add-repo-to-installation-for-authenticated-user', 'apps/check-token', 'apps/creat...'apps/scope-token', 'apps/suspend-installation', 'apps/unsuspend-installation', 'apps/update-webhook-config-for-app']"]
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_apps.py:366: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 37 problems:
+E     "apps/get-authenticated": no record
+E     "apps/create-from-manifest": no record
+E     "apps/list-installation-requests-for-authenticated-app": no record
+E     "apps/list-installations": no record
+E     "apps/get-installation": no record
+E     "apps/delete-installation": no record
+E     "apps/create-installation-access-token": no record
+E     "apps/suspend-installation": no record
+E     "apps/unsuspend-installation": no record
+E     "apps/scope-token": no record
+E     "apps/get-by-slug": no record
+E     "apps/get-org-installation": no record
+E     "apps/get-repo-installation": no record
+E     "apps/get-user-installation": no record
+E     "apps/list-repos-accessible-to-installation": no record
+E     "apps/revoke-installation-access-token": no record
+E     "apps/list-installations-for-authenticated-user": no record
+E     "apps/list-installation-repos-for-authenticated-user": no record
+E     "apps/add-repo-to-installation-for-authenticated-user": no record
+E     "apps/remove-repo-from-installation-for-authenticated-user": no record
+E     "apps/get-subscription-plan-for-account": no record
+E     "apps/list-plans": no record
+E     "apps/list-accounts-for-plan": no record
+E     "apps/get-subscription-plan-for-account-stubbed": no record
+E     "apps/list-plans-stubbed": no record
+E     "apps/list-accounts-for-plan-stubbed": no record
+E     "apps/list-subscriptions-for-authenticated-user": no record
+E     "apps/list-subscriptions-for-authenticated-user-stubbed": no record
+E     "apps/delete-authorization": no record
+E     "apps/check-token": no record
+E     "apps/reset-token": no record
+E     "apps/delete-token": no record
+E     "apps/get-webhook-config-for-app": no record
+E     "apps/update-webhook-config-for-app": no record
+E     "apps/list-webhook-deliveries": no record
+E     "apps/get-webhook-delivery": no record
+E     "apps/redeliver-webhook-delivery": no record
+E   assert not ['"apps/get-authenticated": no record', '"apps/create-from-manifest": no record', '"apps/list-installation-requests-fo...ps/list-installations": no record', '"apps/get-installation": no record', '"apps/delete-installation": no record', ...]
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_apps.py:405: in test_every_list_record_has_a_case
+    assert not problems, "\n".join(problems)
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['apps/list-accounts-for-plan', 'apps/list-accounts-for-plan-stubbed', 'apps/list-installation-repos-for-authenticated-user', 'apps/list-installation-requests-for-authenticated-app', 'apps/list-installations', 'apps/list-installations-for-authenticated-user', 'apps/list-plans', 'apps/list-plans-stubbed', 'apps/list-repos-accessible-to-installation', 'apps/list-subscriptions-for-authenticated-user', 'apps/list-subscriptions-for-authenticated-user-stubbed', 'apps/list-webhook-deliveries']
+E   assert not ["Paging.LINK records without a case: []; cases without a Paging.LINK record: ['apps/list-accounts-for-plan', 'apps/li...ns-for-authenticated-user', 'apps/list-subscriptions-for-authenticated-user-stubbed', 'apps/list-webhook-deliveries']"]
+_ test_a_list_record_prints_every_item[apps/list-installation-repos-for-authenticated-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-installation-repos-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-installation-repos-for-authenticated-user"
+__ test_a_list_record_prints_every_item[apps/list-accounts-for-plan-stubbed] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-accounts-for-plan-stubbed: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-accounts-for-plan-stubbed"
+____________ test_a_list_record_prints_every_item[apps/list-plans] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-plans: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-plans"
+_ test_a_list_record_prints_every_item[apps/list-subscriptions-for-authenticated-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-subscriptions-for-authenticated-user: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-subscriptions-for-authenticated-user"
+______ test_a_list_record_prints_every_item[apps/list-accounts-for-plan] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-accounts-for-plan: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-accounts-for-plan"
+_ test_a_list_record_prints_every_item[apps/list-subscriptions-for-authenticated-user-stubbed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-subscriptions-for-authenticated-user-stubbed: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-subscriptions-for-authenticated-user-stubbed"
+________ test_a_list_record_prints_every_item[apps/list-plans-stubbed] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-plans-stubbed: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-plans-stubbed"
+_____ test_a_list_record_prints_every_item[apps/list-webhook-deliveries] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-webhook-deliveries: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 No GitHub operation record declares "apps/list-webhook-deliveries"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_orgs.py::test_nothing_is_pending - As...
+FAILED src/payload/test/test_github_api_orgs.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_orgs.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_orgs.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-for-authenticated-user]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/custom-properties-for-repos-get-organization-values]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-for-user]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/get-immutable-releases-settings-repositories]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-invitation-teams]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/get-org-ruleset-history]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-members]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-memberships-for-authenticated-user]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-app-installations]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-org-role-teams]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-attestation-repositories]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-org-role-users]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-attestations]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-outside-collaborators]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-blocked-users]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grant-repositories]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-failed-invitations]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grant-request-repositories]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-public-members]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grant-requests]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-webhook-deliveries]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pat-grants]
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-webhooks]
+FAILED src/payload/test/test_github_api_teams.py::test_nothing_is_pending - A...
+FAILED src/payload/test/test_github_api_teams.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_teams.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-pending-invitations]
+FAILED src/payload/test/test_github_api_users.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_users.py::test_the_multi_segment_parameters_are_the_sections
+FAILED src/payload/test/test_github_api_users.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-pending-invitations-in-org]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-members-in-org]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-attestations]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-pending-invitations-legacy]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-blocked-by-authenticated-user]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-members-legacy]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-emails-for-authenticated-user]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-followed-by-authenticated-user]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-repos-in-org]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-followers-for-authenticated-user]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-child-in-org]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-followers-for-user]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-repos-legacy]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-following-for-user]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-child-legacy]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-gpg-keys-for-authenticated-user]
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list-for-authenticated-user]
+FAILED src/payload/test/test_github_api_users.py::test_nothing_is_pending - A...
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-gpg-keys-for-user]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-public-keys-for-user]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-public-emails-for-authenticated-user]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-public-ssh-keys-for-authenticated-user]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installation-requests-for-authenticated-app]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-social-accounts-for-authenticated-user]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installations]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-social-accounts-for-user]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-ssh-signing-keys-for-authenticated-user]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-repos-accessible-to-installation]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installations-for-authenticated-user]
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-ssh-signing-keys-for-user]
+FAILED src/payload/test/test_github_api_apps.py::test_nothing_is_pending - As...
+FAILED src/payload/test/test_github_api_apps.py::test_every_record_sends_the_default_version_and_media_type
+FAILED src/payload/test/test_github_api_apps.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-installation-repos-for-authenticated-user]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-accounts-for-plan-stubbed]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-plans]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-subscriptions-for-authenticated-user]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-accounts-for-plan]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-subscriptions-for-authenticated-user-stubbed]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-plans-stubbed]
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-webhook-deliveries]
+======================= 78 failed, 26 passed in 25.63s ========================

@@ -18,3 +18,6 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api call gate | git/delete-ref stays callable via call | issue-27 change.md UB-4; #28 Residuals | not AC-7's branch-writing class; no incident | open |
 | 2026-11-11 | github_api copilot | copilot/set-copilot-content-exclusion-for-organization stays pending | issue-33 DL-004 | body is a map of any key; call refuses undocumented names | open |
 | 2026-11-11 | github_api gitignore, licenses | get-template and get-for-repo send ACCEPT_JSON, not their raw/html types | issue-33 change.md Residuals | needs a per-call Accept; no caller needs it | open |
+| 2026-11-11 | github_api apps | app-authenticated apps records go with the configured token (no JWT or client secret) | issue-29 DL-002; change.md Residuals | another credential source would break UB-3; no caller needs it | open |
+| 2026-11-11 | github_api issues | issues/get-issue-artifact prints one page of versions | issue-32 change.md Residuals | paging a list inside an object needs a record field | open |
+| 2026-11-11 | github_api pulls | pulls/update-branch stays pending (writes the PR head branch) | issue-32 DL-002 | gating needs #27's None mapping; one entry once it lands | open |

@@ -1,0 +1,38 @@
+# mutant M14: pulls/update-review method PUT -> PATCH
+# file: src/payload/scripts/github_api/families/pulls.py
+# sha256 original: 762bbdb8a554a5c1a6c639c4a19ac4619b883cbae528a521c3fc312fc49badce  # pragma: allowlist secret
+# sha256 mutated:  25482bb7a137a611e3b41e4e90afadf933b6922a05eae8590bafe9221cd50cc5  # pragma: allowlist secret
+# sha256 restored: 762bbdb8a554a5c1a6c639c4a19ac4619b883cbae528a521c3fc312fc49badce  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_pulls.py test/test_github_wrapper_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_pulls.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+..............F.....F.                                                   [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "pulls/update-review": method: the section documents "PUT", the record declares "PATCH"
+E   assert not ['"pulls/update-review": method: the section documents "PUT", the record declares "PATCH"']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 384 records:
+E     "pulls/update-review": the fake host has no route for its request; log []; stderr ''
+E     "pulls/update-review": method: the section documents "PUT", the call sends "PATCH"
+E   assert not ['"pulls/update-review": the fake host has no route for its request; log []; stderr \'\'', '"pulls/update-review": method: the section documents "PUT", the call sends "PATCH"']
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed, 20 passed in 33.09s ========================
