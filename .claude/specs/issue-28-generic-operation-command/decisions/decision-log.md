@@ -44,3 +44,12 @@
 **Evidence:** review/review-latest.md iteration 02 section.
 **Supersedes:** none
 **Artifacts touched:** design.md, review/review-latest.md
+
+## DL-006 — 2026-11-11T01:01:30Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** Approve tasks.md after tasks iteration 02 (both lanes CLEAN/READY, TEST-READY 21/21); the shared B1 (wave 3 never red) fixed by moving H and N into wave 2 with in-test imports and giving wave 3 a mutant red capture; the spec lane's D1 (the 'M3' label) left as worded.
+**Driver:** review/test-architect/tasks-iteration-01.md B1, review/spec-review-agent/tasks-iteration-01.md B1; both tasks-iteration-02.md verdicts.
+**Alternatives considered:** keep wave 3 with three mutants (rejected: H and N would still trail their IMPL).
+**Evidence:** tasks.md waves 2 and 3.
+**Supersedes:** none
+**Artifacts touched:** tasks.md, docs/findings-ledger.md (the F.n task-id row)
