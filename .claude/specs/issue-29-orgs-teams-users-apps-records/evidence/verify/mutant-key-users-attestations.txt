@@ -1,0 +1,39 @@
+# mutant: key-users-attestations
+# purpose: users/list-attestations item_key attestations -> None
+# sha256 before users.py: 1d2d04ff949c21ac7d02c6807a239d2b39cab9ae593e0dc129ec2ba918cf5623  # pragma: allowlist secret
+# sha256 mutant users.py: 893bc0e5dbf68ad6ebcc18a0aac78617b647aa401952469d12798c54f023d5e5  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_users.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored users.py: 1d2d04ff949c21ac7d02c6807a239d2b39cab9ae593e0dc129ec2ba918cf5623 MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-attestations]
+# ======================== 1 failed, 33 passed in 41.44s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_users.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [34 items]
+
+.........F........................                                       [100%]
+================================== FAILURES ===================================
+________ test_a_list_record_prints_every_item[users/list-attestations] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_users.py:456: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/users/list-attestations: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/users/vusername/attestations/sha256/deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef?per_page=1" returned no item list
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_users.py::test_a_list_record_prints_every_item[users/list-attestations]
+======================== 1 failed, 33 passed in 41.44s ========================

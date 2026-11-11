@@ -1,0 +1,35 @@
+# Whole-suite verdict: CI run 42962058110, read through scripts/github_wrapper.py from the main checkout (2026-11-11)
+
+$ python scripts/github_wrapper.py wait-run 42962058110 --timeout-seconds 540
+{"run_id": 42962058110, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/42962058110"}
+exit=0
+
+$ python scripts/github_wrapper.py get-run 42962058110   (fields quoted from the complete JSON)
+"name": "ci", "event": "pull_request", "status": "completed", "conclusion": "success", "run_number": 44, "run_attempt": 1
+"head_branch": "issue-29-orgs-teams-users-apps-records"
+"head_sha": "c007a9f6a04a03ade22fee3c2abc160f243d4b7d"  # pragma: allowlist secret
+"pull_requests": [{"number": 50, base "main" f374b3d4005b010fd4ae5c4bb2d95a9f25f75844}]  # pragma: allowlist secret
+Worktree `git rev-parse HEAD`: c007a9f6a04a03ade22fee3c2abc160f243d4b7d -> head_sha MATCHES the tree.  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py get-jobs 42962058110
+130330665795   completed    success      verify (types)
+130330666121   completed    success      verify (security)
+130330666137   completed    success      verify (tests)
+130330666246   completed    success      verify (lint)
+130331066195   completed    success      report
+
+$ python scripts/github_wrapper.py get-job-logs 130330666137   (verify (tests); lines quoted from the complete log)
+HEAD is now at 1f829bf Merge c007a9f6a04a03ade22fee3c2abc160f243d4b7d into f374b3d4005b010fd4ae5c4bb2d95a9f25f75844  # pragma: allowlist secret
+run_tests: python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+testpaths: src/hooks/tests, src/payload/test, test
+4 workers [2545 items]
+src/payload/scripts/github_api/families/apps.py      7  0  100%
+src/payload/scripts/github_api/families/orgs.py      7  0  100%
+src/payload/scripts/github_api/families/teams.py     7  0  100%
+src/payload/scripts/github_api/families/users.py     7  0  100%
+Required test coverage of 80% reached. Total coverage: 91.37%
+============================ 2545 passed in 35.85s =============================
+1053 passed in 5.75s   (tests/hook-suite)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+
+Verdict: GREEN (every job success; 2545 + 1053 passed, 0 failed, 0 skipped).
