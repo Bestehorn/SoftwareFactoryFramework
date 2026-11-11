@@ -38,3 +38,7 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api markdown | markdown/render-raw always sends text/plain; no per-call media type | issue-46 design.md Residuals | #28 requirements residual | open |
 | 2026-11-11 | github_api transport | REST_ROOTS holds github.com roots only; GHES upload hosts are outside it | issue-46 design.md Residuals | conventions.md Hosts and base URLs; no GHES caller | open |
 | 2026-11-11 | github_api call | no guard refuses an --input path naming the credentials file; the 307 re-send is not logged | issue-46 design.md Security Considerations, Residuals | no failure seen; a guard is a mechanism | open |
+| 2026-11-11 | gitlab_api 13 stages | several-endpoint References, two-:id token paths, two-level override_params rows stay pending; orbit glob to #40 | issue-38 DL-002, DL-005 | one record per id; forms part 1 lacks | open |
+| 2026-11-11 | gitlab_api 13 stages | flow trigger/restart and the existing-project imports stay pending | issue-38 DL-002, DL-005 | they write code, MRs or issues; no no-subcommand gate on GitLab | open |
+| 2026-11-11 | gitlab_api 13 stages | Geo lists and SCIM identities paging is named by no docs page | issue-38 change.md Residuals | #11's real-instance run settles it | open |
+| 2026-11-11 | gitlab_api 13 stages | hook, signing and importer tokens, import_url, license go in argv; runners_token prints on stdout | issue-38 change.md Residuals; #36 DL-003 | #41 Residuals; no failure seen | open |

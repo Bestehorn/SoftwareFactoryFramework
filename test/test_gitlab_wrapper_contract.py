@@ -939,8 +939,9 @@ def test_an_unreachable_call_matches_its_reference_section(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any
 ) -> None:
     """`gitlab-dedicated#update-a-geo-site`, unreachable by the Offering arm: the record a slice writes matches its
-    section; added to `gitlab_dedicated.OPERATIONS` for this test only and called with a typed value for every
-    attribute, it exits 0 and sends one request whose JSON body is those values and that the call half passes."""
+    section; put in `gitlab_dedicated.OPERATIONS` in place of any record declared with its id, for this test only, and
+    called with a typed value for every attribute, it exits 0 and sends one request whose JSON body is those values and
+    that the call half passes."""
     registry = gitlab_module(name="registry")
     sections = reference_sections(rest_dir=REST_DIR)
     section = sections[GEO_SITE_ID]
@@ -950,7 +951,8 @@ def test_an_unreachable_call_matches_its_reference_section(
 
     assert (PACKAGE_DIR / "commands" / "call.py").is_file(), "gitlab_api/commands/call.py does not exist"
     dedicated = gitlab_module(name=GEO_SITE_FAMILY)
-    monkeypatch.setattr(target=dedicated, name="OPERATIONS", value=tuple(dedicated.OPERATIONS) + (record,))
+    others = tuple(declared for declared in dedicated.OPERATIONS if declared.operation_id != GEO_SITE_ID)
+    monkeypatch.setattr(target=dedicated, name="OPERATIONS", value=others + (record,))
     contract_project(root=tmp_path, monkeypatch=monkeypatch)
     fake_gitlab.script_next(body=GEO_SITE_ANSWER)
 
