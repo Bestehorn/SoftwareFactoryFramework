@@ -15,17 +15,17 @@ the minimal code that turns them green. No task edits an existing line of `CASES
 
 Run: `python scripts/run_tests.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_transport.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py`
 
-- [ ] 1.1 TEST: R, on its synthetic family and a `Transport` on the fake host:
+- [x] 1.1 TEST: R, on its synthetic family and a `Transport` on the fake host:
   `test_send_returns_the_response_of_the_record` (`registry.send` returns the `Response`; the recorded request carries
   the record's method, the path as `expand` writes it, the decoded query, the JSON body, and the record's
   `api_version` and `accept`), `test_path_parameters_are_the_placeholders_in_order` (`registry.path_parameters` gives
   the path's `{name}` placeholders in order), `test_a_query_name_ending_in_brackets_is_sent_as_written` (`send` and
   `pages` accept `<name>[]` for a documented query name and send it as written). Existing R tests unedited. — Files:
   src/payload/test/test_github_api_registry.py — Validates: AC-1.2, AC-2.3
-- [ ] 1.2 TEST: T — `test_link_pages_send_the_given_accept`: `Transport.pages` given a non-default `accept` sends it as
+- [x] 1.2 TEST: T — `test_link_pages_send_the_given_accept`: `Transport.pages` given a non-default `accept` sends it as
   `Accept` on every page of a two-page list route. — Files: src/payload/test/test_github_api_transport.py —
   Validates: AC-1.2
-- [ ] 1.3 IMPL: D2's registry additions — `path_parameters` (`PATH_PARAMETER_PATTERN`), `query_name` (one trailing
+- [x] 1.3 IMPL: D2's registry additions — `path_parameters` (`PATH_PARAMETER_PATTERN`), `query_name` (one trailing
   `[]` removed), `_check_names` comparing a query name through `query_name`,
   `send(transport, operation_id, *, path_params, query=None, body=None) -> Response`, `call` as `send(...).json()`,
   `pages` passing `accept=operation.accept`; and `Transport.pages` and `_page_items` taking

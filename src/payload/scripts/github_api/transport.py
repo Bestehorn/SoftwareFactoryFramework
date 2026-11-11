@@ -401,11 +401,15 @@ class Transport:
         query: Optional[Mapping[str, Any]] = None,
         item_key: Optional[str] = None,
         api_version: str = API_VERSION_DEFAULT,
+        accept: str = ACCEPT_JSON,
     ) -> Iterator[Any]:
-        """The items of every page of a list, in page order, following each ``rel="next"`` target as given. The API
-        version and the path are checked here, so a refusal comes before anything is sent."""
+        """The items of every page of a list, in page order, following each ``rel="next"`` target as given; every
+        page is asked for with ``accept``. The API version and the path are checked here, so a refusal comes before
+        anything is sent."""
         _check_api_version(api_version=api_version)
-        return self._page_items(url=_api_url(path=path, query=query), item_key=item_key, api_version=api_version)
+        return self._page_items(
+            url=_api_url(path=path, query=query), item_key=item_key, api_version=api_version, accept=accept
+        )
 
     def upload(
         self, *, upload_url: str, name: str, data: bytes, media_type: str, label: Optional[str] = None
@@ -463,14 +467,16 @@ class Transport:
                 return
             after = page.end_cursor
 
-    def _page_items(self, *, url: str, item_key: Optional[str], api_version: str) -> Iterator[Any]:
+    def _page_items(
+        self, *, url: str, item_key: Optional[str], api_version: str, accept: str = ACCEPT_JSON
+    ) -> Iterator[Any]:
         next_url: Optional[str] = url
         while next_url is not None:
             response = self._send(
                 method=METHOD_GET,
                 url=next_url,
                 data=None,
-                headers={HEADER_ACCEPT: ACCEPT_JSON},
+                headers={HEADER_ACCEPT: accept},
                 api_version=api_version,
                 allowed_origin=API_ROOT,
             )

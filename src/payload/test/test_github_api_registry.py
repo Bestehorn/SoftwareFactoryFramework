@@ -7,11 +7,15 @@ finds a real family (by being there) and no real family takes part. Every reques
 ``github_wrapper_fixtures.py`` (loaded by path) through the transport's own opener; no socket is opened. Each test
 imports the package itself, so while a module is not written the test fails on the assertion that names it.
 
+``send``, ``path_parameters`` and a query name spelled ``<name>[]`` are issue #28's registry additions (its design
+D2; AC-1.2, AC-2.3).
+
 Run: ``python scripts/run_tests.py test/test_github_api_registry.py`` (no network).
 """
 
 from __future__ import annotations
 
+import dataclasses
 import importlib
 import importlib.util
 import sys
@@ -483,3 +487,148 @@ def test_expand_encodes_and_refuses_dot_segments(case: ExpandCase) -> None:
             api.registry.expand(operation=operation, path_params=case.path_params)
     else:
         assert api.registry.expand(operation=operation, path_params=case.path_params) == case.expanded
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AC-1.2 — send returns the Response of the record's request; a query name ending in [] is sent as written
+# ---------------------------------------------------------------------------------------------------------------------
+
+ENTRY_SEND = "send"
+#: A media type no transport default sends (``conventions.md`` "Headers, media types and API versions"): a request
+#: carrying it carries the record's.
+ACCEPT_FULL_JSON = "application/vnd.github.full+json"
+#: How ``conventions.md`` "Request encoding", "Query strings", spells an array:
+#: ``repository_ids[]=1&repository_ids[]=2``.
+ARRAY_SUFFIX = "[]"
+
+SEND_CASES = tuple(
+    dataclasses.replace(documented, entry=ENTRY_SEND)  # positional: replace takes its object positional-only
+    for documented in (UPDATE_ISSUE_CALL, GET_CONTENT_CALL)
+)
+BRACKETED_QUERIES = (
+    dataclasses.replace(GET_CONTENT_CALL, entry=ENTRY_SEND, query={f"{PARAM_REF}{ARRAY_SUFFIX}": ["main", "release"]}),
+    dataclasses.replace(
+        LIST_WORKFLOW_RUNS_PAGES, query={f"{PARAM_STATUS}{ARRAY_SUFFIX}": "completed", PARAM_PER_PAGE: 2}
+    ),
+)
+
+
+def use_record_media(*, api: Api, operation_id: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Give the installed synthetic family's record ``operation_id`` an API version and a media type that are not the
+    transport's defaults, ``API_VERSION_NEXT`` and ``ACCEPT_FULL_JSON``, for the test: a ``dataclasses.replace`` copy
+    set into the family's ``OPERATIONS`` in place of the original."""
+    family = importlib.import_module(name=SYNTHETIC_MODULE)
+    operations = tuple(
+        dataclasses.replace(record, api_version=api.transport.API_VERSION_NEXT, accept=ACCEPT_FULL_JSON)
+        if record.operation_id == operation_id
+        else record
+        for record in family.OPERATIONS
+    )
+    monkeypatch.setattr(target=family, name="OPERATIONS", value=operations)
+
+
+def _sent_answer(*, api: Api, transport: Any, documented: Documented) -> Any:
+    """``documented``'s answer through its entry point: ``send``'s response parsed as JSON, or every item ``pages``
+    yields, read to the list's end (``pages`` takes no body)."""
+    operation_id = documented.record.operation_id
+    if documented.entry == ENTRY_PAGES:
+        listed = api.registry.pages(
+            transport=transport, operation_id=operation_id, path_params=documented.path_params, query=documented.query
+        )
+        return list(listed)
+    response = api.registry.send(
+        transport=transport,
+        operation_id=operation_id,
+        path_params=documented.path_params,
+        query=documented.query,
+        body=documented.body,
+    )
+    return response.json()
+
+
+def _without_paging(*, query: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """``query`` without the ``page`` and ``per_page`` parameters that a list's pages set."""
+    return {name: values for name, values in query.items() if name not in fx.PAGING_PARAMETERS}
+
+
+@pytest.mark.parametrize("case", SEND_CASES, ids=lambda case: case.record.operation_id)
+def test_send_returns_the_response_of_the_record(
+    case: Documented, fake: Any, family_directory: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    api = load_api()
+    install_synthetic_family(directory=family_directory, monkeypatch=monkeypatch)
+    use_record_media(api=api, operation_id=case.record.operation_id, monkeypatch=monkeypatch)
+    record = api.registry.lookup(operation_id=case.record.operation_id)
+    assert (record.api_version, record.accept) == (api.transport.API_VERSION_NEXT, ACCEPT_FULL_JSON)
+    expanded = api.registry.expand(operation=record, path_params=case.path_params)
+    reply = fx.Reply(body=case.answer)
+    fake.route(method=record.method, url=case.sent_path, query=case.query, replies=[reply])
+    transport = api.transport.Transport(token=TOKEN)
+
+    response = api.registry.send(
+        transport=transport,
+        operation_id=case.record.operation_id,
+        path_params=case.path_params,
+        query=case.query,
+        body=case.body,
+    )
+
+    assert isinstance(response, api.transport.Response), f"send returned {response!r}, not the Response"
+    assert response.status == reply.status
+    assert response.body == reply.encoded()
+    assert response.json() == case.answer
+    (request,) = fake.requests
+    assert request.method == record.method
+    assert request.path == expanded
+    assert request.query == fx.query_of(values=case.query)
+    assert request.json() == case.body
+    assert request.header(name=api.transport.HEADER_API_VERSION) == record.api_version
+    assert request.header(name=api.transport.HEADER_ACCEPT) == record.accept
+
+
+@pytest.mark.parametrize("case", BRACKETED_QUERIES, ids=lambda case: case.entry)
+def test_a_query_name_ending_in_brackets_is_sent_as_written(
+    case: Documented, fake: Any, family_directory: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    api = load_api()
+    install_synthetic_family(directory=family_directory, monkeypatch=monkeypatch)
+    transport = api.transport.Transport(token=TOKEN)
+    _route(fake=fake, documented=case)
+
+    assert _sent_answer(api=api, transport=transport, documented=case) == case.answer
+
+    _assert_sent(requests=fake.requests, documented=case)
+    written = _without_paging(query=fx.query_of(values=case.query))
+    assert [_without_paging(query=request.query) for request in fake.requests] == [written] * len(fake.requests)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AC-2.3 — path_parameters gives the {name} placeholders of the record's path, in order
+# ---------------------------------------------------------------------------------------------------------------------
+
+GET_AUTHENTICATED_USER = RecordSpec(operation_id="synthetic/get-authenticated-user", method=METHOD_GET, path="/user")
+
+
+@dataclass(frozen=True)
+class PlaceholderCase:
+    """``record``'s path and the names of its ``{name}`` placeholders, in the order the path names them."""
+
+    record: RecordSpec
+    names: Tuple[str, ...]
+
+
+PLACEHOLDER_CASES = (
+    PlaceholderCase(record=UPDATE_ISSUE, names=(PARAM_OWNER, PARAM_REPO, PARAM_ISSUE_NUMBER)),
+    PlaceholderCase(record=GET_CONTENT, names=(PARAM_OWNER, PARAM_REPO, PARAM_PATH)),
+    PlaceholderCase(record=GET_LABEL, names=(PARAM_OWNER, PARAM_REPO, PARAM_NAME)),
+    PlaceholderCase(record=LIST_WORKFLOW_RUNS, names=(PARAM_OWNER, PARAM_REPO)),
+    PlaceholderCase(record=GET_AUTHENTICATED_USER, names=()),
+)
+
+
+@pytest.mark.parametrize("case", PLACEHOLDER_CASES, ids=lambda case: case.record.operation_id)
+def test_path_parameters_are_the_placeholders_in_order(case: PlaceholderCase) -> None:
+    api = load_api()
+    operation = case.record.build(api=api)
+
+    assert api.registry.path_parameters(operation=operation) == case.names
