@@ -20,6 +20,11 @@ queued with ``FakeGitLab.script_next``:
   ``test_a_file_for_a_variable_that_is_no_upload_is_refused`` (UB-1.2): exit 2 and no request although one would be
   answered, judged with the log record of the refusal.
 
+``test_the_usage_names_every_graphql_record`` (AC-5.1, design.md D8) reads the entry script's ``__doc__``, loaded with
+``gitlab_wrapper_fixtures.load_wrapper``, within its GraphQL entry only: every capability of ``OPERATIONS`` followed by
+the IDs of its records, how a variable, a file and a result are given and printed, ``exit 2`` and each ID of
+``REFUSED_IDS``.
+
 A JSON body is compared as parsed JSON. A ``multipart/form-data`` body is read with ``email.parser.BytesParser``, its
 ``Content-Type`` header prefixed, as ``test/test_gitlab_wrapper_contract.py`` ``sent_call`` reads one: each part's
 ``Content-Disposition`` ``name`` and ``filename``, a form field's content as JSON and a file's bytes unchanged. A
@@ -1162,4 +1167,118 @@ def test_a_file_for_a_variable_that_is_no_upload_is_refused(
     messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
     assert any(NOT_AN_UPLOAD_REFUSAL in message for message in messages), (
         f"a log record names {NOT_AN_UPLOAD_REFUSAL} (UB-1.2, design.md D3 step 4); logged: {messages!r}"
+    )
+
+
+# --- AC-5.1: the usage names every GraphQL record ------------------------------------------------------------------
+
+#: A usage line of the entry script's docstring starts with this, after its indentation; the GraphQL entry's with the
+#: second (design.md D8).
+USAGE_LINE_PREFIX = "python scripts/gitlab_wrapper.py "
+GRAPHQL_USAGE_PREFIX = f"{USAGE_LINE_PREFIX}{CALL} {GRAPHQL_ID_PREFIX}"
+#: Each line under a usage line starts with it, after its indentation.
+COMMENT_MARKER = "#"
+#: What joins the lines of the entry, each stripped of its indentation and its ``#``: a phrase wrapped onto the next
+#: line reads as one.
+ENTRY_LINE_JOIN = " "
+#: What ends a capability where the entry names it, before the IDs of its records (design.md D8).
+CAPABILITY_END = ":"
+#: The end of an operation ID named whole: no letter, digit or ``_`` follows it, nor ``.`` and a letter, so
+#: ``graphql#Query.vulnerability`` is not named by ``graphql#Query.vulnerabilities``, nor an ID by a longer
+#: ``<Type>.<field>`` ID it begins.
+ID_EDGE_AFTER = r"(?![A-Za-z0-9_]|\.[A-Za-z])"
+#: What the GraphQL entry names besides its records (AC-5.1, design.md D8): how a variable is given as text and as
+#: JSON and a file with ``--file`` (AC-2.1, AC-3.1), how a connection and any other result print (AC-2.2, AC-2.3),
+#: and the exit code of a refusal (AC-4.1).
+USAGE_TERMS: Tuple[str, ...] = (
+    "-f NAME=TEXT",
+    "-F NAME=JSON",
+    "--file NAME=PATH",
+    "JSON array",
+    FIELD_DATA,
+    f"exit {EXIT_REFUSED}",
+)
+
+
+def graphql_usage_entry(*, doc: str) -> str:
+    """The GraphQL entry of the usage ``doc`` (design.md D8): its one ``call graphql#`` usage line and the ``#`` lines
+    under it, up to the first line that is no ``#`` line (the next usage line or the blank line after the list), each
+    stripped of its indentation and its ``#``, joined with one space, so a phrase wrapped onto the next line reads as
+    one."""
+    lines = doc.splitlines()
+    starts = [number for number, line in enumerate(lines) if line.strip().startswith(GRAPHQL_USAGE_PREFIX)]
+    assert len(starts) == 1, (
+        f"the docstring of {fixtures.WRAPPER_FILE.name} holds {len(starts)} usage lines starting "
+        f"{GRAPHQL_USAGE_PREFIX!r}, expected one (AC-5.1, design.md D8)"
+    )
+    entry = [lines[starts[0]].strip()]
+    for line in lines[starts[0] + 1 :]:
+        text = line.strip()
+        if not text.startswith(COMMENT_MARKER):
+            break
+        entry.append(text[len(COMMENT_MARKER) :].strip())
+    return ENTRY_LINE_JOIN.join(entry)
+
+
+def names_id(*, text: str, operation_id: str) -> bool:
+    """Whether ``text`` names ``operation_id`` whole: not inside a longer name, and not followed by a letter, a digit,
+    ``_``, or ``.`` and a letter."""
+    whole = f"{NAME_EDGE_BEFORE}{re.escape(pattern=operation_id)}{ID_EDGE_AFTER}"
+    return re.search(pattern=whole, string=text) is not None
+
+
+def capability_problems(*, entry: str, ids_by_capability: Mapping[str, Sequence[str]]) -> List[str]:
+    """Each capability the GraphQL ``entry`` does not name as ``<capability>:``, and each ID of a capability's records
+    the entry does not name whole after it and before the next capability it names."""
+    labels = {
+        capability: re.compile(
+            pattern=f"{NAME_EDGE_BEFORE}{re.escape(pattern=capability)}{re.escape(pattern=CAPABILITY_END)}"
+        )
+        for capability in ids_by_capability
+    }
+    starts = sorted(match.start() for label in labels.values() for match in label.finditer(string=entry))
+    problems: List[str] = []
+    for capability, operation_ids in ids_by_capability.items():
+        found = labels[capability].search(string=entry)
+        if found is None:
+            problems.append(f"{json.dumps(obj=capability)} is not named as {capability}{CAPABILITY_END}")
+            continue
+        following = [start for start in starts if start > found.start()]
+        segment = entry[found.end() : following[0] if following else len(entry)]
+        problems.extend(
+            f"{json.dumps(obj=capability)}: {operation_id} is not named before the next capability"
+            for operation_id in operation_ids
+            if not names_id(text=segment, operation_id=operation_id)
+        )
+    return problems
+
+
+def test_the_usage_names_every_graphql_record() -> None:
+    """AC-5.1 (design.md D8): the GraphQL entry of the entry script's ``__doc__``, loaded with ``load_wrapper`` (its
+    ``call graphql#`` usage line and the ``#`` lines under it, joined by ``graphql_usage_entry``), names every
+    capability of ``graphql_only.OPERATIONS`` followed by the IDs of its records before the next capability, each ID
+    whole; ``-f NAME=TEXT``, ``-F NAME=JSON``, ``--file NAME=PATH``, ``JSON array``, ``data`` and ``exit 2``; and each
+    ID of ``REFUSED_IDS``. Only the entry is read, so what the docstring says of a REST ``call`` satisfies none of it;
+    the test fails when ``OPERATIONS`` holds no record."""
+    graphql_only = gitlab_module(name=GRAPHQL_ONLY)
+    ids_by_capability: Dict[str, List[str]] = {}
+    for record in graphql_only.OPERATIONS:
+        ids_by_capability.setdefault(str(record.capability), []).append(str(record.operation_id))
+    assert ids_by_capability, "graphql_only.OPERATIONS holds no record for the usage to name (AC-5.1)"
+    doc = fixtures.load_wrapper(module_name=WRAPPER_MODULE).__doc__
+    assert doc, f"{fixtures.WRAPPER_FILE} has no module docstring"
+
+    entry = graphql_usage_entry(doc=doc)
+
+    problems = capability_problems(entry=entry, ids_by_capability=ids_by_capability)
+    problems.extend(f"{term!r} is not in the entry" for term in USAGE_TERMS if not names(text=entry, name=term))
+    problems.extend(
+        f"the refused {operation_id} is not named"
+        for operation_id in REFUSED_IDS
+        if not names_id(text=entry, operation_id=operation_id)
+    )
+    assert not problems, (
+        f"the GraphQL usage entry of {fixtures.WRAPPER_FILE.name}:\n"
+        + "\n".join(problems)
+        + f"\nThe entry reads: {entry}"
     )

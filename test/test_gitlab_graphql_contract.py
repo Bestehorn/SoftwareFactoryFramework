@@ -9,6 +9,8 @@ in GraphQL" row of ``conventions.md`` names, with the argument or selection its 
 ``member_problems`` names each member of a row that no record of its capability selects as the row writes it. The
 tests prove the method on the reference and on altered copies of named records, then hold every record to it (AC-1.1,
 AC-1.2, AC-1.3, AC-4.1).
+``test_the_map_names_the_graphql_call`` holds the ``src/payload/scripts/gitlab_api/`` bullet of the project map to
+naming the GraphQL call (D8, AC-5.2).
 
 The reference exists only in this repository, so this module lives in ``test/``, as ``test_gitlab_wrapper_contract.py``
 does. It loads the product package ``gitlab_api`` from ``src/payload/scripts/``: each test imports a module of the
@@ -201,6 +203,17 @@ PIPELINE_CREATE = "graphql#pipelineCreate"
 DESIGN_UPLOAD = "graphql#designManagementUpload"
 WORK_ITEM_WIDGETS = "graphql#WorkItem.widgets"
 BRANCH_RULE_DELETE = "graphql#branchRuleDelete"
+
+# test_the_map_names_the_graphql_call (D8, AC-5.2): the map, the first line of its gitlab_api/ bullet, the indent of
+# the bullet's other lines, and what the bullet must hold.
+LLM_MAP = ROOT / "docs" / "forLLMConsumption.md"
+MAP_BULLET_START = "- `src/payload/scripts/gitlab_api/`"
+BULLET_CONTINUATION = " "
+BULLET_LINE_SEPARATOR = " "
+CALL_SUBCOMMAND = "call"
+FILE_OPTION = "--file NAME=PATH"
+UPLOAD_TYPE = "Upload"
+MAP_GRAPHQL_CALL = (f"{CALL_SUBCOMMAND} {GRAPHQL_ID_PREFIX}", FILE_OPTION, UPLOAD_TYPE)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -1324,6 +1337,21 @@ def _schema() -> ReferenceSchema:
     return reference_schema(graphql_dir=GRAPHQL_DIR)
 
 
+def _map_bullet(*, path: Path, start: str) -> str:
+    """The list bullet of ``path`` whose first line starts with ``start``: that line and each line after it that is
+    indented, up to the next bullet, each stripped of its indentation and joined with one space, so a wrapped phrase
+    reads as one; the calling test fails on this assertion when no line, or more than one, starts the bullet."""
+    lines = path.read_text(encoding=TEXT_ENCODING).splitlines()
+    starts = [number for number, line in enumerate(lines) if line.startswith(start)]
+    assert len(starts) == 1, f"{path.name}: {len(starts)} lines start with {start!r}, expected one"
+    bullet = [lines[starts[0]]]
+    for line in lines[starts[0] + 1 :]:
+        if not line.startswith(BULLET_CONTINUATION):
+            break
+        bullet.append(line.strip())
+    return BULLET_LINE_SEPARATOR.join(bullet)
+
+
 # ---------------------------------------------------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------------------------------------------------
@@ -1430,3 +1458,16 @@ def test_every_member_a_row_names_is_selected() -> None:
     problems = [problem for row in rows for problem in member_problems(row=row, records=records, schema=schema)]
 
     assert not problems, "members a row names that no record of its capability selects:\n" + "\n".join(problems)
+
+
+def test_the_map_names_the_graphql_call() -> None:
+    """AC-5.2: the ``src/payload/scripts/gitlab_api/`` bullet of the project map, ``docs/forLLMConsumption.md``, names
+    the GraphQL call: it holds ``call graphql#``, ``--file NAME=PATH`` and ``Upload`` (D8)."""
+    bullet = _map_bullet(path=LLM_MAP, start=MAP_BULLET_START)
+
+    missing = [text for text in MAP_GRAPHQL_CALL if text not in bullet]
+
+    assert not missing, (
+        f"the {MAP_BULLET_START!r} bullet of {LLM_MAP.relative_to(ROOT).as_posix()} does not hold {missing}: "
+        f"it names no GraphQL call; the bullet is {bullet!r}"
+    )

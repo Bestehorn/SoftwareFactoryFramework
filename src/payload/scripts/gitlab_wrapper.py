@@ -46,6 +46,25 @@ Usage:
         # nothing, any other body as its bytes unchanged. An unknown operation, an undocumented parameter, a missing
         # path parameter, a value of the wrong shape, and ai-coding#merge-a-merge-request and plan#create-an-issue
         # (use mr merge and issue create) are refused before any request: exit 2.
+    python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record
+        # -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one,
+        # input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each
+        # field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request.
+        # A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's
+        # nodes, any other result as its data. The "Only in GraphQL" capabilities and their records:
+        #   Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems
+        #     graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete
+        #     graphql#workItemExport
+        #   Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets
+        #   Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate
+        #     graphql#branchRuleDelete
+        #   Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities
+        #     graphql#Query.vulnerabilities graphql#Query.vulnerability
+        #   Design uploads: graphql#designManagementUpload
+        #   Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest
+        #   Work item CSV import: graphql#workItemsCsvImport
+        #   Query cost introspection: graphql#queryComplexity
+        # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
 
 Exit codes: 0 done; 1 a GitLab API error, a refused claim or a refused config/gitlab.json (the reason on standard
 error); 2 a usage error or a refused `call`; 3 `issue claim-check` on an open, unclaimed issue; 10 and 11
