@@ -209,14 +209,16 @@ the package.
   its exit codes (#13 UB-1). A `:name` that a path other than an F2 path holds twice SHALL CONTINUE TO take its one
   value at both places (`/<route-prefix>/symbolfiles/:file_name/:signature/:file_name`, #43 UB-4). The existing tests
   of `src/payload/test/test_gitlab_*.py`, `test/test_gitlab_api_properties.py`, N and V SHALL CONTINUE TO pass with no
-  existing assertion edited.
+  existing assertion edited, except one that pins what this change retires (a key's pending state, one record per ID,
+  a JSON-only body, a table without `Symbolchecksum`), restated to the new state (#38 DL-004, #37 DL-005; DL-004).
 - UB-2 The entry script and `src/payload/scripts/gitlab_api/` SHALL CONTINUE TO import only the Python 3.9 standard
   library (`test/test_gitlab_api_properties.py` `test_standard_library_only`), to read their only credential from
   `config/gitlab.json` (`_load_config`), with no token option, and to send the configured token only to the configured
   origin (#13 AC-3.1): no request to the registry carries it.
 - UB-3 A value its record does not declare SHALL CONTINUE TO be refused with nothing sent and exit 2 (#41
   Requirement 2) — the endpoints, formats and request headers of this change held to the same rule (AC-2.4, AC-4.2,
-  AC-6.3) — and `commands/call.py` `GATED_OPERATIONS` SHALL CONTINUE TO be as the base has it.
+  AC-6.3) — and `commands/call.py` `GATED_OPERATIONS` SHALL CONTINUE TO be as the base has it, but for one `None`
+  entry for the S3 import, which writes into an existing project (#38 DL-005; DL-004).
 - UB-4 `src/payload/scripts/github_wrapper.py`, `src/payload/scripts/github_api/` and their tests SHALL CONTINUE TO be
   untouched by this change and to pass.
 
@@ -229,7 +231,8 @@ ephemeral `sff-test-*` project.
 - Computing `X-Gitlab-Hmac-Sha256` (docs.gitlab.com `external_controls`: HMAC-SHA256 of the timestamp, nonce, path and
   `status=<status>` "using your secret key") needs the control's secret, which UB-2 keeps out; the caller gives it.
 - The S3 import takes `overwrite`, which replaces an existing project, the reason `families/gitlab_dedicated.py`
-  (#38 DL-005) keeps the archive imports pending; gating it is the gated kept IDs' slice, which the Ask excludes.
+  (#38 DL-005) keeps the archive imports pending; its record is refused by `call` (UB-3), the archive imports stay
+  the gated kept IDs' slice. A `bearer` token has no documented registry login, so the registry keys refuse it.
 - "Delete image tags by reference": the docs' example URL has `/manifests/` where its endpoint line and the index have
   `/tags/reference/`; the record follows the index, and GitLab's answer is #10's run.
 - "Retrieve the token information" documents an OAuth token as `Authorization: Bearer`; under `token_type` `private`

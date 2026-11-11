@@ -17,3 +17,21 @@
 **Evidence:** docs/api-reference/gitlab/ sections the requirements cite (operations-index.md header on `https://HOST` paths).
 **Supersedes:** none
 **Artifacts touched:** requirements.md
+
+## DL-003 — 2026-11-11T13:50:35Z — issue-work-orchestrator — phase:DESIGN
+
+**Decision:** Design D1-D9 as authored: F1 several records per ID chosen by `call --endpoint 'METHOD path'`; F2 `positional_names` with `--path id=` repeated in path order; F3 `suffix_values` and `--path format=`; F4 host-root `Base`, the registry origin from `container_registry_image_prefix`, its token from `/jwt/auth` by HTTP Basic (`GET /user` username, or `gitlab-ci-token` for a job token) sent only to the configured origin, a `bearer` token refused; F5 `Location.HEADER` and `--header`; F6 a FORM-body record and N's widened `PARENT_KEY`.
+**Driver:** requirements.md Requirements 2-7 (mechanisms left to design); issue #63 Open questions.
+**Alternatives considered:** a registry host in `config/gitlab.json` (rejected: UB-2 keeps the config to the instance and token); one record per ID with an endpoint table (rejected: V's `record_key_problems` already accepts several keys per Reference).
+**Evidence:** design.md D1-D9; docs.gitlab.com `authenticate_with_container_registry`, `api/container_registry`, `api/projects` (`container_registry_image_prefix`); RFC 7617, RFC 9110 sections 5.1 and 5.5.
+**Supersedes:** none
+**Artifacts touched:** design.md
+
+## DL-004 — 2026-11-11T13:50:35Z — issue-work-orchestrator — phase:DESIGN
+
+**Decision:** Restate UB-1 (an existing assertion that pins what this change retires, such as a key's pending state, one record per ID, a JSON-only body or a table without `Symbolchecksum`, is restated to the new state) and UB-3 (one `None` gate for the S3 import), before the design review opens.
+**Driver:** design author: AC-1.1 and AC-6.1 contradict UB-1's "no existing assertion edited"; the S3 import writes into an existing project (#38 DL-005) and the orchestrator settled its gate.
+**Alternatives considered:** keep the S3 key pending (rejected: AC-1.1 maps it, F6 needs a record to prove).
+**Evidence:** design.md D9 (the restated tests); #38 DL-004, #37 DL-005 (the same restatement).
+**Supersedes:** none
+**Artifacts touched:** requirements.md
