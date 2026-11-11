@@ -16,6 +16,9 @@ exactly, every ``POST`` as ``GoldenCase.writes`` holds it (method, path, and the
   with D6's argv: ``-F input=<MUTATION_INPUT>`` for ``input`` and ``-f <name>=v-<name>`` for any other declared
   variable. A record without a ``connection`` is answered with a ``data`` object, which prints; a record with one with
   two pages nested at its ``connection``, the first naming ``FIRST_CURSOR``, whose nodes print as one array.
+- ``test_every_mutation_document_has_the_designed_shape`` (AC-1.1, design D1) judges every mutation record's document
+  by this file's own ``MUTATION_DOCUMENT_SHAPE`` and a brace count, never by the product's builder: the calls above
+  post each record's own document, so they cannot see a change to it.
 - ``test_a_variable_holds_the_given_json_value`` (AC-2.1) also compares the posted ``variables`` with
   ``json.dumps(sort_keys=True)``, so ``true`` is not ``1``.
 - ``test_a_graphql_failure_exits_1_with_its_details`` (AC-2.4) patches ``FakeGitHub.answer`` for its no-response
@@ -406,6 +409,78 @@ def test_every_record_is_called_through_main(
         "graphql_only.OPERATIONS holds no record outside REFUSED_MUTATIONS, so no GraphQL call was proven: "
         f"{[record.operation_id for record in graphql_only.OPERATIONS]}"
     )
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AC-1.1 — every mutation document has design D1's shape
+# ---------------------------------------------------------------------------------------------------------------------
+
+#: How the document of a mutation record starts.
+MUTATION_KEYWORD = "mutation"
+#: Design D1's mutation document, ``mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }``,
+#: with any white space between its tokens: the one variable ``$input``, of a non-null named type; a root field called
+#: with ``(input: $input)``; a selection that begins with ``clientMutationId`` and holds at least one more field. The
+#: group ``selection`` is what follows ``clientMutationId`` up to the root field's closing brace.
+MUTATION_DOCUMENT_SHAPE = re.compile(
+    pattern=(
+        r"\Amutation\s*\(\s*\$input\s*:\s*[_A-Za-z][_0-9A-Za-z]*\s*!\s*\)\s*\{"
+        r"\s*[_A-Za-z][_0-9A-Za-z]*\s*\(\s*input\s*:\s*\$input\s*\)\s*\{"
+        r"\s*clientMutationId\s+(?P<selection>[_A-Za-z].*?)\s*\}\s*\}\s*\Z"
+    ),
+    flags=re.DOTALL,
+)
+GROUP_SELECTION = "selection"
+OPENING_BRACE = "{"
+CLOSING_BRACE = "}"
+#: D1's shape, as a failure names it.
+MUTATION_SHAPE_TEXT = "mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }"
+
+
+def selection_is_unbalanced(*, selection: str) -> bool:
+    """Whether ``selection`` closes a brace it did not open, or leaves one open: what a second root field after the
+    first one's selection leaves in the text ``MUTATION_DOCUMENT_SHAPE`` reads as the selection."""
+    depth = 0
+    for character in selection:
+        if character == OPENING_BRACE:
+            depth += 1
+        elif character == CLOSING_BRACE:
+            depth -= 1
+            if depth < 0:
+                return True
+    return depth != 0
+
+
+def mutation_shape_problems(*, operation_id: str, document: str) -> List[str]:
+    """Why the mutation ``document`` of the record ``operation_id`` does not have design D1's shape; none when it
+    has."""
+    shape = MUTATION_DOCUMENT_SHAPE.match(string=document)
+    if shape is None:
+        return [f"{operation_id}: the document is not {MUTATION_SHAPE_TEXT}: {document}"]
+    if selection_is_unbalanced(selection=shape.group(GROUP_SELECTION)):
+        return [f"{operation_id}: the document selects more than one root field, or leaves a brace open: {document}"]
+    return []
+
+
+def test_every_mutation_document_has_the_designed_shape() -> None:
+    """AC-1.1, design D1: the document of every record of ``graphql_only.OPERATIONS`` that starts with ``mutation`` is
+    ``mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }`` — one ``$input`` of a non-null
+    input type, one root field called with ``(input: $input)``, a selection beginning with ``clientMutationId`` —
+    judged by ``MUTATION_DOCUMENT_SHAPE`` and ``selection_is_unbalanced``, not by the product's builder; it fails when
+    no record is a mutation."""
+    graphql_only = fx.import_api_module(name=GRAPHQL_ONLY)
+    mutations = [record for record in graphql_only.OPERATIONS if str(record.document).startswith(MUTATION_KEYWORD)]
+    assert mutations, (
+        f"graphql_only.OPERATIONS holds no record whose document starts with {MUTATION_KEYWORD!r}: "
+        f"{[record.operation_id for record in graphql_only.OPERATIONS]}"
+    )
+
+    problems = [
+        problem
+        for record in mutations
+        for problem in mutation_shape_problems(operation_id=str(record.operation_id), document=str(record.document))
+    ]
+
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
 
 
 # ---------------------------------------------------------------------------------------------------------------------

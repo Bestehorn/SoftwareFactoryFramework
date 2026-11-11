@@ -62,3 +62,12 @@
 **Evidence:** review/test-architect/tasks-iteration-02.md Verdict line.
 **Supersedes:** none
 **Artifacts touched:** tasks.md, design.md
+
+## DL-008 — 2026-11-11T08:20:12Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's M2c and M2l as test gaps; add two tests that kill them (G: every mutation document has D1's shape with `clientMutationId`; R: `graphql_call` refuses an undeclared variable and sends nothing); no product change, then a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md M2c, M2l (REFUTED).
+**Alternatives considered:** moving `graphql_call` inside `_call_graphql`'s `try` (rejected: unreachable through `main`, since `check_graphql_call` refuses first; a behaviour change outside the finding).
+**Evidence:** evidence/verify/refutation-report.md; src/payload/scripts/github_api/registry.py `graphql_call`; graphql_only.py `_mutation`.
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_github_api_graphql_only.py, src/payload/test/test_github_api_registry.py
