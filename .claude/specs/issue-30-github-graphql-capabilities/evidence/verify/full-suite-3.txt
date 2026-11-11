@@ -1,0 +1,44 @@
+# Whole-suite verdict for issue #30 after the merge with #46, read through scripts/github_wrapper.py from the main checkout
+# worktree HEAD: 5857bb8bbce9112c901033609b0f3bd5fb665b5b  # pragma: allowlist secret
+# merge 5e6ad6f parents: 16ec9c7 (branch) and e0868e5 (origin/main at the merge); e0868e5 is an ancestor of 5857bb8
+# command: python scripts/github_wrapper.py get-run 42994129853 (exit 0); the run's own fields, verbatim:
+  "id": 42994129853,
+  "name": "ci",
+  "head_branch": "issue-30-github-graphql-capabilities",
+  "head_sha": "5857bb8bbce9112c901033609b0f3bd5fb665b5b",  # pragma: allowlist secret
+  "path": ".github/workflows/ci.yml",
+  "run_number": 80,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  pull_requests[0]: "number": 56,
+        "sha": "5857bb8bbce9112c901033609b0f3bd5fb665b5b",  # pragma: allowlist secret
+      "base": { "ref": "main",
+        "sha": "e0868e564e3708615aa4e901465cb8015bc672d8",  # pragma: allowlist secret
+  "run_attempt": 1,
+  "run_started_at": "2026-11-11T09:18:56Z",
+  "updated_at": "2026-11-11T09:21:05Z",
+# command: python scripts/github_wrapper.py get-jobs 42994129853 (exit 0), complete output:
+130433856050   completed    success      verify (lint)
+130433856067   completed    success      verify (security)
+130433856222   completed    success      verify (types)
+130433856612   completed    success      verify (tests)
+130434758412   completed    success      report
+# command: python scripts/github_wrapper.py get-job-logs 130433856612 (exit 0), searched whole for
+# passed|failed|skipped|xfail|xpass|error and the coverage rows; every matching line:
+2026-11-11T09:19:01.9613839Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/56/merge
+2026-11-11T09:19:02.0901514Z HEAD is now at 391c4c2 Merge 5857bb8bbce9112c901033609b0f3bd5fb665b5b into e0868e564e3708615aa4e901465cb8015bc672d8  # pragma: allowlist secret
+2026-11-11T09:19:19.9868922Z run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+2026-11-11T09:20:38.0847143Z src/payload/scripts/github_api/commands/call.py                               197      0   100%
+2026-11-11T09:20:38.0881487Z src/payload/scripts/github_api/graphql_only.py                                 20      0   100%
+2026-11-11T09:20:38.0882074Z src/payload/scripts/github_api/registry.py                                    123      2    98%   122, 176
+2026-11-11T09:20:38.0882775Z src/payload/scripts/github_api/transport.py                                   308     13    96%   137-138, 180, 197-198, 262, 347, 349-350, 358, 389, 393, 611
+2026-11-11T09:20:38.0883646Z src/payload/scripts/github_wrapper.py                                         154      3    98%   104, 358-359
+2026-11-11T09:20:38.0964997Z TOTAL                                                                       23163   1930    92%
+2026-11-11T09:20:38.2511656Z Required test coverage of 80% reached. Total coverage: 91.67%
+2026-11-11T09:20:38.2512251Z ======================= 3067 passed in 77.73s (0:01:17) ========================
+2026-11-11T09:20:45.4116541Z 1053 passed in 6.79s
+2026-11-11T09:20:45.4668531Z CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+# No FAILED, SKIPPED, XFAIL or XPASS line in the log (pytest -ra lists each). Because e0868e5 is an ancestor of
+# 5857bb8, the test merge 391c4c2 holds 5857bb8's tree.
+# Verdict: GREEN on 5857bb8, the worktree HEAD.

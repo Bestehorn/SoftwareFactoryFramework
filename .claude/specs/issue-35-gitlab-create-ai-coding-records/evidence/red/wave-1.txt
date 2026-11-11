@@ -1,0 +1,942 @@
+# tasks: TEST-1 TEST-2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_ai_coding.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [60 items]
+
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF             [100%]
+================================== FAILURES ===================================
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:598: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "create.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: create.PENDING is not the keys AC-1 keeps pending:
+E     not expected: ('DELETE', '/admin/ssh_certificates/:id')
+E     not expected: ('DELETE', '/groups/:id/epics/:epic_id/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('DELETE', '/groups/:id/protected_branches/:name')
+E     not expected: ('DELETE', '/groups/:id/push_rule')
+E     not expected: ('DELETE', '/project_aliases/:name')
+E     not expected: ('DELETE', '/projects/:id/issues/:issue_iid/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('DELETE', '/projects/:id/protected_branches/:name')
+E     not expected: ('DELETE', '/projects/:id/protected_tags/:name')
+E     not expected: ('DELETE', '/projects/:id/push_rule')
+E     not expected: ('DELETE', '/projects/:id/remote_mirrors/:mirror_id')
+E     not expected: ('DELETE', '/projects/:id/repository/commits/:commit_id/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('DELETE', '/projects/:id/repository/merged_branches')
+E     not expected: ('DELETE', '/projects/:id/repository/tags/:tag_name')
+E     not expected: ('DELETE', '/projects/:id/snippets/:snippet_id')
+E     not expected: ('DELETE', '/projects/:id/snippets/:snippet_id/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('DELETE', '/snippets/:id')
+E     not expected: ('GET', '/admin/ssh_certificates')
+E     not expected: ('GET', '/group_repository_storage_moves')
+E     not expected: ('GET', '/group_repository_storage_moves/:repository_storage_id')
+E     not expected: ('GET', '/groups/:group_id/repository_storage_moves')
+E     not expected: ('GET', '/groups/:group_id/repository_storage_moves/:repository_storage_id')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/discussions')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/discussions/:discussion_id')
+E     not expected: ('GET', '/groups/:id/merge_request_approval_setting')
+E     not expected: ('GET', '/groups/:id/protected_branches')
+E     not expected: ('GET', '/groups/:id/protected_branches/:name')
+E     not expected: ('GET', '/groups/:id/push_rule')
+E     not expected: ('GET', '/groups/:id/ssh_certificates')
+E     not expected: ('GET', '/keys')
+E     not expected: ('GET', '/keys/:id')
+E     not expected: ('GET', '/project_aliases')
+E     not expected: ('GET', '/project_aliases/:name')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/discussions')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/discussions/:discussion_id')
+E     not expected: ('GET', '/projects/:id/merge_request_approval_setting')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/discussions')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/discussions/:discussion_id')
+E     not expected: ('GET', '/projects/:id/mirror/pull')
+E     not expected: ('GET', '/projects/:id/protected_branches')
+E     not expected: ('GET', '/projects/:id/protected_branches/:name')
+E     not expected: ('GET', '/projects/:id/protected_tags')
+E     not expected: ('GET', '/projects/:id/protected_tags/:name')
+E     not expected: ('GET', '/projects/:id/push_rule')
+E     not expected: ('GET', '/projects/:id/remote_mirrors')
+E     not expected: ('GET', '/projects/:id/remote_mirrors/:mirror_id')
+E     not expected: ('GET', '/projects/:id/remote_mirrors/:mirror_id/public_key')
+E     not expected: ('GET', '/projects/:id/repository/blobs/:sha')
+E     not expected: ('GET', '/projects/:id/repository/blobs/:sha/raw')
+E     not expected: ('GET', '/projects/:id/repository/branches')
+E     not expected: ('GET', '/projects/:id/repository/branches/:branch')
+E     not expected: ('GET', '/projects/:id/repository/changed_paths')
+E     not expected: ('GET', '/projects/:id/repository/changelog')
+E     not expected: ('GET', '/projects/:id/repository/commits')
+E     not expected: ('GET', '/projects/:id/repository/commits/:commit_id/discussions')
+E     not expected: ('GET', '/projects/:id/repository/commits/:commit_id/discussions/:discussion_id')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/comments')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/diff')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/discussions')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/merge_requests')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/refs')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/sequence')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/signature')
+E     not expected: ('GET', '/projects/:id/repository/commits/:sha/statuses')
+E     not expected: ('GET', '/projects/:id/repository/compare')
+E     not expected: ('GET', '/projects/:id/repository/contributors')
+E     not expected: ('GET', '/projects/:id/repository/diff_stats')
+E     not expected: ('GET', '/projects/:id/repository/diverging_commits')
+E     not expected: ('GET', '/projects/:id/repository/files/:file_path')
+E     not expected: ('GET', '/projects/:id/repository/files/:file_path/blame')
+E     not expected: ('GET', '/projects/:id/repository/files/:file_path/raw')
+E     not expected: ('GET', '/projects/:id/repository/health')
+E     not expected: ('GET', '/projects/:id/repository/merge_base')
+E     not expected: ('GET', '/projects/:id/repository/tags')
+E     not expected: ('GET', '/projects/:id/repository/tags/:tag_name')
+E     not expected: ('GET', '/projects/:id/repository/tags/:tag_name/signature')
+E     not expected: ('GET', '/projects/:id/repository/tree')
+E     not expected: ('GET', '/projects/:id/snippets')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/discussions')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/discussions/:discussion_id')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/files/:ref/:file_path/raw')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/raw')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/user_agent_detail')
+E     not expected: ('GET', '/projects/:id/statistics')
+E     not expected: ('GET', '/projects/:id/templates/:type')
+E     not expected: ('GET', '/projects/:id/templates/:type/:name')
+E     not expected: ('GET', '/snippet_repository_storage_moves')
+E     not expected: ('GET', '/snippet_repository_storage_moves/:repository_storage_id')
+E     not expected: ('GET', '/snippets')
+E     not expected: ('GET', '/snippets/:id')
+E     not expected: ('GET', '/snippets/:id/files/:ref/:file_path/raw')
+E     not expected: ('GET', '/snippets/:id/raw')
+E     not expected: ('GET', '/snippets/:id/user_agent_detail')
+E     not expected: ('GET', '/snippets/:snippet_id/repository_storage_moves')
+E     not expected: ('GET', '/snippets/:snippet_id/repository_storage_moves/:repository_storage_id')
+E     not expected: ('GET', '/snippets/all')
+E     not expected: ('GET', '/snippets/public')
+E     not expected: ('GET', '/templates/dockerfiles')
+E     not expected: ('GET', '/templates/dockerfiles/:key')
+E     not expected: ('GET', '/templates/gitignores')
+E     not expected: ('GET', '/templates/gitignores/:key')
+E     not expected: ('GET', '/web_commits/public_key')
+E     not expected: ('HEAD', '/projects/:id/repository/files/:file_path')
+E     not expected: ('HEAD', '/projects/:id/repository/files/:file_path/blame')
+E     not expected: ('PATCH', '/groups/:id/protected_branches/:name')
+E     not expected: ('PATCH', '/projects/:id/protected_branches/:name')
+E     not expected: ('POST', '/admin/ssh_certificates')
+E     not expected: ('POST', '/group_repository_storage_moves')
+E     not expected: ('POST', '/groups/:group_id/repository_storage_moves')
+E     not expected: ('POST', '/groups/:id/epics/:epic_id/discussions')
+E     not expected: ('POST', '/groups/:id/epics/:epic_id/discussions/:discussion_id/notes')
+E     not expected: ('POST', '/groups/:id/protected_branches')
+E     not expected: ('POST', '/groups/:id/push_rule')
+E     not expected: ('POST', '/groups/:id/ssh_certificates')
+E     not expected: ('POST', '/project_aliases')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/discussions')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/discussions/:discussion_id/notes')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/discussions')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/discussions/:discussion_id/notes')
+E     not expected: ('POST', '/projects/:id/protected_branches')
+E     not expected: ('POST', '/projects/:id/protected_tags')
+E     not expected: ('POST', '/projects/:id/push_rule')
+E     not expected: ('POST', '/projects/:id/remote_mirrors')
+E     not expected: ('POST', '/projects/:id/remote_mirrors/:mirror_id/sync')
+E     not expected: ('POST', '/projects/:id/repository/blobs/batch')
+E     not expected: ('POST', '/projects/:id/repository/commits/:commit_id/discussions')
+E     not expected: ('POST', '/projects/:id/repository/commits/:commit_id/discussions/:discussion_id/notes')
+E     not expected: ('POST', '/projects/:id/repository/commits/:sha/comments')
+E     not expected: ('POST', '/projects/:id/repository/tags')
+E     not expected: ('POST', '/projects/:id/snippets')
+E     not expected: ('POST', '/projects/:id/snippets/:snippet_id/discussions')
+E     not expected: ('POST', '/projects/:id/snippets/:snippet_id/discussions/:discussion_id/notes')
+E     not expected: ('POST', '/projects/:id/statuses/:sha')
+E     not expected: ('POST', '/snippet_repository_storage_moves')
+E     not expected: ('POST', '/snippets')
+E     not expected: ('POST', '/snippets/:snippet_id/repository_storage_moves')
+E     not expected: ('PUT', '/groups/:id/epics/:epic_id/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('PUT', '/groups/:id/merge_request_approval_setting')
+E     not expected: ('PUT', '/groups/:id/push_rule')
+E     not expected: ('PUT', '/projects/:id/issues/:issue_iid/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('PUT', '/projects/:id/merge_request_approval_setting')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/discussions/:discussion_id')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('PUT', '/projects/:id/mirror/pull')
+E     not expected: ('PUT', '/projects/:id/push_rule')
+E     not expected: ('PUT', '/projects/:id/remote_mirrors/:mirror_id')
+E     not expected: ('PUT', '/projects/:id/repository/commits/:commit_id/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('PUT', '/projects/:id/snippets/:snippet_id')
+E     not expected: ('PUT', '/projects/:id/snippets/:snippet_id/discussions/:discussion_id/notes/:note_id')
+E     not expected: ('PUT', '/snippets/:id')
+E   assert frozenset({('...:name'), ...}) == frozenset({('...nches'), ...})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/remote_mirrors/:mirror_id/sync[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/protected_branches/:name[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/issues/:issue_iid/discussions/:discussion_id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mG...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:621: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the non-SCALAR and member Params are not the sections' (AC-2, AC-3):\n" + (
+E   AssertionError: the non-SCALAR and member Params are not the sections' (AC-2, AC-3):
+E     missing: 'create#create-a-commit-thread'
+E     missing: 'create#create-a-merge-request-thread'
+E     missing: 'create#create-a-push-mirror'
+E     missing: 'create#create-a-snippet'
+E     missing: 'create#create-a-snippet-1'
+E     missing: 'create#get-merge-base'
+E     missing: 'create#protect-a-repository-tag'
+E     missing: 'create#protect-repository-branches'
+E     missing: 'create#protect-repository-branches-1'
+E     missing: 'create#retrieve-file-blame-history-from-a-repository'
+E     missing: 'create#retrieve-multiple-blobs-in-a-single-request'
+E     missing: 'create#update-a-protected-branch'
+E     missing: 'create#update-a-protected-branch-1'
+E     missing: 'create#update-a-remote-mirror-in-a-project'
+E     missing: 'create#update-a-snippet'
+E     missing: 'create#update-snippet'
+E   assert {} == {'create#crea...HASHES'}, ...}
+E     
+E     Right contains 16 more items:
+E     [0m{[33m'[39;49;00m[33mcreate#create-a-commit-thread[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mposition[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mHASH[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mcreate#create-a-merge-request-thread[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mposition[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mHASH[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mcreate#create-a-push-mirror[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mhost_keys[39;49;00m[3...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:644: in test_only_the_list_records_are_paged
+    assert offset == expected, "the Paging.OFFSET records are not the sections' lists (AC-4):\n" + set_difference(
+E   AssertionError: the Paging.OFFSET records are not the sections' lists (AC-4):
+E     missing: 'create#get-contributor-list'
+E     missing: 'create#list-all-commit-comments'
+E     missing: 'create#list-all-commit-discussion-items'
+E     missing: 'create#list-all-commit-discussions'
+E     missing: 'create#list-all-dockerfile-templates'
+E     missing: 'create#list-all-epic-discussion-items'
+E     missing: 'create#list-all-gitignore-templates'
+E     missing: 'create#list-all-group-repository-storage-moves'
+E     missing: 'create#list-all-group-ssh-certificates'
+E     missing: 'create#list-all-instance-ssh-certificates'
+E     missing: 'create#list-all-issue-discussion-items'
+E     missing: 'create#list-all-merge-request-discussion-items'
+E     missing: 'create#list-all-project-aliases'
+E     missing: 'create#list-all-project-repository-tags'
+E     missing: 'create#list-all-public-snippets'
+E     missing: 'create#list-all-references-a-commit-is-pushed-to'
+E     missing: 'create#list-all-remote-mirrors-for-a-project'
+E     missing: 'create#list-all-repository-branches'
+E     missing: 'create#list-all-repository-storage-moves-for-a-group'
+E     missing: 'create#list-all-repository-storage-moves-for-a-snippet'
+E     missing: 'create#list-all-repository-trees-in-a-project'
+E     missing: 'create#list-all-snippet-discussion-items'
+E     missing: 'create#list-all-snippet-repository-storage-moves'
+E     missing: 'create#list-all-snippets'
+E     missing: 'create#list-all-snippets-for-a-project'
+E     missing: 'create#list-all-snippets-for-current-user'
+E     missing: 'create#list-all-templates-of-a-particular-type'
+E     missing: 'create#list-commit-statuses'
+E     missing: 'create#list-merge-requests-associated-with-a-commit'
+E     missing: 'create#list-protected-branches'
+E     missing: 'create#list-protected-branches-1'
+E     missing: 'create#list-protected-tags'
+E     missing: 'create#list-repository-commits'
+E     missing: 'create#retrieve-changed-paths'
+E     missing: 'create#retrieve-commit-diff'
+E     missing: 'create#retrieve-diff-statistics'
+E   assert frozenset() == frozenset({'c...-items', ...})
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mcreate#list-repository-commits[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mcreate#list-all-snippet-discussion-items[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mcreate#list-all-snippets-for-current-user[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mcreate#list-all-commit-comments[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mcreate#list-commit-statuses[39;49;00m[33m'[39;49;00m[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+_____ test_a_list_record_prints_every_page[list-all-dockerfile-templates] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-dockerfile-templates'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-dockerfile-templates': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_page[get-contributor-list] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#get-contributor-list', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#get-contributor-list': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[list-all-epic-discussion-items] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-epic-discussion-items', '--path', 'id=101', '--path', 'epic_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-epic-discussion-items': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-all-commit-comments] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-commit-comments', '--path', 'id=101', '--path', 'sha=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-commit-comments': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[list-all-gitignore-templates] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-gitignore-templates'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-gitignore-templates': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-commit-discussion-items] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-commit-discussion-items', '--path', 'id=101', '--path', 'commit_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-commit-discussion-items': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-group-repository-storage-moves] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-group-repository-storage-moves'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-group-repository-storage-moves': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-all-commit-discussions] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-commit-discussions', '--path', 'id=101', '--path', 'sha=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-commit-discussions': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[list-all-group-ssh-certificates] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-group-ssh-certificates', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-group-ssh-certificates': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-merge-request-discussion-items] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-merge-request-discussion-items', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-merge-request-discussion-items': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[list-all-instance-ssh-certificates] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-instance-ssh-certificates'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-instance-ssh-certificates': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-all-project-aliases] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-project-aliases'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-project-aliases': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[list-all-issue-discussion-items] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-issue-discussion-items', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-issue-discussion-items': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-project-repository-tags] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-project-repository-tags', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-project-repository-tags': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-repository-storage-moves-for-a-group] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-repository-storage-moves-for-a-group', '--path', 'group_id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-repository-storage-moves-for-a-group': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-all-public-snippets] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-public-snippets'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-public-snippets': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-repository-storage-moves-for-a-snippet] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-repository-storage-moves-for-a-snippet', '--path', 'snippet_id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-repository-storage-moves-for-a-snippet': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-references-a-commit-is-pushed-to] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-references-a-commit-is-pushed-to', '--path', 'id=101', '--path', 'sha=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-references-a-commit-is-pushed-to': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-repository-trees-in-a-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-repository-trees-in-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-repository-trees-in-a-project': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-remote-mirrors-for-a-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-remote-mirrors-for-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-remote-mirrors-for-a-project': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-snippet-discussion-items] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-snippet-discussion-items', '--path', 'id=101', '--path', 'snippet_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-snippet-discussion-items': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[list-all-repository-branches] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-repository-branches', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-repository-branches': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-snippet-repository-storage-moves] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-snippet-repository-storage-moves'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-snippet-repository-storage-moves': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[list-all-snippets-for-a-project] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-snippets-for-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-snippets-for-a-project': no family module and no graphql_only record declares it
+___________ test_a_list_record_prints_every_page[list-all-snippets] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-snippets'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-snippets': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-protected-branches] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-protected-branches', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-protected-branches': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[list-all-snippets-for-current-user] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-snippets-for-current-user'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-snippets-for-current-user': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-protected-branches-1] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-protected-branches-1', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-protected-branches-1': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-templates-of-a-particular-type] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-all-templates-of-a-particular-type', '--path', 'id=101', '--path', 'type=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-all-templates-of-a-particular-type': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_page[list-protected-tags] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-protected-tags', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-protected-tags': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_page[list-commit-statuses] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-commit-statuses', '--path', 'id=101', '--path', 'sha=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-commit-statuses': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[list-repository-commits] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-repository-commits', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-repository-commits': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-merge-requests-associated-with-a-commit] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#list-merge-requests-associated-with-a-commit', '--path', 'id=101', '--path', 'sha=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#list-merge-requests-associated-with-a-commit': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_page[retrieve-commit-diff] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#retrieve-commit-diff', '--path', 'id=101', '--path', 'sha=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#retrieve-commit-diff': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_page[retrieve-changed-paths] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#retrieve-changed-paths', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#retrieve-changed-paths': no family module and no graphql_only record declares it
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_ai_coding.py:582: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_OR_MEMBER_PARAMS, (
+E   AssertionError: the Params not Kind.SCALAR or naming a member are not the rows' (AC-2, AC-3):
+E     missing: 'ai-coding#create-a-draft-note'
+E     missing: 'ai-coding#create-an-approval-rule-for-a-group'
+E     missing: 'ai-coding#create-an-approval-rule-for-a-merge-request'
+E     missing: 'ai-coding#create-an-approval-rule-for-a-project'
+E     missing: 'ai-coding#create-context-commits-for-a-merge-request'
+E     missing: 'ai-coding#delete-context-commits-from-a-merge-request'
+E     missing: 'ai-coding#generate-code-completions'
+E     missing: 'ai-coding#list-group-merge-requests'
+E     missing: 'ai-coding#list-merge-requests'
+E     missing: 'ai-coding#list-project-merge-requests'
+E     missing: 'ai-coding#update-a-draft-note'
+E     missing: 'ai-coding#update-a-merge-request'
+E     missing: 'ai-coding#update-an-approval-rule-for-a-merge-request'
+E     missing: 'ai-coding#update-an-approval-rule-for-a-project'
+E   assert {'ai-coding#c...ls': 'ARRAY'}} == {'ai-coding#c...'ARRAY'}, ...}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 14 more items:
+E     [0m{[33m'[39;49;00m[33mai-coding#create-a-draft-note[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mposition[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mHASH[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mai-coding#create-an-approval-rule-for-a-group[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mgroup_ids[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33muser_ids[39;49;00m[33m'[39;49;00m: [33...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_only_the_list_records_are_paged _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_ai_coding.py:609: in test_only_the_list_records_are_paged
+    assert paged == expected, "the records not Paging.NONE are not the lists AC-4 pages:\n" + mapping_difference(
+E   AssertionError: the records not Paging.NONE are not the lists AC-4 pages:
+E     missing: 'ai-coding#list-all-approval-rules-for-a-group'
+E     missing: 'ai-coding#list-all-approval-rules-for-a-merge-request'
+E     missing: 'ai-coding#list-all-approval-rules-for-a-project'
+E     missing: 'ai-coding#list-all-merge-request-draft-notes'
+E     missing: 'ai-coding#list-context-commits-for-a-merge-request'
+E     missing: 'ai-coding#list-group-merge-requests'
+E     missing: 'ai-coding#list-issues-related-to-the-merge-request'
+E     missing: 'ai-coding#list-issues-that-close-on-merge'
+E     missing: 'ai-coding#list-merge-request-diffs'
+E     missing: 'ai-coding#list-merge-requests'
+E     missing: 'ai-coding#list-project-merge-requests'
+E     missing: 'ai-coding#retrieve-blocked-merge-requests'
+E     missing: 'ai-coding#retrieve-merge-request-commits'
+E     missing: 'ai-coding#retrieve-merge-request-dependencies'
+E     missing: 'ai-coding#retrieve-merge-request-diff-versions'
+E     missing: 'ai-coding#retrieve-merge-request-participants'
+E     missing: 'ai-coding#retrieve-merge-request-reviewers'
+E   assert {'ai-coding#l...es': 'OFFSET'} == {'ai-coding#l...'OFFSET', ...}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 17 more items:
+E     [0m{[33m'[39;49;00m[33mai-coding#list-all-approval-rules-for-a-group[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mai-coding#list-all-approval-rules-for-a-merge-request[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mai-coding#list-all-approval-rules-for-a-project[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[3...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______ test_a_list_record_prints_every_page[retrieve-diff-statistics] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:668: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#retrieve-diff-statistics', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#retrieve-diff-statistics': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[list-all-approval-rules-for-a-group] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-all-approval-rules-for-a-group', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-all-approval-rules-for-a-group': no family module and no graphql_only record declares it
+__________________ test_a_raw_download_is_written_unchanged ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_create.py:697: in test_a_raw_download_is_written_unchanged
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-raw-blob-content', '--path', 'sha=7d70e02'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'create#retrieve-raw-blob-content': no family module and no graphql_only record declares it
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_ai_coding.py:554: in test_only_the_kept_keys_are_pending
+    assert pending == KEPT_PENDING_KEYS, "PENDING is not the key AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: PENDING is not the key AC-1 keeps pending:
+E     not expected: ('DELETE', '/projects/:id/approval_rules/:approval_rule_id')
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid')
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/approval_rules/:approval_rule_id')
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/blocks/:block_id')
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/context_commits')
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/draft_notes/:draft_note_id')
+E     not expected: ('GET', '/groups/:id/approval_rules')
+E     not expected: ('GET', '/groups/:id/merge_requests')
+E     not expected: ('GET', '/merge_requests')
+E     not expected: ('GET', '/projects/:id/approval_rules')
+E     not expected: ('GET', '/projects/:id/approval_rules/:approval_rule_id')
+E     not expected: ('GET', '/projects/:id/approvals')
+E     not expected: ('GET', '/projects/:id/merge_requests')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/approval_rules')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/approval_rules/:approval_rule_id')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/approval_state')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/approvals')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/blockees')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/blocks')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/changes')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/closes_issues')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/commits')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/context_commits')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/diffs')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/draft_notes')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/draft_notes/:draft_note_id')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/merge_ref')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/participants')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/raw_diffs')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/related_issues')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/reviewers')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/time_stats')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/versions')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/versions/:version_id')
+E     not expected: ('POST', '/code_suggestions/completions')
+E     not expected: ('POST', '/code_suggestions/connection_details')
+E     not expected: ('POST', '/code_suggestions/direct_access')
+E     not expected: ('POST', '/code_suggestions/enabled')
+E     not expected: ('POST', '/groups/:id/approval_rules')
+E     not expected: ('POST', '/projects/:id/approval_rules')
+E     not expected: ('POST', '/projects/:id/approvals')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/add_spent_time')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/approval_rules')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/blocks')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/cancel_auto_merge')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/cancel_merge_when_pipeline_succeeds')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/context_commits')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/draft_notes')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/draft_notes/bulk_publish')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/pipelines')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/reset_spent_time')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/reset_time_estimate')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/subscribe')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/time_estimate')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/todo')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/unapprove')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/unsubscribe')
+E     not expected: ('PUT', '/projects/:id/approval_rules/:approval_rule_id')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/approval_rules/:approval_rule_id')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/draft_notes/:draft_note_id')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/draft_notes/:draft_note_id/publish')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/reset_approvals')
+E   assert frozenset({('...te_id'), ...}) == frozenset({('...iid/rebase')})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/code_suggestions/direct_access[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/merge_requests/:merge_request_iid/cancel_auto_merge[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/merge_requests/:merge_request_iid/diffs[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_list_record_prints_every_page[list-all-approval-rules-for-a-merge-request] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-all-approval-rules-for-a-merge-request', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-all-approval-rules-for-a-merge-request': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-context-commits-for-a-merge-request] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-context-commits-for-a-merge-request', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-context-commits-for-a-merge-request': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-approval-rules-for-a-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-all-approval-rules-for-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-all-approval-rules-for-a-project': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-group-merge-requests] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-group-merge-requests', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-group-merge-requests': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[list-all-merge-request-draft-notes] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-all-merge-request-draft-notes', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-all-merge-request-draft-notes': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-issues-related-to-the-merge-request] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-issues-related-to-the-merge-request', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-issues-related-to-the-merge-request': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[list-issues-that-close-on-merge] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-issues-that-close-on-merge', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-issues-that-close-on-merge': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_page[list-merge-request-diffs] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-merge-request-diffs', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-merge-request-diffs': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_page[list-merge-requests] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-merge-requests'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-merge-requests': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_page[list-project-merge-requests] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#list-project-merge-requests', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#list-project-merge-requests': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[retrieve-blocked-merge-requests] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#retrieve-blocked-merge-requests', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#retrieve-blocked-merge-requests': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_page[retrieve-merge-request-commits] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#retrieve-merge-request-commits', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#retrieve-merge-request-commits': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[retrieve-merge-request-dependencies] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#retrieve-merge-request-dependencies', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#retrieve-merge-request-dependencies': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[retrieve-merge-request-diff-versions] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#retrieve-merge-request-diff-versions', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#retrieve-merge-request-diff-versions': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_page[retrieve-merge-request-participants] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#retrieve-merge-request-participants', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#retrieve-merge-request-participants': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[retrieve-merge-request-reviewers] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-35\src\payload\test\test_gitlab_api_ai_coding.py:639: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['ai-coding#retrieve-merge-request-reviewers', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'ai-coding#retrieve-merge-request-reviewers': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_create.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_create.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_create.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-dockerfile-templates]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[get-contributor-list]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-epic-discussion-items]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-commit-comments]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-gitignore-templates]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-commit-discussion-items]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-group-repository-storage-moves]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-commit-discussions]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-group-ssh-certificates]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-merge-request-discussion-items]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-instance-ssh-certificates]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-project-aliases]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-issue-discussion-items]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-project-repository-tags]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-repository-storage-moves-for-a-group]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-public-snippets]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-repository-storage-moves-for-a-snippet]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-references-a-commit-is-pushed-to]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-repository-trees-in-a-project]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-remote-mirrors-for-a-project]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-snippet-discussion-items]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-repository-branches]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-snippet-repository-storage-moves]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-snippets-for-a-project]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-snippets]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-protected-branches]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-snippets-for-current-user]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-protected-branches-1]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-all-templates-of-a-particular-type]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-protected-tags]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-commit-statuses]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-repository-commits]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[list-merge-requests-associated-with-a-commit]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[retrieve-commit-diff]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[retrieve-changed-paths]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_list_record_prints_every_page[retrieve-diff-statistics]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-all-approval-rules-for-a-group]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_raw_download_is_written_unchanged
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-all-approval-rules-for-a-merge-request]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-context-commits-for-a-merge-request]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-all-approval-rules-for-a-project]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-group-merge-requests]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-all-merge-request-draft-notes]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-issues-related-to-the-merge-request]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-issues-that-close-on-merge]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-merge-request-diffs]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-merge-requests]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[list-project-merge-requests]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[retrieve-blocked-merge-requests]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[retrieve-merge-request-commits]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[retrieve-merge-request-dependencies]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[retrieve-merge-request-diff-versions]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[retrieve-merge-request-participants]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_list_record_prints_every_page[retrieve-merge-request-reviewers]
+============================= 60 failed in 6.08s ==============================
+exit=1

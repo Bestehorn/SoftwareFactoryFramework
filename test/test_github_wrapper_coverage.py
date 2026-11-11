@@ -115,6 +115,18 @@ BEFORE_REGENERATION = {
 }
 NO_CAPABILITIES: tuple[str, ...] = ()
 
+# AC-1.4's synthetic capability module: GraphQL records whose operation IDs are compared with each other and with the
+# operation IDs of an index that holds one row, ``issues/get``'s.
+SYNTHETIC_GRAPHQL_MODULE = "synthetic_graphql_only"
+SYNTHETIC_FIRST_CAPABILITY = "First capability"
+SYNTHETIC_SECOND_CAPABILITY = "Second capability"
+SYNTHETIC_GRAPHQL_CAPABILITIES = (SYNTHETIC_FIRST_CAPABILITY, SYNTHETIC_SECOND_CAPABILITY)
+SYNTHETIC_FIRST_GRAPHQL_ID = "graphql/firstMutation"
+SYNTHETIC_SECOND_GRAPHQL_ID = "graphql/secondMutation"
+SYNTHETIC_GRAPHQL_INDEX = {ISSUES_GET: ISSUES_GET_ROW}
+SYNTHETIC_DOCUMENT = "mutation($input: SyntheticInput!) { synthetic(input: $input) { clientMutationId } }"
+NO_CONNECTION: tuple[str, ...] = ()
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Reading the reference (D7)
@@ -347,19 +359,26 @@ def _family_problems(
     return problems
 
 
-def _capability_problems(*, module: ModuleType, capabilities: Sequence[str], record_type: type) -> list[str]:
+def _capability_problems(
+    *, module: ModuleType, index: Mapping[str, tuple[str, str]], capabilities: Sequence[str], record_type: type[Any]
+) -> list[str]:
     """Every way the GraphQL capability module breaks D2: a record or pending entry that is no "Only in GraphQL"
-    capability, a capability declared twice, or one both covered and pending."""
+    capability, a record's operation ID declared twice or that is an operation ID of ``index``, or a capability both
+    covered and pending."""
     name = module.__name__
     problems = []
-    declared = []
+    declared: list[str] = []
+    covered: set[str] = set()
     for record in module.OPERATIONS:
         if not isinstance(record, record_type):
             problems.append(f"{name}: {record!r} in {ATTRIBUTE_OPERATIONS} is not a {GRAPHQL_OPERATION}")
             continue
-        declared.append(record.capability)
+        declared.append(record.operation_id)
+        covered.add(record.capability)
         if record.capability not in capabilities:
             problems.append(f'{name}: the record {record.capability!r} is not an "Only in GraphQL" capability')
+        if record.operation_id in index:
+            problems.append(f"{name}: the record {record.operation_id!r} is an operation ID of the index")
     pending = set(module.PENDING_CAPABILITIES)
     problems.extend(
         f'{name}: {ATTRIBUTE_PENDING_CAPABILITIES} holds {capability!r}, not an "Only in GraphQL" capability'
@@ -367,13 +386,11 @@ def _capability_problems(*, module: ModuleType, capabilities: Sequence[str], rec
         if capability not in capabilities
     )
     problems.extend(
-        f"{name}: {capability!r} is declared {count} times"
-        for capability, count in sorted(Counter(declared).items())
+        f"{name}: {operation_id!r} is declared {count} times"
+        for operation_id, count in sorted(Counter(declared).items())
         if count > 1
     )
-    problems.extend(
-        f"{name}: {capability!r} is both covered and pending" for capability in sorted(set(declared) & pending)
-    )
+    problems.extend(f"{name}: {capability!r} is both covered and pending" for capability in sorted(covered & pending))
     return problems
 
 
@@ -441,6 +458,20 @@ def _regenerated(
     """``BEFORE_REGENERATION`` with the rows of ``changes`` added or replaced and the IDs of ``removed`` gone."""
     rows = {**BEFORE_REGENERATION, **changes}
     return {operation_id: row for operation_id, row in rows.items() if operation_id not in removed}
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A synthetic capability module (AC-1.4)
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+def _capability_module(*, records: Sequence[Any]) -> ModuleType:
+    """A GraphQL capability module of D2's contract whose ``OPERATIONS`` are ``records`` and whose
+    ``PENDING_CAPABILITIES`` is empty."""
+    module = ModuleType(name=SYNTHETIC_GRAPHQL_MODULE)
+    setattr(module, ATTRIBUTE_OPERATIONS, tuple(records))
+    setattr(module, ATTRIBUTE_PENDING_CAPABILITIES, frozenset())
+    return module
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -630,11 +661,71 @@ def test_one_module_per_family_holding_only_its_own_ids() -> None:
     _assert_contract(modules=[graphql], names=GRAPHQL_ONLY_CONTRACT)
     problems.extend(
         _capability_problems(
-            module=graphql, capabilities=capabilities, record_type=getattr(registry, GRAPHQL_OPERATION)
+            module=graphql, index=index, capabilities=capabilities, record_type=getattr(registry, GRAPHQL_OPERATION)
         )
     )
 
     assert not problems, "the family and capability modules break D2's contract:\n" + "\n".join(problems)
+
+
+@pytest.mark.usefixtures("scripts_on_path")
+@pytest.mark.parametrize(
+    argnames=("declared", "expected_named_ids"),
+    argvalues=[
+        pytest.param(
+            (
+                (SYNTHETIC_FIRST_GRAPHQL_ID, SYNTHETIC_FIRST_CAPABILITY),
+                (SYNTHETIC_SECOND_GRAPHQL_ID, SYNTHETIC_FIRST_CAPABILITY),
+            ),
+            (),
+            id="shared_capability",
+        ),
+        pytest.param(
+            (
+                (SYNTHETIC_FIRST_GRAPHQL_ID, SYNTHETIC_FIRST_CAPABILITY),
+                (SYNTHETIC_FIRST_GRAPHQL_ID, SYNTHETIC_SECOND_CAPABILITY),
+            ),
+            (SYNTHETIC_FIRST_GRAPHQL_ID,),
+            id="shared_id",
+        ),
+        pytest.param(
+            ((ISSUES_GET, SYNTHETIC_FIRST_CAPABILITY),),
+            (ISSUES_GET,),
+            id="index_id",
+        ),
+    ],
+)
+def test_a_graphql_record_id_is_its_own(declared: Sequence[tuple[str, str]], expected_named_ids: Sequence[str]) -> None:
+    """AC-1.4: on a synthetic capability module of the registry's ``GraphQLOperation`` records, each built from one
+    ``(operation_id, capability)`` pair of ``declared``, two records that share a capability give no problem; two that
+    share an operation ID give one problem naming the ID, and so does a record whose ID is an operation ID of the
+    index. Every capability is one the table lists and nothing is pending, so each problem is the ID's."""
+    registry = _import_package_module(name=REGISTRY)
+    record_type = getattr(registry, GRAPHQL_OPERATION)
+    records = [
+        record_type(
+            operation_id=operation_id, capability=capability, document=SYNTHETIC_DOCUMENT, connection=NO_CONNECTION
+        )
+        for operation_id, capability in declared
+    ]
+
+    problems = _capability_problems(
+        module=_capability_module(records=records),
+        index=SYNTHETIC_GRAPHQL_INDEX,
+        capabilities=SYNTHETIC_GRAPHQL_CAPABILITIES,
+        record_type=record_type,
+    )
+
+    assert len(problems) == len(expected_named_ids), (
+        f"_capability_problems returned {problems} for the records {declared}; expected one problem naming each of "
+        f"{list(expected_named_ids)}"
+    )
+    unnamed = [
+        f"{problem!r} does not name {operation_id!r}"
+        for problem, operation_id in zip(problems, expected_named_ids)
+        if repr(operation_id) not in problem
+    ]
+    assert not unnamed, "\n".join(unnamed)
 
 
 @pytest.mark.usefixtures("scripts_on_path")
