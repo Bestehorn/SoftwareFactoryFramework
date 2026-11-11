@@ -1,0 +1,49 @@
+# mutant M08: CREATE_RE lookarounds removed
+# file: src/hooks/gate_filing.py
+# sha256 original: 43e21cecf3d39fba985bc0baa9fd37f6b982828a47d50e84bfc757c127fc4ec3  # pragma: allowlist secret
+# sha256 mutated:  23dae28a8e3aefda70f83e237a8b7c883472f46e8f8312e5c60e1f36eb543a51  # pragma: allowlist secret
+# sha256 restored: 43e21cecf3d39fba985bc0baa9fd37f6b982828a47d50e84bfc757c127fc4ec3  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/hooks/tests/test_gate_filing.py src/hooks/tests/test_dispatcher.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/hooks/tests/test_gate_filing.py src/hooks/tests/test_dispatcher.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\hooks\tests
+configfile: pytest.ini
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [97 items]
+
+...........................................F............................ [ 74%]
+.........................                                                [100%]
+================================== FAILURES ===================================
+_ test_a_command_that_creates_nothing_is_allowed_without_a_note[call-create-issue-artifact] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\hooks\tests\test_gate_filing.py:196: in test_a_command_that_creates_nothing_is_allowed_without_a_note
+    assert decision.exit_code == ALLOW, decision.stderr
+E   AssertionError: BLOCKED by issue-filing-gate: this issue body is missing required provenance line(s): Origin: Subject: Filing-rationale:
+E     
+E     First re-run the fix-first evaluation (.claude/rules/issue-filing-discipline.md):
+E       1. Blocking the current task?  -> fix it in the current change, do not file.
+E       2. Small and clear (a few lines, no design choice, no new dependency)?
+E          -> FIX IT NOW and do not file. This is the expected outcome for most
+E             defects noticed in passing.
+E       3. Needs extensive RESEARCH, an evaluation of DESIGN-OPTIONS, or is
+E          OUT-OF-SCOPE for the current task (or a human asked: HUMAN-REQUEST)?
+E          -> file it, and say which one.
+E       4. None of the above? -> one line in docs/findings-ledger.md, then move on.
+E          Filing nothing is a valid and expected outcome.
+E     
+E     If the evaluation still says FILE, put these lines in the issue body (prefer
+E     delegating the filing to the issue-intake agent, which emits them):
+E       Origin: human-request|spawned-discovery|spawned-residual|agent-sweep
+E       Subject: product|process
+E       Spawned-from: #<N>            (only when Origin is spawned-*)
+E       Filing-rationale: RESEARCH|DESIGN-OPTIONS|OUT-OF-SCOPE|HUMAN-REQUEST — <why>
+E     
+E   assert 2 == 0
+E    +  where 2 = Decision(exit_code=2, stdout='', stderr='BLOCKED by issue-filing-gate: this issue body is missing required provenance ...    (only when Origin is spawned-*)\n  Filing-rationale: RESEARCH|DESIGN-OPTIONS|OUT-OF-SCOPE|HUMAN-REQUEST — <why>\n').exit_code
+=========================== short test summary info ===========================
+FAILED src\hooks\tests\test_gate_filing.py::test_a_command_that_creates_nothing_is_allowed_without_a_note[call-create-issue-artifact]
+======================== 1 failed, 96 passed in 6.25s =========================

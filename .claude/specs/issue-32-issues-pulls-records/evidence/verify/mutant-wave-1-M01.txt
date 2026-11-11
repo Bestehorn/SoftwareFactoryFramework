@@ -1,0 +1,45 @@
+# mutant M01: search/code item_key ITEM_KEY_ITEMS -> None
+# file: src/payload/scripts/github_api/families/search.py
+# sha256 original: 9b3160076287e5ca52ab35ef13f20e835c3a59d7b1e15f558adc49212ffc97b0  # pragma: allowlist secret
+# sha256 mutated:  edcff4d1f12e42e392a04b27362dd8314adc9f09e586cec3fc8baab1eebd9136  # pragma: allowlist secret
+# sha256 restored: 9b3160076287e5ca52ab35ef13f20e835c3a59d7b1e15f558adc49212ffc97b0  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_search.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_search.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [33 items]
+
+.F...F...........................                                        [100%]
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_search.py:192: in test_the_records_follow_the_transcription_rules
+    assert problems == [], f"{FAMILY_MODULE}: {problems}"
+E   AssertionError: github_api.families.search: ["search/code: item_key None, expected 'items'"]
+E   assert ["search/code...cted 'items'"] == []
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33msearch/code: item_key None, expected [39;49;00m[33m'[39;49;00m[33mitems[39;49;00m[33m'[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_a_paged_record_prints_every_page[AC-4/exit-0/search/code] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_search.py:202: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/search/code: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/search/code?per_page=1" returned no item list
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_search.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_search.py::test_a_paged_record_prints_every_page[AC-4/exit-0/search/code]
+======================== 2 failed, 31 passed in 31.48s ========================

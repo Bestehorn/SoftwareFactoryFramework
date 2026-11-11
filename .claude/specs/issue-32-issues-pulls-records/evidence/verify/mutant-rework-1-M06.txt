@@ -1,0 +1,64 @@
+# mutant M06 (re-applied, delta verification of rework-1 at 8e80256): GATED_NOT_SENT ending flipped
+# file: src/payload/scripts/github_api/commands/call.py
+# replaced:     ending = "" if operation_id in GATED_NOT_SENT else SENDS_IT
+# with:         ending = SENDS_IT if operation_id in GATED_NOT_SENT else ""
+# sha256 original: a6615a18f6ac07aee8770c0abf84b0bbf670de425c897c4c6f512b0a14f97aa4  # pragma: allowlist secret
+# sha256 mutated:  4882dfa8f5c32aff3fe907856e51c4ee280e44c625efca303b398078e009bb51  # pragma: allowlist secret
+# sha256 recorded by the first pass for M06: 4882dfa8f5c32aff3fe907856e51c4ee280e44c625efca303b398078e009bb51  # pragma: allowlist secret
+# mutated equals the first-pass mutant: True
+# sha256 restored: a6615a18f6ac07aee8770c0abf84b0bbf670de425c897c4c6f512b0a14f97aa4  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [42 items]
+
+..F..F...F................................                               [100%]
+================================== FAILURES ===================================
+_ test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-is-merge-pr] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:890: in test_a_gated_operation_names_its_subcommand
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:875: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.1/exit-2/pulls-merge-is-merge-pr: no log record matches every one of ['"pulls/merge"', 'merge\\-pr', 'which\\ sends\\ it']: ['call refuses the GitHub operation "pulls/merge": use the merge-pr subcommand']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 call refuses the GitHub operation "pulls/merge": use the merge-pr subcommand
+_ test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-async-is-merge-pr] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:890: in test_a_gated_operation_names_its_subcommand
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:875: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.1/exit-2/pulls-merge-async-is-merge-pr: no log record matches every one of ['"pulls/merge\\-async"', 'merge\\-pr', '\\A(?![\\s\\S]*which\\ sends\\ it)']: ['call refuses the GitHub operation "pulls/merge-async": use the merge-pr subcommand, which sends it']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 call refuses the GitHub operation "pulls/merge-async": use the merge-pr subcommand, which sends it
+_ test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/issues-create-is-create-issue] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:890: in test_a_gated_operation_names_its_subcommand
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_call.py:875: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-1.1/exit-2/issues-create-is-create-issue: no log record matches every one of ['"issues/create"', 'create\\-issue', 'which\\ sends\\ it']: ['call refuses the GitHub operation "issues/create": use the create-issue subcommand']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 call refuses the GitHub operation "issues/create": use the create-issue subcommand
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-is-merge-pr]
+FAILED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-async-is-merge-pr]
+FAILED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/issues-create-is-create-issue]
+======================== 3 failed, 39 passed in 7.28s =========================
