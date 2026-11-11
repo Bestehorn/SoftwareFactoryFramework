@@ -62,3 +62,12 @@
 **Evidence:** src/payload/scripts/github_api/commands/call.py `refuse_gated`, `GATED_NOT_SENT`; evidence/green/wave-1.txt.
 **Supersedes:** none
 **Artifacts touched:** src/payload/scripts/github_api/commands/call.py
+
+## DL-008 — 2026-11-11T04:39:47Z — issue-work-orchestrator — phase:PR
+
+**Decision:** Resolve the rebase conflict onto #27's merge (f374b3d) in `commands/call.py` by keeping both: #27's `Mapping[str, Optional[str]]`, membership test and `None` branch, plus #32's `pulls/merge-async` entry and `GATED_NOT_SENT` ending on the non-`None` branch.
+**Driver:** rebase conflict; code-merge-reviewer report (both intents kept line by line).
+**Alternatives considered:** none (taking one side would drop the other's refusals).
+**Evidence:** code-merge-reviewer run: 789 passed over the 15 affected test files; commit eb63d18.
+**Supersedes:** none
+**Artifacts touched:** src/payload/scripts/github_api/commands/call.py
