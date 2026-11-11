@@ -2,7 +2,7 @@
 
 Tier: M. Kind: FEATURE. Scope: `prompt.md` and DL-001: the six request forms F1 to F6, the records of the keys they
 unblock, the usage docstring and `docs/forLLMConsumption.md`; not the gated kept IDs, #40's path forms, #43's route
-prefix or the real-forge run (#10). Builds on `.claude/specs/issue-13-gitlab-wrapper-foundation/` ("#13"),
+prefix or the real-instance run (#11). Builds on `.claude/specs/issue-13-gitlab-wrapper-foundation/` ("#13"),
 `.claude/specs/issue-41-gitlab-generic-operation-command/` ("#41"),
 `.claude/specs/issue-40-gitlab-openapi-only-records/` ("#40", PR #62) and
 `.claude/specs/issue-43-gitlab-package-records/` ("#43"). The **base** is `origin/main` once #40 and #43 have merged;
@@ -60,7 +60,7 @@ As the owner of #15, I want every issue key mapped by a record, so that no `PEND
 
 - AC-1.1 Each issue key SHALL be the method and path, verbatim as its index row writes them, of a record declared with
   its row's Reference, and SHALL be on no `PENDING`. The issue keys, by form and family:
-  - F1: the 37 keys issue #63 counts under F1 (create, developer-experience, fulfillment, plan,
+  - F1: the keys issue #63 lists under F1 (create, developer-experience, fulfillment, plan,
     security-risk-management, software-supply-chain-security, tenant-scale, verify); in package, the
     `/projects/:id/packages/conan/v1/...` key of each Conan v1 entry and `("PUT", "/projects/:id/packages/nuget/v2")`,
     which #43 keeps pending (#43 AC-1.2, DL-003);
@@ -166,10 +166,11 @@ control and the NuGet symbol download reach GitLab whole.
 As a caller, I want the S3 import's `override_params` members sent at their names, two-level ones included, so that
 the record sends every row its section documents.
 
-- AC-7.1 WHEN a call of `gitlab-dedicated#import-a-project-from-an-aws-s3-bucket` gives `override_params` members,
-  one-level (`override_params[visibility]`) or two-level (an F6 two-level member), the body SHALL carry each at its
-  name as `conventions.md` "Arrays, hashes and arrays of hashes" writes a hash — nested objects in a JSON body,
-  bracketed names in a form or multipart body — an `array of string` member as an array, and the `file` member
+- AC-7.1 WHEN the record of `gitlab-dedicated#import-a-project-from-an-aws-s3-bucket` is called with
+  `GATED_OPERATIONS` lifted (UB-3 refuses it otherwise) and given `override_params` members, one-level
+  (`override_params[visibility]`) or two-level (an F6 two-level member), the body SHALL carry each at its name as
+  `conventions.md` "Arrays, hashes and arrays of hashes" writes a hash — nested objects in a JSON body, bracketed
+  names in a form or multipart body — an `array of string` member as an array, and the `file` member
   `override_params[avatar]` as the multipart part of that name. How a call gives them and the record's body format
   are `design.md`'s.
 - AC-7.2 N SHALL read every row of that section's table, the two-level rows included, and SHALL name the record when
@@ -177,13 +178,13 @@ the record sends every row its section documents.
 
 ### Requirement 8 — Proven through the contract test and `main` (issue AC-4, AC-5)
 
-As the owner of #10, I want each form proven by a test that runs `call` to the API boundary, so that every record of
+As the owner of #11, I want each form proven by a test that runs `call` to the API boundary, so that every record of
 this change rests on test evidence rather than on its transcription alone.
 
 - AC-8.1 Every record of this change, and each record AC-6.1 changes, SHALL pass N
   `test_every_record_matches_its_reference_section` and `test_every_record_is_sent_as_its_section_documents`; the send
   test SHALL call each declared endpoint of an F1 Reference once, naming it, and each F4 record at its own base or
-  origin.
+  origin; a record `GATED_OPERATIONS` holds is sent by AC-7.2's test instead.
 - AC-8.2 N SHALL name a record whose declared request headers differ from its section's, and a sent call that carries
   an undeclared header or lacks one the call gave.
 - AC-8.3 AC-2.1 to AC-2.3, AC-3.2, AC-4.1, AC-5.1, AC-5.2, AC-6.2 and AC-7.1 SHALL each have a test that runs `call`
@@ -210,7 +211,8 @@ the package.
   value at both places (`/<route-prefix>/symbolfiles/:file_name/:signature/:file_name`, #43 UB-4). The existing tests
   of `src/payload/test/test_gitlab_*.py`, `test/test_gitlab_api_properties.py`, N and V SHALL CONTINUE TO pass with no
   existing assertion edited, except one that pins what this change retires (a key's pending state, one record per ID,
-  a JSON-only body, a table without `Symbolchecksum`), restated to the new state (#38 DL-004, #37 DL-005; DL-004).
+  a JSON-only body, a table without `Symbolchecksum`, a path's parameters read as `:name` and `*name` alone), restated
+  to the new state (#38 DL-004, #37 DL-005; DL-004).
 - UB-2 The entry script and `src/payload/scripts/gitlab_api/` SHALL CONTINUE TO import only the Python 3.9 standard
   library (`test/test_gitlab_api_properties.py` `test_standard_library_only`), to read their only credential from
   `config/gitlab.json` (`_load_config`), with no token option, and to send the configured token only to the configured
@@ -223,19 +225,18 @@ the package.
   untouched by this change and to pass.
 
 E2E: the wrapper is a command-line program with nothing deployed. N and the tests of AC-8.3 run `call` through
-`main`'s argv against the fake host to the API boundary in CI's `tests` leg; the real-forge check is #10's run on an
-ephemeral `sff-test-*` project.
+`main`'s argv against the fake host to the API boundary in CI's `tests` leg; the real-instance check is #11's run on
+an ephemeral `sff-test-*` project.
 
 ## Residuals
 
 - Computing `X-Gitlab-Hmac-Sha256` (docs.gitlab.com `external_controls`: HMAC-SHA256 of the timestamp, nonce, path and
   `status=<status>` "using your secret key") needs the control's secret, which UB-2 keeps out; the caller gives it.
-- The S3 import takes `overwrite`, which replaces an existing project, the reason `families/gitlab_dedicated.py`
-  (#38 DL-005) keeps the archive imports pending; its record is refused by `call` (UB-3), the archive imports stay
-  the gated kept IDs' slice. A `bearer` token has no documented registry login, so the registry keys refuse it.
+- The S3 import takes `overwrite`, which replaces an existing project (#38 DL-005); `call` refuses its record (UB-3),
+  and the archive imports stay pending, the gated kept IDs' slice.
 - "Delete image tags by reference": the docs' example URL has `/manifests/` where its endpoint line and the index have
-  `/tags/reference/`; the record follows the index, and GitLab's answer is #10's run.
-- "Retrieve the token information" documents an OAuth token as `Authorization: Bearer`; under `token_type` `private`
-  the configured header is `PRIVATE-TOKEN`, and whether GitLab answers it is #10's run.
+  `/tags/reference/`; the record follows the index, and GitLab's answer is #11's run.
+- "Retrieve the token information": GitLab reads only an OAuth token there (`Oauth::TokenInfoController`, Doorkeeper
+  `access_token_methods`), so under `token_type` `private` or `job` the call exits 1 with GitLab's `401`.
 - The emoji resource sections' row `issue_iid/merge_request_iid/snippet_id` is one `Param` (`families/plan.py`); the
   new endpoints share their Reference's table, and reading that row as a path parameter is not this change's.

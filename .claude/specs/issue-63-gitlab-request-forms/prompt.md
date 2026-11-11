@@ -19,7 +19,7 @@ Kind: FEATURE.
 
 ## Scope
 
-The six forms, the records for the keys above, the usage docstring and `docs/forLLMConsumption.md`. Out of scope: the gated kept IDs (#15's `None` gate slice), #40's path forms, #43's route prefix, the real-forge run (#10).
+The six forms, the records for the keys above, the usage docstring and `docs/forLLMConsumption.md`. Out of scope: the gated kept IDs (#15's `None` gate slice), #40's path forms, #43's route prefix, the real-instance run (#11).
 
 ## Depends on
 

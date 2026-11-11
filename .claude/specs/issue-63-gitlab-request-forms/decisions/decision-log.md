@@ -35,3 +35,12 @@
 **Evidence:** design.md D9 (the restated tests); #38 DL-004, #37 DL-005 (the same restatement).
 **Supersedes:** none
 **Artifacts touched:** requirements.md
+
+## DL-005 — 2026-11-11T14:22:51Z — issue-work-orchestrator — phase:DESIGN_REVIEW
+
+**Decision:** Apply all of iteration 01's findings (7 B, every C and D) in one author pass; the GitLab real-instance run is #11's (devops B1); delta review iteration 02 goes to the four NOT-READY lanes only.
+**Driver:** review/review-latest.md (iteration 01: 0 A, 7 B; security and best-practice READY).
+**Alternatives considered:** none
+**Evidence:** review/<lane>/iteration-01.md; issue #10 Ask ("GitHub first"), issue #11 work item "Real-GitLab integration tests".
+**Supersedes:** none
+**Artifacts touched:** requirements.md, design.md, prompt.md
