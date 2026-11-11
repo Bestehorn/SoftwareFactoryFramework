@@ -1,0 +1,30 @@
+# mutant sec-jwt-non-json-answer-reraised: D4 AC-5.3/UB-2: a non-JSON /jwt/auth answer's body does not travel on as details
+# edit src/payload/scripts/gitlab_api/transport.py: 'it goes no further.\n        answer = None\n' -> 'it goes no further.\n        raise\n'
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (every GitLab suite, the wave Run line): src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [926 items]
+
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 31%]
+........................................................................ [ 38%]
+........................................................................ [ 46%]
+........................................................................ [ 54%]
+........................................................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 77%]
+........................................................................ [ 85%]
+........................................................................ [ 93%]
+..............................................................           [100%]
+======================= 926 passed in 151.61s (0:02:31) =======================
+exit=0
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: SURVIVED (926 passed in 151.61s (0:02:31))

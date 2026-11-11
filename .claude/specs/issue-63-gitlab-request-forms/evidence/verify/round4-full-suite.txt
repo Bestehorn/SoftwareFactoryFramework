@@ -1,0 +1,84 @@
+# Round 4 whole-suite verdict for issue #63, PR #66, read through scripts/github_wrapper.py (main checkout).
+# The worktree's HEAD (git rev-parse HEAD):
+# 6687d9b78f950d54d928b3e6d71847d04e201846  # pragma: allowlist secret
+# Product files unchanged by the rework: `git diff 5ece525 6687d9b --stat -- src/payload/scripts` printed nothing;
+# container_registry.py is blob 43997b59 at 583fbbd, 5ece525 and 6687d9b.
+
+## The PR run on the head never started
+
+$ python scripts/github_wrapper.py list-runs --limit 3
+43096840286  queued       None         ci
+43093062683  completed    success      ci
+43087628208  completed    success      ci
+
+$ python scripts/github_wrapper.py get-run 43096840286   (fields of its answer, read 2026-11-11T21:40:23Z)
+status queued
+conclusion None
+head_sha 6687d9b78f950d54d928b3e6d71847d04e201846  # pragma: allowlist secret
+event pull_request, run_number 112, run_attempt 1
+created_at 2026-11-11T20:34:20Z
+updated_at 2026-11-11T20:34:20Z
+
+$ python scripts/github_wrapper.py get-jobs 43096840286   (21:12:08Z and 21:40:23Z: no job listed)
+
+$ python scripts/github_wrapper.py wait-run 43096840286 --timeout-seconds 540   (issued six times)
+{"run_id": 43096840286, "status": "queued", "timeout_seconds": 540}
+wait-exit=11
+
+$ python scripts/github_wrapper.py ci-liveness
+LIVENESS: ALIVE  newest Executed Run #111, age 1.0 h (threshold 72.0 h)
+LATEST RUN: #112  conclusion=None  executed=no  -> this conclusion is NOT a check result: zero steps ran, so no check could have failed
+
+$ python scripts/github_wrapper.py cancel 43096840286   (21:50:44Z)
+ERROR: GitHub API POST https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/43096840286/cancel failed: HTTP 409
+  "message": "Cannot cancel a workflow run that has not been queued yet.",
+cancel-exit=1
+
+githubstatus.com api/v2/incidents.json: "Impact across multiple GitHub products including Actions, Pages, and Copilot
+products", created 2026-11-11T20:48:12Z, resolved 21:21:39Z; 21:21:32Z "The backlog of Actions jobs has been fully
+processed."
+
+## The run the orchestrator dispatched on the branch (workflow_dispatch of ci.yml, same head)
+
+$ python scripts/github_wrapper.py get-run 43106939480   (fields of its answer)
+head_branch issue-63-gitlab-request-forms
+head_sha 6687d9b78f950d54d928b3e6d71847d04e201846  # pragma: allowlist secret
+event workflow_dispatch, run_number 113, run_attempt 1, path .github/workflows/ci.yml
+created_at 2026-11-11T21:52:59Z
+
+$ python scripts/github_wrapper.py wait-run 43106939480 --timeout-seconds 540
+{"run_id": 43106939480, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43106939480"}
+wait-exit=0
+
+$ python scripts/github_wrapper.py get-jobs 43106939480
+130812617123   completed    success      verify (tests)
+130812617718   completed    success      verify (types)
+130812617734   completed    success      verify (lint)
+130812617942   completed    success      verify (security)
+130814218505   completed    success      report
+
+$ python scripts/github_wrapper.py get-job-logs 130812617123   (verify (tests); lines of the complete log)
+2026-11-11T21:53:05.5971246Z [command]/usr/bin/git checkout --progress --force -B issue-63-gitlab-request-forms refs/remotes/origin/issue-63-gitlab-request-forms
+2026-11-11T21:53:05.7757941Z 6687d9b78f950d54d928b3e6d71847d04e201846  # pragma: allowlist secret
+2026-11-11T21:53:26.6265497Z --- RUN  tests/pytest: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python scripts/run_tests.py --workers auto --coverage --junit reports/junit.xml
+2026-11-11T21:53:26.7624315Z run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+2026-11-11T21:53:41.0891368Z 4 workers [3725 items]
+2026-11-11T21:55:12.1544306Z src/payload/scripts/gitlab_api/container_registry.py                           39      0   100%
+2026-11-11T21:55:12.1614791Z src/payload/test/test_gitlab_api_container_registry.py                        152      9    94%   49, 57-62, 179, 184
+2026-11-11T21:55:12.3290973Z Required test coverage of 80% reached. Total coverage: 92.36%
+2026-11-11T21:55:12.3291945Z ======================= 3725 passed in 105.02s (0:01:45) =======================
+2026-11-11T21:55:12.4976887Z --- PASS tests/pytest (105.9s, exit 0)
+2026-11-11T21:55:12.5225392Z --- RUN  tests/hook-suite: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest .claude/hooks/tests -q -o addopts= -p no:cacheprovider
+2026-11-11T21:55:19.5897943Z 1053 passed in 6.85s
+2026-11-11T21:55:19.6491056Z --- PASS tests/hook-suite (7.1s, exit 0)
+2026-11-11T21:55:19.6496571Z CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+2026-11-11T21:55:19.6497787Z   [PASS] tests/pytest  exit 0
+2026-11-11T21:55:19.6498277Z   [PASS] tests/hook-suite  exit 0
+
+# Round 3 (run 43093062683, head 5ece525): 3699 passed. Round 4: 3725 passed (+26: the 29 generated white-space
+# cases and the guard test, less the four hand-written ones they replace). The test module's unexecuted lines 49,
+# 57-62, 179, 184 lie outside the rework's hunks (5ece525..6687d9b: 11-12, 122-157, 159-160, 326-331);
+# container_registry.py 100%. The dispatched run checks out the branch head itself, not a merge with main.
+
+Verdict: GREEN. Every job of run 43106939480 succeeded on head_sha 6687d9b, the worktree's HEAD; 3725 passed, 0 failed;
+hook suite 1053 passed. PR run 43096840286 on the same head never left GitHub's pending state.

@@ -7,12 +7,14 @@ included; the method and the path are the row's, verbatim, with its ``*name`` gl
 escaped parentheses (each backslash doubled in the literal) and its ``$`` as the row writes them (``registry.expand``,
 design.md D1).
 
-A record declares one ``Param`` per ``query``, ``body`` or ``form`` row of its section's table, in table order, named as
-the row writes it (``$filter``, ``terraform-get``, ``ID``): a ``query`` row in the query, a ``body`` or ``form`` row in
+A record declares one ``Param`` per ``header``, ``query``, ``body`` or ``form`` row of its section's table, in table
+order, named as the row writes it (``$filter``, ``terraform-get``, ``ID``, ``Symbolchecksum``): a ``header`` row a
+``Location.HEADER`` ``Param``, the request header ``call --header`` gives (issue #63, design.md D5 and D8: the
+``Symbolchecksum`` of both NuGet symbol file downloads), a ``query`` row in the query, a ``body`` or ``form`` row in
 the body. Its ``Kind`` is the row's Type: ``ARRAY`` for ``array of string``, ``HASH`` for ``object``,
 ``ARRAY_OF_HASHES`` for ``array of object``, ``FILE`` for ``file``, ``SCALAR`` for every other Type; it is ``required``
 where Required reads ``yes``. A row that names a ``*name`` glob of the record's path, inside an optional group or not,
-is that path parameter and is given with ``--path``, so it has no ``Param``; nor has a ``header`` row. Every record's
+is that path parameter and is given with ``--path``, so it has no ``Param``. Every record's
 ``body`` is ``BodyFormat.JSON``, which a ``FILE`` value makes multipart, and no record fixes a query value; the eight
 ``GET`` records whose section has the ``page`` and ``per_page`` query rows page by offset (``conventions.md``
 "Offset-based") and declare both rows, every other is ``Paging.NONE``.
@@ -2138,6 +2140,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="openapi-only#the-nuget-symbol-file-download-endpoint",
         method="GET",
         path="/groups/:id/-/packages/nuget/symbolfiles/*file_name/*signature/*same_file_name",
+        params=(Param(name="Symbolchecksum", location=Location.HEADER, required=True),),
     ),
     # "packages_nuget: The NuGet V2 Feed Service Index".
     RestOperation(
@@ -2192,6 +2195,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="openapi-only#the-nuget-symbol-file-download-endpoint-1",
         method="GET",
         path="/projects/:id/packages/nuget/symbolfiles/*file_name/*signature/*same_file_name",
+        params=(Param(name="Symbolchecksum", location=Location.HEADER, required=True),),
     ),
     # "packages_nuget: The NuGet Symbol Package Authorize endpoint".
     RestOperation(

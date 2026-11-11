@@ -50,7 +50,12 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   `-f/--raw-field`, `-F/--field`, `--file`, `--input FILE` for a raw-body upload such as
   `openapi-only#upload-package-file`, its bytes sent unchanged, `-` reading standard input, and `--route-prefix PREFIX`
   for a record whose path starts with `/<route-prefix>/`, PREFIX one of the values its page lists, such as
-  `/groups/:id/-/packages/npm`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2).
+  `/groups/:id/-/packages/npm`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2). A request form is one
+  option: `--endpoint 'METHOD path'` picks one of the endpoints an ID declares (without it, the first declared), a
+  repeated `--path` fills a name's places in path order
+  (`call create#delete-a-group-ssh-certificate --path id=7 --path id=12345`), `--path format=zip` writes a `[.format]`
+  suffix, `--header NAME=VALUE` sends a documented request header, and a two-level member is given by its full name
+  (`-f 'override_params[container_expiration_policy_attributes][cadence]=7d'`).
   `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. A GraphQL-only
   capability is a record of `graphql_only.py`, called the same way:
   `python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project` (`-f`/`-F` give the

@@ -15,13 +15,19 @@ a record that ``call`` sends (issue #39; issue #41, design.md D6 and D8):
 - the combined row ``issue_iid/merge_request_iid/snippet_id`` of the emoji sections is declared as the table writes it;
 - a ``GET`` section whose heading begins with "List" or "Get all" is ``Paging.OFFSET``; no plan list is keyset-only.
 
-A section with several endpoints has one record, on its first endpoint under ``/projects/:id/``; ``PENDING`` holds the
-others (the merge-request and snippet endpoints of the four emoji resource sections, and the group endpoints of the two
-notification settings sections) and the keys of ``plan#clone-an-issue``, which creates an issue, and
-``plan#create-a-merge-request-note``, whose ``/merge`` quick action merges: no subcommand sends either, and ``call``
-refuses only an ID that names its subcommand (issue #39, DL-003). ``plan#promote-an-issue-to-an-epic`` has no record of
-its own: its key is the one ``plan#create-an-issue-note`` declares, sent with ``/promote`` as its ``body``. No other
-family links any of these keys.
+A section with several endpoints has one record per endpoint, each with its Reference's ID (issue #63, design.md D1,
+D8): the base record on its first endpoint under ``/projects/:id/``, then one per other endpoint in the order the
+section's endpoint line lists them, each a copy of the base record but for its method, its path and any ``Param`` naming
+a path parameter of its own path; ``call --endpoint 'METHOD path'`` names one, and without it the base record is sent.
+The four emoji resource sections have the issue endpoint's base record and then the merge-request and the snippet
+endpoints' (the combined row names none of their path parameters, so each copy keeps it); the two notification
+settings sections have the project endpoint's base record and then the group endpoint's.
+
+``PENDING`` holds the keys of ``plan#clone-an-issue``, which creates an issue, and ``plan#create-a-merge-request-note``,
+whose ``/merge`` quick action merges: no subcommand sends either, and ``call`` refuses only an ID that names its
+subcommand (issue #39, DL-003). ``plan#promote-an-issue-to-an-epic`` has no record of its own: its key is the one
+``plan#create-an-issue-note`` declares, sent with ``/promote`` as its ``body``. No other family links any of these
+keys.
 
 Standard library only; Python 3.9.
 """
@@ -194,8 +200,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="archived", location=Location.BODY),
         ),
     ),
-    # "Emoji reactions API: List all emoji reactions for a resource"; its other endpoints stay on PENDING (one record
-    # per Reference).
+    # "Emoji reactions API: List all emoji reactions for a resource"; its base record, on the issue endpoint.
     RestOperation(
         operation_id="plan#list-all-emoji-reactions-for-a-resource",
         method="GET",
@@ -207,16 +212,56 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         ),
         paging=Paging.OFFSET,
     ),
-    # "Emoji reactions API: Retrieve an emoji reaction from a resource"; its other endpoints stay on PENDING (one record
-    # per Reference).
+    # "Emoji reactions API: List all emoji reactions for a resource"; the merge-request endpoint, a copy of the base
+    # record (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#list-all-emoji-reactions-for-a-resource",
+        method="GET",
+        path="/projects/:id/merge_requests/:merge_request_iid/award_emoji",
+        params=(
+            Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),
+            Param(name="page", location=Location.QUERY),
+            Param(name="per_page", location=Location.QUERY),
+        ),
+        paging=Paging.OFFSET,
+    ),
+    # "Emoji reactions API: List all emoji reactions for a resource"; the snippet endpoint, a copy of the base record
+    # (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#list-all-emoji-reactions-for-a-resource",
+        method="GET",
+        path="/projects/:id/snippets/:snippet_id/award_emoji",
+        params=(
+            Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),
+            Param(name="page", location=Location.QUERY),
+            Param(name="per_page", location=Location.QUERY),
+        ),
+        paging=Paging.OFFSET,
+    ),
+    # "Emoji reactions API: Retrieve an emoji reaction from a resource"; its base record, on the issue endpoint.
     RestOperation(
         operation_id="plan#retrieve-an-emoji-reaction-from-a-resource",
         method="GET",
         path="/projects/:id/issues/:issue_iid/award_emoji/:award_id",
         params=(Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),),
     ),
-    # "Emoji reactions API: Add an emoji reaction to a resource"; its other endpoints stay on PENDING (one record per
-    # Reference).
+    # "Emoji reactions API: Retrieve an emoji reaction from a resource"; the merge-request endpoint, a copy of the base
+    # record (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#retrieve-an-emoji-reaction-from-a-resource",
+        method="GET",
+        path="/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id",
+        params=(Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),),
+    ),
+    # "Emoji reactions API: Retrieve an emoji reaction from a resource"; the snippet endpoint, a copy of the base record
+    # (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#retrieve-an-emoji-reaction-from-a-resource",
+        method="GET",
+        path="/projects/:id/snippets/:snippet_id/award_emoji/:award_id",
+        params=(Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),),
+    ),
+    # "Emoji reactions API: Add an emoji reaction to a resource"; its base record, on the issue endpoint.
     RestOperation(
         operation_id="plan#add-an-emoji-reaction-to-a-resource",
         method="POST",
@@ -226,12 +271,49 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="name", location=Location.BODY, required=True),
         ),
     ),
-    # "Emoji reactions API: Delete an emoji reaction from a resource"; its other endpoints stay on PENDING (one record
-    # per Reference).
+    # "Emoji reactions API: Add an emoji reaction to a resource"; the merge-request endpoint, a copy of the base record
+    # (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#add-an-emoji-reaction-to-a-resource",
+        method="POST",
+        path="/projects/:id/merge_requests/:merge_request_iid/award_emoji",
+        params=(
+            Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.BODY, required=True),
+            Param(name="name", location=Location.BODY, required=True),
+        ),
+    ),
+    # "Emoji reactions API: Add an emoji reaction to a resource"; the snippet endpoint, a copy of the base record (issue
+    # #63, design.md D8).
+    RestOperation(
+        operation_id="plan#add-an-emoji-reaction-to-a-resource",
+        method="POST",
+        path="/projects/:id/snippets/:snippet_id/award_emoji",
+        params=(
+            Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.BODY, required=True),
+            Param(name="name", location=Location.BODY, required=True),
+        ),
+    ),
+    # "Emoji reactions API: Delete an emoji reaction from a resource"; its base record, on the issue endpoint.
     RestOperation(
         operation_id="plan#delete-an-emoji-reaction-from-a-resource",
         method="DELETE",
         path="/projects/:id/issues/:issue_iid/award_emoji/:award_id",
+        params=(Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),),
+    ),
+    # "Emoji reactions API: Delete an emoji reaction from a resource"; the merge-request endpoint, a copy of the base
+    # record (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#delete-an-emoji-reaction-from-a-resource",
+        method="DELETE",
+        path="/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id",
+        params=(Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),),
+    ),
+    # "Emoji reactions API: Delete an emoji reaction from a resource"; the snippet endpoint, a copy of the base record
+    # (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#delete-an-emoji-reaction-from-a-resource",
+        method="DELETE",
+        path="/projects/:id/snippets/:snippet_id/award_emoji/:award_id",
         params=(Param(name="issue_iid/merge_request_iid/snippet_id", location=Location.QUERY, required=True),),
     ),
     # "Emoji reactions API: List all emoji reactions for a comment".
@@ -1613,19 +1695,56 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="success_pipeline", location=Location.BODY),
         ),
     ),
-    # "Notification settings API: Retrieve notification settings"; its other endpoints stay on PENDING (one record per
-    # Reference).
+    # "Notification settings API: Retrieve notification settings"; its base record, on the project endpoint.
     RestOperation(
         operation_id="plan#retrieve-notification-settings",
         method="GET",
         path="/projects/:id/notification_settings",
     ),
-    # "Notification settings API: Update group or project notification settings"; its other endpoints stay on PENDING
-    # (one record per Reference).
+    # "Notification settings API: Retrieve notification settings"; the group endpoint, a copy of the base record (issue
+    # #63, design.md D8).
+    RestOperation(
+        operation_id="plan#retrieve-notification-settings",
+        method="GET",
+        path="/groups/:id/notification_settings",
+    ),
+    # "Notification settings API: Update group or project notification settings"; its base record, on the project
+    # endpoint.
     RestOperation(
         operation_id="plan#update-group-or-project-notification-settings",
         method="PUT",
         path="/projects/:id/notification_settings",
+        params=(
+            Param(name="approver", location=Location.BODY),
+            Param(name="change_reviewer_merge_request", location=Location.BODY),
+            Param(name="close_issue", location=Location.BODY),
+            Param(name="close_merge_request", location=Location.BODY),
+            Param(name="failed_pipeline", location=Location.BODY),
+            Param(name="fixed_pipeline", location=Location.BODY),
+            Param(name="issue_due", location=Location.BODY),
+            Param(name="level", location=Location.BODY),
+            Param(name="merge_merge_request", location=Location.BODY),
+            Param(name="merge_when_pipeline_succeeds", location=Location.BODY),
+            Param(name="moved_project", location=Location.BODY),
+            Param(name="new_epic", location=Location.BODY),
+            Param(name="new_issue", location=Location.BODY),
+            Param(name="new_merge_request", location=Location.BODY),
+            Param(name="new_note", location=Location.BODY),
+            Param(name="new_release", location=Location.BODY),
+            Param(name="push_to_merge_request", location=Location.BODY),
+            Param(name="reassign_issue", location=Location.BODY),
+            Param(name="reassign_merge_request", location=Location.BODY),
+            Param(name="reopen_issue", location=Location.BODY),
+            Param(name="reopen_merge_request", location=Location.BODY),
+            Param(name="success_pipeline", location=Location.BODY),
+        ),
+    ),
+    # "Notification settings API: Update group or project notification settings"; the group endpoint, a copy of the
+    # base record (issue #63, design.md D8).
+    RestOperation(
+        operation_id="plan#update-group-or-project-notification-settings",
+        method="PUT",
+        path="/groups/:id/notification_settings",
         params=(
             Param(name="approver", location=Location.BODY),
             Param(name="change_reviewer_merge_request", location=Location.BODY),
@@ -2166,17 +2285,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
 
 PENDING: FrozenSet[Tuple[str, str]] = frozenset(
     {
-        ("GET", "/groups/:id/notification_settings"),
-        ("PUT", "/groups/:id/notification_settings"),
         ("POST", "/projects/:id/issues/:issue_iid/clone"),
-        ("GET", "/projects/:id/merge_requests/:merge_request_iid/award_emoji"),
-        ("POST", "/projects/:id/merge_requests/:merge_request_iid/award_emoji"),
-        ("DELETE", "/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id"),
-        ("GET", "/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id"),
         ("POST", "/projects/:id/merge_requests/:merge_request_iid/notes"),
-        ("GET", "/projects/:id/snippets/:snippet_id/award_emoji"),
-        ("POST", "/projects/:id/snippets/:snippet_id/award_emoji"),
-        ("DELETE", "/projects/:id/snippets/:snippet_id/award_emoji/:award_id"),
-        ("GET", "/projects/:id/snippets/:snippet_id/award_emoji/:award_id"),
     }
 )

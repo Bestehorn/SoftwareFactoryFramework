@@ -1,0 +1,51 @@
+# mutant-wave-3: wave 3's IMPL files (src/payload/scripts/gitlab_wrapper.py, docs/forLLMConsumption.md, docs/findings-ledger.md) reverted to commit 8922465 (wave 2) in a detached worktree of 43ba0f1; wave 3's Run line
+# reverted files vs HEAD:
+ docs/findings-ledger.md               | 20 --------------------
+ docs/forLLMConsumption.md             |  7 +------
+ src/payload/scripts/gitlab_wrapper.py | 21 +--------------------
+ 3 files changed, 2 insertions(+), 46 deletions(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [1030 items]
+
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+........................................................................ [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+....................................................................F... [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+................F.....                                                   [100%]
+================================== FAILURES ===================================
+___________________ test_the_usage_names_the_request_forms ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_wrapper_compat.py:1591: in test_the_usage_names_the_request_forms
+    assert missing == [], f"the usage of {WRAPPER_FILE} does not name: {missing} (issue #63 AC-9.1)"
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py does not name: ['--endpoint', '--path format=', '--header', 'override_params[container_expiration_policy_attributes]'] (issue #63 AC-9.1)
+E   assert ['--endpoint'..._attributes]'] == []
+E     
+E     Left contains 4 more items, first extra item: [0m[33m'[39;49;00m[33m--endpoint[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_the_map_names_the_request_forms _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1984: in test_the_map_names_the_request_forms
+    assert not missing and given >= MAP_PATH_ID_TIMES, (
+E   AssertionError: the '- `src/payload/scripts/gitlab_api/`' bullet of docs/forLLMConsumption.md does not hold ['--endpoint', '--path format=', '--header', 'override_params[container_expiration_policy_attributes]'] and holds '--path id=' 0 times, 2 expected: it does not name the request forms of issue #63 (AC-9.2); the bullet is "- `src/payload/scripts/gitlab_api/` — the package of the product GitLab wrapper, copied with its entry script `gitlab_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of `docs/api-reference/gitlab/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites: `src/payload/test/test_gitlab_api_*.py`, `src/payload/test/test_gitlab_wrapper_compat.py`; in `test/`, `test_gitlab_wrapper_coverage.py` (every API-reference operation covered by a record or pending). The product wrapper calls any declared record by its operation ID: `python scripts/gitlab_wrapper.py call plan#retrieve-a-project-issue --path issue_iid=5` (`--path`, `--query`, `-f/--raw-field`, `-F/--field`, `--file`, `--input FILE` for a raw-body upload such as `openapi-only#upload-package-file`, its bytes sent unchanged, `-` reading standard input, and `--route-prefix PREFIX` for a record whose path starts with `/<route-prefix>/`, PREFIX one of the values its page lists, such as `/groups/:id/-/packages/npm`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2). `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. A GraphQL-only capability is a record of `graphql_only.py`, called the same way: `python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project` (`-f`/`-F` give the document's variables, `--file NAME=PATH` an `Upload` variable's file). `test/test_gitlab_graphql_contract.py` checks each document against `graphql/`. Not installed here: the repository is on GitHub (`config/toolchain.json`)."
+E   assert (not ['--endpoint', '--path format=', '--header', 'override_params[container_expiration_policy_attributes]'])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_compat.py::test_the_usage_names_the_request_forms
+FAILED test/test_gitlab_wrapper_contract.py::test_the_map_names_the_request_forms
+================= 2 failed, 1028 passed in 166.87s (0:02:46) ==================
+exit=1

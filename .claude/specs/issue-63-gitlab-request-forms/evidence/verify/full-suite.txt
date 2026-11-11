@@ -1,0 +1,61 @@
+# Whole-suite verdict for issue #63, PR #66: CI run 43070929100, read through scripts/github_wrapper.py (main checkout).
+# The worktree's HEAD (git rev-parse HEAD) and the run's head_sha are the same commit:
+# 43ba0f15072640b46b6b1ea7662dc9309675a63c  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py wait-run 43070929100 --timeout-seconds 540
+{"run_id": 43070929100, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43070929100"}
+exit=0
+
+$ python scripts/github_wrapper.py get-run 43070929100   (fields of its answer)
+  "head_branch": "issue-63-gitlab-request-forms",
+  "head_sha": "43ba0f15072640b46b6b1ea7662dc9309675a63c",  # pragma: allowlist secret
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  pull_requests[0].number: 66, base.sha "6beeb772a657c5c68bf3b61a180ffd9ca285ea1c"  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py get-jobs 43070929100
+130698269191   completed    success      verify (security)
+130698269565   completed    success      verify (tests)
+130698269771   completed    success      verify (types)
+130698269821   completed    success      verify (lint)
+130699636065   completed    success      report
+
+$ python scripts/github_wrapper.py get-job-logs 130698269565   (verify (tests); lines of the complete log)
+HEAD is now at 11dbc29 Merge 43ba0f15072640b46b6b1ea7662dc9309675a63c into 6beeb772a657c5c68bf3b61a180ffd9ca285ea1c  # pragma: allowlist secret
+--- RUN  tests/pytest: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python scripts/run_tests.py --workers auto --coverage --junit reports/junit.xml
+4 workers [3663 items]
+src/payload/scripts/gitlab_api/commands/call.py                               277      0   100%
+src/payload/scripts/gitlab_api/container_registry.py                           39      0   100%
+src/payload/scripts/gitlab_api/registry.py                                    398      9    98%   457, 484, 499, 774, 779, 805, 932, 935, 945
+src/payload/scripts/gitlab_api/transport.py                                   425     16    96%   272-273, 289-291, 327, 368-369, 427, 518, 534, 569-570, 579, 743, 898-901
+src/payload/scripts/gitlab_wrapper.py                                         120      7    94%   139, 192-194, 198, 363, 386-387
+src/payload/test/test_wrapper_delivery.py                                      53      0   100%
+Required test coverage of 80% reached. Total coverage: 92.27%
+======================= 3663 passed in 65.85s (0:01:05) ========================
+--- PASS tests/pytest (66.5s, exit 0)
+1053 passed in 5.24s
+--- PASS tests/hook-suite (5.5s, exit 0)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+  [PASS] tests/pytest  exit 0
+  [PASS] tests/hook-suite  exit 0
+
+# Base for comparison: CI run 43053372616, push to main, head_sha 6beeb772a657c5c68bf3b61a180ffd9ca285ea1c  # pragma: allowlist secret
+# job 130636226742 verify (tests): 3577 passed
+src/payload/scripts/gitlab_api/registry.py                                    273      3    99%   315, 617, 621
+src/payload/scripts/gitlab_api/transport.py                                   376     15    96%   211-212, 241, 282-283, 324, 341, 432, 462-463, 472, 583, 595, 722-725
+
+# git blame HEAD of the lines 43ba0f1's run leaves unexecuted, the ones this change wrote (ce555f6 wave 1, 8922465 wave 2):
+registry.py 484 ce555f6 `_described`: return "no value"
+registry.py 499 ce555f6 `_place_values`: continue (a positional name the template does not hold)
+registry.py 774 ce555f6 `_scope`: raise ValueError (record declares no token_scope)
+registry.py 779 ce555f6 `_scope`: raise ValueError (a ${NAME} of token_scope given no value)
+registry.py 805 ce555f6 `_send_to_container_registry`: raise ValueError (DL-009 body/file/header/raw bytes)
+registry.py 935 ce555f6 `pages`: raise ValueError (base is not REST)
+registry.py 945 ce555f6 `pages`: raise ValueError (method/body/now headers; unexecuted on the base too, base line 621)
+transport.py 289-291 8922465 `_registry_token`: except GitLabAPIError: answer = None (a /jwt/auth answer that is not JSON)
+transport.py 534 ce555f6 `rooted_url`: raise ValueError (moved from base `_rest_url`, unexecuted on the base too, base line 595)
+
+Verdict: GREEN. Every job of run 43070929100 succeeded on head_sha 43ba0f1, the worktree's HEAD; the suite ran in full
+(3663 passed, 0 failed; hook suite 1053 passed); src/payload/test/test_github_api_*.py and test_wrapper_delivery.py ran
+in it (F.2).

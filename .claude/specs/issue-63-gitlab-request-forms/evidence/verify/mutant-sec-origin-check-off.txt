@@ -1,0 +1,396 @@
+# mutant sec-origin-check-off: UB-2/D4: _send refuses any origin but its destination
+# edit src/payload/scripts/gitlab_api/transport.py: '        if found != expected:' -> '        if False:'
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [152 items]
+
+......F...F..F...F...F..F...F...F....................................... [ 47%]
+..........F..F.FF...FF.................................................. [ 94%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+_______ test_next_url_on_another_origin_is_refused[another-host-OFFSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://evil.example/projects/1/issues?page=2 (still scripted: [])
+_______ test_next_url_on_another_origin_is_refused[another-host-KEYSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://evil.example/projects/1/issues?page=2 (still scripted: [])
+______ test_next_url_on_another_origin_is_refused[another-scheme-OFFSET] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET http://gitlab.example.com/api/v4/projects/1/issues?page=2 (still scripted: [])
+______ test_next_url_on_another_origin_is_refused[another-scheme-KEYSET] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET http://gitlab.example.com/api/v4/projects/1/issues?page=2 (still scripted: [])
+_______ test_next_url_on_another_origin_is_refused[another-port-OFFSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com:8443/api/v4/projects/1/issues?page=2 (still scripted: [])
+_______ test_next_url_on_another_origin_is_refused[another-port-KEYSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com:8443/api/v4/projects/1/issues?page=2 (still scripted: [])
+______ test_next_url_on_another_origin_is_refused[userinfo-host-OFFSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com@evil.example/api/v4/projects/1/issues?page=2 (still scripted: [])
+______ test_next_url_on_another_origin_is_refused[userinfo-host-KEYSET] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:582: in test_next_url_on_another_origin_is_refused
+    list(
+src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com@evil.example/api/v4/projects/1/issues?page=2 (still scripted: [])
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-private] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_request_carries_only_the_registry_token
+    client._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/1 (still scripted: [])
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-bearer] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_request_carries_only_the_registry_token
+    client._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/1 (still scripted: [])
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-job] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_request_carries_only_the_registry_token
+    client._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/1 (still scripted: [])
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-private] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_request_carries_only_the_registry_token
+    client._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/1 (still scripted: [])
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-bearer] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_request_carries_only_the_registry_token
+    client._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/1 (still scripted: [])
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-job] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1380: in test_a_registry_request_carries_only_the_registry_token
+    client._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/1 (still scripted: [])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-host-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-host-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-scheme-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-scheme-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-port-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[another-port-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[userinfo-host-OFFSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_next_url_on_another_origin_is_refused[userinfo-host-KEYSET]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-job]
+======================= 14 failed, 138 passed in 9.71s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: KILLED (14 failed, 138 passed in 9.71s)

@@ -1,0 +1,1052 @@
+# tasks: 2.1 2.2 2.3 2.4 2.5 2.6
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [924 items]
+
+.....................................F..F.F.....F..F..F..F..F..F...F.F.. [  7%]
+F.F.F..F..F..F.......................................................... [ 15%]
+....................F.F.F.F.....F...F.F.F.F.F................F.FFF..F... [ 23%]
+...FFF...........FF......F..........FFF....F....FF...................... [ 31%]
+.................................................F.......F.....F.F...FF. [ 38%]
+..F.F...F.F..F.F..FF.................................................... [ 46%]
+......................................................FF................ [ 54%]
+.......FF..F.......................................................F.... [ 62%]
+...............F..FF.FF.FFF.................F.F.F.F..................... [ 70%]
+........................................................................ [ 77%]
+....F................................................................... [ 85%]
+........................................................................ [ 93%]
+................................F........FFF...............F             [100%]
+================================== FAILURES ===================================
+_____ test_an_endpoint_is_named_by_its_method_and_path[snippet-endpoint] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2331: in test_an_endpoint_is_named_by_its_method_and_path
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#add-an-emoji-reaction-to-a-resource', '--endpoint', 'POST /projects/:id/snippets/:snippet_id/award_emoji', '--path', 'snippet_id=9', '-f', 'name=thumbsup'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint POST /projects/:id/snippets/:snippet_id/award_emoji
+E     
+E   assert 2 == 0
+_ test_an_endpoint_is_named_by_its_method_and_path[path-parameter-of-another-endpoint] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2317: in test_an_endpoint_is_named_by_its_method_and_path
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:360: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint POST /projects/:id/merge_requests/:merge_request_iid/award_emoji
+E     
+E   assert []
+_ test_an_endpoint_the_reference_does_not_declare_is_refused[endpoint-of-another-section] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2378: in test_an_endpoint_the_reference_does_not_declare_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:360: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint POST /projects/:id/epics
+E     
+E   assert []
+_ test_an_endpoint_the_reference_does_not_declare_is_refused[declared-path-with-another-method] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2378: in test_an_endpoint_the_reference_does_not_declare_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:360: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint PUT /projects/:id/issues/:issue_iid/award_emoji
+E     
+E   assert []
+_ test_an_endpoint_the_reference_does_not_declare_is_refused[method-without-a-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2393: in test_an_endpoint_the_reference_does_not_declare_is_refused
+    assert messages, f"no usage error names the option {OPTION_ENDPOINT} (design.md D1); stderr:\n{captured.err}"
+E   AssertionError: no usage error names the option --endpoint (design.md D1); stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint POST
+E     
+E   assert []
+_________ test_a_two_value_path_given_one_value_is_refused[one-value] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2443: in test_a_two_value_path_given_one_value_is_refused
+    assert naming, (
+E   AssertionError: one log record says id has no value and lists the path parameters ['id', 'id'] (issue #63 AC-3.3); logged: ["unknown operation id 'create#delete-a-group-ssh-certificate': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#delete-a-group-ssh-certificate': no family module and no graphql_only record declares it
+_________ test_a_two_value_path_given_one_value_is_refused[no-value] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2443: in test_a_two_value_path_given_one_value_is_refused
+    assert naming, (
+E   AssertionError: one log record says id has no value and lists the path parameters ['id', 'id'] (issue #63 AC-3.3); logged: ["unknown operation id 'create#delete-a-group-ssh-certificate': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#delete-a-group-ssh-certificate': no family module and no graphql_only record declares it
+_______ test_a_two_value_path_given_one_value_is_refused[three-values] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2443: in test_a_two_value_path_given_one_value_is_refused
+    assert naming, (
+E   AssertionError: one log record says 'more values than its places' and lists the path parameters ['id', 'id'] (issue #63 AC-3.3); logged: ["unknown operation id 'create#delete-a-group-ssh-certificate': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#delete-a-group-ssh-certificate': no family module and no graphql_only record declares it
+______ test_a_format_the_page_does_not_list_is_refused[unlisted-format] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2477: in test_a_format_the_page_does_not_list_is_refused
+    assert naming, (
+E   AssertionError: one log record names every listed format ['bz2', 'tar', 'tar.bz2', 'tar.gz', 'tb2', 'tbz', 'tbz2', 'zip'] (issue #63 AC-4.2); logged: ["unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+_ test_a_format_the_page_does_not_list_is_refused[listed-format-in-capitals] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2477: in test_a_format_the_page_does_not_list_is_refused
+    assert naming, (
+E   AssertionError: one log record names every listed format ['bz2', 'tar', 'tar.bz2', 'tar.gz', 'tb2', 'tbz', 'tbz2', 'zip'] (issue #63 AC-4.2); logged: ["unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+__ test_an_undeclared_header_is_refused[header-the-record-does-not-declare] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2552: in test_an_undeclared_header_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:360: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Hmac-Sha256=ab12 --header X-Other=1
+E     
+E   assert []
+___ test_an_undeclared_header_is_refused[declared-header-given-as-a-field] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2552: in test_an_undeclared_header_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:360: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Hmac-Sha256=ab12
+E     
+E   assert []
+_ test_an_undeclared_header_is_refused[header-on-a-record-that-declares-none] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2552: in test_an_undeclared_header_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:360: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header X-Gitlab-Nonce=n1
+E     
+E   assert []
+____ test_an_undeclared_header_is_refused[declared-header-in-another-case] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2558: in test_an_undeclared_header_is_refused
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#set-status-of-an-external-control', '--path', 'external_control_id=3', '-f', 'status=pass', '--header', 'X-Gitlab-Timestamp=1700000000', '--header', 'X-Gitlab-Hmac-Sha256=ab12', '--header', 'x-gitlab-nonce=n1'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Hmac-Sha256=ab12 --header x-gitlab-nonce=n1
+E     
+E   assert 2 == 0
+________________________ test_the_s3_import_is_refused ________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_call.py:2612: in test_the_s3_import_is_refused
+    assert any(OP_IMPORT_FROM_S3 in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+E   AssertionError: one log record names 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket' and ends ': no subcommand sends it': the gate refuses the S3 import, which writes into an existing project (issue #63 design.md D6); logged: ["unknown operation id 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket': no family module and no graphql_only record declares it"]
+E   assert False
+E    +  where False = any(<generator object test_the_s3_import_is_refused.<locals>.<genexpr> at 0x0000023E708E3840>)
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket': no family module and no graphql_only record declares it
+_______________ test_the_call_docstring_names_the_request_forms _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_call.py:2635: in test_the_call_docstring_names_the_request_forms
+    assert missing == [], f"the docstring of commands/call.py does not name: {missing} (issue #63 AC-9.1)"
+E   AssertionError: the docstring of commands/call.py does not name: ['--endpoint', '--path format=', '--header', 'override_params[container_expiration_policy_attributes]'] (issue #63 AC-9.1)
+E   assert ['--endpoint'..._attributes]'] == []
+E     
+E     Left contains 4 more items, first extra item: [0m[33m'[39;49;00m[33m--endpoint[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:660: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "create.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: create.PENDING is not the keys AC-1 keeps pending:
+E     not expected: ('DELETE', '/groups/:id/ssh_certificates/:id')
+E     not expected: ('GET', '/projects/:id/repository/archive[.format]')
+E     not expected: ('GET', '/projects/:id/repository/changelog.txt')
+E   assert frozenset({('...nches'), ...}) == frozenset({('..._pick'), ...})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/archive[.format][39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/ssh_certificates/:id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/repository/changelog.txt[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________ test_each_id_of_the_certificate_path_takes_its_place _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:789: in test_each_id_of_the_certificate_path_takes_its_place
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['create#delete-a-group-ssh-certificate', '--path', 'id=7', '--path', 'id=12345'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#delete-a-group-ssh-certificate': no family module and no graphql_only record declares it
+_____________ test_the_archive_format_is_sent_as_its_suffix[bz2] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=bz2'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+_____________ test_the_archive_format_is_sent_as_its_suffix[tar] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=tar'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+___________ test_the_archive_format_is_sent_as_its_suffix[tar.bz2] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=tar.bz2'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+____________ test_the_archive_format_is_sent_as_its_suffix[tar.gz] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=tar.gz'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+_____________ test_the_archive_format_is_sent_as_its_suffix[tb2] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=tb2'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+_____________ test_the_archive_format_is_sent_as_its_suffix[tbz] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=tbz'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+_____________ test_the_archive_format_is_sent_as_its_suffix[tbz2] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=tbz2'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+_____________ test_the_archive_format_is_sent_as_its_suffix[zip] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository', '--path', 'format=zip'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+__________ test_the_archive_format_is_sent_as_its_suffix[no-format] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_create.py:818: in test_the_archive_format_is_sent_as_its_suffix
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+E   AssertionError: call ['create#retrieve-file-archive-from-a-repository'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'create#retrieve-file-archive-from-a-repository': no family module and no graphql_only record declares it
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:652: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "gitlab_dedicated.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(
+E   AssertionError: gitlab_dedicated.PENDING is not the keys AC-2 keeps pending:
+E     not expected: ('POST', '/projects/remote-import-s3')
+E   assert frozenset({('...-import-s3')}) == frozenset({('...ote-import')})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/remote-import-s3[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_____________________ test_every_reference_has_its_record _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_developer_experience.py:324: in test_every_reference_has_its_record
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+E   AssertionError: the records after a base record are not its section's other endpoints:
+E     missing: 'developer-experience#file-path-branches-and-tags-name'
+E   assert {} == {'developer-e...s/my%2Ftag'))}
+E     
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mdeveloper-experience#file-path-branches-and-tags-name[39;49;00m[33m'[39;49;00m: (([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                 [33m'[39;49;00m[33m/projects/1/branches/my[39;49;00m[33m%2F[39;49;00m[33mbranch/commits[39;49;00m[33m'[39;49;00m),[90m[39;49;00m
+E                                                                ([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                 [33m...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:670: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the Params that are not Kind.SCALAR are not the sections' (AC-4):\n" + (
+E   AssertionError: the Params that are not Kind.SCALAR are not the sections' (AC-4):
+E     missing: ('gitlab-dedicated#import-a-project-from-an-aws-s3-bucket', 'override_params[avatar]')
+E     missing: ('gitlab-dedicated#import-a-project-from-an-aws-s3-bucket', 'override_params[tag_list]')
+E     missing: ('gitlab-dedicated#import-a-project-from-an-aws-s3-bucket', 'override_params[topics]')
+E   assert {('gitlab-ded... 'ARRAY', ...} == {('gitlab-ded... 'ARRAY', ...}
+E     
+E     Omitting 27 identical items, use -vv to show
+E     Right contains 3 more items:
+E     [0m{([33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-an-aws-s3-bucket[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33moverride_params[avatar][39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mFILE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      ([33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-an-aws-s3-bucket[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33moverride_params[tag_list][39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m,...
+E     
+E     ...Full output truncated, use '-vv' to show
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_developer_experience.py:334: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, f"{FAMILY}.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(
+E   AssertionError: developer_experience.PENDING is not the keys AC-2 keeps pending:
+E     not expected: ('GET', '/projects/1/branches/my%2Fbranch/commits')
+E     not expected: ('GET', '/projects/1/repository/tags/my%2Ftag')
+E   assert frozenset({('...s/my%2Ftag')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/1/branches/my[39;49;00m[33m%2F[39;49;00m[33mbranch/commits[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/1/repository/tags/my[39;49;00m[33m%2F[39;49;00m[33mtag[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:699: in test_only_the_list_records_are_paged
+    assert paging == expected, "the records' Paging is not the sections' (AC-5):\n" + mapping_difference(
+E   AssertionError: the records' Paging is not the sections' (AC-5):
+E     missing: 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket'
+E   assert {'gitlab-dedi...: 'NONE', ...} == {'gitlab-dedi...: 'NONE', ...}
+E     
+E     Omitting 79 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-an-aws-s3-bucket[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_the_literal_endpoints_are_sent_as_written[/projects/1/repository/files/src%2FREADME.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_developer_experience.py:433: in test_the_literal_endpoints_are_sent_as_written
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['developer-experience#file-path-branches-and-tags-name', '--endpoint', 'GET /projects/1/repository/files/src%2FREADME.md'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint GET /projects/1/repository/files/src%2FREADME.md
+E     
+E   assert 2 == 0
+_ test_the_literal_endpoints_are_sent_as_written[/projects/1/branches/my%2Fbranch/commits] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_developer_experience.py:433: in test_the_literal_endpoints_are_sent_as_written
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['developer-experience#file-path-branches-and-tags-name', '--endpoint', 'GET /projects/1/branches/my%2Fbranch/commits'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint GET /projects/1/branches/my%2Fbranch/commits
+E     
+E   assert 2 == 0
+_ test_the_literal_endpoints_are_sent_as_written[/projects/1/repository/tags/my%2Ftag] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_developer_experience.py:433: in test_the_literal_endpoints_are_sent_as_written
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['developer-experience#file-path-branches-and-tags-name', '--endpoint', 'GET /projects/1/repository/tags/my%2Ftag'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint GET /projects/1/repository/tags/my%2Ftag
+E     
+E   assert 2 == 0
+_____________________ test_every_reference_has_its_record _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_fulfillment.py:302: in test_every_reference_has_its_record
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+E   AssertionError: the records after a base record are not its section's other endpoints:
+E     missing: 'fulfillment#delete-an-ldap-group-link-deprecated'
+E   assert {} == {'fulfillment...vider/:cn'),)}
+E     
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mfulfillment#delete-an-ldap-group-link-deprecated[39;49;00m[33m'[39;49;00m: (([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                            [33m'[39;49;00m[33m/groups/:id/ldap_group_links/:provider/:cn[39;49;00m[33m'[39;49;00m),)}[90m[39;49;00m
+E     Use -v to get more diff
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_fulfillment.py:312: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, f"{FAMILY}.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(
+E   AssertionError: fulfillment.PENDING is not the keys AC-2 keeps pending:
+E     not expected: ('DELETE', '/groups/:id/ldap_group_links/:provider/:cn')
+E   assert frozenset({('...ovider/:cn')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/ldap_group_links/:provider/:cn[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_____________________ test_every_reference_has_its_record _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:639: in test_every_reference_has_its_record
+    assert endpoints == RECORD_ENDPOINTS, "gitlab_dedicated.OPERATIONS is not the family's index rows (AC-1):\n" + (
+E   AssertionError: gitlab_dedicated.OPERATIONS is not the family's index rows (AC-1):
+E     missing: 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket'
+E   assert {'gitlab-dedi...ecksum'), ...} == {'gitlab-dedi...l_name'), ...}
+E     
+E     Omitting 79 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-an-aws-s3-bucket[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                  [33m'[39;49;00m[33m/projects/remote-import-s3[39;49;00m[33m'[39;49;00m)}[90m[39;49;00m
+E     Use -v to get more diff
+________ test_the_s3_import_sends_every_member_at_its_name[form-body] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_gitlab_dedicated.py:784: in test_the_s3_import_sends_every_member_at_its_name
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['gitlab-dedicated#import-a-project-from-an-aws-s3-bucket', '-f', 'access_key_id=key-id', '-f', 'bucket_name=imports', '-f', 'file_key=project.tar.gz', '-f', 'path=imported-project', '-f', 'region=eu-central-1', '-f', 'secret_access_key=access-key', '-f', 'override_params[visibility]=private', '-f', 'override_params[container_expiration_policy_attributes][cadence]=7d', '-F', 'override_params[tag_list]=["a","b"]'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket': no family module and no graphql_only record declares it
+_ test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_openapi_only.py:1325: in test_the_symbol_download_sends_its_checksum_header
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#the-nuget-symbol-file-download-endpoint', '--path', 'id=12', '--path', 'file_name=lib.pdb', '--path', 'signature=abc123', '--path', 'same_file_name=lib.pdb', '--header', 'Symbolchecksum=SHA256:ab'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header Symbolchecksum=SHA256:ab
+E     
+E   assert 2 == 0
+_ test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint-1] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_openapi_only.py:1325: in test_the_symbol_download_sends_its_checksum_header
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#the-nuget-symbol-file-download-endpoint-1', '--path', 'file_name=lib.pdb', '--path', 'signature=abc123', '--path', 'same_file_name=lib.pdb', '--header', 'Symbolchecksum=SHA256:ab'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header Symbolchecksum=SHA256:ab
+E     
+E   assert 2 == 0
+_ test_the_s3_import_sends_every_member_at_its_name[multipart-body-with-avatar] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_gitlab_dedicated.py:784: in test_the_s3_import_sends_every_member_at_its_name
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['gitlab-dedicated#import-a-project-from-an-aws-s3-bucket', '-f', 'access_key_id=key-id', '-f', 'bucket_name=imports', '-f', 'file_key=project.tar.gz', '-f', 'path=imported-project', '-f', 'region=eu-central-1', '-f', 'secret_access_key=access-key', '-f', 'override_params[visibility]=private', '-f', 'override_params[container_expiration_policy_attributes][cadence]=7d', '-F', 'override_params[tag_list]=["a","b"]', '--file', 'override_params[avatar]=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1868\\popen-gw0\\test_the_s3_import_sends_every1\\logo.png'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket': no family module and no graphql_only record declares it
+__________________ test_nothing_is_pending_but_the_kept_keys __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1620: in test_nothing_is_pending_but_the_kept_keys
+    assert pending == KEPT, (
+E   AssertionError: PENDING holds 22 key(s), the kept keys are 1 (AC-1.3; #63 AC-1.1, design.md D9):
+E     not expected: ('DELETE', '/http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}')
+E     not expected: ('DELETE', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel')
+E     not expected: ('GET', '/http(s)://${CI_REGISTRY}/v2/_catalog')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/:package_version/:package_username/:package_channel')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/conans/search')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/ping')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/users/authenticate')
+E     not expected: ('GET', '/projects/:id/packages/conan/v1/users/check_credentials')
+E     not expected: ('POST', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls')
+E     not expected: ('POST', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls')
+E     not expected: ('PUT', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')
+E     not expected: ('PUT', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')
+E     not expected: ('PUT', '/projects/:id/packages/nuget/v2')
+E   assert frozenset({('...rence'), ...}) == frozenset({('...jects/:id/')})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/nuget/v2[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/conan/v1/users/check...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________ test_a_two_endpoint_entry_maps_its_first_endpoint ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1659: in test_a_two_endpoint_entry_maps_its_first_endpoint
+    assert mapped == expected, (
+E   AssertionError: a two-endpoint entry's records map its first endpoint, then its other one (AC-1.2; #63 design.md D1, D8):
+E     'package#create-an-authentication-token': declared [('GET', '/packages/conan/v1/users/authenticate')], expected [('GET', '/packages/conan/v1/users/authenticate'), ('GET', '/projects/:id/packages/conan/v1/users/authenticate')]
+E     'package#delete-a-recipe-and-package': declared [('DELETE', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel')], expected [('DELETE', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel'), ('DELETE', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel')]
+E     'package#list-all-package-download-urls': declared [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls')], expected [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls')]
+E     'package#list-all-package-upload-urls': declared [('POST', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls')], expected [('POST', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls'), ('POST', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls')]
+E     'package#list-all-recipe-download-urls': declared [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls')], expected [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls')]
+E     'package#list-all-recipe-upload-urls': declared [('POST', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls')], expected [('POST', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls'), ('POST', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls')]
+E     'package#retrieve-a-package-file': declared [('GET', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')], expected [('GET', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name'), ('GET', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')]
+E     'package#retrieve-a-package-manifest': declared [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest')], expected [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest')]
+E     'package#retrieve-a-package-snapshot': declared [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference')], expected [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference')]
+E     'package#retrieve-a-recipe-file': declared [('GET', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')], expected [('GET', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name'), ('GET', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')]
+E     'package#retrieve-a-recipe-manifest': declared [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest')], expected [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest')]
+E     'package#retrieve-a-recipe-snapshot': declared [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel')], expected [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_version/:package_username/:package_channel')]
+E     'package#retrieve-package-references-metadata': declared [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search')], expected [('GET', '/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search')]
+E     'package#search-for-a-conan-package': declared [('GET', '/packages/conan/v1/conans/search')], expected [('GET', '/packages/conan/v1/conans/search'), ('GET', '/projects/:id/packages/conan/v1/conans/search')]
+E     'package#upload-a-package-file': declared [('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')], expected [('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name'), ('PUT', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name')]
+E     'package#upload-a-package-file-5': declared [('PUT', '/projects/:id/packages/nuget')], expected [('PUT', '/projects/:id/packages/nuget'), ('PUT', '/projects/:id/packages/nuget/v2')]
+E     'package#upload-a-recipe-file': declared [('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')], expected [('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name'), ('PUT', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name')]
+E     'package#verify-authentication-credentials': declared [('GET', '/packages/conan/v1/users/check_credentials')], expected [('GET', '/packages/conan/v1/users/check_credentials'), ('GET', '/projects/:id/packages/conan/v1/users/check_credentials')]
+E     'package#verify-availability-of-a-conan-repository': declared [('GET', '/packages/conan/v1/ping')], expected [('GET', '/packages/conan/v1/ping'), ('GET', '/projects/:id/packages/conan/v1/ping')]
+E   assert {'package#cre...tials')], ...} == {'package#cre...tials')], ...}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mpackage#list-all-package-upload-urls[39;49;00m[33m'[39;49;00m: [([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls[39;49;00m[33m'[39;49;00m)]}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mpackage#list-all-package-upload-urls[39;49;00m[33m'[39;49;00m: [([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/packages/conan/v1/conans/...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1950: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert code == case.code, f"call {list(case.argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+E    +  where 0 = RegistryCase(argv=('package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'C...istry.example.com/v2/group/project/tags/reference/1a2b3c4', answer=Answer(status=202, body=None), code=0, printed=None).code
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1950: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert code == case.code, f"call {list(case.argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#listing-all-container-repositories'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+E    +  where 0 = RegistryCase(argv=('package#listing-all-container-repositories',), jwt_url='https://gitlab.example.com/jwt/auth?servic...swer=Answer(status=200, body={'repositories': ['group/project']}), code=0, printed={'repositories': ['group/project']}).code
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#listing-all-container-repositories': no family module and no graphql_only record declares it
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1950: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    assert code == case.code, f"call {list(case.argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2; stderr:
+E     
+E   assert 2 == 1
+E    +  where 1 = RegistryCase(argv=('package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'C...swer(status=404, body={'errors': [{'code': 'MANIFEST_UNKNOWN', 'message': 'manifest unknown'}]}), code=1, printed=None).code
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_____ test_no_registry_token_sends_nothing_to_the_registry[bearer-token] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+___ test_no_registry_token_sends_nothing_to_the_registry[user-answers-401] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_openapi_only.py:1102: in test_every_param_is_typed_as_its_row
+    assert required == expected_required, "required=True is not exactly where Required reads `yes` (AC-1.3):\n" + (
+E   AssertionError: required=True is not exactly where Required reads `yes` (AC-1.3):
+E     missing: 'openapi-only#the-nuget-symbol-file-download-endpoint'
+E     missing: 'openapi-only#the-nuget-symbol-file-download-endpoint-1'
+E   assert {'openapi-onl...'name'}), ...} == {'openapi-onl...token'}), ...}
+E     
+E     Omitting 88 identical items, use -vv to show
+E     Right contains 2 more items:
+E     [0m{[33m'[39;49;00m[33mopenapi-only#the-nuget-symbol-file-download-endpoint[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mSymbolchecksum[39;49;00m[33m'[39;49;00m}),[90m[39;49;00m
+E      [33m'[39;49;00m[33mopenapi-only#the-nuget-symbol-file-download-endpoint-1[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mSymbolchecksum[39;49;00m[33m'[39;49;00m})}[90m[39;49;00m
+E     Use -v to get more diff
+____ test_no_registry_token_sends_nothing_to_the_registry[no-image-prefix] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+__ test_no_registry_token_sends_nothing_to_the_registry[empty-image-prefix] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-without-a-host] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-a-fragment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_ test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-userinfo] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_ test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-401] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_ test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-no-token] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_package.py:1994: in test_no_registry_token_sends_nothing_to_the_registry
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call ['package#delete-image-tags-by-reference', '--path', 'CI_REGISTRY_IMAGE=group/project', '--path', 'CI_COMMIT_SHORT_SHA=1a2b3c4'] exits 1, got 2 (AC-5.3); stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'package#delete-image-tags-by-reference': no family module and no graphql_only record declares it
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:737: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "plan.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: plan.PENDING is not the keys AC-1 keeps pending:
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id')
+E     not expected: ('DELETE', '/projects/:id/snippets/:snippet_id/award_emoji/:award_id')
+E     not expected: ('GET', '/groups/:id/notification_settings')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/award_emoji')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/award_emoji')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/award_emoji/:award_id')
+E     not expected: ('POST', '/projects/:id/merge_requests/:merge_request_iid/award_emoji')
+E     not expected: ('POST', '/projects/:id/snippets/:snippet_id/award_emoji')
+E     not expected: ('PUT', '/groups/:id/notification_settings')
+E   assert frozenset({('...emoji'), ...}) == frozenset({('..._iid/notes')})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/notification_settings[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/snippets/:snippet_id/award_emoji/:award_id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________________ test_every_key_has_its_record ________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:440: in test_every_key_has_its_record
+    assert declared == RECORD_KEYS, "the records are not the family's sections (AC-1):\n" + mapping_difference(
+E   AssertionError: the records are not the family's sections (AC-1):
+E     missing: ('POST', '/groups/:id/dependency_list_exports')
+E     missing: ('POST', '/pipelines/:id/dependency_list_exports')
+E   assert {('GET', '/ad...-export', ...} == {('GET', '/ad...-export', ...}
+E     
+E     Omitting 41 identical items, use -vv to show
+E     Right contains 2 more items:
+E     [0m{([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/dependency_list_exports[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33msecurity-risk-management#create-a-dependency-list-export[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      ([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/pipelines/:id/dependency_list_exports[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33msecurity-risk-management#create-a-dependency-list-export[39...
+E     
+E     ...Full output truncated, use '-vv' to show
+___________________ test_only_the_unmapped_keys_are_pending ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:459: in test_only_the_unmapped_keys_are_pending
+    assert pending == PENDING_KEYS, "security_risk_management.PENDING is not AC-2's set:\n" + set_difference(
+E   AssertionError: security_risk_management.PENDING is not AC-2's set:
+E     not expected: ('POST', '/groups/:id/dependency_list_exports')
+E     not expected: ('POST', '/pipelines/:id/dependency_list_exports')
+E   assert frozenset({('...st_exports')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/dependency_list_exports[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/pipelines/:id/dependency_list_exports[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+________________________ test_every_key_has_its_record ________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:789: in test_every_key_has_its_record
+    assert declared == KEY_IDS, "the first new record of each ID is not its key and Reference (AC-1, #63 D1):\n" + (
+E   AssertionError: the first new record of each ID is not its key and Reference (AC-1, #63 D1):
+E     missing: ('GET', 'https://HOST/oauth/token/info')
+E     missing: ('PATCH', '/projects/:id/compliance_external_controls/:external_control_id/status')
+E   assert {('GET', '/ap...ettings', ...} == {('DELETE', '...se-user', ...}
+E     
+E     Omitting 153 identical items, use -vv to show
+E     Right contains 2 more items:
+E     [0m{([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mhttps://HOST/oauth/token/info[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33msoftware-supply-chain-security#retrieve-the-token-information[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      ([33m'[39;49;00m[33mPATCH[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/compliance_external_controls/:external_control_id/status[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33msoftware-supply-chain-securi...
+E     
+E     ...Full output truncated, use '-vv' to show
+___________________ test_only_the_unmapped_keys_are_pending ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:808: in test_only_the_unmapped_keys_are_pending
+    assert pending == PENDING_KEYS, "software_supply_chain_security.PENDING is not the keys AC-2 keeps pending:\n" + (
+E   AssertionError: software_supply_chain_security.PENDING is not the keys AC-2 keeps pending:
+E     not expected: ('DELETE', '/groups/:id/access_requests/:user_id')
+E     not expected: ('DELETE', '/groups/:id/custom_attributes/:key')
+E     not expected: ('DELETE', '/users/:id/custom_attributes/:key')
+E     not expected: ('GET', '/groups/:id/access_requests')
+E     not expected: ('GET', '/groups/:id/custom_attributes')
+E     not expected: ('GET', '/groups/:id/custom_attributes/:key')
+E     not expected: ('GET', '/users/:id/custom_attributes')
+E     not expected: ('GET', '/users/:id/custom_attributes/:key')
+E     not expected: ('GET', 'https://HOST/oauth/token/info')
+E     not expected: ('PATCH', '/projects/:id/compliance_external_controls/:external_control_id/status')
+E     not expected: ('PATCH', '/user/status')
+E     not expected: ('POST', '/groups/:id/access_requests')
+E     not expected: ('PUT', '/groups/:id/access_requests/:user_id/approve')
+E     not expected: ('PUT', '/groups/:id/custom_attributes/:key')
+E     not expected: ('PUT', '/users/:id/custom_attributes/:key')
+E   assert frozenset({('.../:key'), ...}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/custom_attributes[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/access_requests/:user_id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/custom_attributes/:key[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPATCH[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________ test_the_required_attributes_are_the_sections ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:860: in test_the_required_attributes_are_the_sections
+    assert declared == REQUIRED_ATTRIBUTES, "the required Params are not the sections' `yes` rows (AC-4):\n" + (
+E   AssertionError: the required Params are not the sections' `yes` rows (AC-4):
+E     missing: 'software-supply-chain-security#set-status-of-an-external-control'
+E   assert {'software-su...ct_id'}), ...} == {'software-su...email'}), ...}
+E     
+E     Omitting 29 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33msoftware-supply-chain-security#set-status-of-an-external-control[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                                     [33m'[39;49;00m[33mX-Gitlab-Nonce[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                                     [33m'[39;49;00m[33mX-Gitla...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________________ test_an_other_endpoint_is_sent_when_named __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_plan.py:866: in test_an_other_endpoint_is_sent_when_named
+    assert code == EXIT_OK, f"call {named} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#add-an-emoji-reaction-to-a-resource', '--endpoint', 'POST /projects/:id/merge_requests/:merge_request_iid/award_emoji', '--path', 'merge_request_iid=5', '-f', 'name=thumbsup'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint POST /projects/:id/merge_requests/:merge_request_iid/award_emoji
+E     
+E   assert 2 == 0
+________________ test_the_user_status_patch_is_sent_when_named ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_software_supply_chain_security.py:930: in test_the_user_status_patch_is_sent_when_named
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#set-your-user-status', '--endpoint', 'PATCH /user/status', '-f', 'availability=busy'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --endpoint PATCH /user/status
+E     
+E   assert 2 == 0
+_____________ test_the_token_information_is_sent_outside_the_api ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_software_supply_chain_security.py:955: in test_the_token_information_is_sent_outside_the_api
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#retrieve-the-token-information'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'software-supply-chain-security#retrieve-the-token-information': no family module and no graphql_only record declares it
+_ test_the_external_control_status_carries_its_headers[every-request-header] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_software_supply_chain_security.py:991: in test_the_external_control_status_carries_its_headers
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#set-status-of-an-external-control', '--path', 'external_control_id=3', '-f', 'status=pass', '--header', 'X-Gitlab-Timestamp=1700000000', '--header', 'X-Gitlab-Nonce=n1', '--header', 'X-Gitlab-Hmac-Sha256=ab12'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Nonce=n1 --header X-Gitlab-Hmac-Sha256=ab12
+E     
+E   assert 2 == 0
+_ test_the_external_control_status_carries_its_headers[without-x-gitlab-nonce] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_software_supply_chain_security.py:991: in test_the_external_control_status_carries_its_headers
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#set-status-of-an-external-control', '--path', 'external_control_id=3', '-f', 'status=pass', '--header', 'X-Gitlab-Timestamp=1700000000', '--header', 'X-Gitlab-Hmac-Sha256=ab12'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Hmac-Sha256=ab12
+E     
+E   assert 2 == 0
+_____________________ test_every_reference_has_its_record _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_tenant_scale.py:604: in test_every_reference_has_its_record
+    assert declared == RECORDS, (
+E   AssertionError: tenant_scale.OPERATIONS declares 97 ID(s), AC-1 expects 101:
+E     missing: 'tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user'
+E   assert {'tenant-scal...dge_id'), ...} == {'tenant-scal...dge_id'), ...}
+E     
+E     Omitting 97 identical items, use -vv to show
+E     Right contains 4 more items:
+E     [0m{[33m'[39;49;00m[33mtenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                                     [33m'[39;49;00m[33m/groups/:id/manage/resource_access_tokens/:id[39;49;00m[33m'[39;49;00m),[90m[39;49;00m
+E      [33m'[39;49;00m[33mtenant-scale#revoke-a-personal-access-token-for-an-enterprise-user[39;49;00m[33m'...
+E     
+E     ...Full output truncated, use '-vv' to show
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_tenant_scale.py:619: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "tenant_scale.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(
+E   AssertionError: tenant_scale.PENDING is not the keys AC-2 keeps pending:
+E     not expected: ('DELETE', '/groups/:id/invitations/:email')
+E     not expected: ('DELETE', '/groups/:id/manage/personal_access_tokens/:id')
+E     not expected: ('DELETE', '/groups/:id/manage/resource_access_tokens/:id')
+E     not expected: ('GET', '/groups/:id/invitations')
+E     not expected: ('POST', '/groups/:id/invitations')
+E     not expected: ('POST', '/groups/:id/manage/personal_access_tokens/:id/rotate')
+E     not expected: ('POST', '/groups/:id/manage/resource_access_tokens/:id/rotate')
+E     not expected: ('PUT', '/groups/:id/invitations/:email')
+E   assert frozenset({('...otate'), ...}) == frozenset()
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/manage/resource_access_tokens/:id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/manage/resource_access_tokens/:id/rotate[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/invitations/:email[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPUT[39;49;00m[33m'[39;...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_tenant_scale.py:645: in test_every_param_is_typed_as_its_row
+    assert bodies == expected_bodies, "every record has body BodyFormat.JSON and no fixed pairs (AC-4):\n" + (
+E   AssertionError: every record has body BodyFormat.JSON and no fixed pairs (AC-4):
+E     missing: 'tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user'
+E   assert {'tenant-scal...ON', ()), ...} == {'tenant-scal...ON', ()), ...}
+E     
+E     Omitting 97 identical items, use -vv to show
+E     Right contains 4 more items:
+E     [0m{[33m'[39;49;00m[33mtenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mJSON[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E                                                                                     ()),[90m[39;49;00m
+E      [33m'[39;49;00m[33mtenant-scale#revoke-a-personal-access-token-for-an-enterprise-user[39;49;00m[33m'[39;49;00m: ([33m'[39;49;00m[33mJSON[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E               ...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_only_the_list_records_are_paged _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_tenant_scale.py:660: in test_only_the_list_records_are_paged
+    assert paging == expected, "the records' Paging is not OFFSET for the sections' lists, NONE else (AC-5):\n" + (
+E   AssertionError: the records' Paging is not OFFSET for the sections' lists, NONE else (AC-5):
+E     missing: 'tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user'
+E     missing: 'tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user'
+E   assert {'tenant-scal...: 'NONE', ...} == {'tenant-scal...: 'NONE', ...}
+E     
+E     Omitting 97 identical items, use -vv to show
+E     Right contains 4 more items:
+E     [0m{[33m'[39;49;00m[33mtenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33mtenant-scale#revoke-a-personal-access-token-for-an-enterprise-user[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mNONE[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33mtenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user[39;49;00m[33...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_each_id_of_a_token_path_takes_its_place[revoke-a-personal-access-token-for-an-enterprise-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_tenant_scale.py:735: in test_each_id_of_a_token_path_takes_its_place
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user', '--path', 'id=7', '--path', 'id=self'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user': no family module and no graphql_only record declares it
+_ test_each_id_of_a_token_path_takes_its_place[revoke-a-group-or-project-access-token-for-an-enterprise-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_tenant_scale.py:735: in test_each_id_of_a_token_path_takes_its_place
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user', '--path', 'id=7', '--path', 'id=self'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user': no family module and no graphql_only record declares it
+_ test_each_id_of_a_token_path_takes_its_place[rotate-a-personal-access-token-for-an-enterprise-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_tenant_scale.py:735: in test_each_id_of_a_token_path_takes_its_place
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user', '--path', 'id=7', '--path', 'id=self'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user': no family module and no graphql_only record declares it
+_ test_each_id_of_a_token_path_takes_its_place[rotate-a-group-or-project-access-token-for-an-enterprise-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\src\payload\test\test_gitlab_api_tenant_scale.py:735: in test_each_id_of_a_token_path_takes_its_place
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user', '--path', 'id=7', '--path', 'id=self'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:509 unknown operation id 'tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user': no family module and no graphql_only record declares it
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:848: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "verify.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: verify.PENDING is not the keys AC-1 keeps pending:
+E     not expected: ('GET', '/groups/:id/runners/all')
+E     not expected: ('GET', '/projects/:id/releases/permalink/latest/downloads/bin/asset.exe')
+E     not expected: ('GET', '/projects/:id/releases/permalink/latest/evidence')
+E     not expected: ('GET', '/version')
+E   assert frozenset({('...rsion'), ...}) == frozenset({('...equest_iid')})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/runners/all[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/version[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/releases/permalink/latest/downloads/bin/asset.exe[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1563: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: openapi-only#the-nuget-symbol-file-download-endpoint: the section's request header 'Symbolchecksum' is not declared by the record
+E     openapi-only#the-nuget-symbol-file-download-endpoint-1: the section's request header 'Symbolchecksum' is not declared by the record
+E   assert not ["openapi-only#the-nuget-symbol-file-download-endpoint: the section's request header 'Symbolchecksum' is not declared ...he-nuget-symbol-file-download-endpoint-1: the section's request header 'Symbolchecksum' is not declared by the record"]
+_____________ test_a_two_level_member_is_read_and_sent_as_written _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1783: in test_a_two_level_member_is_read_and_sent_as_written
+    record = declared_record(registry=registry, operation_id=S3_IMPORT_ID)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:950: in declared_record
+    assert records, f"no family declares a record of {operation_id}" + (f" on {endpoint}" if endpoint else "")
+E   AssertionError: no family declares a record of gitlab-dedicated#import-a-project-from-an-aws-s3-bucket
+E   assert []
+______ test_an_endpoint_a_place_a_suffix_and_a_base_are_read_as_written _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1825: in test_an_endpoint_a_place_a_suffix_and_a_base_are_read_as_written
+    certificate = declared_record(registry=registry, operation_id=SSH_CERTIFICATE_ID)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:950: in declared_record
+    assert records, f"no family declares a record of {operation_id}" + (f" on {endpoint}" if endpoint else "")
+E   AssertionError: no family declares a record of create#delete-a-group-ssh-certificate
+E   assert []
+______________ test_a_request_header_is_read_and_sent_as_written ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1904: in test_a_request_header_is_read_and_sent_as_written
+    control = declared_record(registry=registry, operation_id=EXTERNAL_CONTROL_ID)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_gitlab_wrapper_contract.py:950: in declared_record
+    assert records, f"no family declares a record of {operation_id}" + (f" on {endpoint}" if endpoint else "")
+E   AssertionError: no family declares a record of software-supply-chain-security#set-status-of-an-external-control
+E   assert []
+______________ test_each_record_of_an_id_copies_its_base_record _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1756: in test_each_record_of_an_id_copies_its_base_record
+    assert not missing, f"no family declares several records of {missing}"
+E   AssertionError: no family declares several records of ['plan#add-an-emoji-reaction-to-a-resource', 'verify#get-the-latest-release']
+E   assert not ['plan#add-an-emoji-reaction-to-a-resource', 'verify#get-the-latest-release']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_is_named_by_its_method_and_path[snippet-endpoint]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_is_named_by_its_method_and_path[path-parameter-of-another-endpoint]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_the_reference_does_not_declare_is_refused[endpoint-of-another-section]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_the_reference_does_not_declare_is_refused[declared-path-with-another-method]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_the_reference_does_not_declare_is_refused[method-without-a-path]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_two_value_path_given_one_value_is_refused[one-value]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_two_value_path_given_one_value_is_refused[no-value]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_two_value_path_given_one_value_is_refused[three-values]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_format_the_page_does_not_list_is_refused[unlisted-format]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_format_the_page_does_not_list_is_refused[listed-format-in-capitals]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undeclared_header_is_refused[header-the-record-does-not-declare]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undeclared_header_is_refused[declared-header-given-as-a-field]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undeclared_header_is_refused[header-on-a-record-that-declares-none]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undeclared_header_is_refused[declared-header-in-another-case]
+FAILED src/payload/test/test_gitlab_api_call.py::test_the_s3_import_is_refused
+FAILED src/payload/test/test_gitlab_api_call.py::test_the_call_docstring_names_the_request_forms
+FAILED src/payload/test/test_gitlab_api_create.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_create.py::test_each_id_of_the_certificate_path_takes_its_place
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[bz2]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[tar]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[tar.bz2]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[tar.gz]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[tb2]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[tbz]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[tbz2]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[zip]
+FAILED src/payload/test/test_gitlab_api_create.py::test_the_archive_format_is_sent_as_its_suffix[no-format]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_developer_experience.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_developer_experience.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_developer_experience.py::test_the_literal_endpoints_are_sent_as_written[/projects/1/repository/files/src%2FREADME.md]
+FAILED src/payload/test/test_gitlab_api_developer_experience.py::test_the_literal_endpoints_are_sent_as_written[/projects/1/branches/my%2Fbranch/commits]
+FAILED src/payload/test/test_gitlab_api_developer_experience.py::test_the_literal_endpoints_are_sent_as_written[/projects/1/repository/tags/my%2Ftag]
+FAILED src/payload/test/test_gitlab_api_fulfillment.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_fulfillment.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_the_s3_import_sends_every_member_at_its_name[form-body]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint-1]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_the_s3_import_sends_every_member_at_its_name[multipart-body-with-avatar]
+FAILED src/payload/test/test_gitlab_api_package.py::test_nothing_is_pending_but_the_kept_keys
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_two_endpoint_entry_maps_its_first_endpoint
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[bearer-token]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[user-answers-401]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[no-image-prefix]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[empty-image-prefix]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-without-a-host]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-a-fragment]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[image-prefix-host-with-userinfo]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-401]
+FAILED src/payload/test/test_gitlab_api_package.py::test_no_registry_token_sends_nothing_to_the_registry[jwt-auth-answers-no-token]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_key_has_its_record
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_only_the_unmapped_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_key_has_its_record
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_only_the_unmapped_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_plan.py::test_an_other_endpoint_is_sent_when_named
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_user_status_patch_is_sent_when_named
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_token_information_is_sent_outside_the_api
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_external_control_status_carries_its_headers[every-request-header]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_external_control_status_carries_its_headers[without-x-gitlab-nonce]
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_each_id_of_a_token_path_takes_its_place[revoke-a-personal-access-token-for-an-enterprise-user]
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_each_id_of_a_token_path_takes_its_place[revoke-a-group-or-project-access-token-for-an-enterprise-user]
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_each_id_of_a_token_path_takes_its_place[rotate-a-personal-access-token-for-an-enterprise-user]
+FAILED src/payload/test/test_gitlab_api_tenant_scale.py::test_each_id_of_a_token_path_takes_its_place[rotate-a-group-or-project-access-token-for-an-enterprise-user]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_only_the_kept_keys_are_pending
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_a_two_level_member_is_read_and_sent_as_written
+FAILED test/test_gitlab_wrapper_contract.py::test_an_endpoint_a_place_a_suffix_and_a_base_are_read_as_written
+FAILED test/test_gitlab_wrapper_contract.py::test_a_request_header_is_read_and_sent_as_written
+FAILED test/test_gitlab_wrapper_contract.py::test_each_record_of_an_id_copies_its_base_record
+================= 82 failed, 842 passed in 153.66s (0:02:33) ==================

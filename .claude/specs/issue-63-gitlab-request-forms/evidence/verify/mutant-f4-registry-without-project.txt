@@ -1,0 +1,32 @@
+# mutant f4-registry-without-project: AC-5.2/D4: a container-registry record sent without project raises before any request
+# edit src/payload/scripts/gitlab_api/registry.py: '    if project is None:\n        raise ValueError(\n            f"{operation.operation_id!r} is sent to' -> '    if False:\n        raise ValueError(\n            f"{operation.operation_id!r} is sent to'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_container_registry.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_container_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [112 items]
+
+.......................................................F................ [ 64%]
+........................................                                 [100%]
+================================== FAILURES ===================================
+__________ test_send_fetches_the_registry_token_before_the_registry ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1204: in test_send_fetches_the_registry_token_before_the_registry
+    assert fake_gitlab.requests == [], (
+E   AssertionError: a container-registry record sent without the configured project is refused before step 1, with no request to the instance or the registry (design.md D4, AC-5.2)
+E   assert [RecordedRequ...}, body=None)] == []
+E     
+E     Left contains one more item: [0mRecordedRequest(method=[33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, url=[33m'[39;49;00m[33mhttps://gitlab.example.com/api/v4/user[39;49;00m[33m'[39;49;00m, headers={[33m'[39;49;00m[33mHost[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mgitlab.example.com[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mUser-agent[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mPython-urllib/3.14[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mAccept[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mapplication/json[39;49;00m[33m'[39;49;00m, [33m'...
+E     
+E     ...Full output truncated, use '-vv' to show
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_send_fetches_the_registry_token_before_the_registry
+======================== 1 failed, 111 passed in 6.05s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 111 passed in 6.05s)

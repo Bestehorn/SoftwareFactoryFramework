@@ -1,0 +1,133 @@
+# mutant f1-call-lookup-ignores-endpoint: AC-2.1/AC-2.4: call looks the record up on --endpoint
+# edit src/payload/scripts/gitlab_api/commands/call.py: '    operation = registry.lookup(operation_id=operation_id, endpoint=endpoint)' -> '    operation = registry.lookup(operation_id=operation_id)'
+# sha256 before src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_developer_experience.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_developer_experience.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [217 items]
+
+........................................................................ [ 33%]
+...................F...F..F.........F................................... [ 66%]
+.................................F...................................... [ 99%]
+.                                                                        [100%]
+================================== FAILURES ===================================
+_____ test_an_endpoint_is_named_by_its_method_and_path[snippet-endpoint] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2331: in test_an_endpoint_is_named_by_its_method_and_path
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#add-an-emoji-reaction-to-a-resource', '--endpoint', 'POST /projects/:id/snippets/:snippet_id/award_emoji', '--path', 'snippet_id=9', '-f', 'name=thumbsup'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 plan#add-an-emoji-reaction-to-a-resource: "snippet_id" given with --path is not documented; the path parameter issue_iid has no value; its path parameters: id, issue_iid; its attributes: issue_iid/merge_request_iid/snippet_id (body, scalar), name (body, scalar)
+_ test_an_endpoint_is_named_by_its_method_and_path[path-parameter-of-another-endpoint] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2315: in test_an_endpoint_is_named_by_its_method_and_path
+    code = run_call(root=project, argv=case.argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:331: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:855: in send
+    encoded = encode(operation=operation, values=given)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:724: in encode
+    given = _declared_values(operation=operation, values=values)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:670: in _declared_values
+    raise ValueError(f"{operation.operation_id}: {name!r} is neither a path parameter nor a declared attribute")
+E   ValueError: plan#add-an-emoji-reaction-to-a-resource: 'issue_iid' is neither a path parameter nor a declared attribute
+_ test_an_endpoint_the_reference_does_not_declare_is_refused[endpoint-of-another-section] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2375: in test_an_endpoint_the_reference_does_not_declare_is_refused
+    code = run_call(root=project, argv=(OP_ADD_EMOJI_REACTION, OPTION_ENDPOINT, case.text, *ISSUE_PATH, *EMOJI_FIELDS))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:331: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:848: in send
+    operation = _record_of(operation_id=operation_id, endpoint=endpoint)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:348: in _record_of
+    return lookup(operation_id=operation_id, endpoint=endpoint)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:340: in lookup
+    raise ValueError(f"{operation_id!r}: the endpoint {given} is none of its endpoints, {listed}")
+E   ValueError: 'plan#add-an-emoji-reaction-to-a-resource': the endpoint "POST /projects/:id/epics" is none of its endpoints, POST /projects/:id/issues/:issue_iid/award_emoji, POST /projects/:id/merge_requests/:merge_request_iid/award_emoji, POST /projects/:id/snippets/:snippet_id/award_emoji
+_ test_an_endpoint_the_reference_does_not_declare_is_refused[declared-path-with-another-method] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2375: in test_an_endpoint_the_reference_does_not_declare_is_refused
+    code = run_call(root=project, argv=(OP_ADD_EMOJI_REACTION, OPTION_ENDPOINT, case.text, *ISSUE_PATH, *EMOJI_FIELDS))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:331: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:848: in send
+    operation = _record_of(operation_id=operation_id, endpoint=endpoint)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:348: in _record_of
+    return lookup(operation_id=operation_id, endpoint=endpoint)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:340: in lookup
+    raise ValueError(f"{operation_id!r}: the endpoint {given} is none of its endpoints, {listed}")
+E   ValueError: 'plan#add-an-emoji-reaction-to-a-resource': the endpoint "PUT /projects/:id/issues/:issue_iid/award_emoji" is none of its endpoints, POST /projects/:id/issues/:issue_iid/award_emoji, POST /projects/:id/merge_requests/:merge_request_iid/award_emoji, POST /projects/:id/snippets/:snippet_id/award_emoji
+__________________ test_an_other_endpoint_is_sent_when_named __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_plan.py:866: in test_an_other_endpoint_is_sent_when_named
+    assert code == EXIT_OK, f"call {named} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#add-an-emoji-reaction-to-a-resource', '--endpoint', 'POST /projects/:id/merge_requests/:merge_request_iid/award_emoji', '--path', 'merge_request_iid=5', '-f', 'name=thumbsup'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 plan#add-an-emoji-reaction-to-a-resource: "merge_request_iid" given with --path is not documented; the path parameter issue_iid has no value; its path parameters: id, issue_iid; its attributes: issue_iid/merge_request_iid/snippet_id (body, scalar), name (body, scalar)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_is_named_by_its_method_and_path[snippet-endpoint]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_is_named_by_its_method_and_path[path-parameter-of-another-endpoint]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_the_reference_does_not_declare_is_refused[endpoint-of-another-section]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_the_reference_does_not_declare_is_refused[declared-path-with-another-method]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_an_other_endpoint_is_sent_when_named
+======================= 5 failed, 212 passed in 11.48s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a match=True  # pragma: allowlist secret
+# verdict: KILLED (5 failed, 212 passed in 11.48s)

@@ -7,9 +7,11 @@ Every expected value is a literal table transcribed from the reference, never re
 and ``docs/api-reference/gitlab/rest/security-risk-management.md`` (each section's endpoints, its heading, and the
 ``In``, ``Type`` and ``Required`` columns of its ``| Attribute | In | Type | Required |`` table). What is pinned:
 
-- AC-1: the ``(method, path)`` of every record, each key once, mapped to its record's ID, the Reference of its row;
-  "Create a dependency list export", the one section with several endpoints, maps its ``/projects/:id/`` endpoint;
-- AC-2: ``PENDING`` is exactly that section's other two endpoints (one record per ID, DL-003);
+- AC-1 (as issue #63 design.md D9 restates it): the ``(method, path)`` of every record, each key once, mapped to its
+  record's ID, the Reference of its row; "Create a dependency list export", the one section with several endpoints,
+  has a record per endpoint, its base record (its ``/projects/:id/`` endpoint) first and then its other two in the
+  section's order (issue #63 AC-1.1, design.md D1, D8);
+- AC-2: ``PENDING`` is empty: the two endpoints it held are records of that section's ID (issue #63 AC-1.1, AC-1.3);
 - AC-3, its ``body`` and ``fixed`` clause: every record has ``body`` ``BodyFormat.JSON`` and no ``fixed`` pair, and
   the family declares a record;
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``HASH`` for an ``object`` row, ``ARRAY`` for an
@@ -121,8 +123,8 @@ PAGING_OFFSET = "OFFSET"
 # --- The tables, transcribed from docs/api-reference/gitlab ----------------------------------------------------------
 
 # rest/security-risk-management.md: every section, as (record ID, method, path), in page order — the section's
-# endpoint, or of several its `/projects/:id/` one (AC-1). Each is the key of an operations-index.md row whose
-# Reference is the ID.
+# endpoint, or of several its `/projects/:id/` one, its base record (AC-1). Each is the key of an operations-index.md
+# row whose Reference is the ID.
 RECORDS: Tuple[Tuple[str, str, str], ...] = (
     (
         "security-risk-management#retrieve-security-policy-settings",
@@ -250,16 +252,23 @@ RECORDS: Tuple[Tuple[str, str, str], ...] = (
         "/projects/:id/vulnerability_findings",
     ),
 )
-RECORD_KEYS: Dict[Tuple[str, str], str] = {(method, path): operation_id for operation_id, method, path in RECORDS}
-RECORD_PATHS: Dict[str, str] = {operation_id: path for operation_id, _, path in RECORDS}
-
-# AC-2: the endpoints of "Create a dependency list export" that are not its record's (one record per ID, DL-003).
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
+# "Create a dependency list export" lists `POST /projects/:id/dependency_list_exports` first, then the two below; the
+# records after its base record take them, in the section's order (issue #63, design.md D1, D8).
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "security-risk-management#create-a-dependency-list-export": (
         ("POST", "/groups/:id/dependency_list_exports"),
         ("POST", "/pipelines/:id/dependency_list_exports"),
-    }
-)
+    ),
+}
+BASE_KEYS: Dict[str, Tuple[str, str]] = {operation_id: (method, path) for operation_id, method, path in RECORDS}
+RECORD_KEYS: Dict[Tuple[str, str], str] = {
+    **{(method, path): operation_id for operation_id, method, path in RECORDS},
+    **{key: operation_id for operation_id, keys in OTHER_ENDPOINT_KEYS.items() for key in keys},
+}
+RECORD_PATHS: Dict[str, str] = {operation_id: path for operation_id, _, path in RECORDS}
+
+# AC-2 as issue #63 AC-1.1 restates it: nothing of the family stays pending.
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset()
 
 # rest/security-risk-management.md: every query and body row whose Kind is not SCALAR, by (record ID, attribute name)
 # — HASH for Type `object`, ARRAY for Type `array` or `string array`. Every other row's Type is `integer`,
@@ -366,6 +375,14 @@ def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, An
     return "\n".join(line for line in lines if line)
 
 
+def endpoints_by_id(*, records: Sequence[Any]) -> Dict[str, Tuple[Tuple[str, str], ...]]:
+    """``{operation_id: ((method, path), ...)}`` over ``records``, each ID's keys in declaration order."""
+    declared: Dict[str, List[Tuple[str, str]]] = {}
+    for record in records:
+        declared.setdefault(record.operation_id, []).append((record.method, record.path))
+    return {operation_id: tuple(keys) for operation_id, keys in declared.items()}
+
+
 def path_values(*, path: str) -> Dict[str, str]:
     """A distinct number for each placeholder of ``path``, in path order: ``101``, ``102``, ..."""
     names = dict.fromkeys(match.group(GROUP_NAME) for match in PLACEHOLDER.finditer(string=path))
@@ -412,7 +429,9 @@ def list_params() -> List[Any]:
 
 
 def test_every_key_has_its_record() -> None:
-    """AC-1: ``{(method, path): operation_id}`` over the family's records is ``RECORD_KEYS``, each key declared once."""
+    """AC-1, issue #63 AC-1.1 (design.md D9): ``{(method, path): operation_id}`` over the family's records is
+    ``RECORD_KEYS``, each key declared once, and each ID's records start with its base record, the others following in
+    their section's order."""
     family = gitlab_module(name=FAMILY_MODULE)
     keys = [(record.method, record.path) for record in family.OPERATIONS]
     repeated = sorted({key for key in keys if keys.count(key) > 1})
@@ -421,11 +440,20 @@ def test_every_key_has_its_record() -> None:
     assert declared == RECORD_KEYS, "the records are not the family's sections (AC-1):\n" + mapping_difference(
         declared=declared, expected=RECORD_KEYS
     )
+    endpoints = endpoints_by_id(records=family.OPERATIONS)
+    bases = {operation_id: of_id[0] for operation_id, of_id in endpoints.items()}
+    assert bases == BASE_KEYS, "each ID's first record is not its base record (issue #63 D1):\n" + (
+        mapping_difference(declared=bases, expected=BASE_KEYS)
+    )
+    others = {operation_id: of_id[1:] for operation_id, of_id in endpoints.items() if len(of_id) > 1}
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+        mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
+    )
 
 
 def test_only_the_unmapped_keys_are_pending() -> None:
-    """AC-2: ``PENDING`` is exactly the two endpoints of "Create a dependency list export" that its record does not
-    map."""
+    """AC-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is empty: the two endpoints of "Create a dependency
+    list export" after its base record's are records of its ID."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, "security_risk_management.PENDING is not AC-2's set:\n" + set_difference(

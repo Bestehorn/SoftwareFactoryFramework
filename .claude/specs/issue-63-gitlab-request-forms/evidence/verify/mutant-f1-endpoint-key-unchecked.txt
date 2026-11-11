@@ -1,0 +1,31 @@
+# mutant f1-endpoint-key-unchecked: AC-2.4/D1: --endpoint without a path is an argparse usage error
+# edit src/payload/scripts/gitlab_api/commands/call.py: '    if not separator or not method or not path:' -> '    if False:'
+# sha256 before src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [104 items]
+
+........................................................................ [ 69%]
+......................F.........                                         [100%]
+================================== FAILURES ===================================
+_ test_an_endpoint_the_reference_does_not_declare_is_refused[method-without-a-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2393: in test_an_endpoint_the_reference_does_not_declare_is_refused
+    assert messages, f"no usage error names the option {OPTION_ENDPOINT} (design.md D1); stderr:\n{captured.err}"
+E   AssertionError: no usage error names the option --endpoint (design.md D1); stderr:
+E     
+E   assert []
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 'plan#add-an-emoji-reaction-to-a-resource': the endpoint "POST " is none of its endpoints, POST /projects/:id/issues/:issue_iid/award_emoji, POST /projects/:id/merge_requests/:merge_request_iid/award_emoji, POST /projects/:id/snippets/:snippet_id/award_emoji
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_endpoint_the_reference_does_not_declare_is_refused[method-without-a-path]
+======================== 1 failed, 103 passed in 7.26s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/commands/call.py: 40b16ef1e52e354805be9b07ce4211e9666d2ebd4f4a18eed711d8e8f55ebd0a match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 103 passed in 7.26s)

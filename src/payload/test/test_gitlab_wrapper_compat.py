@@ -1569,3 +1569,27 @@ def test_the_usage_names_the_operation_call() -> None:
     assert isinstance(usage, str), f"{WRAPPER_FILE} has no module docstring"
     missing = [text for text in USAGE_CALL_TEXTS if text not in usage]
     assert missing == [], f"the usage of {WRAPPER_FILE} does not name: {missing}"
+
+
+# AC-9.1 (issue #63): the request forms design.md D11's usage lines give the entry script's docstring, and the
+# `--path id=` one line of it holds twice (D2).
+USAGE_REQUEST_FORM_TEXTS = (
+    "--endpoint",
+    "--path format=",
+    "--header",
+    "override_params[container_expiration_policy_attributes]",
+)
+USAGE_PATH_ID_GIVEN = "--path id="
+
+
+def test_the_usage_names_the_request_forms() -> None:
+    """Issue #63 AC-9.1 (design.md D11): the entry script's ``__doc__`` holds ``--endpoint``, two ``--path id=`` in
+    one line, ``--path format=``, ``--header`` and ``override_params[container_expiration_policy_attributes]``."""
+    usage = load_wrapper().__doc__
+    assert isinstance(usage, str), f"{WRAPPER_FILE} has no module docstring"
+    missing = [text for text in USAGE_REQUEST_FORM_TEXTS if text not in usage]
+    assert missing == [], f"the usage of {WRAPPER_FILE} does not name: {missing} (issue #63 AC-9.1)"
+    assert any(line.count(USAGE_PATH_ID_GIVEN) >= 2 for line in usage.splitlines()), (
+        f"no line of the usage of {WRAPPER_FILE} holds {USAGE_PATH_ID_GIVEN!r} twice: the two values of a path "
+        "holding id twice (issue #63 AC-9.1, design.md D2)"
+    )

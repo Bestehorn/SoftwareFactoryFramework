@@ -1,0 +1,97 @@
+# mutant f5-transport-drops-headers: AC-6.2: the transport sends the caller's headers
+# edit src/payload/scripts/gitlab_api/transport.py: '    for name, value in headers:\n        request.add_header(key=name, val=value)' -> '    for name, value in ():\n        request.add_header(key=name, val=value)'
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_openapi_only.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_openapi_only.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [164 items]
+
+........................................................................ [ 43%]
+..................F.FF.....................................F.F.......... [ 87%]
+..................FF                                                     [100%]
+================================== FAILURES ===================================
+_____ test_a_request_header_is_sent_beside_the_transport_headers[private] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1468: in test_a_request_header_is_sent_beside_the_transport_headers
+    assert [(name, full.header(name=name)) for name, _ in CONTROL_HEADERS] == list(CONTROL_HEADERS), (
+E   AssertionError: each header given is sent at its value (AC-6.2)
+E   assert [('X-Gitlab-T...ha256', None)] == [('X-Gitlab-T...256', 'ab12')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m1700000000[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_____ test_a_request_header_is_sent_beside_the_transport_headers[bearer] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1468: in test_a_request_header_is_sent_beside_the_transport_headers
+    assert [(name, full.header(name=name)) for name, _ in CONTROL_HEADERS] == list(CONTROL_HEADERS), (
+E   AssertionError: each header given is sent at its value (AC-6.2)
+E   assert [('X-Gitlab-T...ha256', None)] == [('X-Gitlab-T...256', 'ab12')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m1700000000[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_a_request_header_is_sent_beside_the_transport_headers[job] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1468: in test_a_request_header_is_sent_beside_the_transport_headers
+    assert [(name, full.header(name=name)) for name, _ in CONTROL_HEADERS] == list(CONTROL_HEADERS), (
+E   AssertionError: each header given is sent at its value (AC-6.2)
+E   assert [('X-Gitlab-T...ha256', None)] == [('X-Gitlab-T...256', 'ab12')]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m != [0m([33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m1700000000[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+_ test_the_external_control_status_carries_its_headers[every-request-header] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_software_supply_chain_security.py:997: in test_the_external_control_status_carries_its_headers
+    assert {name: request.header(name=name) for name in CONTROL_HEADER_NAMES} == {
+E   AssertionError: each request header given is sent at its value, and one not given is not sent (#63 AC-6.2)
+E   assert {'X-Gitlab-Ti...Sha256': None} == {'X-Gitlab-Ti...a256': 'ab12'}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mab12[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m1700000000[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_the_external_control_status_carries_its_headers[without-x-gitlab-nonce] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_software_supply_chain_security.py:997: in test_the_external_control_status_carries_its_headers
+    assert {name: request.header(name=name) for name in CONTROL_HEADER_NAMES} == {
+E   AssertionError: each request header given is sent at its value, and one not given is not sent (#63 AC-6.2)
+E   assert {'X-Gitlab-Ti...Sha256': None} == {'X-Gitlab-Ti...a256': 'ab12'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mab12[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m1700000000[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_openapi_only.py:1328: in test_the_symbol_download_sends_its_checksum_header
+    assert request.header(name=HEADER_SYMBOL_CHECKSUM) == SYMBOL_CHECKSUM, (
+E   AssertionError: the request carries Symbolchecksum: SHA256:ab (#63 AC-6.2); headers sent: {'Host': 'gitlab.example.com', 'User-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}  # pragma: allowlist secret
+E   assert None == 'SHA256:ab'
+E    +  where None = header(name='Symbolchecksum')
+E    +    where header = RecordedRequest(method='GET', url='https://gitlab.example.com/api/v4/groups/12/-/packages/nuget/symbolfiles/lib.pdb/ab... 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}, body=None).header  # pragma: allowlist secret
+_ test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint-1] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_openapi_only.py:1328: in test_the_symbol_download_sends_its_checksum_header
+    assert request.header(name=HEADER_SYMBOL_CHECKSUM) == SYMBOL_CHECKSUM, (
+E   AssertionError: the request carries Symbolchecksum: SHA256:ab (#63 AC-6.2); headers sent: {'Host': 'gitlab.example.com', 'User-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}  # pragma: allowlist secret
+E   assert None == 'SHA256:ab'
+E    +  where None = header(name='Symbolchecksum')
+E    +    where header = RecordedRequest(method='GET', url='https://gitlab.example.com/api/v4/projects/4242/packages/nuget/symbolfiles/lib.pdb/... 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}, body=None).header  # pragma: allowlist secret
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[job]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_external_control_status_carries_its_headers[every-request-header]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_external_control_status_carries_its_headers[without-x-gitlab-nonce]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint-1]
+======================== 7 failed, 157 passed in 9.92s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: KILLED (7 failed, 157 passed in 9.92s)

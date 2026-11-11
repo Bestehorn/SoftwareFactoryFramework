@@ -1,0 +1,360 @@
+# mutant sec-registry-token-in-url: D4: the registry token enters no URL
+# edit src/payload/scripts/gitlab_api/transport.py: '            url=rooted_url(root=origin, path=path, query=tuple(query)),' -> '            url=rooted_url(root=origin, path=path, query=tuple(query) + (("access_token", token),)),'
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [152 items]
+
+........................................................................ [ 47%]
+.............FFFF...FF..........F...................................FF.. [ 94%]
+F.......                                                                 [100%]
+================================== FAILURES ===================================
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-private] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4?access_token=registry-token-for-the-test (still scripted: [('DELETE', 'https://registry.example.com/v2/group/project/tags/reference/1a2b3c4')])
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-bearer] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4?access_token=registry-token-for-the-test (still scripted: [('DELETE', 'https://registry.example.com/v2/group/project/tags/reference/1a2b3c4')])
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-private] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://registry.example.com/v2/_catalog?access_token=registry-token-for-the-test (still scripted: [('GET', 'https://registry.example.com/v2/_catalog')])
+_ test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-job] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4?access_token=registry-token-for-the-test (still scripted: [('DELETE', 'https://registry.example.com/v2/group/project/tags/reference/1a2b3c4')])
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-bearer] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://registry.example.com/v2/_catalog?access_token=registry-token-for-the-test (still scripted: [('GET', 'https://registry.example.com/v2/_catalog')])
+_ test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-job] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1360: in test_a_registry_request_carries_only_the_registry_token
+    response = client.container_registry_request(
+src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://registry.example.com/v2/_catalog?access_token=registry-token-for-the-test (still scripted: [('GET', 'https://registry.example.com/v2/_catalog')])
+_________________ test_a_job_token_logs_in_as_gitlab_ci_token _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:150: in test_a_job_token_logs_in_as_gitlab_ci_token
+    response = container_registry.send(
+src\payload\scripts\gitlab_api\container_registry.py:131: in send
+    return transport.container_registry_request(
+src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4?access_token=registry-token-for-the-test (still scripted: [('GET', 'https://gitlab.example.com/api/v4/user'), ('DELETE', 'https://registry.example.com/v2/group/project/tags/reference/1a2b3c4')])
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1948: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    code = run_call(root=project, argv=case.argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1459: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:859: in send
+    return _send_to_container_registry(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:813: in _send_to_container_registry
+    return container_registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\container_registry.py:131: in send
+    return transport.container_registry_request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://registry.example.com/v2/_catalog?access_token=registry-token-for-the-package-test (still scripted: [('GET', 'https://registry.example.com/v2/_catalog')])
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1948: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    code = run_call(root=project, argv=case.argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1459: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:859: in send
+    return _send_to_container_registry(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:813: in _send_to_container_registry
+    return container_registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\container_registry.py:131: in send
+    return transport.container_registry_request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4?access_token=registry-token-for-the-package-test (still scripted: [('DELETE', 'https://registry.example.com/v2/group/project/tags/reference/1a2b3c4')])
+_ test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1948: in test_a_registry_record_is_sent_to_the_registry_with_its_token
+    code = run_call(root=project, argv=case.argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_package.py:1459: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:859: in send
+    return _send_to_container_registry(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:813: in _send_to_container_registry
+    return container_registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\container_registry.py:131: in send
+    return transport.container_registry_request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:717: in container_registry_request
+    return self._send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://registry.example.com/v2/group/project/tags/reference/1a2b3c4?access_token=registry-token-for-the-package-test (still scripted: [('DELETE', 'https://registry.example.com/v2/group/project/tags/reference/1a2b3c4')])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[delete-image-tags-by-reference-job]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_registry_request_carries_only_the_registry_token[listing-all-container-repositories-job]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_job_token_logs_in_as_gitlab_ci_token
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[listing-all-container-repositories]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-by-reference]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_registry_record_is_sent_to_the_registry_with_its_token[delete-image-tags-answered-404]
+======================= 10 failed, 142 passed in 9.68s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: KILLED (10 failed, 142 passed in 9.68s)

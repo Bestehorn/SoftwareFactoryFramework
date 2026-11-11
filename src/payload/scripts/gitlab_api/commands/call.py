@@ -1,11 +1,12 @@
 """The GitLab wrapper's operation call, ``call <operation-id>`` (issue #41, design.md D1 to D4): any record that a
 family module of ``gitlab_api/families/`` or ``gitlab_api/graphql_only.py`` declares, sent by its operation ID.
 
-The grammar (D2, issue #40 design.md D5 for ``--input``, and issue #43 design.md D3 for ``--route-prefix``)::
+The grammar (D2, issue #40 design.md D5 for ``--input``, issue #43 design.md D3 for ``--route-prefix``, and issue #63
+design.md D1 and D5 for ``--endpoint`` and ``--header``)::
 
     python scripts/gitlab_wrapper.py call <operation-id> [--path NAME=VALUE]... [--query NAME=VALUE]...
         [-f|--raw-field NAME=TEXT]... [-F|--field NAME=JSON]... [--file NAME=PATH]... [--input FILE]
-        [--route-prefix PREFIX]
+        [--route-prefix PREFIX] [--endpoint 'METHOD path'] [--header NAME=VALUE]...
 
 - ``<operation-id>``: a record's ID, ``<stem>#<anchor>`` for a REST record (``plan#retrieve-a-project-issue``) and
   ``graphql#<field>`` for a GraphQL record.
@@ -13,15 +14,23 @@ The grammar (D2, issue #40 design.md D5 for ``--input``, and issue #43 design.md
   segment, a ``*name`` with each ``/`` kept and each part between them one such segment; the parameter of an optional
   ``(...)`` group may be left out, and the group is then not sent (issue #40, design.md D2). On a record whose path is
   ``/projects/:id`` or starts with ``/projects/:id/``, an ``id`` the call does not give is the configured project
-  (``project_id`` of ``config/gitlab.json``); no other ``:id`` has a default.
+  (``project_id`` of ``config/gitlab.json``); no other ``:id`` has a default. A name of the record's
+  ``positional_names``, which its path holds at more than one place, takes one ``--path`` per place, its values filling
+  the places in command-line order, and has no default (issue #63, design.md D2):
+  ``--path id=7 --path id=12345`` sends ``/groups/7/ssh_certificates/12345``. A ``[.name]`` suffix is a path parameter
+  that may be left out (D3): ``--path format=zip`` sends ``archive.zip``, its value one of the record's
+  ``suffix_values``, and no ``--path format`` sends ``archive``. In a container-registry path each ``${NAME}`` is a
+  path parameter whose ``/`` are kept (D4): ``--path CI_REGISTRY_IMAGE=group/project``.
 - ``--query NAME=VALUE``: an attribute the record declares in the query, as text. The values of one name are collected
   in the order given: a list for an ``ARRAY`` attribute, even with one value, and the one string for any other
   ``Kind`` (a repeated name becomes a list, which the shape check refuses).
-- ``-f/--raw-field NAME=TEXT``: an attribute of either location, the string TEXT as its value.
-- ``-F/--field NAME=JSON``: an attribute of either location, the value ``json.loads`` parses: a number, a boolean, an
-  array, an object or a quoted string. Text that is not JSON is refused; ``NaN``, ``Infinity`` and ``-Infinity``,
-  which plain ``json.loads`` takes outside the JSON grammar, are such text. ``null`` is accepted, but a REST attribute
-  of ``None`` is not sent (``registry.encode``); a GraphQL variable sends it.
+- ``-f/--raw-field NAME=TEXT``: a query or body attribute, the string TEXT as its value. A member of a form body below
+  its first bracket level is named in full, as its table writes it (issue #63, design.md D6):
+  ``-f 'override_params[container_expiration_policy_attributes][cadence]=7d'``.
+- ``-F/--field NAME=JSON``: a query or body attribute, the value ``json.loads`` parses: a number, a boolean, an array,
+  an object or a quoted string. Text that is not JSON is refused; ``NaN``, ``Infinity`` and ``-Infinity``, which plain
+  ``json.loads`` takes outside the JSON grammar, are such text. ``null`` is accepted, but a REST attribute of ``None``
+  is not sent (``registry.encode``); a GraphQL variable sends it.
 - ``--file NAME=PATH``: a ``FILE`` attribute, ``pathlib.Path(PATH)`` as its value. The transport reads the file when it
   builds the request, and the body is then ``multipart/form-data``, every other body attribute a form field in it.
 - ``--input FILE``: the request body is the bytes of FILE, or of standard input's binary buffer when FILE is ``-``,
@@ -37,35 +46,73 @@ The grammar (D2, issue #40 design.md D5 for ``--input``, and issue #43 design.md
   record: each ``:name`` of the value is a path parameter of the call, given with ``--path`` (``--path id=7``), and a
   value starting ``/projects/:id`` takes the configured project as its ``id`` when the call gives none. The text goes
   to ``registry.send`` as its ``prefix``.
+- ``--endpoint 'METHOD path'``: the endpoint of a Reference that several records of one family declare, its method,
+  one space and its path as the index writes them, taken as one argument after the option (issue #63, design.md D1).
+  The option takes one value; a repeated option keeps its last. The ID's record on that endpoint is sent, and every
+  later step reads it: a path parameter of another endpoint is a name the record does not document. Without the
+  option, an ID that several records declare sends its first declared endpoint, its base record. The option's
+  ``type``, ``endpoint_key``, cuts the text at its first space; no space, an empty method and an empty path are an
+  argparse usage error (exit 2) for ``--endpoint``, before the config is read, whose message names the text rendered
+  with ``json.dumps``. The pair goes to ``registry.lookup``, ``registry.send`` and ``registry.pages`` as ``endpoint``.
+- ``--header NAME=VALUE``: a request header the record declares, a ``Location.HEADER`` ``Param``, as text (issue #63,
+  design.md D5): its name is compared with the declared names ignoring case (RFC 9110 section 5.1), and its value is
+  sent under the declared spelling; a header not given is not sent. ``-f``, ``-F`` and ``--file`` give no header, and
+  ``--header`` no other attribute; a record that declares no header, a GraphQL record included, takes none.
 - A GraphQL record takes its variables with ``-f`` and ``-F``, and with ``--file`` a variable its document declares of
   type ``Upload`` or a list of them (``registry.upload_variables``; issue #44, design.md D4): each ``--file`` of a
   list's name is one item, in command-line order, a single one included, and one ``Upload`` keeps the last file given;
   the call is then one multipart request. Any other option, and a ``--file`` of any other name, is refused.
+
+Issue #63's request forms (its design.md D1 to D6), one example each, the last a two-level member, by its full name::
+
+    call plan#add-an-emoji-reaction-to-a-resource --path merge_request_iid=5 -f name=thumbsup
+        --endpoint 'POST /projects/:id/merge_requests/:merge_request_iid/award_emoji'
+    call create#delete-a-group-ssh-certificate --path id=7 --path id=12345
+    call create#retrieve-file-archive-from-a-repository --path format=zip
+    call software-supply-chain-security#set-status-of-an-external-control --path external_control_id=3 -f status=pass
+        --header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Nonce=n1 --header X-Gitlab-Hmac-Sha256=ab12
+    -f 'override_params[container_expiration_policy_attributes][cadence]=7d'   # a two-level member, by its full name
+
+The first call without ``--endpoint`` sends the Reference's first declared endpoint, the issue's. The S3 import,
+``gitlab-dedicated#import-a-project-from-an-aws-s3-bucket``, whose form body holds the last line's member, is refused
+(``GATED_OPERATIONS``). A container-registry record (``package#delete-image-tags-by-reference``) obtains its registry
+token from the configured instance before the registry is sent anything (D4, ``gitlab_api/container_registry.py``):
+the login (``GET /user``, or ``gitlab-ci-token`` for a job token), the registry's origin (``GET /projects/<project>``),
+and the registry token from ``/jwt/auth`` with the configured token as the password; the registry request then carries
+that registry token alone, and the configured project goes to ``registry.send`` as its ``project``.
 
 Each ``NAME=VALUE`` splits at its first ``=``; a REST attribute's name is read with ``registry.attribute_name``, so
 ``iids[]`` names the attribute ``iids``. No ``=``, an empty name, and ``-F`` text that is not JSON are argparse's usage
 error (exit 2), raised by the option's ``type`` (``assignment``, ``json_member``, ``file_member``) before the config is
 read: argparse names the option, and the message names the text before the first ``=`` (all of it when there is none)
 rendered with ``json.dumps``, never a value. A path name, or an attribute given by ``-f`` or ``-F``, given twice keeps
-its last value; ``-f`` and ``-F`` share one destination, so their values keep their command-line order. A ``-f`` or
-``-F`` value replaces the ``--query`` values of the same name, and ``--file`` replaces both. The raw body ``--input``
-read goes to ``registry.send`` as its ``data``.
+its last value, but a name of the record's ``positional_names``, whose values fill its places in command-line order
+(issue #63, design.md D2); so does a header given twice under names equal ignoring case. ``-f`` and ``-F`` share one
+destination, so their values keep their command-line order. A ``-f`` or ``-F`` value replaces the ``--query`` values
+of the same name, and ``--file`` replaces both. The raw body ``--input`` read goes to ``registry.send`` as its
+``data``.
 
 ``call_operation`` refuses with exit 2 (``EXIT_REFUSED``), before any request (D4), in this order: a raw body given
 together with one or more ``-f`` or ``-F`` values (``refuse_both_bodies``), in a message naming ``--input``,
 ``-f/--raw-field`` and ``-F/--field`` and saying that a raw-body record's attributes are given with ``--query``; an ID
 in ``GATED_OPERATIONS``, naming the compatibility subcommand that sends it, or, for an ID mapped to ``None``
-(``graphql#workItemCreate``, ``graphql#workItemsCsvImport``), saying that no subcommand sends it (issue #44,
-design.md D6); an ID no record declares, or one declared twice (``registry.lookup``); a raw body for any record but a
-REST record with a ``content_type`` (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that
-its body is given with ``-f``, ``-F`` or ``--file``; a route prefix that none of the record's values equals, none for a
-record whose path starts with ``/<route-prefix>/``, or one for any other record (``registry.route``; issue #43,
-design.md D3), in a message naming the ID and, for a record whose path starts with ``/<route-prefix>/``, each of its
-values; a name the record does not document or a path parameter outside an optional group left without a value, in one
-message naming each such name with its option, each missing path parameter, then the record's documented parameters
-(``check_parameters``); a value of a shape its ``Kind`` does not take (``registry.encode``); and a paged record given
-body values (``registry.pages``). Each refusal is a ``ValueError``, logged; every name the caller supplied is rendered
-with ``json.dumps``, and no byte of a raw body is.
+(``graphql#workItemCreate``, ``graphql#workItemsCsvImport``, the S3 import), saying that no subcommand sends it (issue
+#44, design.md D6; issue #63, design.md D6); an ID no record declares, or one declared twice, and an ``--endpoint``
+none of the ID's records is on, in a message naming the ID, the text given and each declared endpoint, or given for a
+GraphQL record (``registry.lookup``; issue #63, design.md D1); a raw body for any record but a REST record with a
+``content_type`` (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that its body is given
+with ``-f``, ``-F`` or ``--file``; a route prefix that none of the record's values equals, none for a record whose path
+starts with ``/<route-prefix>/``, or one for any other record (``registry.route``; issue #43, design.md D3), in a
+message naming the ID and, for a record whose path starts with ``/<route-prefix>/``, each of its values; a name the
+record does not document, a header the record does not declare included, a path parameter outside an optional group
+left without a value, a positional name given more values than its places, and a suffix value none of the record's
+``suffix_values`` equals, in one message naming each such name with its option, each missing path parameter (a
+positional name once for each place left without a value), each such positional name and each such suffix value with
+the listed values, then the record's documented parameters, a positional name once per place (``check_parameters``;
+issue #63, design.md D2, D3, D5); a value of a shape its ``Kind`` does not take, or a header value holding CR, LF or
+NUL (``registry.encode``); and a paged record given body values or a header (``registry.pages``). Each refusal is a
+``ValueError``, logged; every name and path value the caller supplied is rendered with ``json.dumps``, and no byte of
+a raw body is.
 
 What prints (D3):
 
@@ -77,8 +124,9 @@ What prints (D3):
 - a GraphQL record: ``print_json`` of its ``data``, or of the one array of the nodes of every page of its connection.
 
 A ``GitLabAPIError`` (an HTTP error, spent ``429`` retries, no response, GraphQL ``errors``, an empty, ``.`` or ``..``
-path value or glob part, a ``--file`` that cannot be read) reaches the entry script, which logs its message and
-details and exits 1. Standard library only; Python 3.9.
+path value or glob part, a ``--file`` that cannot be read, a container-registry call whose login, registry origin or
+registry token the configured instance does not give, issue #63 design.md D4) reaches the entry script, which logs its
+message and details and exits 1. Standard library only; Python 3.9.
 """
 
 from __future__ import annotations
@@ -95,7 +143,8 @@ from typing import TYPE_CHECKING, Any, Dict, FrozenSet, Iterator, List, Mapping,
 from gitlab_api import graphql_only, registry
 from gitlab_api.commands import issue, mr
 from gitlab_api.commands._common import EXIT_REFUSED, PATH_PROJECT, add_command, print_bytes, print_json
-from gitlab_api.registry import GraphQLOperation, Kind, Location, Operation, Paging, RestOperation
+from gitlab_api.families import gitlab_dedicated
+from gitlab_api.registry import Endpoint, GraphQLOperation, Kind, Location, Operation, Paging, RestOperation
 
 if TYPE_CHECKING:
     from gitlab_api.commands._common import SubParsers
@@ -113,6 +162,8 @@ OPTION_FIELD = "--field"
 OPTION_FILE = "--file"
 OPTION_INPUT = "--input"
 OPTION_ROUTE_PREFIX = "--route-prefix"
+OPTION_ENDPOINT = "--endpoint"
+OPTION_HEADER = "--header"
 # How D4's message names the option of a name given with `-f` or `-F`, which share one destination.
 OPTION_FIELDS = f"{OPTION_RAW_FIELD_SHORT}/{OPTION_FIELD_SHORT}"
 # The `argparse.Namespace` attributes the options are stored under; `-f` and `-F` share one.
@@ -122,6 +173,8 @@ ARG_FIELDS = "fields"
 ARG_FILES = "files"
 ARG_RAW_BODY = "raw_body"
 ARG_ROUTE_PREFIX = "route_prefix"
+ARG_ENDPOINT = "endpoint"
+ARG_HEADERS = "headers"
 ACTION_APPEND = "append"
 ACTION_STORE = "store"
 METAVAR_VALUE = "NAME=VALUE"
@@ -130,16 +183,20 @@ METAVAR_JSON = "NAME=JSON"
 METAVAR_PATH = "NAME=PATH"
 METAVAR_FILE = "FILE"
 METAVAR_PREFIX = "PREFIX"
+METAVAR_ENDPOINT = "ENDPOINT"
 ASSIGNMENT_SEPARATOR = "="
 # The `--input` text that reads the raw body from standard input rather than from a file, as `gh api` spells it.
 STDIN_INPUT = "-"
-# Each destination with the option D4's message names it by, in the message's order.
+# Each destination with the option D4's message names it by, in the message's order; `--header` last (issue #63, D5).
 DESTINATION_OPTIONS: Tuple[Tuple[str, str], ...] = (
     (ARG_PATH, OPTION_PATH),
     (ARG_QUERY, OPTION_QUERY),
     (ARG_FIELDS, OPTION_FIELDS),
     (ARG_FILES, OPTION_FILE),
+    (ARG_HEADERS, OPTION_HEADER),
 )
+# The locations of the attributes `-f`, `-F` and `--file` give; `--header` gives the HEADER ones (issue #63, D5).
+FIELD_LOCATIONS = frozenset({Location.QUERY, Location.BODY})
 
 # A path whose `:id` defaults to the configured project: `/projects/:id` itself, or a path under it (AC-1.8).
 PROJECT_PATH = f"/projects/:{PATH_PROJECT}"
@@ -149,18 +206,20 @@ MESSAGE_SEPARATOR = "; "
 LIST_SEPARATOR = ", "
 NOTHING_DOCUMENTED = "none"
 
-# The records `call` refuses: a record that commits to or merges into a branch, or that creates an issue or another
-# work item (issue #41, design.md D8). A record a gated compatibility subcommand sends maps to that subcommand: the
-# `merge-steward` and `issue-filing-gate` hooks judge the subcommands by their words, so `call` refuses these IDs rather
-# than reach them unjudged (design.md D1, "Security Considerations"). A record no subcommand sends maps to `None`, and
-# `call` refuses it with no alternative: `issue create` never sends `graphql#workItemCreate`, which creates a work item
-# of any type, and no subcommand imports a CSV (issue #44, design.md D6).
+# The records `call` refuses: a record that commits to or merges into a branch, that creates an issue or another
+# work item (issue #41, design.md D8), or that writes into an existing project (issue #63, design.md D6). A record a
+# gated compatibility subcommand sends maps to that subcommand: the `merge-steward` and `issue-filing-gate` hooks judge
+# the subcommands by their words, so `call` refuses these IDs rather than reach them unjudged (design.md D1, "Security
+# Considerations"). A record no subcommand sends maps to `None`, and `call` refuses it with no alternative: `issue
+# create` never sends `graphql#workItemCreate`, which creates a work item of any type, no subcommand imports a CSV
+# (issue #44, design.md D6), and none sends the S3 import, which takes `overwrite` (issue #63, design.md D6).
 GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
     {
         mr.OP_MERGE_MR: f"{mr.GROUP} merge",
         issue.OP_CREATE_ISSUE: f"{issue.GROUP} create",
         graphql_only.OP_WORK_ITEM_CREATE: None,
         graphql_only.OP_WORK_ITEMS_CSV_IMPORT: None,
+        gitlab_dedicated.OP_IMPORT_FROM_S3: None,
     }
 )
 # The end of the refusal of an ID `GATED_OPERATIONS` maps to `None`.
@@ -180,14 +239,16 @@ class Assignment(NamedTuple):
 @dataclass(frozen=True)
 class PreparedCall:
     """A call that steps 1 to 5 accepted: its record, its values, for a paged record the generator of its items, which
-    sends nothing until it is read, the raw body ``--input`` read, ``None`` when none was given, and the
-    ``--route-prefix`` text given, ``None`` when none was (issue #43, design.md D3)."""
+    sends nothing until it is read, the raw body ``--input`` read, ``None`` when none was given, the
+    ``--route-prefix`` text given, ``None`` when none was (issue #43, design.md D3), and the ``--endpoint`` given,
+    ``(method, path)``, ``None`` when none was (issue #63, design.md D1)."""
 
     operation: Operation
     values: Dict[str, Any]
     items: Optional[Iterator[Any]] = None
     raw_body: Optional[bytes] = None
     prefix: Optional[str] = None
+    endpoint: Optional[Endpoint] = None
 
 
 # --- The argparse types (D2) ----------------------------------------------------------------------------------------
@@ -205,7 +266,8 @@ def _split(*, text: str) -> Tuple[str, str]:
 
 
 def assignment(text: str) -> Assignment:
-    """The ``type`` of ``--path``, ``--query`` and ``-f/--raw-field``: ``NAME=VALUE`` with the value as text."""
+    """The ``type`` of ``--path``, ``--query``, ``-f/--raw-field`` and ``--header``: ``NAME=VALUE`` with the value as
+    text."""
     name, value = _split(text=text)
     return Assignment(name=name, value=value)
 
@@ -236,6 +298,19 @@ def file_member(text: str) -> Assignment:
     return Assignment(name=name, value=Path(value))
 
 
+def endpoint_key(text: str) -> Endpoint:
+    """The ``type`` of ``--endpoint`` (issue #63, design.md D1): ``METHOD path`` cut at its first space into the method
+    and the path, each verbatim. No space, an empty method and an empty path raise ``argparse.ArgumentTypeError``
+    naming ``text`` rendered with ``json.dumps``."""
+    method, separator, path = text.partition(registry.ENDPOINT_SEPARATOR)
+    if not separator or not method or not path:
+        raise argparse.ArgumentTypeError(
+            f"{json.dumps(obj=text)} is not an endpoint: give its method, one space and its path as the index writes "
+            "them, e.g. 'POST /projects/:id/issues/:issue_iid/award_emoji'"
+        )
+    return method, path
+
+
 def read_input(text: str) -> bytes:
     """The ``type`` of ``--input`` (issue #40, design.md D5): the bytes of standard input's binary buffer when ``text``
     is ``-``, else the bytes of the file ``text`` names, read whole by ``Path.read_bytes``. An ``OSError`` raises
@@ -264,10 +339,21 @@ def takes_project(*, path: str) -> bool:
 
 
 def path_values(*, operation: RestOperation, project: str, args: argparse.Namespace) -> Dict[str, Any]:
-    """The path values of the call: the given ones, a name given twice holding its last value, and ``project`` as the
-    ``id`` of a ``/projects/:id`` path the call gives no ``id`` for (AC-1.8)."""
-    values: Dict[str, Any] = {each.name: each.value for each in _given(args=args, dest=ARG_PATH)}
-    if takes_project(path=operation.path) and PATH_PROJECT not in values:
+    """The path values of the call: the given ones, a name given twice holding its last value but a name of the
+    record's ``positional_names``, which holds the list of every value given for it, in command-line order (issue #63,
+    design.md D2); and ``project`` as the ``id`` of a ``/projects/:id`` path the call gives no ``id`` for (AC-1.8),
+    unless ``id`` is a positional name, which has no default."""
+    values: Dict[str, Any] = {}
+    for each in _given(args=args, dest=ARG_PATH):
+        if each.name in operation.positional_names:
+            values.setdefault(each.name, []).append(each.value)
+        else:
+            values[each.name] = each.value
+    if (
+        takes_project(path=operation.path)
+        and PATH_PROJECT not in values
+        and PATH_PROJECT not in operation.positional_names
+    ):
         values[PATH_PROJECT] = project
     return values
 
@@ -275,7 +361,9 @@ def path_values(*, operation: RestOperation, project: str, args: argparse.Namesp
 def attribute_values(*, operation: RestOperation, args: argparse.Namespace) -> Dict[str, Any]:
     """The attributes of the call, each named by ``registry.attribute_name``: the ``--query`` values of a name (a list
     for an ``ARRAY`` query attribute or a repeated name, else the one string), replaced by a ``-f`` or ``-F`` value of
-    the same name (the last one given), replaced in turn by a ``--file``."""
+    the same name (the last one given), replaced in turn by a ``--file``; then each ``--header`` value under the
+    spelling the record declares for its name, compared ignoring case, the last one given of a name (issue #63,
+    design.md D5)."""
     query_kinds = {param.name: param.kind for param in operation.params if param.location is Location.QUERY}
     collected: Dict[str, List[str]] = {}
     for each in _given(args=args, dest=ARG_QUERY):
@@ -286,6 +374,10 @@ def attribute_values(*, operation: RestOperation, args: argparse.Namespace) -> D
     }
     for dest in (ARG_FIELDS, ARG_FILES):
         values.update((registry.attribute_name(name=each.name), each.value) for each in _given(args=args, dest=dest))
+    values.update(
+        (_compared_name(operation=operation, dest=ARG_HEADERS, name=each.name), each.value)
+        for each in _given(args=args, dest=ARG_HEADERS)
+    )
     return values
 
 
@@ -307,7 +399,8 @@ def file_values(*, operation: GraphQLOperation, args: argparse.Namespace) -> Dic
 def call_values(*, operation: Operation, project: str, args: argparse.Namespace) -> Dict[str, Any]:
     """The values ``registry`` is given: a GraphQL record's variables from ``-f`` and ``-F``, a name given twice keeping
     its last value, then its ``--file`` values (``file_values``), which replace a variable of the same name; for a REST
-    record, the attributes and then the path values, which win over an attribute of the same name."""
+    record, the attributes, its request headers among them under their declared spelling (issue #63, design.md D5),
+    and then the path values, which win over an attribute of the same name."""
     if isinstance(operation, GraphQLOperation):
         fields = {each.name: each.value for each in _given(args=args, dest=ARG_FIELDS)}
         return {**fields, **file_values(operation=operation, args=args)}
@@ -319,29 +412,38 @@ def call_values(*, operation: Operation, project: str, args: argparse.Namespace)
 
 
 def documented_names(*, operation: Operation) -> Dict[str, FrozenSet[str]]:
-    """The names each destination may give ``operation`` (D4): the path parameters for ``--path``, the
-    ``Location.QUERY`` ``Param`` names for ``--query``, every ``Param`` name for ``-f``, ``-F`` and ``--file``; for a
-    GraphQL record, the variables its document defines for ``-f`` and ``-F``, those of ``registry.upload_variables``
-    for ``--file`` (issue #44, design.md D4), and nothing for any other option."""
+    """The names each destination may give ``operation`` (D4): the path parameters for ``--path``, a ``[.name]`` suffix
+    and a container registry's ``${NAME}`` included (``registry.placeholders``), the ``Location.QUERY`` ``Param`` names
+    for ``--query``, the ``QUERY`` and ``BODY`` ``Param`` names for ``-f``, ``-F`` and ``--file``, and the ``HEADER``
+    ones for ``--header`` (issue #63, design.md D5); for a GraphQL record, the variables its document defines for
+    ``-f`` and ``-F``, those of ``registry.upload_variables`` for ``--file`` (issue #44, design.md D4), and nothing for
+    any other option, ``--header`` included."""
     if isinstance(operation, GraphQLOperation):
         return {
             ARG_FIELDS: frozenset(registry.variables(operation=operation)),
             ARG_FILES: frozenset(registry.upload_variables(operation=operation)),
         }
-    attributes = frozenset(param.name for param in operation.params)
+    attributes = frozenset(param.name for param in operation.params if param.location in FIELD_LOCATIONS)
     return {
         ARG_PATH: frozenset(registry.placeholders(path=operation.path)),
         ARG_QUERY: frozenset(param.name for param in operation.params if param.location is Location.QUERY),
         ARG_FIELDS: attributes,
         ARG_FILES: attributes,
+        ARG_HEADERS: frozenset(param.name for param in operation.params if param.location is Location.HEADER),
     }
 
 
 def _compared_name(*, operation: Operation, dest: str, name: str) -> str:
-    """The name a given name is checked as: a REST attribute's by ``registry.attribute_name``, any other as given."""
-    if isinstance(operation, RestOperation) and dest != ARG_PATH:
-        return registry.attribute_name(name=name)
-    return name
+    """The name a given name is checked and stored as: a REST record's request header by the spelling the record
+    declares for a ``HEADER`` ``Param`` whose name equals it ignoring case (RFC 9110 section 5.1; issue #63, design.md
+    D5), as given when none does; a REST attribute's by ``registry.attribute_name``; any other as given."""
+    if not isinstance(operation, RestOperation) or dest == ARG_PATH:
+        return name
+    if dest == ARG_HEADERS:
+        lowered = name.lower()
+        declared = (param.name for param in operation.params if param.location is Location.HEADER)
+        return next((header for header in declared if header.lower() == lowered), name)
+    return registry.attribute_name(name=name)
 
 
 def undocumented(*, operation: Operation, args: argparse.Namespace) -> List[Tuple[str, str]]:
@@ -358,13 +460,54 @@ def undocumented(*, operation: Operation, args: argparse.Namespace) -> List[Tupl
 
 
 def missing_path_parameters(*, operation: Operation, project: str, args: argparse.Namespace) -> List[str]:
-    """The path parameters of a REST record outside an optional ``(...)`` group (``registry.required_placeholders``)
-    that the call leaves without a value once ``id`` has its default; the parameter of a group may be left out, and
-    the group is then not sent (issue #40, design.md D2)."""
+    """The path parameters of a REST record outside an optional ``(...)`` group and a ``[.name]`` suffix
+    (``registry.required_placeholders``) that the call leaves without a value once ``id`` has its default; the
+    parameter of a group may be left out, and the group is then not sent (issue #40, design.md D2). A name of the
+    record's ``positional_names`` is named once for each of its places left without a value (issue #63, design.md
+    D2)."""
     if isinstance(operation, GraphQLOperation):
         return []
     given = path_values(operation=operation, project=project, args=args)
-    return [name for name in dict.fromkeys(registry.required_placeholders(path=operation.path)) if name not in given]
+    required = registry.required_placeholders(path=operation.path)
+    missing: List[str] = []
+    for name in dict.fromkeys(required):
+        if name in operation.positional_names:
+            missing.extend([name] * max(0, required.count(name) - len(given.get(name, ()))))
+        elif name not in given:
+            missing.append(name)
+    return missing
+
+
+def _surplus_problems(*, operation: Operation, args: argparse.Namespace) -> List[str]:
+    """For each name of a REST record's ``positional_names`` given more ``--path`` values than the places its path
+    holds it at, the problem saying so (issue #63, design.md D2)."""
+    if isinstance(operation, GraphQLOperation):
+        return []
+    places = registry.placeholders(path=operation.path)
+    given = [each.name for each in _given(args=args, dest=ARG_PATH)]
+    return [
+        f"the path parameter {name} is given more values than its places: {given.count(name)} for {places.count(name)}"
+        for name in operation.positional_names
+        if given.count(name) > places.count(name)
+    ]
+
+
+def _suffix_problems(*, operation: Operation, project: str, args: argparse.Namespace) -> List[str]:
+    """For each ``[.name]`` suffix of a REST record's path given a value none of the record's ``suffix_values``
+    equals, the problem naming the value given, rendered with ``json.dumps``, and each listed value (issue #63,
+    design.md D3)."""
+    if isinstance(operation, GraphQLOperation):
+        return []
+    given = path_values(operation=operation, project=project, args=args)
+    suffixes = dict.fromkeys(
+        match.group(registry.GROUP_NAME) for match in registry.OPTIONAL_SUFFIX.finditer(string=operation.path)
+    )
+    listed = _listed(names=[json.dumps(obj=value) for value in operation.suffix_values])
+    return [
+        f"the path parameter {name} is {json.dumps(obj=given[name])}, which is none of its values, {listed}"
+        for name in suffixes
+        if name in given and given[name] not in operation.suffix_values
+    ]
 
 
 def _listed(*, names: Sequence[str]) -> str:
@@ -372,19 +515,25 @@ def _listed(*, names: Sequence[str]) -> str:
 
 
 def documented_text(*, operation: Operation) -> str:
-    """The record's documented parameters as D4's message ends with them: the path parameters and every attribute with
-    its location and ``Kind``, or a GraphQL record's variables."""
+    """The record's documented parameters as D4's message ends with them: the path parameters, a name of the record's
+    ``positional_names`` once per place (issue #63, design.md D2) and any other once, and every attribute with its
+    location and ``Kind``, or a GraphQL record's variables."""
     if isinstance(operation, GraphQLOperation):
         return f"its variables: {_listed(names=registry.variables(operation=operation))}"
     attributes = [f"{param.name} ({param.location.value}, {param.kind.value})" for param in operation.params]
-    path_parameters = list(dict.fromkeys(registry.placeholders(path=operation.path)))
+    path_parameters: List[str] = []
+    for name in registry.placeholders(path=operation.path):
+        if name in operation.positional_names or name not in path_parameters:
+            path_parameters.append(name)
     return f"its path parameters: {_listed(names=path_parameters)}; its attributes: {_listed(names=attributes)}"
 
 
 def check_parameters(*, operation: Operation, project: str, args: argparse.Namespace) -> None:
     """D4's check: refuse with ``ValueError``, in one message, each name ``operation`` does not document, with its
-    option, and each path parameter left without a value; the message then names the record's documented
-    parameters. A name the caller supplied is rendered with ``json.dumps``."""
+    option, a request header compared ignoring case (issue #63, design.md D5); each path parameter left without a
+    value, a positional name once per place; each positional name given more values than its places (D2); and each
+    suffix value none of the record's ``suffix_values`` equals, with those values (D3). The message then names the
+    record's documented parameters. A name or path value the caller supplied is rendered with ``json.dumps``."""
     problems = [
         f"{json.dumps(obj=name)} given with {option} is not documented"
         for name, option in undocumented(operation=operation, args=args)
@@ -393,6 +542,8 @@ def check_parameters(*, operation: Operation, project: str, args: argparse.Names
         f"the path parameter {name} has no value"
         for name in missing_path_parameters(operation=operation, project=project, args=args)
     )
+    problems.extend(_surplus_problems(operation=operation, args=args))
+    problems.extend(_suffix_problems(operation=operation, project=project, args=args))
     if problems:
         raise ValueError(
             f"{operation.operation_id}: {MESSAGE_SEPARATOR.join(problems)}{MESSAGE_SEPARATOR}"
@@ -442,16 +593,18 @@ def refuse_raw_body(*, operation: Operation, raw_body: Optional[bytes]) -> None:
 
 def prepare_call(*, transport: Transport, project: str, operation_id: str, args: argparse.Namespace) -> PreparedCall:
     """Steps 1 to 5, each refusal a ``ValueError`` and nothing sent: a raw body beside ``-f`` or ``-F``
-    (``refuse_both_bodies``), the gate, ``registry.lookup``, a raw body for a record that takes none
-    (``refuse_raw_body``), the route prefix (``registry.route``; issue #43, design.md D3), whose routed record every
-    later step reads, the values, D4's check, and the shape check — ``registry.encode`` for a ``Paging.NONE`` REST
-    record, ``registry.pages`` (its own look-up, encoding, ``GET``-only check and ``expand``) for a paged one. The
-    ``PreparedCall`` of a ``Paging.NONE`` REST record carries the ``--route-prefix`` text for ``registry.send``."""
+    (``refuse_both_bodies``), the gate, ``registry.lookup`` on the ``--endpoint`` given (issue #63, design.md D1), a
+    raw body for a record that takes none (``refuse_raw_body``), the route prefix (``registry.route``; issue #43,
+    design.md D3), whose routed record every later step reads, the values, D4's check, and the shape check —
+    ``registry.encode`` for a ``Paging.NONE`` REST record, ``registry.pages`` (its own look-up on the endpoint,
+    encoding, ``GET``-only check and ``expand``) for a paged one. The ``PreparedCall`` of a REST record carries the
+    endpoint, and that of a ``Paging.NONE`` one the ``--route-prefix`` text, for ``registry.send``."""
     raw_body: Optional[bytes] = getattr(args, ARG_RAW_BODY, None)
     prefix: Optional[str] = getattr(args, ARG_ROUTE_PREFIX, None)
+    endpoint: Optional[Endpoint] = getattr(args, ARG_ENDPOINT, None)
     refuse_both_bodies(raw_body=raw_body, args=args)
     refuse_gated(operation_id=operation_id)
-    operation = registry.lookup(operation_id=operation_id)
+    operation = registry.lookup(operation_id=operation_id, endpoint=endpoint)
     refuse_raw_body(operation=operation, raw_body=raw_body)
     operation = registry.route(operation=operation, prefix=prefix)
     values = call_values(operation=operation, project=project, args=args)
@@ -460,9 +613,9 @@ def prepare_call(*, transport: Transport, project: str, operation_id: str, args:
         return PreparedCall(operation=operation, values=values)
     if operation.paging is Paging.NONE:
         registry.encode(operation=operation, values=values)
-        return PreparedCall(operation=operation, values=values, raw_body=raw_body, prefix=prefix)
-    items = registry.pages(transport=transport, operation_id=operation_id, values=values)
-    return PreparedCall(operation=operation, values=values, items=items)
+        return PreparedCall(operation=operation, values=values, raw_body=raw_body, prefix=prefix, endpoint=endpoint)
+    items = registry.pages(transport=transport, operation_id=operation_id, values=values, endpoint=endpoint)
+    return PreparedCall(operation=operation, values=values, items=items, endpoint=endpoint)
 
 
 def print_response(*, response: Response) -> None:
@@ -476,10 +629,12 @@ def print_response(*, response: Response) -> None:
     print_bytes(data=response.body)
 
 
-def send_call(*, transport: Transport, prepared: PreparedCall) -> None:
+def send_call(*, transport: Transport, project: str, prepared: PreparedCall) -> None:
     """Step 6 and D3: a paged record's items read and printed as one array once the last page has arrived; a GraphQL
     record through ``registry.call``; a ``Paging.NONE`` record through ``registry.send``, the raw body as its
-    ``data`` and the ``--route-prefix`` text as its ``prefix`` (issue #43, design.md D3)."""
+    ``data``, the ``--route-prefix`` text as its ``prefix`` (issue #43, design.md D3), the ``--endpoint`` as its
+    ``endpoint`` and the configured ``project`` as its ``project``, which a container-registry record's registry token
+    is asked for with (issue #63, design.md D1, D4)."""
     operation_id = prepared.operation.operation_id
     if prepared.items is not None:
         print_json(value=list(prepared.items))
@@ -493,6 +648,8 @@ def send_call(*, transport: Transport, prepared: PreparedCall) -> None:
         values=prepared.values,
         data=prepared.raw_body,
         prefix=prepared.prefix,
+        endpoint=prepared.endpoint,
+        project=project,
     )
     print_response(response=response)
 
@@ -508,7 +665,7 @@ def call_operation(
     except ValueError as refusal:
         logger.error("%s", refusal)
         return EXIT_REFUSED
-    send_call(transport=transport, prepared=prepared)
+    send_call(transport=transport, project=project, prepared=prepared)
     return None
 
 
@@ -590,4 +747,22 @@ def register(*, subparsers: SubParsers) -> None:
         help=(
             "the <route-prefix> of a protocol route: one of the values its page lists, e.g. /projects/:id/packages/npm"
         ),
+    )
+    parser.add_argument(
+        OPTION_ENDPOINT,
+        dest=ARG_ENDPOINT,
+        action=ACTION_STORE,
+        default=None,
+        type=endpoint_key,
+        metavar=METAVAR_ENDPOINT,
+        help="'METHOD path', one endpoint of an ID several records declare; without it, its first declared endpoint",
+    )
+    parser.add_argument(
+        OPTION_HEADER,
+        dest=ARG_HEADERS,
+        action=ACTION_APPEND,
+        default=None,
+        type=assignment,
+        metavar=METAVAR_VALUE,
+        help="a request header the record declares, its name compared ignoring case",
     )

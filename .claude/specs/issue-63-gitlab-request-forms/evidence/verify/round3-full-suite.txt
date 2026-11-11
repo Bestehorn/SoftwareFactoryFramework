@@ -1,0 +1,53 @@
+# Round 3 whole-suite verdict for issue #63, PR #66: CI run 43093062683, read through scripts/github_wrapper.py (main checkout).
+# The worktree's HEAD (git rev-parse HEAD) and the run's head_sha are the same commit:
+# 5ece525ccc0b480bc98c78c98b6c164f5c166106  # pragma: allowlist secret
+# Product files unchanged by the rework: `git diff 583fbbd 5ece525 --stat -- src/payload/scripts` printed nothing.
+
+$ python scripts/github_wrapper.py list-runs --limit 3
+43093062683  in_progress  None         ci
+43087628208  completed    success      ci
+43070929100  completed    success      ci
+
+$ python scripts/github_wrapper.py get-run 43093062683   (fields of its answer)
+  "head_branch": "issue-63-gitlab-request-forms",
+  "head_sha": "5ece525ccc0b480bc98c78c98b6c164f5c166106",  # pragma: allowlist secret
+  "event": "pull_request",
+  "run_number": 111,
+  pull_requests[0].number: 66, base.sha "6beeb772a657c5c68bf3b61a180ffd9ca285ea1c"  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py wait-run 43093062683 --timeout-seconds 540
+{"run_id": 43093062683, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43093062683"}
+wait-exit=0
+
+$ python scripts/github_wrapper.py get-jobs 43093062683
+130774820008   completed    success      verify (security)
+130774820358   completed    success      verify (types)
+130774820550   completed    success      verify (lint)
+130774820562   completed    success      verify (tests)
+130776142509   completed    success      report
+
+$ python scripts/github_wrapper.py get-job-logs 130774820562   (verify (tests); lines of the complete log, timestamps cut)
+HEAD is now at e58c69f Merge 5ece525ccc0b480bc98c78c98b6c164f5c166106 into 6beeb772a657c5c68bf3b61a180ffd9ca285ea1c  # pragma: allowlist secret
+--- RUN  tests/pytest: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python scripts/run_tests.py --workers auto --coverage --junit reports/junit.xml
+run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+4 workers [3699 items]
+src/payload/scripts/gitlab_api/container_registry.py                           39      0   100%
+src/payload/scripts/gitlab_api/registry.py                                    398      2    99%   457, 932
+src/payload/scripts/gitlab_api/transport.py                                   425     12    97%   272-273, 327, 427, 518, 534, 569-570, 579, 743, 898-901
+src/payload/test/test_gitlab_api_container_registry.py                        149      9    94%   48, 56-61, 145, 150
+Required test coverage of 80% reached. Total coverage: 92.36%
+======================= 3699 passed in 100.20s (0:01:40) =======================
+--- PASS tests/pytest (101.1s, exit 0)
+--- RUN  tests/hook-suite: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest .claude/hooks/tests -q -o addopts= -p no:cacheprovider
+1053 passed in 7.03s
+--- PASS tests/hook-suite (7.3s, exit 0)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+  [PASS] tests/pytest  exit 0
+  [PASS] tests/hook-suite  exit 0
+
+# Round 2 (run 43087628208, head 583fbbd): 3694 passed. Round 3: 3699 passed (+5, the rework's new cases: four
+# white-space hosts and the empty username; rework-2.txt 957 -> 962). The test module's unexecuted lines 48, 56-61,
+# 145, 150 lie outside the rework's hunks (583fbbd..5ece525: 6-16, 109-129, 286-329); container_registry.py 100%.
+
+Verdict: GREEN. Every job of run 43093062683 succeeded on head_sha 5ece525, the worktree's HEAD; 3699 passed, 0 failed;
+hook suite 1053 passed.

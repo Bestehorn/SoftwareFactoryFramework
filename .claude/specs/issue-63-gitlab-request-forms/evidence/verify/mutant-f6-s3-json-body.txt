@@ -1,0 +1,148 @@
+# mutant f6-s3-json-body: AC-7.1/D6: the S3 import's body is FORM
+# edit src/payload/scripts/gitlab_api/families/gitlab_dedicated.py: '        body=BodyFormat.FORM,' -> '        body=BodyFormat.JSON,'
+# sha256 before src/payload/scripts/gitlab_api/families/gitlab_dedicated.py: 4049b4fd2d37c6197f7540388bb6d317d51e2e18c745a1a6e05d62b103c71478  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_gitlab_dedicated.py test/test_gitlab_wrapper_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_gitlab_dedicated.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [39 items]
+
+..F...............F............F.F.....                                  [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:680: in test_every_param_is_typed_as_its_row
+    assert bodies == expected_bodies, (
+E   AssertionError: every record's body is BodyFormat.JSON but the S3 import's, BodyFormat.FORM (AC-4, #63 D6):
+E     'gitlab-dedicated#import-a-project-from-an-aws-s3-bucket': declared 'JSON', expected 'FORM'
+E   assert {'gitlab-dedi...: 'JSON', ...} == {'gitlab-dedi...: 'JSON', ...}
+E     
+E     Omitting 79 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-an-aws-s3-bucket[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mJSON[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mgitlab-dedicated#import-a-project-from-an-aws-s3-bucket[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mFORM[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+________ test_the_s3_import_sends_every_member_at_its_name[form-body] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_gitlab_dedicated.py:788: in test_the_s3_import_sends_every_member_at_its_name
+    assert media_type(value=content_type) == case.media_type, f"the body's Content-Type: {content_type!r}"
+E   AssertionError: the body's Content-Type: 'application/json'
+E   assert 'application/json' == 'application/...rm-urlencoded'
+E     
+E     [0m[91m- application/x-www-form-urlencoded[39;49;00m[90m[39;49;00m
+E     [92m+ application/json[39;49;00m[90m[39;49;00m
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1563: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[description]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[build_git_strategy]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[build_timeout]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[auto_cancel_pending_pipelines]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[ci_config_path]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[service_desk_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[issues_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[merge_requests_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[wiki_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[jobs_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[snippets_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[issues_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[repository_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[merge_requests_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[forking_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[wiki_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[builds_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[snippets_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[package_registry_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[pages_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[analytics_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_registry_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[security_and_compliance_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[releases_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[environments_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[feature_flags_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[infrastructure_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[monitor_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[model_experiments_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[model_registry_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[emails_disabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[emails_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[show_default_award_emojis]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[show_diff_preview_in_email]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[warn_about_potentially_unwanted_characters]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[enforce_auth_checks_on_uploads]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[shared_runners_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[group_runners_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[resource_group_default_process_mode]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[resolve_outdated_diff_discussions]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[remove_source_branch_after_merge]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[packages_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_registry_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_expiration_policy_attributes][cadence]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_expiration_policy_attributes][keep_n]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_expiration_policy_attributes][older_than]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_expiration_policy_attributes][name_regex]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_expiration_policy_attributes][name_regex_keep]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[container_expiration_policy_attributes][enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[lfs_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[visibility]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[public_builds]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[public_jobs]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[request_access_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[only_allow_merge_if_pipeline_succeeds]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[allow_merge_on_skipped_pipeline]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[only_allow_merge_if_all_discussions_are_resolved]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[tag_list]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[topics]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[avatar]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[printing_merge_request_link_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[merge_method]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[suggestion_commit_message]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[merge_commit_template]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[squash_commit_template]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[issue_branch_template]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[auto_devops_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[auto_devops_deploy_strategy]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[autoclose_referenced_issues]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[repository_storage]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[squash_option]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[mr_default_target_self]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[mr_default_title_template]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[cicd_catalog_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[only_allow_merge_if_all_status_checks_passed]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[approvals_before_merge]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[mirror]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[mirror_trigger_builds]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[external_authorization_classification_label]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[requirements_access_level]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[prevent_merge_without_jira_issue]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[auto_duo_code_review_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[duo_remote_flows_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[duo_sast_fp_detection_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[duo_secret_detection_fp_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[duo_dependency_bump_breaking_changes_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[duo_sast_vr_workflow_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[spp_repository_pipeline_access]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[merge_request_title_regex]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E     gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[merge_request_title_regex_description]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record
+E   assert not ["gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param 'override_params[description]' holds '[' or ':' b...ams[service_desk_enabled]' holds '[' or ':' but is no parent[key] name of a query Param or of a FORM-body record", ...]
+_____________ test_a_two_level_member_is_read_and_sent_as_written _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1784: in test_a_two_level_member_is_read_and_sent_as_written
+    assert record_problems(record=record, section=section) == []
+E   assert ['gitlab-dedi... record', ...] == []
+E     
+E     Left contains 90 more items, first extra item: [0m[33m"[39;49;00m[33mgitlab-dedicated#import-a-project-from-an-aws-s3-bucket: the Param [39;49;00m[33m'[39;49;00m[33moverride_params[description][39;49;00m[33m'[39;49;00m[33m holds [39;49;00m[33m'[39;49;00m[33m[[39;49;00m[33m'[39;49;00m[33m or [39;49;00m[33m'[39;49;00m[33m:[39;49;00m[33m'[39;49;00m[33m but is no parent[key] name of a query Param or of a FORM-body record[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_the_s3_import_sends_every_member_at_its_name[form-body]
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_a_two_level_member_is_read_and_sent_as_written
+================== 4 failed, 35 passed in 120.01s (0:02:00) ===================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/families/gitlab_dedicated.py: 4049b4fd2d37c6197f7540388bb6d317d51e2e18c745a1a6e05d62b103c71478 match=True  # pragma: allowlist secret
+# verdict: KILLED (4 failed, 35 passed in 120.01s (0:02:00))

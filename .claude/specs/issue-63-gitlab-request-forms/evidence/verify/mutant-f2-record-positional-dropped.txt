@@ -1,0 +1,108 @@
+# mutant f2-record-positional-dropped: AC-3.1: the SSH certificate record declares positional_names
+# edit src/payload/scripts/gitlab_api/families/create.py: '        positional_names=("id",),\n' -> ''
+# sha256 before src/payload/scripts/gitlab_api/families/create.py: afcac8e0333ff9933c7975a68790307af17a4d59ce04c0f2a6ac3f3c3b1a0326  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [173 items]
+
+............................................F........................... [ 41%]
+.....................................................................F.. [ 83%]
+F.F.....................F....                                            [100%]
+================================== FAILURES ===================================
+____________ test_each_id_of_the_certificate_path_takes_its_place _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_create.py:787: in test_each_id_of_the_certificate_path_takes_its_place
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_create.py:620: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:668: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\commands\call.py:645: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\registry.py:878: in send
+    return transport.request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:661: in request
+    return self._send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: DELETE https://gitlab.example.com/api/v4/groups/12345/ssh_certificates/12345 (still scripted: [('DELETE', 'https://gitlab.example.com/api/v4/groups/7/ssh_certificates/12345')])
+_________ test_a_two_value_path_given_one_value_is_refused[no-value] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2443: in test_a_two_value_path_given_one_value_is_refused
+    assert naming, (
+E   AssertionError: one log record says id has no value and lists the path parameters ['id', 'id'] (issue #63 AC-3.3); logged: ['create#delete-a-group-ssh-certificate: the path parameter id has no value; its path parameters: id; its attributes: none']
+E   assert []
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:666 create#delete-a-group-ssh-certificate: the path parameter id has no value; its path parameters: id; its attributes: none
+_______ test_a_two_value_path_given_one_value_is_refused[three-values] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2435: in test_a_two_value_path_given_one_value_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:356: in refused_messages
+    assert code == EXIT_USAGE, f"a refused call exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a refused call exits 2, got 0; stderr:
+E     
+E   assert 0 == 2
+_________ test_a_two_value_path_given_one_value_is_refused[one-value] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2435: in test_a_two_value_path_given_one_value_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:356: in refused_messages
+    assert code == EXIT_USAGE, f"a refused call exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a refused call exits 2, got 0; stderr:
+E     
+E   assert 0 == 2
+______ test_an_endpoint_a_place_a_suffix_and_a_base_are_read_as_written _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1832: in test_an_endpoint_a_place_a_suffix_and_a_base_are_read_as_written
+    assert values == {SSH_CERTIFICATE_NAME: SSH_CERTIFICATE_VALUES}
+E   AssertionError: assert {'id': 'v1'} == {'id': ['v1', 'v2']}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mid[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mv1[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mid[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mv1[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mv2[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_create.py::test_each_id_of_the_certificate_path_takes_its_place
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_two_value_path_given_one_value_is_refused[no-value]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_two_value_path_given_one_value_is_refused[three-values]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_two_value_path_given_one_value_is_refused[one-value]
+FAILED test/test_gitlab_wrapper_contract.py::test_an_endpoint_a_place_a_suffix_and_a_base_are_read_as_written
+================== 5 failed, 168 passed in 142.28s (0:02:22) ==================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/families/create.py: afcac8e0333ff9933c7975a68790307af17a4d59ce04c0f2a6ac3f3c3b1a0326 match=True  # pragma: allowlist secret
+# verdict: KILLED (5 failed, 168 passed in 142.28s (0:02:22))

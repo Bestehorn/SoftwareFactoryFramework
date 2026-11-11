@@ -1,0 +1,109 @@
+# Decision Log
+
+## DL-001 — 2026-11-11T12:57:39Z — issue-work-orchestrator — phase:CLASSIFY
+
+**Decision:** Tier M: six request forms across `gitlab_api/registry.py`, `transport.py`, `commands/call.py` and the contract test, each a design choice, plus the records of the keys they unblock; the spec is written now and implementation waits for #40 and #43 to land, then this branch rebases.
+**Driver:** issue #63 "Tier: M" and "Filing-rationale: DESIGN-OPTIONS"; proportionality.md (a feature across several components with a design choice).
+**Alternatives considered:** one issue per form (rejected: one ask, one coverage criterion, shared registry and contract changes).
+**Evidence:** issue #63 body (Forms and keys, Where, Open questions).
+**Supersedes:** none
+**Artifacts touched:** prompt.md, qa_log.md
+
+## DL-002 — 2026-11-11T13:18:28Z — issue-work-orchestrator — phase:REQUIREMENTS
+
+**Decision:** The reference settles four of the issue's open questions in requirements (F1 endpoints are the spans on a section's first line, method included; F2's second `:id` is the certificate or token; F3 `.format` is an optional suffix from the documented list; F5 headers are the section's `Request headers` line and `In: header` rows) and leaves every mechanism to design; token information is the configured origin outside `/api/v4`, not another origin.
+**Driver:** issue #63 Open questions; requirements.md Glossary and Requirements 2-7.
+**Alternatives considered:** none
+**Evidence:** docs/api-reference/gitlab/ sections the requirements cite (operations-index.md header on `https://HOST` paths).
+**Supersedes:** none
+**Artifacts touched:** requirements.md
+
+## DL-003 — 2026-11-11T13:50:35Z — issue-work-orchestrator — phase:DESIGN
+
+**Decision:** Design D1-D9 as authored: F1 several records per ID chosen by `call --endpoint 'METHOD path'`; F2 `positional_names` with `--path id=` repeated in path order; F3 `suffix_values` and `--path format=`; F4 host-root `Base`, the registry origin from `container_registry_image_prefix`, its token from `/jwt/auth` by HTTP Basic (`GET /user` username, or `gitlab-ci-token` for a job token) sent only to the configured origin, a `bearer` token refused; F5 `Location.HEADER` and `--header`; F6 a FORM-body record and N's widened `PARENT_KEY`.
+**Driver:** requirements.md Requirements 2-7 (mechanisms left to design); issue #63 Open questions.
+**Alternatives considered:** a registry host in `config/gitlab.json` (rejected: UB-2 keeps the config to the instance and token); one record per ID with an endpoint table (rejected: V's `record_key_problems` already accepts several keys per Reference).
+**Evidence:** design.md D1-D9; docs.gitlab.com `authenticate_with_container_registry`, `api/container_registry`, `api/projects` (`container_registry_image_prefix`); RFC 7617, RFC 9110 sections 5.1 and 5.5.
+**Supersedes:** none
+**Artifacts touched:** design.md
+
+## DL-004 — 2026-11-11T13:50:35Z — issue-work-orchestrator — phase:DESIGN
+
+**Decision:** Restate UB-1 (an existing assertion that pins what this change retires, such as a key's pending state, one record per ID, a JSON-only body or a table without `Symbolchecksum`, is restated to the new state) and UB-3 (one `None` gate for the S3 import), before the design review opens.
+**Driver:** design author: AC-1.1 and AC-6.1 contradict UB-1's "no existing assertion edited"; the S3 import writes into an existing project (#38 DL-005) and the orchestrator settled its gate.
+**Alternatives considered:** keep the S3 key pending (rejected: AC-1.1 maps it, F6 needs a record to prove).
+**Evidence:** design.md D9 (the restated tests); #38 DL-004, #37 DL-005 (the same restatement).
+**Supersedes:** none
+**Artifacts touched:** requirements.md
+
+## DL-005 — 2026-11-11T14:22:51Z — issue-work-orchestrator — phase:DESIGN_REVIEW
+
+**Decision:** Apply all of iteration 01's findings (7 B, every C and D) in one author pass; the GitLab real-instance run is #11's (devops B1); delta review iteration 02 goes to the four NOT-READY lanes only.
+**Driver:** review/review-latest.md (iteration 01: 0 A, 7 B; security and best-practice READY).
+**Alternatives considered:** none
+**Evidence:** review/<lane>/iteration-01.md; issue #10 Ask ("GitHub first"), issue #11 work item "Real-GitLab integration tests".
+**Supersedes:** none
+**Artifacts touched:** requirements.md, design.md, prompt.md
+
+## DL-006 — 2026-11-11T14:42:25Z — issue-work-orchestrator — phase:DESIGN_REVIEW
+
+**Decision:** Apply iteration 02's findings (spec B1 = test B3 the map test's spellings; the C/D items) in one author pass; standards and devops are READY at iteration 02, so iteration 03 goes to spec-review-agent and test-architect only.
+**Driver:** review/<lane>/iteration-02.md (spec 1 B, test 1 B, standards READY, devops READY).
+**Alternatives considered:** none
+**Evidence:** review/spec-review-agent/iteration-02.md B1; review/test-architect/iteration-02.md B3.
+**Supersedes:** none
+**Artifacts touched:** design.md
+
+## DL-007 — 2026-11-11T14:46:38Z — issue-work-orchestrator — phase:DESIGN_REVIEW
+
+**Decision:** Approve requirements.md and design.md at iteration 03: every lane READY with 0 A and 0 B (security and best-practice at 01, standards and devops at 02, spec-review and test-architect at 03); scope frozen.
+**Driver:** review/<lane>/iteration-0N.md verdicts.
+**Alternatives considered:** none
+**Evidence:** review/spec-review-agent/iteration-03.md, review/test-architect/iteration-03.md (30 COVERED, 0 GAP).
+**Supersedes:** none
+**Artifacts touched:** review/review-latest.md
+
+## DL-008 — 2026-11-11T15:43:17Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** Approve tasks.md at tasks iteration 02 (both lanes READY, 0 A, 0 B; 30 criteria covered); AC-5.3's failure path moves to wave-2 task 2.12 after its test 2.5, wave 3 runs every GitLab suite; implementation waits for #43's PR #65 to merge, then this branch rebases.
+**Driver:** review/spec-review-agent/tasks-iteration-01.md B1, review/test-architect/tasks-iteration-01.md B1 B2; both tasks-iteration-02.md READY.
+**Alternatives considered:** none
+**Evidence:** review/<lane>/tasks-iteration-02.md.
+**Supersedes:** none
+**Artifacts touched:** tasks.md
+
+## DL-009 — 2026-11-11T16:28:41Z — issue-work-orchestrator — phase:IMPLEMENT
+
+**Decision:** Keep IMPL 1.6's extra refusal in `registry.send`: a container-registry record given a body, a file, a request header or raw bytes raises `ValueError` with nothing sent, since `container_registry.send` takes none of them; it narrows what is sent and no record or test reaches it.
+**Driver:** IMPL 1.6 report; design D4 (the registry request carries the path, query and registry token only).
+**Alternatives considered:** drop the inputs silently (rejected: a caller's value would vanish unsent with exit 0).
+**Evidence:** src/payload/scripts/gitlab_api/registry.py `send`; evidence/green/wave-1.txt.
+**Supersedes:** none
+**Artifacts touched:** src/payload/scripts/gitlab_api/registry.py
+
+## DL-010 — 2026-11-11T19:28:01Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Answer the verifier's REFUTED (RF-1..RF-6, all test gaps) with tests only: F:package, T and G pin the step-2 host shapes, the missing username and the never-quoted `/jwt/auth` body; R pins `pages`' base and header refusals, DL-009's refusal and the four unexecuted refusal lines; no product file changes; a delta re-verification follows.
+**Driver:** evidence/verify/refutation-report.md RF-1..RF-6 (9 surviving mutants of 70).
+**Alternatives considered:** none (the code holds; only the proof was missing).
+**Evidence:** evidence/green/rework-1.txt (957 passed); each new test failed under its mutant (implementer reports).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_package.py, test_gitlab_api_transport.py, test_gitlab_api_container_registry.py, test_gitlab_api_registry.py
+
+## DL-011 — 2026-11-11T20:04:11Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Answer round 2's REFUTED (R2-1 tab/LF/CR in the registry host, R2-2 an empty username, both near-variant test gaps) with two cases in G only, keeping F:package untouched for the #15 branch; a delta round 3 verifies just these two.
+**Driver:** evidence/verify/refutation-report-2.md R2-1, R2-2 (15 of 17 near-variants and all nine round-1 survivors killed).
+**Alternatives considered:** none
+**Evidence:** evidence/green/rework-2.txt; each new case failed under its round-2 mutant (implementer report).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_container_registry.py
+
+## DL-012 — 2026-11-11T20:34:01Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Close the white-space class instead of one character per round: G's registry-host refusal test covers every character `str.isspace()` counts (a literal tuple of escapes, guarded by a test that it equals Python's set); a delta round 4 verifies it.
+**Driver:** evidence/verify/refutation-report-3.md R3-1 (VT, FF and Unicode white space unpinned; R2-2 closed).
+**Alternatives considered:** restate D4 to the four pinned characters (rejected: narrows a security refusal to fit the tests).
+**Evidence:** evidence/green/rework-3.txt; both round-3 mutants killed (implementer report: 25 and 23 cases fail).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_container_registry.py

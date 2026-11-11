@@ -1,0 +1,53 @@
+# mutant sec-header-name-authorization-dropped: D5: a caller header named Authorization is refused
+# edit src/payload/scripts/gitlab_api/transport.py: 'TRANSPORT_HEADER_NAMES = frozenset(' -> 'TRANSPORT_HEADER_NAMES = frozenset({"accept", "content-type", "content-length", "transfer-encoding", "host", "user-agent", "private-token", "job-token"}) or frozenset('
+# sha256 before src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [252 items]
+
+........................................................................ [ 28%]
+..F..F.F................................................................ [ 57%]
+........................................................................ [ 85%]
+....................................                                     [100%]
+================================== FAILURES ===================================
+_____ test_a_request_header_is_sent_beside_the_transport_headers[private] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1512: in test_a_request_header_is_sent_beside_the_transport_headers
+    assert not_refused == [], (
+E   AssertionError: a name the transport owns, a credential header of any token type, and a value holding CR, LF or NUL each raise ValueError (D5); not refused: ["request with Authorization: 'Bearer another-token-for-the-test'", "request_raw with Authorization: 'Bearer another-token-for-the-test'"]
+E   assert ["request wit...or-the-test'"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mrequest with Authorization: [39;49;00m[33m'[39;49;00m[33mBearer another-token-for-the-test[39;49;00m[33m'[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____ test_a_request_header_is_sent_beside_the_transport_headers[bearer] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1512: in test_a_request_header_is_sent_beside_the_transport_headers
+    assert not_refused == [], (
+E   AssertionError: a name the transport owns, a credential header of any token type, and a value holding CR, LF or NUL each raise ValueError (D5); not refused: ["request with Authorization: 'Bearer another-token-for-the-test'", "request_raw with Authorization: 'Bearer another-token-for-the-test'"]
+E   assert ["request wit...or-the-test'"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mrequest with Authorization: [39;49;00m[33m'[39;49;00m[33mBearer another-token-for-the-test[39;49;00m[33m'[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_a_request_header_is_sent_beside_the_transport_headers[job] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1512: in test_a_request_header_is_sent_beside_the_transport_headers
+    assert not_refused == [], (
+E   AssertionError: a name the transport owns, a credential header of any token type, and a value holding CR, LF or NUL each raise ValueError (D5); not refused: ["request with Authorization: 'Bearer another-token-for-the-test'", "request_raw with Authorization: 'Bearer another-token-for-the-test'"]
+E   assert ["request wit...or-the-test'"] == []
+E     
+E     Left contains 2 more items, first extra item: [0m[33m"[39;49;00m[33mrequest with Authorization: [39;49;00m[33m'[39;49;00m[33mBearer another-token-for-the-test[39;49;00m[33m'[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[private]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[bearer]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_a_request_header_is_sent_beside_the_transport_headers[job]
+======================= 3 failed, 249 passed in 10.20s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/transport.py: 183ea542dd1f50c84f80bc81646a045a904e2a462c6f4be62882105d3f25126b match=True  # pragma: allowlist secret
+# verdict: KILLED (3 failed, 249 passed in 10.20s)

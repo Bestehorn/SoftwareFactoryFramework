@@ -6,14 +6,15 @@ Every expected value is a literal table transcribed from the reference, never re
 ``docs/api-reference/gitlab/rest/tenant-scale.md`` (each section's endpoints, its heading, and the ``In``, ``Type``,
 ``Required`` and ``Notes`` columns of its ``| Attribute | In | Type |`` table). What is pinned:
 
-- AC-1, UB-2: ``OPERATIONS`` as ``{operation_id: (method, path)}``, each ID once, is ``RECORDS``: every Reference of the
-  family but the four kept IDs, each with its section's endpoint, of several the ``/projects/:id/...`` one. The three
-  References whose keys V's ``key_families`` gives ``developer_experience`` (DL-003: ``GET /projects`` and
-  ``DELETE /projects/:id/share/:group_id`` are also carried by ``rest/developer-experience.md`` rows) are declared
-  there, not here: ``tenant-scale#list-all-projects``, ``#list-all-projects-assigned-to-a-topic`` and
-  ``#delete-a-shared-project-link-in-a-group``;
-- AC-2: ``PENDING`` is exactly the keys of the four ``/groups/:id/manage/..._access_tokens/:id...`` IDs and the
-  ``/groups/:id/...`` endpoint of each Invitations section;
+- AC-1, UB-2 (as issue #63 design.md D9 restates them): ``OPERATIONS``, each ID's first record as
+  ``{operation_id: (method, path)}``, each key of an ID once, is ``RECORDS``: every Reference of the family, each with
+  its section's endpoint, of several the ``/projects/:id/...`` one, the four ``/groups/:id/manage/..._access_tokens/
+  :id...`` IDs among them (issue #63 AC-1.1); each Invitations section then has a record for its ``/groups/:id/...``
+  endpoint (``OTHER_ENDPOINT_KEYS``). The three References whose keys V's ``key_families`` gives
+  ``developer_experience`` (DL-003: ``GET /projects`` and ``DELETE /projects/:id/share/:group_id`` are also carried by
+  ``rest/developer-experience.md`` rows) are declared there, not here: ``tenant-scale#list-all-projects``,
+  ``#list-all-projects-assigned-to-a-topic`` and ``#delete-a-shared-project-link-in-a-group``;
+- AC-2: ``PENDING`` is empty: the keys it held are records (issue #63 AC-1.1, AC-1.3);
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``FILE`` for a Notes cell beginning "file upload",
   ``ARRAY_OF_HASHES`` for ``array of object``, ``HASH`` for ``hash`` or ``object``, ``ARRAY`` for any other Type holding
   ``array``); the ``required`` ``Param``s, exactly the query, body and form rows whose Required reads ``yes``; a JSON
@@ -24,7 +25,9 @@ Every expected value is a literal table transcribed from the reference, never re
   every placeholder of its path against a fake host serving one item on each of two pages chained by ``x-next-page``,
   exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``);
 - AC-8: "Download snapshot of a Git repository", answered with bytes that are not UTF-8 as
-  ``application/octet-stream``, exits 0 and writes those bytes unchanged (read with ``capsysbinary``).
+  ``application/octet-stream``, exits 0 and writes those bytes unchanged (read with ``capsysbinary``);
+- issue #63 AC-3.1, AC-3.2, AC-8.3: each of the four token records, called with ``--path id=7 --path id=self``, sends
+  one request whose path holds ``7`` at the group's place and ``self`` at the token's.
 
 The names and ``In`` of every ``Param`` (AC-3) and one call of every record (AC-6) are proven by
 ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
@@ -92,12 +95,16 @@ PROJECT_ID = 4242
 
 EXIT_OK = 0
 METHOD_GET = "GET"
+METHOD_DELETE = "DELETE"
+STATUS_NO_CONTENT = 204
 OPTION_PATH = "--path"
 ASSIGNED = "="
 ID_SEPARATOR = "#"
 TEXT_ENCODING = "utf-8"
 DECODE_ERRORS = "replace"
 HEADER_CONTENT_TYPE = "Content-Type"
+# The configured token's header for the default token type, matched case-insensitively by `RecordedRequest.header`.
+HEADER_PRIVATE_TOKEN = "PRIVATE-TOKEN"
 HEADER_NEXT_PAGE = "x-next-page"
 CONTENT_TYPE_JSON = "application/json"
 CONTENT_TYPE_OCTET_STREAM = "application/octet-stream"
@@ -137,11 +144,40 @@ OP_DOWNLOAD_SNAPSHOT = "tenant-scale#download-snapshot-of-a-git-repository"
 SNAPSHOT_URL = f"{REST_BASE}/projects/{PROJECT_ID}/snapshot"
 NOT_UTF8_BYTES = b"snapshot.git/\x00\x00\x00\xff\xfe\xfd\x80"
 
+# Issue #63 AC-3.1, AC-3.2: each record whose path holds `:id` twice (rest/tenant-scale.md "Revoke ..." and "Rotate ...
+# for an enterprise user"), its two `id` values given in path order — the group `7`, then the token `self` (the
+# sections' Values) — and the method and path it is sent with. A revoke is answered `204`, a rotation with the token.
+POSITIONAL_ID_VALUES: Tuple[str, ...] = ("id=7", "id=self")
+TOKEN_PATH_CASES: Tuple[Tuple[str, str, str], ...] = (
+    (
+        "tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user",
+        "DELETE",
+        "/groups/7/manage/personal_access_tokens/self",
+    ),
+    (
+        "tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user",
+        "DELETE",
+        "/groups/7/manage/resource_access_tokens/self",
+    ),
+    (
+        "tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user",
+        "POST",
+        "/groups/7/manage/personal_access_tokens/self/rotate",
+    ),
+    (
+        "tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user",
+        "POST",
+        "/groups/7/manage/resource_access_tokens/self/rotate",
+    ),
+)
+ROTATED_TOKEN_ANSWER: Dict[str, Any] = {FIELD_ID: 1}
+
 # --- The tables, transcribed from docs/api-reference/gitlab ----------------------------------------------------------
 
 # AC-1: every Reference of an operations-index.md row linking rest/tenant-scale.md, written `tenant-scale#<anchor>`,
-# whose record this family declares, with its section's endpoint, in the page's section order. Of the Invitations
-# sections, each listing `/groups/:id/...` then `/projects/:id/...`, the record takes the `/projects/:id/...` one.
+# whose record this family declares, with its section's endpoint, in the page's section order: its first record, the
+# base record. Of the Invitations sections, each listing `/groups/:id/...` then `/projects/:id/...`, the base record
+# takes the `/projects/:id/...` one.
 # "Schedule a group for deletion" and "Delete a group permanently" share `DELETE /groups/:id`; "List all groups" and
 # "Search for a group" share `GET /groups`; "Update a project" and "Upload a project avatar" share `PUT /projects/:id`.
 RECORDS: Dict[str, Tuple[str, str]] = {
@@ -185,7 +221,24 @@ RECORDS: Dict[str, Tuple[str, str]] = {
         "/groups/:id/manage/resource_access_tokens",
     ),
     "tenant-scale#list-all-ssh-keys-for-a-group": ("GET", "/groups/:id/manage/ssh_keys"),
+    # Issue #63 AC-3.1: the four IDs whose path holds `:id` twice, the group's and the token's.
+    "tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user": (
+        "DELETE",
+        "/groups/:id/manage/personal_access_tokens/:id",
+    ),
+    "tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user": (
+        "DELETE",
+        "/groups/:id/manage/resource_access_tokens/:id",
+    ),
     "tenant-scale#delete-an-ssh-key-for-an-enterprise-user": ("DELETE", "/groups/:id/manage/ssh_keys/:key_id"),
+    "tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user": (
+        "POST",
+        "/groups/:id/manage/personal_access_tokens/:id/rotate",
+    ),
+    "tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user": (
+        "POST",
+        "/groups/:id/manage/resource_access_tokens/:id/rotate",
+    ),
     # Invitations API
     "tenant-scale#add-a-member-to-a-group-or-project": ("POST", "/projects/:id/invitations"),
     "tenant-scale#list-all-pending-invitations-for-a-group-or-project": ("GET", "/projects/:id/invitations"),
@@ -273,41 +326,23 @@ RECORDS: Dict[str, Tuple[str, str]] = {
     "tenant-scale#merge-topics": ("POST", "/topics/merge"),
 }
 
-# AC-2: the four IDs kept pending for the two `:id` of their path, each with the one endpoint of its section ...
-KEPT_PENDING: Dict[str, Tuple[str, str]] = {
-    "tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user": (
-        "DELETE",
-        "/groups/:id/manage/personal_access_tokens/:id",
-    ),
-    "tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user": (
-        "DELETE",
-        "/groups/:id/manage/resource_access_tokens/:id",
-    ),
-    "tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user": (
-        "POST",
-        "/groups/:id/manage/personal_access_tokens/:id/rotate",
-    ),
-    "tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user": (
-        "POST",
-        "/groups/:id/manage/resource_access_tokens/:id/rotate",
-    ),
+# The endpoint each Invitations section lists before the `/projects/:id/...` one its base record takes: the one record
+# after the base record of its ID (issue #63, design.md D1, D8).
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "tenant-scale#add-a-member-to-a-group-or-project": (("POST", "/groups/:id/invitations"),),
+    "tenant-scale#list-all-pending-invitations-for-a-group-or-project": (("GET", "/groups/:id/invitations"),),
+    "tenant-scale#update-an-invitation-to-a-group-or-project": (("PUT", "/groups/:id/invitations/:email"),),
+    "tenant-scale#delete-an-invitation-to-a-group-or-project": (("DELETE", "/groups/:id/invitations/:email"),),
 }
-# ... and the endpoint each Invitations section lists before the `/projects/:id/...` one its record takes.
-OTHER_ENDPOINT_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("POST", "/groups/:id/invitations"),
-        ("GET", "/groups/:id/invitations"),
-        ("PUT", "/groups/:id/invitations/:email"),
-        ("DELETE", "/groups/:id/invitations/:email"),
-    }
-)
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(KEPT_PENDING.values()) | OTHER_ENDPOINT_KEYS
+# AC-2 as issue #63 AC-1.1 restates it: nothing of the family stays pending.
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset()
 
 # AC-4: every query, body or form row of a declared record whose Kind is not SCALAR, as `(operation_id, name)`, in the
 # page's order. `FILE`: the `avatar` rows, whose Notes read "file upload (multipart/form-data)" (Type `mixed`, `file`,
 # or `string` in "Upload a project avatar"); `ARRAY_OF_HASHES`: `array of object`; `HASH`: `hash`, `object`; `ARRAY`:
 # `array`, `array of integer(s)`, `array of string(s)`, `integer array`. Every other row's Type is `string`, `integer`,
-# `integer (int32)`, `integer or string`, `boolean`, `boolean/string`, `date`, `datetime` or a dated `string`, a SCALAR.
+# `integer (int32)`, `integer or string`, `boolean`, `boolean/string`, `date`, `datetime` or a dated `string`, a SCALAR
+# (issue #63: the rotations' one non-path row, `expires_at`, is a `date`; the revokes have none).
 NON_SCALAR_KINDS: Dict[Tuple[str, str], str] = {
     ("tenant-scale#list-all-groups", "skip_groups"): KIND_ARRAY,
     ("tenant-scale#search-for-a-group", "skip_groups"): KIND_ARRAY,
@@ -359,7 +394,7 @@ NON_SCALAR_KINDS: Dict[Tuple[str, str], str] = {
 
 # AC-4: the query, body and form rows of a declared record whose Required reads `yes`, by record, in table order; a
 # record with none is not listed. A path row is no Param; `conditional` ("Schedule a group for deletion" `full_path`)
-# is not `yes`.
+# is not `yes`; the four token records of issue #63 have no such row.
 REQUIRED_PARAMS: Dict[str, Tuple[str, ...]] = {
     "tenant-scale#create-a-group-badge": ("link_url", "image_url"),
     "tenant-scale#retrieve-a-group-badge-preview": ("link_url", "image_url"),
@@ -466,6 +501,29 @@ def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, An
     return "\n".join(line for line in lines if line)
 
 
+def endpoints_by_id(*, records: Sequence[Any]) -> Dict[str, Tuple[Tuple[str, str], ...]]:
+    """``{operation_id: ((method, path), ...)}`` over ``records``, each ID's keys in declaration order."""
+    declared: Dict[str, List[Tuple[str, str]]] = {}
+    for record in records:
+        declared.setdefault(record.operation_id, []).append((record.method, record.path))
+    return {operation_id: tuple(keys) for operation_id, keys in declared.items()}
+
+
+def repeated_keys(*, endpoints: Mapping[str, Sequence[Tuple[str, str]]]) -> List[Tuple[str, Tuple[str, str]]]:
+    """Each ``(operation_id, key)`` that ``endpoints`` holds more than once for its ID, sorted."""
+    return sorted(
+        {(operation_id, key) for operation_id, keys in endpoints.items() for key in keys if list(keys).count(key) > 1}
+    )
+
+
+def token_path_params() -> List[Any]:
+    """One case per entry of ``TOKEN_PATH_CASES``, named by its anchor."""
+    return [
+        pytest.param(operation_id, method, path, id=operation_id.partition(ID_SEPARATOR)[2])
+        for operation_id, method, path in TOKEN_PATH_CASES
+    ]
+
+
 def non_scalar_kinds(*, records: Sequence[Any], registry: ModuleType) -> Dict[Tuple[str, str], str]:
     """``{(operation_id, name): Kind name}`` of every ``Param`` whose Kind is not SCALAR."""
     return {
@@ -535,21 +593,27 @@ def list_params() -> List[Any]:
 
 
 def test_every_reference_has_its_record() -> None:
-    """AC-1, UB-2: ``OPERATIONS`` declares each ID once, and as ``{operation_id: (method, path)}`` it is ``RECORDS``:
-    every index Reference of the family but the four kept IDs and the three ``developer_experience`` holds (DL-003)."""
+    """AC-1, UB-2, issue #63 AC-1.1 (design.md D9): ``OPERATIONS`` declares each key of an ID once; each ID's first
+    record as ``{operation_id: (method, path)}`` is ``RECORDS``, every index Reference of the family but the three
+    ``developer_experience`` holds (DL-003); the records after a base record are its section's other endpoints."""
     family = gitlab_module(name=FAMILY_MODULE)
-    declared_ids = [record.operation_id for record in family.OPERATIONS]
-    repeated = sorted({operation_id for operation_id in declared_ids if declared_ids.count(operation_id) > 1})
-    assert not repeated, f"tenant_scale.OPERATIONS declares these IDs more than once: {repeated}"
-    declared = {record.operation_id: (record.method, record.path) for record in family.OPERATIONS}
+    endpoints = endpoints_by_id(records=family.OPERATIONS)
+    repeated = repeated_keys(endpoints=endpoints)
+    assert not repeated, f"tenant_scale.OPERATIONS declares these keys of one ID more than once: {repeated}"
+    declared = {operation_id: keys[0] for operation_id, keys in endpoints.items()}
     assert declared == RECORDS, (
-        f"tenant_scale.OPERATIONS declares {len(declared)} record(s), AC-1 expects {len(RECORDS)}:\n"
+        f"tenant_scale.OPERATIONS declares {len(declared)} ID(s), AC-1 expects {len(RECORDS)}:\n"
         + mapping_difference(declared=declared, expected=RECORDS)
+    )
+    others = {operation_id: keys[1:] for operation_id, keys in endpoints.items() if len(keys) > 1}
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+        mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
     )
 
 
 def test_only_the_kept_keys_are_pending() -> None:
-    """AC-2: ``PENDING`` is the kept IDs' keys and the ``/groups/:id/...`` endpoint of each Invitations section."""
+    """AC-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is empty: the four token IDs and the
+    ``/groups/:id/...`` endpoint of each Invitations section are records."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, "tenant_scale.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(
@@ -648,4 +712,28 @@ def test_a_download_is_written_unchanged(
     assert sent(fake=fake_gitlab) == [(METHOD_GET, SNAPSHOT_URL)], "one GET to the project's snapshot, id the project"
     assert captured.out == NOT_UTF8_BYTES, (
         f"the body's bytes unchanged, no line end added (AC-8); standard output: {captured.out!r}"
+    )
+
+
+# --- Issue #63 AC-3.1, AC-3.2: one value per place ------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames=("operation_id", "method", "path"), argvalues=token_path_params())
+def test_each_id_of_a_token_path_takes_its_place(
+    operation_id: str, method: str, path: str, project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #63 AC-3.1, AC-3.2, AC-8.3: ``call <token record> --path id=7 --path id=self`` sends one request whose
+    path holds ``7`` at the group's ``:id`` and ``self`` at the token's, the configured token in its header."""
+    url = f"{REST_BASE}{path}"
+    if method == METHOD_DELETE:
+        fake_gitlab.script(method=method, url=url, status=STATUS_NO_CONTENT)
+    else:
+        fake_gitlab.script(method=method, url=url, body=ROTATED_TOKEN_ANSWER)
+    argv = [operation_id, *(part for value in POSITIONAL_ID_VALUES for part in (OPTION_PATH, value))]
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(method, url)], "one request, each --path id in its own place (AC-3.2)"
+    assert fake_gitlab.requests[0].header(name=HEADER_PRIVATE_TOKEN) == TOKEN, (
+        "the configured token travels in its one header"
     )

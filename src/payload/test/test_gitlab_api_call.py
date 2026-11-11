@@ -14,15 +14,24 @@ What is pinned, each case through the product's ``main(argv=["call", ...])`` aga
 - the refusals, exit 2 with no request (AC-1.1, AC-2.1 to AC-2.4): a gated ID names the subcommand to use; an unknown
   ID, an undocumented parameter, a missing path parameter and a value of the wrong shape are named in a log record;
   a ``NAME=VALUE`` with no ``=`` or an empty name, and ``-F`` text that is not JSON, are argparse's usage error, which
-  names no value (design.md D2, D4); ``call`` has no token option (UB-2.1).
+  names no value (design.md D2, D4); ``call`` has no token option (UB-2.1);
+- issue #63's request forms (its design.md D1 to D6, D11): ``--endpoint 'METHOD path'`` sends the endpoint it names of
+  a Reference that several records declare; an endpoint no record of the Reference declares, an ``--endpoint`` text
+  with no path, a path parameter of another endpoint, a path holding ``id`` twice given one value, none or three, a
+  format the page does not list, and a header the record does not declare, given with ``--header`` or ``-f``, are
+  refused with exit 2 and no request; a ``--header`` name is matched ignoring case and kept under its declared
+  spelling; the S3 import is refused as a gated ID no subcommand sends; and ``commands/call.py``'s docstring names
+  each form (AC-9.1).
 
 A refusal is judged by its ``logging`` record (``caplog``) and argparse's by standard error (``capsys``), each with no
 request recorded; output that is not JSON is read as bytes (``capsysbinary``). A synthetic record (design.md "Testing
-Strategy") is set into a family module's ``OPERATIONS`` or ``graphql_only.OPERATIONS`` for its test only.
+Strategy") is set into a family module's ``OPERATIONS`` or ``graphql_only.OPERATIONS`` for its test only. A recorded
+header is read by ``RecordedRequest.header``, which compares names ignoring case, as urllib capitalizes them.
 
-``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; no test
-imports ``gitlab_api.commands.call``, and a package module a test reads is imported inside the test. The fake GitLab
-host and the socket guard (``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
+``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; a
+package module a test reads is imported inside the test, and ``gitlab_api.commands.call`` only by the two issue #63
+tests that read it itself, for its docstring and its ``call_values``. The fake GitLab host and the socket guard
+(``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
 
 Run: ``python scripts/run_tests.py src/payload/test/test_gitlab_api_call.py`` (no network).
 """
@@ -2222,4 +2231,409 @@ def test_a_hyphenated_name_is_documented_and_required(
         f"one log record says {list(case.missing)} have no value, names {list(case.undocumented)} given with "
         f"{OPTION_PATH} undocumented, and lists the path parameters {list(MODULE_PATH_PARAMETERS)} (issue #43 AC-3.1); "
         f"logged: {messages!r}"
+    )
+
+
+# --- Issue #63: the request forms (its design.md D1 to D6, D11) -------------------------------------------------------
+
+OPTION_ENDPOINT = "--endpoint"
+OPTION_HEADER = "--header"
+METHOD_PATCH = "PATCH"
+# The module two tests read itself: its docstring (issue #63 AC-9.1) and its `call_values` (AC-6.3, design.md D5).
+COMMANDS_CALL = "commands.call"
+# Issue #63's records the cases call, each the Reference of its index rows (design.md D8): families/plan.py,
+# create.py, software_supply_chain_security.py and gitlab_dedicated.py.
+OP_ADD_EMOJI_REACTION = "plan#add-an-emoji-reaction-to-a-resource"
+OP_DELETE_GROUP_SSH_CERTIFICATE = "create#delete-a-group-ssh-certificate"
+OP_RETRIEVE_ARCHIVE = "create#retrieve-file-archive-from-a-repository"
+OP_SET_EXTERNAL_CONTROL_STATUS = "software-supply-chain-security#set-status-of-an-external-control"
+OP_IMPORT_FROM_S3 = "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket"
+# The endpoints of rest/plan.md "Add an emoji reaction to a resource", in its endpoint line's order, each written
+# `METHOD path` as `--endpoint` takes it (design.md D1).
+EMOJI_ISSUE_ENDPOINT = "POST /projects/:id/issues/:issue_iid/award_emoji"
+EMOJI_MERGE_REQUEST_ENDPOINT = "POST /projects/:id/merge_requests/:merge_request_iid/award_emoji"
+EMOJI_SNIPPET_ENDPOINT = "POST /projects/:id/snippets/:snippet_id/award_emoji"
+EMOJI_ENDPOINTS = (EMOJI_ISSUE_ENDPOINT, EMOJI_MERGE_REQUEST_ENDPOINT, EMOJI_SNIPPET_ENDPOINT)
+EMOJI_NAME = "thumbsup"
+EMOJI_FIELDS = (OPTION_RAW_FIELD, f"{FIELD_NAME}={EMOJI_NAME}")
+SNIPPET_ID = 9
+PATH_MERGE_REQUEST_IID = "merge_request_iid"
+
+
+class EndpointCase(NamedTuple):
+    """A call of ``plan#add-an-emoji-reaction-to-a-resource`` naming an endpoint with ``--endpoint`` (issue #63 AC-2.1,
+    AC-2.4): the URL its one ``POST`` is sent to, or ``None`` when it is refused; for a refusal, the names one log
+    record says were given with ``--path`` undocumented, and the path parameters it lists, the named endpoint's."""
+
+    argv: Tuple[str, ...]
+    url: Optional[str]
+    undocumented: Tuple[str, ...] = ()
+    path_parameters: Tuple[str, ...] = ()
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(
+            EndpointCase(
+                argv=(
+                    OP_ADD_EMOJI_REACTION,
+                    OPTION_ENDPOINT,
+                    EMOJI_SNIPPET_ENDPOINT,
+                    OPTION_PATH,
+                    f"snippet_id={SNIPPET_ID}",
+                    *EMOJI_FIELDS,
+                ),
+                url=project_url(path=f"/snippets/{SNIPPET_ID}/award_emoji"),
+            ),
+            id="snippet-endpoint",
+        ),
+        pytest.param(
+            EndpointCase(
+                argv=(OP_ADD_EMOJI_REACTION, OPTION_ENDPOINT, EMOJI_MERGE_REQUEST_ENDPOINT, *ISSUE_PATH, *EMOJI_FIELDS),
+                url=None,
+                undocumented=(PATH_ISSUE_IID,),
+                path_parameters=(PATH_ID, PATH_MERGE_REQUEST_IID),
+            ),
+            id="path-parameter-of-another-endpoint",
+        ),
+    ],
+)
+def test_an_endpoint_is_named_by_its_method_and_path(
+    case: EndpointCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #63 AC-2.1, AC-2.4 (design.md D1): ``--endpoint`` of the snippet endpoint with ``--path snippet_id=9``
+    sends one ``POST`` to ``/projects/<project_id>/snippets/9/award_emoji``, the JSON body naming ``name`` and the
+    configured header its credential; ``--endpoint`` of the merge-request endpoint with ``--path issue_iid=5`` exits 2
+    with no request, one log record naming ``"issue_iid"`` given with ``--path`` and listing the merge-request
+    endpoint's path parameters, as #41 AC-2.2 refuses an undocumented name."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=case.argv)
+    if case.url is None:
+        messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+        naming = [
+            message
+            for message in messages
+            if all(json.dumps(obj=name) in message and OPTION_PATH in message for name in case.undocumented)
+            and listed_path_parameters(text=message) == case.path_parameters
+        ]
+        assert naming, (
+            f"one log record names {[json.dumps(obj=name) for name in case.undocumented]} given with {OPTION_PATH} "
+            f"and lists the named endpoint's path parameters {list(case.path_parameters)} (issue #63 AC-2.4); "
+            f"logged: {messages!r}"
+        )
+        return
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(METHOD_POST, case.url)], (
+        "one request: the named endpoint's method and path, id the configured project (issue #63 AC-2.1)"
+    )
+    request = fake_gitlab.requests[0]
+    assert media_type(value=request.header(name=HEADER_CONTENT_TYPE)) == CONTENT_TYPE_JSON, (
+        f"the body's Content-Type: {request.header(name=HEADER_CONTENT_TYPE)!r}"
+    )
+    assert decoded_body(request=request) == {FIELD_NAME: EMOJI_NAME}, "the JSON body names the attribute given"
+    assert credentials(request=request) == (TOKEN, None, None), "the configured token type's one credential header"
+
+
+class UndeclaredEndpointCase(NamedTuple):
+    """An ``--endpoint`` text that names no endpoint of ``plan#add-an-emoji-reaction-to-a-resource`` (issue #63
+    AC-2.4): refused by ``registry.lookup``, or, for a text with no path, by argparse's usage error for
+    ``--endpoint``."""
+
+    text: str
+    usage_error: bool = False
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(UndeclaredEndpointCase(text="POST /projects/:id/epics"), id="endpoint-of-another-section"),
+        pytest.param(
+            UndeclaredEndpointCase(text="PUT /projects/:id/issues/:issue_iid/award_emoji"),
+            id="declared-path-with-another-method",
+        ),
+        pytest.param(UndeclaredEndpointCase(text=METHOD_POST, usage_error=True), id="method-without-a-path"),
+    ],
+)
+def test_an_endpoint_the_reference_does_not_declare_is_refused(
+    case: UndeclaredEndpointCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #63 AC-2.4 (design.md D1): an ``--endpoint`` that no record of the Reference declares exits 2 with no
+    request, one log record naming the ID, the text given as ``json.dumps`` renders it, and each of the three declared
+    endpoints, ``METHOD path``; an ``--endpoint`` text with no path is argparse's usage error, whose
+    ``argument --endpoint:`` message names the text as ``json.dumps`` renders it, exit 2 with no request."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=(OP_ADD_EMOJI_REACTION, OPTION_ENDPOINT, case.text, *ISSUE_PATH, *EMOJI_FIELDS))
+    rendered = json.dumps(obj=case.text)
+    if not case.usage_error:
+        messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+        expected = (OP_ADD_EMOJI_REACTION, rendered, *EMOJI_ENDPOINTS)
+        assert any(all(text in message for text in expected) for message in messages), (
+            f"one log record names {list(expected)}: the ID, the text given and each declared endpoint (issue #63 "
+            f"AC-2.4); logged: {messages!r}"
+        )
+        return
+    captured = capsys.readouterr()
+    assert code == EXIT_USAGE, f"an --endpoint with no path exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [], "argparse refuses the text before the config is read: no request"
+    assert captured.out == "", f"a usage error prints nothing on standard output:\n{captured.out}"
+    named_option = argument_named(option=OPTION_ENDPOINT)
+    messages = [
+        line.split(sep=named_option, maxsplit=1)[1] for line in captured.err.splitlines() if named_option in line
+    ]
+    assert messages, f"no usage error names the option {OPTION_ENDPOINT} (design.md D1); stderr:\n{captured.err}"
+    assert any(rendered in message for message in messages), (
+        f"the usage error names the text as json.dumps renders it, {rendered} (design.md D1): {messages}"
+    )
+
+
+# How design.md D2's check says a positional name was given more values than its places.
+MORE_VALUES_THAN_PLACES = "more values than its places"
+# `/groups/:id/ssh_certificates/:id` lists `id` once per place (design.md D2 `documented_text`).
+CERTIFICATE_PATH_PARAMETERS = (PATH_ID, PATH_ID)
+
+
+class PlacesCase(NamedTuple):
+    """A call of ``create#delete-a-group-ssh-certificate``, whose path holds ``id`` at two places (issue #63 AC-3.3):
+    the ``--path id`` values it gives, in order, and whether it gives more than the two places take."""
+
+    ids: Tuple[str, ...]
+    too_many: bool = False
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(PlacesCase(ids=("7",)), id="one-value"),
+        pytest.param(PlacesCase(ids=()), id="no-value"),
+        pytest.param(PlacesCase(ids=("7", "12345", "9"), too_many=True), id="three-values"),
+    ],
+)
+def test_a_two_value_path_given_one_value_is_refused(
+    case: PlacesCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #63 AC-3.3 (design.md D2): ``create#delete-a-group-ssh-certificate`` with one ``--path id``, and with
+    none, exits 2 with no request, one log record saying ``id`` has no value and listing the path parameters
+    ``id, id``, as #41 AC-2.3 refuses a missing one; with three, one log record names "more values than its places"
+    and lists ``id, id``."""
+    answer_anything(fake=fake_gitlab)
+    given = tuple(argument for value in case.ids for argument in (OPTION_PATH, f"{PATH_ID}={value}"))
+    code = run_call(root=project, argv=(OP_DELETE_GROUP_SSH_CERTIFICATE, *given))
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    naming = [
+        message
+        for message in messages
+        if listed_path_parameters(text=message) == CERTIFICATE_PATH_PARAMETERS
+        and (MORE_VALUES_THAN_PLACES in message if case.too_many else says_no_value(text=message, name=PATH_ID))
+    ]
+    said = repr(MORE_VALUES_THAN_PLACES) if case.too_many else f"{PATH_ID}{NO_VALUE_SUFFIX}"
+    assert naming, (
+        f"one log record says {said} and lists the path parameters {list(CERTIFICATE_PATH_PARAMETERS)} (issue #63 "
+        f"AC-3.3); logged: {messages!r}"
+    )
+
+
+# The "Available options" of docs.gitlab.com `repositories` "Retrieve file archive from a repository" (issue #63
+# AC-4.2), in the page's order.
+ARCHIVE_FORMATS = ("bz2", "tar", "tar.bz2", "tar.gz", "tb2", "tbz", "tbz2", "zip")
+
+
+@pytest.mark.parametrize(
+    argnames="text",
+    argvalues=[
+        pytest.param("rar", id="unlisted-format"),
+        pytest.param("ZIP", id="listed-format-in-capitals"),
+    ],
+)
+def test_a_format_the_page_does_not_list_is_refused(
+    text: str,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #63 AC-4.2 (design.md D3): ``create#retrieve-file-archive-from-a-repository --path format=<text>`` with a
+    text none of the listed formats equals exits 2 with no request, one log record naming every listed format, each
+    as a value of its own (``tar`` not only inside ``tar.gz``)."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=(OP_RETRIEVE_ARCHIVE, OPTION_PATH, f"format={text}"))
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    naming = [
+        message for message in messages if all(names_value(text=message, value=value) for value in ARCHIVE_FORMATS)
+    ]
+    assert naming, (
+        f"one log record names every listed format {list(ARCHIVE_FORMATS)} (issue #63 AC-4.2); logged: {messages!r}"
+    )
+
+
+# AC-6.2's call of the external control (rest/software-supply-chain-security.md "Set status of an external control"),
+# less its `X-Gitlab-Nonce`, which each case gives in its own way.
+HEADER_NONCE = "X-Gitlab-Nonce"
+HEADER_NONCE_LOWER = "x-gitlab-nonce"
+NONCE = "n1"
+EXTERNAL_CONTROL_CALL = (
+    OP_SET_EXTERNAL_CONTROL_STATUS,
+    OPTION_PATH,
+    "external_control_id=3",
+    OPTION_RAW_FIELD,
+    "status=pass",
+    OPTION_HEADER,
+    "X-Gitlab-Timestamp=1700000000",
+    OPTION_HEADER,
+    "X-Gitlab-Hmac-Sha256=ab12",
+)
+EXTERNAL_CONTROL_URL = project_url(path="/compliance_external_controls/3/status")
+
+
+class HeaderCase(NamedTuple):
+    """A call giving a request header (issue #63 AC-6.3): the name one log record says was given with its option
+    undocumented, or ``None`` when the call is accepted."""
+
+    argv: Tuple[str, ...]
+    refused: Optional[Tuple[str, str]]
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(
+            HeaderCase(argv=(*EXTERNAL_CONTROL_CALL, OPTION_HEADER, "X-Other=1"), refused=("X-Other", OPTION_HEADER)),
+            id="header-the-record-does-not-declare",
+        ),
+        pytest.param(
+            HeaderCase(
+                argv=(*EXTERNAL_CONTROL_CALL, OPTION_RAW_FIELD, f"{HEADER_NONCE}={NONCE}"),
+                refused=(HEADER_NONCE, OPTION_FIELDS),
+            ),
+            id="declared-header-given-as-a-field",
+        ),
+        pytest.param(
+            HeaderCase(
+                argv=(OP_RETRIEVE_ISSUE, *ISSUE_PATH, OPTION_HEADER, f"{HEADER_NONCE}={NONCE}"),
+                refused=(HEADER_NONCE, OPTION_HEADER),
+            ),
+            id="header-on-a-record-that-declares-none",
+        ),
+        pytest.param(
+            HeaderCase(argv=(*EXTERNAL_CONTROL_CALL, OPTION_HEADER, f"{HEADER_NONCE_LOWER}={NONCE}"), refused=None),
+            id="declared-header-in-another-case",
+        ),
+    ],
+)
+def test_an_undeclared_header_is_refused(
+    case: HeaderCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #63 AC-6.3 (design.md D5): ``--header X-Other=1`` and ``-f X-Gitlab-Nonce=n1`` on the external control,
+    and ``--header`` on a record that declares no header, each exit 2 with no request, one log record naming the name
+    as ``json.dumps`` renders it with its option, as #41 AC-2.2 refuses an undocumented name; ``--header
+    x-gitlab-nonce=n1`` is matched ignoring case (RFC 9110 section 5.1): exit 0, the one request carries
+    ``X-Gitlab-Nonce: n1``, and ``call_values`` holds the value under the declared spelling."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=case.argv)
+    if case.refused is not None:
+        name, option = case.refused
+        messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+        assert any(json.dumps(obj=name) in message and option in message for message in messages), (
+            f"one log record names {json.dumps(obj=name)} given with {option} (issue #63 AC-6.3); logged: {messages!r}"
+        )
+        return
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(METHOD_PATCH, EXTERNAL_CONTROL_URL)], "one request: the record's method and path"
+    assert fake_gitlab.requests[0].header(name=HEADER_NONCE) == NONCE, (
+        f"the request carries {HEADER_NONCE} at the value given, its name given in another case (issue #63 AC-6.3)"
+    )
+    registry = gitlab_module(name=REGISTRY)
+    call_module = gitlab_module(name=COMMANDS_CALL)
+    args = fixtures.load_wrapper(module_name=WRAPPER_MODULE).build_parser().parse_args(args=[CALL, *case.argv])
+    values = call_module.call_values(
+        operation=registry.lookup(operation_id=case.argv[0]), project=str(PROJECT_ID), args=args
+    )
+    assert values.get(HEADER_NONCE) == NONCE and HEADER_NONCE_LOWER not in values, (
+        f"call_values holds the header under its declared spelling {HEADER_NONCE!r} (design.md D5): {values!r}"
+    )
+
+
+# AC-7.1's form call of the S3 import (rest/gitlab-dedicated.md "Import a project from an AWS S3 bucket"): its six
+# required rows, a one-level and a two-level `override_params` member, and an `array of string` member.
+S3_IMPORT_CALL = (
+    OP_IMPORT_FROM_S3,
+    OPTION_RAW_FIELD,
+    "access_key_id=access-key-id-example",
+    OPTION_RAW_FIELD,
+    "bucket_name=import-bucket",
+    OPTION_RAW_FIELD,
+    "file_key=exports/project.tar.gz",
+    OPTION_RAW_FIELD,
+    "path=imported-project",
+    OPTION_RAW_FIELD,
+    "region=us-east-1",
+    OPTION_RAW_FIELD,
+    "secret_access_key=secret-access-key-example",
+    OPTION_RAW_FIELD,
+    "override_params[visibility]=private",
+    OPTION_RAW_FIELD,
+    "override_params[container_expiration_policy_attributes][cadence]=7d",
+    OPTION_FIELD,
+    'override_params[tag_list]=["a","b"]',
+)
+# The end of the refusal of an ID `GATED_OPERATIONS` maps to `None` (issue #44 design.md D6).
+NO_SUBCOMMAND_SENDS_IT = ": no subcommand sends it"
+
+
+def test_the_s3_import_is_refused(
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #63 AC-7.1, UB-3 (design.md D6): AC-7.1's form call of the S3 import, ``GATED_OPERATIONS`` as the
+    product has it, exits 2 with no request, one log record naming the ID and ending ": no subcommand sends it"."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=S3_IMPORT_CALL)
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    assert any(OP_IMPORT_FROM_S3 in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+        f"one log record names {OP_IMPORT_FROM_S3!r} and ends {NO_SUBCOMMAND_SENDS_IT!r}: the gate refuses the S3 "
+        f"import, which writes into an existing project (issue #63 design.md D6); logged: {messages!r}"
+    )
+
+
+# AC-9.1's spellings (issue #63 design.md D11), and the `--path id=` one line of the docstring holds twice (D2).
+CALL_DOCSTRING_TEXTS = (
+    OPTION_ENDPOINT,
+    "--path format=",
+    OPTION_HEADER,
+    "override_params[container_expiration_policy_attributes]",
+)
+PATH_ID_GIVEN = f"{OPTION_PATH} {PATH_ID}="
+
+
+def test_the_call_docstring_names_the_request_forms() -> None:
+    """Issue #63 AC-9.1 (design.md D11): the module docstring of ``commands/call.py`` holds ``--endpoint``, two
+    ``--path id=`` in one line, ``--path format=``, ``--header`` and
+    ``override_params[container_expiration_policy_attributes]``."""
+    usage = gitlab_module(name=COMMANDS_CALL).__doc__
+    assert isinstance(usage, str), f"{PACKAGE_DIR / 'commands' / 'call.py'} has no module docstring"
+    missing = [text for text in CALL_DOCSTRING_TEXTS if text not in usage]
+    assert missing == [], f"the docstring of commands/call.py does not name: {missing} (issue #63 AC-9.1)"
+    assert any(line.count(PATH_ID_GIVEN) >= 2 for line in usage.splitlines()), (
+        f"no line of the docstring of commands/call.py holds {PATH_ID_GIVEN!r} twice: the two values of a path "
+        "holding id twice (issue #63 AC-9.1, design.md D2)"
     )

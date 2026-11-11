@@ -1,0 +1,27 @@
+# round 2 mutant f4-pages-admits-container-registry: D4: pages refuses a container-registry record (host root still refused)
+# edit src/payload/scripts/gitlab_api/registry.py: '    if base is not Base.REST:\n' -> '    if base is Base.HOST:\n'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\basetemp src/payload/test/test_gitlab_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify2\verify-issue-63-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [67 items]
+
+...........................................................F.......      [100%]
+================================== FAILURES ===================================
+______ test_pages_refuses_a_record_not_under_the_api[container-registry] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1346: in test_pages_refuses_a_record_not_under_the_api
+    with pytest.raises(ValueError, match=re.escape(PAGES_BASE_OPERATION_ID)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_pages_refuses_a_record_not_under_the_api[container-registry]
+======================== 1 failed, 66 passed in 4.13s =========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (1 failed, 66 passed in 4.13s)

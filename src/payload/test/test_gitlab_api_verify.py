@@ -6,10 +6,11 @@ Every expected value is a literal table transcribed from the reference, never re
 ``docs/api-reference/gitlab/rest/verify.md`` (each section's endpoints, its heading, and the ``In``, ``Type`` and
 ``Required`` columns of its ``| Attribute | In | Type | Required |`` table). What is pinned:
 
-- AC-1: ``PENDING`` is exactly the keys of the three IDs kept pending (DL-003: the two ``*artifact_path`` downloads and
-  the merge-train add) and, of each section with several endpoints, every endpoint but its section's first;
-  ``OPERATIONS`` declares, once each, every Reference of the family but those three IDs and ``verify#runners-api-1``,
-  whose endpoints each have a section of their own;
+- AC-1 (as issue #63 design.md D9 restates it): ``PENDING`` is exactly the keys of the three IDs kept pending (DL-003:
+  the two ``*artifact_path`` downloads and the merge-train add); ``OPERATIONS`` declares every Reference of the family
+  but those three IDs and ``verify#runners-api-1``, whose endpoints each have a section of their own, each key of an
+  ID once; a section with several endpoints has one record per endpoint, its base record (the section's first) first
+  and the others in the section's order (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
 - AC-3: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``ARRAY_OF_HASHES`` for a Type ``array of hashes``,
   ``array of hash`` or ``array of strategy JSON objects``, ``ARRAY`` for any other Type holding ``array``, ``HASH`` for
   ``hash`` or ``object``); the ``required`` ``Param``s, exactly the Required ``yes`` rows that are query or body
@@ -379,18 +380,23 @@ KEPT_PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
 # ("List all available runners", "List all runners", "List all jobs processed by a runner", "List all of a project's
 # runners", "List all of a group's runners"): no record.
 NO_RECORD_ID = "verify#runners-api-1"
-# The endpoints but the section's first of the other sections with several endpoints: "Metadata API" (`GET /metadata`
-# first), "Get the latest release" (`GET /projects/:id/releases/permalink/latest` first) and "List all of a group's
-# runners" (`GET /groups/:id/runners` first).
-SECOND_ENDPOINT_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("GET", "/version"),
+# The other sections with several endpoints (issue #63, design.md D1, D8): "Metadata API", "Get the latest release" and
+# "List all of a group's runners". Each ID's base record takes the section's first endpoint ...
+BASE_ENDPOINTS: Dict[str, Tuple[str, str]] = {
+    "verify#metadata-api-1": ("GET", "/metadata"),
+    "verify#get-the-latest-release": ("GET", "/projects/:id/releases/permalink/latest"),
+    "verify#list-all-of-a-groups-runners": ("GET", "/groups/:id/runners"),
+}
+# ... and the records after it take the section's other endpoints, in the order its endpoint line lists them.
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "verify#metadata-api-1": (("GET", "/version"),),
+    "verify#get-the-latest-release": (
         ("GET", "/projects/:id/releases/permalink/latest/evidence"),
         ("GET", "/projects/:id/releases/permalink/latest/downloads/bin/asset.exe"),
-        ("GET", "/groups/:id/runners/all"),
-    }
-)
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = KEPT_PENDING_KEYS | SECOND_ENDPOINT_KEYS
+    ),
+    "verify#list-all-of-a-groups-runners": (("GET", "/groups/:id/runners/all"),),
+}
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = KEPT_PENDING_KEYS
 
 # rest/verify.md: every query and body attribute whose Kind is not SCALAR, by record (AC-3). Every other attribute's
 # Type is a scalar one (`string`, `integer`, `boolean`, `datetime`, `JSON`, `integer or string`, ...). A record with
@@ -719,6 +725,21 @@ def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, An
     return "\n".join(line for line in lines if line)
 
 
+def endpoints_by_id(*, records: Sequence[Any]) -> Dict[str, Tuple[Tuple[str, str], ...]]:
+    """``{operation_id: ((method, path), ...)}`` over ``records``, each ID's keys in declaration order."""
+    declared: Dict[str, List[Tuple[str, str]]] = {}
+    for record in records:
+        declared.setdefault(record.operation_id, []).append((record.method, record.path))
+    return {operation_id: tuple(keys) for operation_id, keys in declared.items()}
+
+
+def repeated_keys(*, endpoints: Mapping[str, Sequence[Tuple[str, str]]]) -> List[Tuple[str, Tuple[str, str]]]:
+    """Each ``(operation_id, key)`` that ``endpoints`` holds more than once for its ID, sorted."""
+    return sorted(
+        {(operation_id, key) for operation_id, keys in endpoints.items() for key in keys if list(keys).count(key) > 1}
+    )
+
+
 def non_scalar_params(*, records: Sequence[Any], registry: ModuleType) -> Dict[str, Dict[str, str]]:
     """``{operation_id: {name: Kind name}}`` of every ``Param`` whose Kind is not SCALAR, over the records with any."""
     typed = {
@@ -818,20 +839,30 @@ def list_params() -> List[Any]:
 
 
 def test_only_the_kept_keys_are_pending() -> None:
-    """AC-1, UB-3: ``PENDING`` is the kept IDs' keys and the later endpoints of the multi-endpoint sections, and
-    ``OPERATIONS`` declares, once each, every index Reference of the family but the kept IDs and
-    ``verify#runners-api-1``."""
+    """AC-1, UB-3, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is the kept IDs' keys, and ``OPERATIONS``
+    declares every index Reference of the family but the kept IDs and ``verify#runners-api-1``, each key of an ID
+    once; an ID of several records is a section's, its base record first and then its other endpoints in the section's
+    order."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, "verify.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
         declared=pending, expected=PENDING_KEYS
     )
-    declared = sorted(record.operation_id for record in family.OPERATIONS)
-    expected = sorted(frozenset(INDEX_REFERENCES) - KEPT_PENDING_IDS - {NO_RECORD_ID})
-    repeated = sorted({operation_id for operation_id in declared if declared.count(operation_id) > 1})
-    assert declared == expected, (
-        f"verify.OPERATIONS declares {len(declared)} record(s), AC-1 expects {len(expected)}; declared more than once: "
-        f"{repeated}\n" + set_difference(declared=set(declared), expected=set(expected))
+    endpoints = endpoints_by_id(records=family.OPERATIONS)
+    repeated = repeated_keys(endpoints=endpoints)
+    assert not repeated, f"verify.OPERATIONS declares these keys of one ID more than once: {repeated}"
+    expected = frozenset(INDEX_REFERENCES) - KEPT_PENDING_IDS - {NO_RECORD_ID}
+    assert frozenset(endpoints) == expected, (
+        f"verify.OPERATIONS declares {len(endpoints)} ID(s), AC-1 expects {len(expected)}:\n"
+        + set_difference(declared=set(endpoints), expected=set(expected))
+    )
+    bases = {operation_id: keys[0] for operation_id, keys in endpoints.items() if operation_id in BASE_ENDPOINTS}
+    assert bases == BASE_ENDPOINTS, "each section's first record is not its base record (issue #63 D1):\n" + (
+        mapping_difference(declared=bases, expected=BASE_ENDPOINTS)
+    )
+    others = {operation_id: keys[1:] for operation_id, keys in endpoints.items() if len(keys) > 1}
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+        mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
     )
 
 

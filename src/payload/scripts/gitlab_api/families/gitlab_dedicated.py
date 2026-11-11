@@ -12,18 +12,24 @@ Every section of the page has one endpoint, the one its record declares.
   item; ``hash``, ``Hash`` and ``object`` are ``HASH``; any other Type holding ``array`` or ``Array`` is ``ARRAY``;
   every other is ``SCALAR``; ``required`` is the Required column's ``yes``;
 - a member row (``configuration[url]``, ``entities[source_type]``, ``upload[url]``) is carried by its parent and is no
-  ``Param`` of its own, so ``upload`` of "Export a project" is not required although ``upload[url]`` is;
-- a ``GET`` section headed "List" is ``Paging.OFFSET`` and every other record ``Paging.NONE``; every body is
-  ``BodyFormat.JSON`` (a ``FILE`` value sends it as multipart), and no record has ``fixed`` values.
+  ``Param`` of its own, so ``upload`` of "Export a project" is not required although ``upload[url]`` is; a bracketed
+  row with no parent row, as each ``override_params[...]`` row of "Import a project from an AWS S3 bucket", one level
+  deep or two (``override_params[container_expiration_policy_attributes][cadence]``), is a body ``Param`` under its
+  full name, so that record's body is ``BodyFormat.FORM`` (issue #63, design.md D6);
+- a ``GET`` section headed "List" is ``Paging.OFFSET`` and every other record ``Paging.NONE``; every other body is
+  ``BodyFormat.JSON`` (a ``FILE`` value sends either as multipart), and no record has ``fixed`` values.
 
 The data management, Geo and system hooks pages are offered on GitLab Self-Managed only; their records are proven by the
 two halves of ``test/test_gitlab_wrapper_contract.py`` against the fake host (issue #41, design.md D5).
 
-``PENDING`` holds the keys of the four imports that have no record (issue #38, DL-005). "Import project resources" and
+``PENDING`` holds the keys of the three imports that have no record (issue #38, DL-005). "Import project resources" and
 the imports from a local and from a remote archive write into an existing project: the first imports issues, milestones,
 merge requests or pipelines into it, and the other two take ``overwrite``, which replaces it; no subcommand sends any of
-them, and ``call`` refuses only an ID a gated subcommand sends. "Import a project from an AWS S3 bucket" has two-level
-``override_params[...][...]`` rows, which no ``Param`` can name. No other family links any of these keys.
+them, and they stay pending for issue #15's gate. No other family links any of these keys.
+
+"Import a project from an AWS S3 bucket" (``OP_IMPORT_FROM_S3``) has its record since issue #63 (design.md D6). It takes
+``overwrite`` too, so it writes into an existing project: ``commands/call.py``'s ``GATED_OPERATIONS`` maps it to
+``None``, and ``call`` refuses it, ": no subcommand sends it", before any request is sent.
 
 Standard library only; Python 3.9.
 """
@@ -32,9 +38,12 @@ from __future__ import annotations
 
 from typing import FrozenSet, Tuple
 
-from gitlab_api.registry import Kind, Location, Paging, Param, RestOperation
+from gitlab_api.registry import BodyFormat, Kind, Location, Paging, Param, RestOperation
 
 FAMILY = "gitlab-dedicated"
+
+# "Import a project from an AWS S3 bucket": `commands/call.py`'s `GATED_OPERATIONS` maps it to `None` (design.md D6).
+OP_IMPORT_FROM_S3 = "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # "Data management API: Retrieve model information".
@@ -587,6 +596,119 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/projects/:id/export/download",
     ),
+    # "Project import and export API: Import a project from an AWS S3 bucket"; no row has a parent row, so each
+    # `override_params[...]` row is a body Param under its full name, and the body is a form (design.md D6).
+    RestOperation(
+        operation_id=OP_IMPORT_FROM_S3,
+        method="POST",
+        path="/projects/remote-import-s3",
+        params=(
+            Param(name="access_key_id", location=Location.BODY, required=True),
+            Param(name="bucket_name", location=Location.BODY, required=True),
+            Param(name="file_key", location=Location.BODY, required=True),
+            Param(name="path", location=Location.BODY, required=True),
+            Param(name="region", location=Location.BODY, required=True),
+            Param(name="secret_access_key", location=Location.BODY, required=True),
+            Param(name="name", location=Location.BODY),
+            Param(name="namespace", location=Location.BODY),
+            Param(name="namespace_id", location=Location.BODY),
+            Param(name="namespace_path", location=Location.BODY),
+            Param(name="overwrite", location=Location.BODY),
+            Param(name="override_params[description]", location=Location.BODY),
+            Param(name="override_params[build_git_strategy]", location=Location.BODY),
+            Param(name="override_params[build_timeout]", location=Location.BODY),
+            Param(name="override_params[auto_cancel_pending_pipelines]", location=Location.BODY),
+            Param(name="override_params[ci_config_path]", location=Location.BODY),
+            Param(name="override_params[service_desk_enabled]", location=Location.BODY),
+            Param(name="override_params[issues_enabled]", location=Location.BODY),
+            Param(name="override_params[merge_requests_enabled]", location=Location.BODY),
+            Param(name="override_params[wiki_enabled]", location=Location.BODY),
+            Param(name="override_params[jobs_enabled]", location=Location.BODY),
+            Param(name="override_params[snippets_enabled]", location=Location.BODY),
+            Param(name="override_params[issues_access_level]", location=Location.BODY),
+            Param(name="override_params[repository_access_level]", location=Location.BODY),
+            Param(name="override_params[merge_requests_access_level]", location=Location.BODY),
+            Param(name="override_params[forking_access_level]", location=Location.BODY),
+            Param(name="override_params[wiki_access_level]", location=Location.BODY),
+            Param(name="override_params[builds_access_level]", location=Location.BODY),
+            Param(name="override_params[snippets_access_level]", location=Location.BODY),
+            Param(name="override_params[package_registry_access_level]", location=Location.BODY),
+            Param(name="override_params[pages_access_level]", location=Location.BODY),
+            Param(name="override_params[analytics_access_level]", location=Location.BODY),
+            Param(name="override_params[container_registry_access_level]", location=Location.BODY),
+            Param(name="override_params[security_and_compliance_access_level]", location=Location.BODY),
+            Param(name="override_params[releases_access_level]", location=Location.BODY),
+            Param(name="override_params[environments_access_level]", location=Location.BODY),
+            Param(name="override_params[feature_flags_access_level]", location=Location.BODY),
+            Param(name="override_params[infrastructure_access_level]", location=Location.BODY),
+            Param(name="override_params[monitor_access_level]", location=Location.BODY),
+            Param(name="override_params[model_experiments_access_level]", location=Location.BODY),
+            Param(name="override_params[model_registry_access_level]", location=Location.BODY),
+            Param(name="override_params[emails_disabled]", location=Location.BODY),
+            Param(name="override_params[emails_enabled]", location=Location.BODY),
+            Param(name="override_params[show_default_award_emojis]", location=Location.BODY),
+            Param(name="override_params[show_diff_preview_in_email]", location=Location.BODY),
+            Param(name="override_params[warn_about_potentially_unwanted_characters]", location=Location.BODY),
+            Param(name="override_params[enforce_auth_checks_on_uploads]", location=Location.BODY),
+            Param(name="override_params[shared_runners_enabled]", location=Location.BODY),
+            Param(name="override_params[group_runners_enabled]", location=Location.BODY),
+            Param(name="override_params[resource_group_default_process_mode]", location=Location.BODY),
+            Param(name="override_params[resolve_outdated_diff_discussions]", location=Location.BODY),
+            Param(name="override_params[remove_source_branch_after_merge]", location=Location.BODY),
+            Param(name="override_params[packages_enabled]", location=Location.BODY),
+            Param(name="override_params[container_registry_enabled]", location=Location.BODY),
+            Param(name="override_params[container_expiration_policy_attributes][cadence]", location=Location.BODY),
+            Param(name="override_params[container_expiration_policy_attributes][keep_n]", location=Location.BODY),
+            Param(name="override_params[container_expiration_policy_attributes][older_than]", location=Location.BODY),
+            Param(name="override_params[container_expiration_policy_attributes][name_regex]", location=Location.BODY),
+            Param(
+                name="override_params[container_expiration_policy_attributes][name_regex_keep]", location=Location.BODY
+            ),
+            Param(name="override_params[container_expiration_policy_attributes][enabled]", location=Location.BODY),
+            Param(name="override_params[lfs_enabled]", location=Location.BODY),
+            Param(name="override_params[visibility]", location=Location.BODY),
+            Param(name="override_params[public_builds]", location=Location.BODY),
+            Param(name="override_params[public_jobs]", location=Location.BODY),
+            Param(name="override_params[request_access_enabled]", location=Location.BODY),
+            Param(name="override_params[only_allow_merge_if_pipeline_succeeds]", location=Location.BODY),
+            Param(name="override_params[allow_merge_on_skipped_pipeline]", location=Location.BODY),
+            Param(name="override_params[only_allow_merge_if_all_discussions_are_resolved]", location=Location.BODY),
+            Param(name="override_params[tag_list]", location=Location.BODY, kind=Kind.ARRAY),
+            Param(name="override_params[topics]", location=Location.BODY, kind=Kind.ARRAY),
+            Param(name="override_params[avatar]", location=Location.BODY, kind=Kind.FILE),
+            Param(name="override_params[printing_merge_request_link_enabled]", location=Location.BODY),
+            Param(name="override_params[merge_method]", location=Location.BODY),
+            Param(name="override_params[suggestion_commit_message]", location=Location.BODY),
+            Param(name="override_params[merge_commit_template]", location=Location.BODY),
+            Param(name="override_params[squash_commit_template]", location=Location.BODY),
+            Param(name="override_params[issue_branch_template]", location=Location.BODY),
+            Param(name="override_params[auto_devops_enabled]", location=Location.BODY),
+            Param(name="override_params[auto_devops_deploy_strategy]", location=Location.BODY),
+            Param(name="override_params[autoclose_referenced_issues]", location=Location.BODY),
+            Param(name="override_params[repository_storage]", location=Location.BODY),
+            Param(name="override_params[squash_option]", location=Location.BODY),
+            Param(name="override_params[mr_default_target_self]", location=Location.BODY),
+            Param(name="override_params[mr_default_title_template]", location=Location.BODY),
+            Param(name="override_params[cicd_catalog_enabled]", location=Location.BODY),
+            Param(name="override_params[only_allow_merge_if_all_status_checks_passed]", location=Location.BODY),
+            Param(name="override_params[approvals_before_merge]", location=Location.BODY),
+            Param(name="override_params[mirror]", location=Location.BODY),
+            Param(name="override_params[mirror_trigger_builds]", location=Location.BODY),
+            Param(name="override_params[external_authorization_classification_label]", location=Location.BODY),
+            Param(name="override_params[requirements_access_level]", location=Location.BODY),
+            Param(name="override_params[prevent_merge_without_jira_issue]", location=Location.BODY),
+            Param(name="override_params[auto_duo_code_review_enabled]", location=Location.BODY),
+            Param(name="override_params[duo_remote_flows_enabled]", location=Location.BODY),
+            Param(name="override_params[duo_sast_fp_detection_enabled]", location=Location.BODY),
+            Param(name="override_params[duo_secret_detection_fp_enabled]", location=Location.BODY),
+            Param(name="override_params[duo_dependency_bump_breaking_changes_enabled]", location=Location.BODY),
+            Param(name="override_params[duo_sast_vr_workflow_enabled]", location=Location.BODY),
+            Param(name="override_params[spp_repository_pipeline_access]", location=Location.BODY),
+            Param(name="override_params[merge_request_title_regex]", location=Location.BODY),
+            Param(name="override_params[merge_request_title_regex_description]", location=Location.BODY),
+        ),
+        body=BodyFormat.FORM,
+    ),
     # "Project import and export API: Retrieve the status of a project import".
     RestOperation(
         operation_id="gitlab-dedicated#retrieve-the-status-of-a-project-import",
@@ -868,6 +990,5 @@ PENDING: FrozenSet[Tuple[str, str]] = frozenset(
         ("POST", "/projects/import"),
         ("POST", "/projects/import-relation"),
         ("POST", "/projects/remote-import"),
-        ("POST", "/projects/remote-import-s3"),
     }
 )

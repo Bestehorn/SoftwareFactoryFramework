@@ -1,0 +1,254 @@
+# round 4 mutant sec-step2-re-ascii: `\s` compiled with re.ASCII (ASCII white space only)
+# edit src/payload/scripts/gitlab_api/container_registry.py: 'REFUSED_IN_HOST = re.compile(pattern=r"[@?#\\\\\\s]")' -> 'REFUSED_IN_HOST = re.compile(pattern=r"[@?#\\\\\\s]", flags=re.ASCII)'
+# sha256 before src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_package.py --basetemp=D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify4\basetemp -p no:cacheprovider --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify4\mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [102 items]
+
+..F.F...F.F.F..F.FFFFFFFF.F......FF.F.F.F.F.F.F......................... [ 70%]
+..............................                                           [100%]
+================================== FAILURES ===================================
+___ test_a_registry_host_holding_white_space_is_refused[a-record-separator] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+____ test_a_registry_host_holding_white_space_is_refused[a-unit-separator] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+______ test_a_registry_host_holding_white_space_is_refused[a-next-line] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+____ test_a_registry_host_holding_white_space_is_refused[a-no-break-space] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+__ test_a_registry_host_holding_white_space_is_refused[an-ogham-space-mark] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+_______ test_a_registry_host_holding_white_space_is_refused[an-en-quad] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+_______ test_a_registry_host_holding_white_space_is_refused[an-em-quad] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+______ test_a_registry_host_holding_white_space_is_refused[an-en-space] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+______ test_a_registry_host_holding_white_space_is_refused[an-em-space] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+____ test_a_registry_host_holding_white_space_is_refused[a-file-separator] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+__ test_a_registry_host_holding_white_space_is_refused[a-three-per-em-space] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+___ test_a_registry_host_holding_white_space_is_refused[a-group-separator] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+__ test_a_registry_host_holding_white_space_is_refused[a-four-per-em-space] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+___ test_a_registry_host_holding_white_space_is_refused[a-six-per-em-space] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+_____ test_a_registry_host_holding_white_space_is_refused[a-figure-space] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+__ test_a_registry_host_holding_white_space_is_refused[a-punctuation-space] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+______ test_a_registry_host_holding_white_space_is_refused[a-thin-space] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+______ test_a_registry_host_holding_white_space_is_refused[a-hair-space] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+____ test_a_registry_host_holding_white_space_is_refused[a-line-separator] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+_ test_a_registry_host_holding_white_space_is_refused[a-paragraph-separator] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+_ test_a_registry_host_holding_white_space_is_refused[a-narrow-no-break-space] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+_ test_a_registry_host_holding_white_space_is_refused[a-medium-mathematical-space] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+__ test_a_registry_host_holding_white_space_is_refused[an-ideographic-space] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_container_registry.py:361: in test_a_registry_host_holding_white_space_is_refused
+    assert sent(fake=fake_gitlab) == [("GET", USER_URL), ("GET", PROJECT_URL)], (
+E   AssertionError: a registry host holding white space raises before step 3: nothing is sent to /jwt/auth or the registry (D4 step 2, AC-5.3)
+E   assert [('GET', 'htt...nce/1a2b3c4')] == [('GET', 'htt...p%2Fproject')]
+E     
+E     Left contains 2 more items, first extra item: ('GET', 'https://gitlab.example.com/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete')
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-record-separator]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-unit-separator]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-next-line]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-no-break-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[an-ogham-space-mark]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[an-en-quad]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[an-em-quad]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[an-en-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[an-em-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-file-separator]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-three-per-em-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-group-separator]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-four-per-em-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-six-per-em-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-figure-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-punctuation-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-thin-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-hair-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-line-separator]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-paragraph-separator]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-narrow-no-break-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[a-medium-mathematical-space]
+FAILED src/payload/test/test_gitlab_api_container_registry.py::test_a_registry_host_holding_white_space_is_refused[an-ideographic-space]
+======================== 23 failed, 79 passed in 7.05s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/container_registry.py: da44c2601d7bd7cd1c2c853a4deb351bc701a4181ccbd33a2974ed2088ece2c9 match=True  # pragma: allowlist secret
+# failed (23): test_a_registry_host_holding_white_space_is_refused[a-record-separator], test_a_registry_host_holding_white_space_is_refused[a-unit-separator], test_a_registry_host_holding_white_space_is_refused[a-next-line], test_a_registry_host_holding_white_space_is_refused[a-no-break-space], test_a_registry_host_holding_white_space_is_refused[an-ogham-space-mark], test_a_registry_host_holding_white_space_is_refused[an-en-quad], test_a_registry_host_holding_white_space_is_refused[an-em-quad], test_a_registry_host_holding_white_space_is_refused[an-en-space], test_a_registry_host_holding_white_space_is_refused[an-em-space], test_a_registry_host_holding_white_space_is_refused[a-file-separator], test_a_registry_host_holding_white_space_is_refused[a-three-per-em-space], test_a_registry_host_holding_white_space_is_refused[a-group-separator], test_a_registry_host_holding_white_space_is_refused[a-four-per-em-space], test_a_registry_host_holding_white_space_is_refused[a-six-per-em-space], test_a_registry_host_holding_white_space_is_refused[a-figure-space], test_a_registry_host_holding_white_space_is_refused[a-punctuation-space], test_a_registry_host_holding_white_space_is_refused[a-thin-space], test_a_registry_host_holding_white_space_is_refused[a-hair-space], test_a_registry_host_holding_white_space_is_refused[a-line-separator], test_a_registry_host_holding_white_space_is_refused[a-paragraph-separator], test_a_registry_host_holding_white_space_is_refused[a-narrow-no-break-space], test_a_registry_host_holding_white_space_is_refused[a-medium-mathematical-space], test_a_registry_host_holding_white_space_is_refused[an-ideographic-space]
+# expected failed (23): test_a_registry_host_holding_white_space_is_refused[a-file-separator], test_a_registry_host_holding_white_space_is_refused[a-group-separator], test_a_registry_host_holding_white_space_is_refused[a-record-separator], test_a_registry_host_holding_white_space_is_refused[a-unit-separator], test_a_registry_host_holding_white_space_is_refused[a-next-line], test_a_registry_host_holding_white_space_is_refused[a-no-break-space], test_a_registry_host_holding_white_space_is_refused[an-ogham-space-mark], test_a_registry_host_holding_white_space_is_refused[an-en-quad], test_a_registry_host_holding_white_space_is_refused[an-em-quad], test_a_registry_host_holding_white_space_is_refused[an-en-space], test_a_registry_host_holding_white_space_is_refused[an-em-space], test_a_registry_host_holding_white_space_is_refused[a-three-per-em-space], test_a_registry_host_holding_white_space_is_refused[a-four-per-em-space], test_a_registry_host_holding_white_space_is_refused[a-six-per-em-space], test_a_registry_host_holding_white_space_is_refused[a-figure-space], test_a_registry_host_holding_white_space_is_refused[a-punctuation-space], test_a_registry_host_holding_white_space_is_refused[a-thin-space], test_a_registry_host_holding_white_space_is_refused[a-hair-space], test_a_registry_host_holding_white_space_is_refused[a-line-separator], test_a_registry_host_holding_white_space_is_refused[a-paragraph-separator], test_a_registry_host_holding_white_space_is_refused[a-narrow-no-break-space], test_a_registry_host_holding_white_space_is_refused[a-medium-mathematical-space], test_a_registry_host_holding_white_space_is_refused[an-ideographic-space] match=True
+# traceback exception kinds: {'AssertionError': 23}; ERROR lines: 0
+# verdict: KILLED (23 failed, 79 passed in 7.05s)

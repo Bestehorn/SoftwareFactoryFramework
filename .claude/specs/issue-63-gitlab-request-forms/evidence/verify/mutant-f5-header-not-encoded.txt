@@ -1,0 +1,89 @@
+# mutant f5-header-not-encoded: AC-6.2: a declared header given is sent
+# edit src/payload/scripts/gitlab_api/registry.py: '    headers = tuple(_header(param=param, value=value) for param, value in sent if param.location is Location.HEADER)' -> '    headers = ()'
+# sha256 before src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925  # pragma: allowlist secret
+# tests (paired): src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [228 items]
+
+....................................................F................... [ 31%]
+...............F.F..........................F..F........................ [ 63%]
+........................................................................ [ 94%]
+..........F.                                                             [100%]
+================================== FAILURES ===================================
+_________________ test_a_header_param_is_encoded_as_a_header __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:1162: in test_a_header_param_is_encoded_as_a_header
+    assert parts == HEADER_ENCODED_PARTS, (
+E   AssertionError: each header value given is in headers, as text, under its declared name, in the caller's order, and never in the query, the form or the JSON body; a header not given is not there (design.md D5, AC-6.2)
+E   assert {'json-body':...headers': []}} == {'json-body':...700000000')]}}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mform-body[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [], [33m'[39;49;00m[33mform[39;49;00m[33m'[39;49;00m: [([33m'[39;49;00m[33mstatus[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mpass[39;49;00m[33m'[39;49;00m)], [33m'[39;49;00m[33mjson_body[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m, [33m'[39;49;00m[33mheaders[39;49;00m[33m'[39;49;00m: []}}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mform-body[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mque...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_the_external_control_status_carries_its_headers[every-request-header] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_software_supply_chain_security.py:997: in test_the_external_control_status_carries_its_headers
+    assert {name: request.header(name=name) for name in CONTROL_HEADER_NAMES} == {
+E   AssertionError: each request header given is sent at its value, and one not given is not sent (#63 AC-6.2)
+E   assert {'X-Gitlab-Ti...Sha256': None} == {'X-Gitlab-Ti...a256': 'ab12'}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m1700000000[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mab12[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_the_external_control_status_carries_its_headers[without-x-gitlab-nonce] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_software_supply_chain_security.py:997: in test_the_external_control_status_carries_its_headers
+    assert {name: request.header(name=name) for name in CONTROL_HEADER_NAMES} == {
+E   AssertionError: each request header given is sent at its value, and one not given is not sent (#63 AC-6.2)
+E   assert {'X-Gitlab-Ti...Sha256': None} == {'X-Gitlab-Ti...a256': 'ab12'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Timestamp[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33m1700000000[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mX-Gitlab-Hmac-Sha256[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mab12[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_openapi_only.py:1328: in test_the_symbol_download_sends_its_checksum_header
+    assert request.header(name=HEADER_SYMBOL_CHECKSUM) == SYMBOL_CHECKSUM, (
+E   AssertionError: the request carries Symbolchecksum: SHA256:ab (#63 AC-6.2); headers sent: {'Host': 'gitlab.example.com', 'User-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}  # pragma: allowlist secret
+E   assert None == 'SHA256:ab'
+E    +  where None = header(name='Symbolchecksum')
+E    +    where header = RecordedRequest(method='GET', url='https://gitlab.example.com/api/v4/groups/12/-/packages/nuget/symbolfiles/lib.pdb/ab... 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}, body=None).header  # pragma: allowlist secret
+_ test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint-1] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_openapi_only.py:1328: in test_the_symbol_download_sends_its_checksum_header
+    assert request.header(name=HEADER_SYMBOL_CHECKSUM) == SYMBOL_CHECKSUM, (
+E   AssertionError: the request carries Symbolchecksum: SHA256:ab (#63 AC-6.2); headers sent: {'Host': 'gitlab.example.com', 'User-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}  # pragma: allowlist secret
+E   assert None == 'SHA256:ab'
+E    +  where None = header(name='Symbolchecksum')
+E    +    where header = RecordedRequest(method='GET', url='https://gitlab.example.com/api/v4/projects/4242/packages/nuget/symbolfiles/lib.pdb/... 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-gitlab-api-openapi-only-test'}, body=None).header  # pragma: allowlist secret
+____ test_an_undeclared_header_is_refused[declared-header-in-another-case] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt\src\payload\test\test_gitlab_api_call.py:2560: in test_an_undeclared_header_is_refused
+    assert fake_gitlab.requests[0].header(name=HEADER_NONCE) == NONCE, (
+E   AssertionError: the request carries X-Gitlab-Nonce at the value given, its name given in another case (issue #63 AC-6.3)
+E   assert None == 'n1'
+E    +  where None = header(name='X-Gitlab-Nonce')
+E    +    where header = RecordedRequest(method='PATCH', url='https://gitlab.example.com/api/v4/projects/4242/compliance_external_controls/3/st.../json', 'Content-type': 'application/json', 'Private-token': 'glpat-gitlab-api-call-test'}, body=b'{"status": "pass"}').header  # pragma: allowlist secret
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_a_header_param_is_encoded_as_a_header
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_external_control_status_carries_its_headers[every-request-header]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_external_control_status_carries_its_headers[without-x-gitlab-nonce]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_the_symbol_download_sends_its_checksum_header[the-nuget-symbol-file-download-endpoint-1]
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_undeclared_header_is_refused[declared-header-in-another-case]
+======================= 6 failed, 222 passed in 10.59s ========================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/registry.py: b4054f25dc9c9ba3a828c7c653f37be73360d033a8c90bfe4e10c0aee6186925 match=True  # pragma: allowlist secret
+# verdict: KILLED (6 failed, 222 passed in 10.59s)

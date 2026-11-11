@@ -11,11 +11,15 @@ is sent in the body), in table order:
   is ``SCALAR``; ``required`` is the Required column's ``yes``; every body is JSON and no record has ``fixed`` values;
 - a ``GET`` section headed "List" or with a ``page`` row is ``Paging.OFFSET``, every other record ``Paging.NONE``.
 
-A section with several endpoints has one record: each Invitations section lists a ``/groups/:id/...`` and a
-``/projects/:id/...`` endpoint, and its record takes the ``/projects/:id/...`` one. ``PENDING`` holds the
-``/groups/:id/...`` endpoints of the four Invitations sections, and the keys of the four sections that revoke or rotate
-an enterprise user's personal, group or project access token: their paths name ``:id`` twice, for the group and for the
-token, and ``registry.expand`` writes one value into both. The References ``tenant-scale#list-all-projects``,
+A section with several endpoints has one record per endpoint, all of its ID (issue #63, design.md D1, D8): each
+Invitations section lists a ``/groups/:id/...`` and a ``/projects/:id/...`` endpoint; its base record, the first of its
+ID, takes the ``/projects/:id/...`` one, and the record after it the ``/groups/:id/...`` one, a copy of the base record
+but for its path and any ``Param`` naming a path parameter of its own path. ``call`` sends the base record without
+``--endpoint`` and the other when ``--endpoint 'GET /groups/:id/invitations'`` names it. The paths of the four sections
+that revoke or rotate an enterprise user's personal, group or project access token name ``:id`` twice, for the group
+and then for the token: each record sets ``positional_names=("id",)``, so each place takes its own value, given as two
+``--path id=`` in path order (D2). Every index key of the family that no other family declares has its record, so
+``PENDING`` is empty. The References ``tenant-scale#list-all-projects``,
 ``#list-all-projects-assigned-to-a-topic`` and ``#delete-a-shared-project-link-in-a-group`` are declared in
 ``families/developer_experience.py``, the family their keys sort to (issue #38, DL-003). No other family links any of
 these keys.
@@ -605,13 +609,43 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         ),
         paging=Paging.OFFSET,
     ),
+    # "Groups API: Revoke a personal access token for an enterprise user"; `:id` the group's, then the token's.
+    RestOperation(
+        operation_id="tenant-scale#revoke-a-personal-access-token-for-an-enterprise-user",
+        method="DELETE",
+        path="/groups/:id/manage/personal_access_tokens/:id",
+        positional_names=("id",),
+    ),
+    # "Groups API: Revoke a group or project access token for an enterprise user"; `:id` the group's, then the token's.
+    RestOperation(
+        operation_id="tenant-scale#revoke-a-group-or-project-access-token-for-an-enterprise-user",
+        method="DELETE",
+        path="/groups/:id/manage/resource_access_tokens/:id",
+        positional_names=("id",),
+    ),
     # "Groups API: Delete an SSH key for an enterprise user".
     RestOperation(
         operation_id="tenant-scale#delete-an-ssh-key-for-an-enterprise-user",
         method="DELETE",
         path="/groups/:id/manage/ssh_keys/:key_id",
     ),
-    # "Invitations API: Add a member to a group or project".
+    # "Groups API: Rotate a personal access token for an enterprise user"; `:id` the group's, then the token's.
+    RestOperation(
+        operation_id="tenant-scale#rotate-a-personal-access-token-for-an-enterprise-user",
+        method="POST",
+        path="/groups/:id/manage/personal_access_tokens/:id/rotate",
+        params=(Param(name="expires_at", location=Location.BODY),),
+        positional_names=("id",),
+    ),
+    # "Groups API: Rotate a group or project access token for an enterprise user"; `:id` the group's, then the token's.
+    RestOperation(
+        operation_id="tenant-scale#rotate-a-group-or-project-access-token-for-an-enterprise-user",
+        method="POST",
+        path="/groups/:id/manage/resource_access_tokens/:id/rotate",
+        params=(Param(name="expires_at", location=Location.BODY),),
+        positional_names=("id",),
+    ),
+    # "Invitations API: Add a member to a group or project"; the base record, its `/projects/:id/` endpoint.
     RestOperation(
         operation_id="tenant-scale#add-a-member-to-a-group-or-project",
         method="POST",
@@ -625,7 +659,22 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="member_role_id", location=Location.BODY),
         ),
     ),
-    # "Invitations API: List all pending invitations for a group or project".
+    # "Invitations API: Add a member to a group or project"; its `/groups/:id/` endpoint (issue #63, design.md D8).
+    RestOperation(
+        operation_id="tenant-scale#add-a-member-to-a-group-or-project",
+        method="POST",
+        path="/groups/:id/invitations",
+        params=(
+            Param(name="email", location=Location.BODY, required=True),
+            Param(name="user_id", location=Location.BODY, required=True),
+            Param(name="access_level", location=Location.BODY, required=True),
+            Param(name="expires_at", location=Location.BODY),
+            Param(name="invite_source", location=Location.BODY),
+            Param(name="member_role_id", location=Location.BODY),
+        ),
+    ),
+    # "Invitations API: List all pending invitations for a group or project"; the base record, its `/projects/:id/`
+    # endpoint.
     RestOperation(
         operation_id="tenant-scale#list-all-pending-invitations-for-a-group-or-project",
         method="GET",
@@ -637,7 +686,20 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         ),
         paging=Paging.OFFSET,
     ),
-    # "Invitations API: Update an invitation to a group or project".
+    # "Invitations API: List all pending invitations for a group or project"; its `/groups/:id/` endpoint (issue #63,
+    # design.md D8).
+    RestOperation(
+        operation_id="tenant-scale#list-all-pending-invitations-for-a-group-or-project",
+        method="GET",
+        path="/groups/:id/invitations",
+        params=(
+            Param(name="page", location=Location.QUERY),
+            Param(name="per_page", location=Location.QUERY),
+            Param(name="query", location=Location.QUERY),
+        ),
+        paging=Paging.OFFSET,
+    ),
+    # "Invitations API: Update an invitation to a group or project"; the base record, its `/projects/:id/` endpoint.
     RestOperation(
         operation_id="tenant-scale#update-an-invitation-to-a-group-or-project",
         method="PUT",
@@ -648,11 +710,30 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="member_role_id", location=Location.BODY),
         ),
     ),
-    # "Invitations API: Delete an invitation to a group or project".
+    # "Invitations API: Update an invitation to a group or project"; its `/groups/:id/` endpoint (issue #63, design.md
+    # D8).
+    RestOperation(
+        operation_id="tenant-scale#update-an-invitation-to-a-group-or-project",
+        method="PUT",
+        path="/groups/:id/invitations/:email",
+        params=(
+            Param(name="access_level", location=Location.BODY),
+            Param(name="expires_at", location=Location.BODY),
+            Param(name="member_role_id", location=Location.BODY),
+        ),
+    ),
+    # "Invitations API: Delete an invitation to a group or project"; the base record, its `/projects/:id/` endpoint.
     RestOperation(
         operation_id="tenant-scale#delete-an-invitation-to-a-group-or-project",
         method="DELETE",
         path="/projects/:id/invitations/:email",
+    ),
+    # "Invitations API: Delete an invitation to a group or project"; its `/groups/:id/` endpoint (issue #63, design.md
+    # D8).
+    RestOperation(
+        operation_id="tenant-scale#delete-an-invitation-to-a-group-or-project",
+        method="DELETE",
+        path="/groups/:id/invitations/:email",
     ),
     # "Namespaces API: List all namespaces".
     RestOperation(
@@ -1707,15 +1788,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("GET", "/groups/:id/invitations"),
-        ("POST", "/groups/:id/invitations"),
-        ("DELETE", "/groups/:id/invitations/:email"),
-        ("PUT", "/groups/:id/invitations/:email"),
-        ("DELETE", "/groups/:id/manage/personal_access_tokens/:id"),
-        ("POST", "/groups/:id/manage/personal_access_tokens/:id/rotate"),
-        ("DELETE", "/groups/:id/manage/resource_access_tokens/:id"),
-        ("POST", "/groups/:id/manage/resource_access_tokens/:id/rotate"),
-    }
-)
+# Every key this held is a record: the `/groups/:id/...` endpoints of the Invitations sections and the four token
+# sections (issue #63 AC-1.1, AC-1.3).
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

@@ -17,7 +17,15 @@ What is pinned (issue #13, ``design.md`` D4 and "Correctness Properties"):
 - GraphQL POSTs ``{"query", "variables"}`` to ``/api/graphql`` (AC-4.1), pages a connection by ``endCursor``
   (AC-4.2), and raises on top-level ``errors`` or a mutation payload's ``errors`` even at HTTP ``200`` (AC-4.3);
 - ``Response.is_json`` (issue #41, ``design.md`` D2) reads the ``Content-Type``, parameters ignored: true for
-  ``application/json; charset=utf-8``, false for ``text/plain`` and with no ``Content-Type`` (#41 AC-1.5).
+  ``application/json; charset=utf-8``, false for ``text/plain`` and with no ``Content-Type`` (#41 AC-1.5);
+- issue #63 (``design.md`` D4, D5): ``base=Base.HOST`` sends under ``https://<hostname>``, outside ``/api/v4``, and
+  ``Base.CONTAINER_REGISTRY`` is refused (AC-5.1); ``container_registry_token`` asks ``/jwt/auth`` with
+  ``Authorization: Basic`` of ``<login>:<token>`` alone and ``container_registry_request`` sends ``Authorization:
+  Bearer <registry token>`` alone, ``_send`` refusing every origin but its ``destination`` (AC-5.2, UB-2); a
+  ``/jwt/auth`` success answer that is not a JSON object, or whose ``token`` is not a non-empty string, raises
+  ``GitLabAPIError`` whose message and ``details`` hold neither its body nor a secret (AC-5.3, UB-2); a request
+  header is sent beside ``Accept``, the ``Content-Type`` and the credential, and a name the transport owns or a value
+  holding CR, LF or NUL is refused before anything is sent (AC-6.2).
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
@@ -30,6 +38,7 @@ Run: ``python scripts/run_tests.py src/payload/test/test_gitlab_api_transport.py
 
 from __future__ import annotations
 
+import base64
 import email.message
 import importlib
 import importlib.util
@@ -41,7 +50,7 @@ import sys
 import urllib.parse
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, List, Mapping, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Mapping, Sequence, Tuple
 
 import pytest
 
@@ -1192,3 +1201,385 @@ def test_a_raw_body_answered_429_is_retried(
         CONTENT_TYPE_OCTET_STREAM
     ] * 2, "the retry carries the same Content-Type"
     assert TOKEN not in caplog.text, "no log record carries the token"
+
+
+# --- issue #63 AC-5.1 the host root -----------------------------------------------------------------------------------
+
+# software-supply-chain-security.md "Retrieve the token information": `GET https://HOST/oauth/token/info`, the host's
+# root outside /api/v4 (#63 design.md D4 "The host root"). The answer is docs.gitlab.com `oauth2`'s example shape.
+TOKEN_INFO_PATH = "/oauth/token/info"
+TOKEN_INFO_URL = f"https://{HOST}/oauth/token/info"
+TOKEN_INFO_ANSWER = {"resource_owner_id": 1, "scope": ["api"], "expires_in": None, "created_at": 1575890427}
+REGISTRY_CATALOG_PATH = "/v2/_catalog"
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+def test_a_host_request_is_sent_outside_the_api(fake_gitlab: Any, sleeper: RecordingSleep, token_type: str) -> None:
+    transport = gitlab_module(name="transport")
+    registry = gitlab_module(name="registry")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    fake_gitlab.script(method="GET", url=TOKEN_INFO_URL, body=TOKEN_INFO_ANSWER)
+    fake_gitlab.script(method="GET", url=TOKEN_INFO_URL, body=TOKEN_INFO_ANSWER)
+
+    response = client.request(method="GET", path=TOKEN_INFO_PATH, base=registry.Base.HOST)
+    raw = client.request_raw(
+        method="GET",
+        path=TOKEN_INFO_PATH,
+        data=None,
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+        base=registry.Base.HOST,
+    )
+
+    assert response.value == TOKEN_INFO_ANSWER, "request's answer is decoded"
+    assert raw.value == TOKEN_INFO_ANSWER, "request_raw's answer is decoded"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("GET", TOKEN_INFO_URL)] * 2, (
+        "request and request_raw with base=Base.HOST send under https://<hostname>, outside /api/v4 (AC-5.1)"
+    )
+    assert [credentials_sent(request=request) for request in fake_gitlab.requests] == [
+        EXPECTED_CREDENTIAL[token_type]
+    ] * 2, f"token type {token_type!r} sends exactly its one credential header to the host's root (AC-5.1)"
+    assert all(TOKEN not in url for url in recorded_urls(fake=fake_gitlab)), "the token never enters a URL"
+
+    with pytest.raises(ValueError):
+        client.request(method="GET", path=REGISTRY_CATALOG_PATH, base=registry.Base.CONTAINER_REGISTRY)
+    with pytest.raises(ValueError):
+        client.request_raw(
+            method="GET",
+            path=REGISTRY_CATALOG_PATH,
+            data=None,
+            content_type=CONTENT_TYPE_OCTET_STREAM,
+            base=registry.Base.CONTAINER_REGISTRY,
+        )
+
+    assert len(fake_gitlab.requests) == 2, (
+        "base=Base.CONTAINER_REGISTRY is refused before anything is sent: only container_registry_request reaches the "
+        "registry (D4)"
+    )
+
+
+# --- issue #63 AC-5.2 the container registry --------------------------------------------------------------------------
+
+# #63 design.md D4 steps 3 and 4. The registry origin is what step 2 reads from `container_registry_image_prefix`
+# (`registry.example.com/group/project`); each scope is a record's `token_scope` with the call's value written in.
+REGISTRY_ORIGIN = "https://registry.example.com"
+REGISTRY_TOKEN = "registry-token-for-the-test"  # pragma: allowlist secret
+FIELD_TOKEN = "token"
+BASIC_PREFIX = "Basic "
+REGISTRY_BEARER_CREDENTIAL = {HEADER_AUTHORIZATION: f"Bearer {REGISTRY_TOKEN}"}
+
+# gitlab-org/gitlab `lib/gitlab/auth.rb`: a job token logs in as `gitlab-ci-token` (CI_JOB_USER); a personal token as
+# its user's `username` (D4 step 1).
+LOGIN_CASES = [
+    pytest.param(TOKEN_TYPE_PRIVATE, "john_smith", id="private-as-its-username"),
+    pytest.param(TOKEN_TYPE_JOB, "gitlab-ci-token", id="job-as-gitlab-ci-token"),
+]
+
+# doc/api/container_registry.md: `${CI_SERVER_URL}/jwt/auth?service=container_registry&scope=${SCOPE}`; the scope is
+# a query value, so `:` is %3A, `/` %2F and `*` %2A.
+JWT_AUTH_CASES = [
+    pytest.param(
+        "repository:group/project:delete",
+        f"https://{HOST}/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete",
+        id="repository-delete",
+    ),
+    pytest.param(
+        "registry:catalog:*",
+        f"https://{HOST}/jwt/auth?service=container_registry&scope=registry%3Acatalog%3A%2A",
+        id="registry-catalog",
+    ),
+]
+
+
+@pytest.mark.parametrize(("token_type", "login"), LOGIN_CASES)
+@pytest.mark.parametrize(("scope", "jwt_url"), JWT_AUTH_CASES)
+def test_the_registry_token_is_asked_for_with_basic_credentials(
+    fake_gitlab: Any, sleeper: RecordingSleep, token_type: str, login: str, scope: str, jwt_url: str
+) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    fake_gitlab.script(method="GET", url=jwt_url, body={FIELD_TOKEN: REGISTRY_TOKEN})
+
+    token = client.container_registry_token(login=login, scope=scope)
+
+    assert token == REGISTRY_TOKEN, "the registry token is the answer's `token` field (D4 step 3)"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("GET", jwt_url)], (
+        "one GET of /jwt/auth on the configured host, outside /api/v4, the scope percent-encoded (D4 step 3)"
+    )
+    sent = fake_gitlab.requests[0]
+    basic = BASIC_PREFIX + base64.b64encode(s=f"{login}:{TOKEN}".encode(encoding="utf-8")).decode(encoding="ascii")
+    assert credentials_sent(request=sent) == {HEADER_AUTHORIZATION: basic}, (
+        "Authorization: Basic of <login>:<token> (RFC 7617) is the request's only credential header; the configured "
+        "token type's header is not sent beside it"
+    )
+    assert sent.body is None, "the token request carries no body"
+    assert TOKEN not in sent.url, "the token never enters a URL"
+
+
+# D4 step 3, "AC-5.3": a `/jwt/auth` success answer that is not a JSON object (one claiming JSON but not JSON, a text
+# body, a JSON array), or whose `token` is not a non-empty string, is refused naming the URL and the field, never
+# quoting its body, which may hold the registry token; the marker stands for such a body. Each case: the answer's
+# headers, then its body (text is sent verbatim).
+REFUSED_JWT_ANSWER_MARKER = "jwt-auth-answer-marker-for-the-transport-test"  # pragma: allowlist secret
+REFUSED_JWT_LOGIN = "john_smith"
+REFUSED_JWT_SCOPE = "repository:group/project:delete"
+REFUSED_JWT_URL = f"https://{HOST}/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete"
+FIELD_NOTE = "note"
+REFUSED_JWT_ANSWERS = [
+    pytest.param(
+        ((HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON),),
+        f"{{not JSON: {REFUSED_JWT_ANSWER_MARKER}",
+        id="claims-json-but-is-not-json",
+    ),
+    pytest.param(((HEADER_CONTENT_TYPE, CONTENT_TYPE_TEXT),), REFUSED_JWT_ANSWER_MARKER, id="a-text-body"),
+    pytest.param((), [REFUSED_JWT_ANSWER_MARKER], id="a-json-array"),
+    pytest.param((), {FIELD_TOKEN: "", FIELD_NOTE: REFUSED_JWT_ANSWER_MARKER}, id="an-empty-token"),
+    pytest.param((), {FIELD_TOKEN: [REFUSED_JWT_ANSWER_MARKER]}, id="a-token-that-is-not-a-string"),
+]
+
+
+@pytest.mark.parametrize(("headers", "body"), REFUSED_JWT_ANSWERS)
+def test_a_registry_token_answer_without_a_token_is_never_quoted(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+    headers: Tuple[Tuple[str, str], ...],
+    body: Any,
+) -> None:
+    caplog.set_level(level=logging.DEBUG)
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = make_client(transport=transport, sleeper=sleeper)
+    fake_gitlab.script(method="GET", url=REFUSED_JWT_URL, headers=headers, body=body)
+
+    with pytest.raises(errors.GitLabAPIError) as raised:
+        client.container_registry_token(login=REFUSED_JWT_LOGIN, scope=REFUSED_JWT_SCOPE)
+
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("GET", REFUSED_JWT_URL)], (
+        "one GET of /jwt/auth, then the refusal (D4 step 3)"
+    )
+    refusal = raised.value
+    reported = {
+        "the message": str(refusal),
+        "the details": str(refusal.details),
+        **{f"log record {index}": record.getMessage() for index, record in enumerate(caplog.records)},
+        "the captured log": caplog.text,
+        "standard error": capsys.readouterr().err,
+    }
+    login_and_token = base64.b64encode(s=f"{REFUSED_JWT_LOGIN}:{TOKEN}".encode(encoding="utf-8")).decode(
+        encoding="ascii"
+    )
+    withheld = {
+        "the /jwt/auth answer's body": REFUSED_JWT_ANSWER_MARKER,
+        "the configured token": TOKEN,
+        "the Base64 of <login>:<token>": login_and_token,
+    }
+    leaked = sorted(
+        f"{where} holds {what}" for where, text in reported.items() for what, value in withheld.items() if value in text
+    )
+    assert leaked == [], (
+        "the refusal quotes no answer body and no secret, and keeps none as details (D4 step 3, AC-5.3, UB-2)"
+    )
+
+
+# D4 step 4 and doc/api/container_registry.md: the record's path after `/http(s)://${CI_REGISTRY}`, `${NAME}`s written.
+REGISTRY_CASES = [
+    pytest.param(
+        "DELETE",
+        "/v2/group/project/tags/reference/1a2b3c4",
+        "https://registry.example.com/v2/group/project/tags/reference/1a2b3c4",
+        202,
+        None,
+        id="delete-image-tags-by-reference",
+    ),
+    pytest.param(
+        "GET",
+        REGISTRY_CATALOG_PATH,
+        "https://registry.example.com/v2/_catalog",
+        200,
+        {"repositories": ["group/project"]},
+        id="listing-all-container-repositories",
+    ),
+]
+# Origins other than the registry's: the configured host, another port of the registry host, another host.
+OFF_REGISTRY_URLS = (
+    f"{REST_BASE}/projects/1",
+    "https://registry.example.com:5050/v2/_catalog",
+    "https://evil.example/v2/_catalog",
+)
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+@pytest.mark.parametrize(("method", "path", "url", "status", "answer"), REGISTRY_CASES)
+def test_a_registry_request_carries_only_the_registry_token(
+    fake_gitlab: Any,
+    sleeper: RecordingSleep,
+    token_type: str,
+    method: str,
+    path: str,
+    url: str,
+    status: int,
+    answer: Any,
+) -> None:
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    fake_gitlab.script(method=method, url=url, status=status, body=answer)
+
+    response = client.container_registry_request(
+        origin=REGISTRY_ORIGIN, method=method, path=path, query=(), token=REGISTRY_TOKEN
+    )
+
+    assert response.status == status, f"the registry's answer is returned, got {response.status}"
+    assert response.value == answer, "the registry's answer is decoded as request's is"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [(method, url)], (
+        "one request to the registry's origin, at the path given (D4 step 4)"
+    )
+    sent = fake_gitlab.requests[0]
+    assert credentials_sent(request=sent) == REGISTRY_BEARER_CREDENTIAL, (
+        f"Authorization: Bearer <registry token> is the only credential header; token type {token_type!r}'s header "
+        "is not sent to the registry (UB-2)"
+    )
+    assert all(TOKEN not in value for value in sent.headers.values()), "no header carries the configured token (UB-2)"
+    assert TOKEN not in sent.url, "the configured token never enters a URL"
+
+    destination = transport.origin(url=REGISTRY_ORIGIN)
+    for elsewhere in OFF_REGISTRY_URLS:
+        with pytest.raises(errors.GitLabAPIError, match=re.escape(elsewhere)):
+            client._send(
+                method="GET",
+                url=elsewhere,
+                credential=(HEADER_AUTHORIZATION, f"Bearer {REGISTRY_TOKEN}"),
+                destination=destination,
+            )
+
+    assert len(fake_gitlab.requests) == 1, (
+        "a URL on an origin other than `destination` is refused before it is sent, the configured one included (D4)"
+    )
+
+
+# --- issue #63 AC-6.2 request headers ---------------------------------------------------------------------------------
+
+# software-supply-chain-security.md "Set status of an external control" (`- Request headers:`), with AC-6.2's values.
+EXTERNAL_CONTROL_PATH = "/projects/1/compliance_external_controls/3/status"
+EXTERNAL_CONTROL_URL = f"{REST_BASE}/projects/1/compliance_external_controls/3/status"
+EXTERNAL_CONTROL_BODY = {"status": "pass"}
+HEADER_ACCEPT = "Accept"
+HEADER_NONCE = "X-Gitlab-Nonce"
+CONTROL_HEADERS = (("X-Gitlab-Timestamp", "1700000000"), (HEADER_NONCE, "n1"), ("X-Gitlab-Hmac-Sha256", "ab12"))
+CONTROL_HEADERS_WITHOUT_NONCE = (("X-Gitlab-Timestamp", "1700000000"), ("X-Gitlab-Hmac-Sha256", "ab12"))
+RAW_HEADERS = ((HEADER_NONCE, "n1"),)
+
+OTHER_TOKEN = "another-token-for-the-test"  # pragma: allowlist secret
+# #63 design.md D5: a name the transport sets, urllib adds (`AbstractHTTPHandler.do_request_`) or a token type sends,
+# compared ignoring case; a value holding CR, LF or NUL (RFC 9110 section 5.5).
+REFUSED_HEADERS = (
+    ("Accept", "text/html"),
+    ("content-type", "text/plain"),
+    ("Content-Length", "0"),
+    ("Transfer-Encoding", "chunked"),
+    ("Host", "evil.example"),
+    ("host", "evil.example"),
+    ("User-Agent", "another-agent"),
+    ("PRIVATE-TOKEN", OTHER_TOKEN),
+    ("private-token", OTHER_TOKEN),
+    ("Authorization", f"Bearer {OTHER_TOKEN}"),
+    ("JOB-TOKEN", OTHER_TOKEN),
+    (HEADER_NONCE, "n1\r\nX-Injected: 1"),
+    (HEADER_NONCE, "n1\rX-Injected: 1"),
+    (HEADER_NONCE, "n1\nX-Injected: 1"),
+    (HEADER_NONCE, "n1\x00"),
+)
+
+
+def raises_value_error(*, send: Callable[..., Any], arguments: Mapping[str, Any]) -> bool:
+    """Whether ``send(**arguments)`` raises ``ValueError``; a response is ``False``."""
+    try:
+        send(**arguments)
+    except ValueError:
+        return True
+    return False
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+def test_a_request_header_is_sent_beside_the_transport_headers(
+    fake_gitlab: Any, sleeper: RecordingSleep, token_type: str
+) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    fake_gitlab.script(method="PATCH", url=EXTERNAL_CONTROL_URL, body=EXTERNAL_CONTROL_BODY)
+    fake_gitlab.script(method="PATCH", url=EXTERNAL_CONTROL_URL, body=EXTERNAL_CONTROL_BODY)
+    fake_gitlab.script(method="PUT", url=RAW_UPLOAD_URL, status=201, body=RAW_UPLOAD_ANSWER)
+
+    client.request(method="PATCH", path=EXTERNAL_CONTROL_PATH, json_body=EXTERNAL_CONTROL_BODY, headers=CONTROL_HEADERS)
+    client.request(
+        method="PATCH",
+        path=EXTERNAL_CONTROL_PATH,
+        json_body=EXTERNAL_CONTROL_BODY,
+        headers=CONTROL_HEADERS_WITHOUT_NONCE,
+    )
+    client.request_raw(
+        method="PUT",
+        path=RAW_UPLOAD_PATH,
+        query=RAW_UPLOAD_QUERY,
+        data=RAW_BODY_BYTES,
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+        headers=RAW_HEADERS,
+    )
+
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [
+        ("PATCH", EXTERNAL_CONTROL_URL),
+        ("PATCH", EXTERNAL_CONTROL_URL),
+        ("PUT", RAW_UPLOAD_URL),
+    ]
+    full, partial, raw = fake_gitlab.requests
+    # urllib stores a name as `str.capitalize` writes it (`X-gitlab-nonce`): `header` compares names ignoring case.
+    assert [(name, full.header(name=name)) for name, _ in CONTROL_HEADERS] == list(CONTROL_HEADERS), (
+        "each header given is sent at its value (AC-6.2)"
+    )
+    assert partial.header(name=HEADER_NONCE) is None, "a header the call does not give is not sent (AC-6.2)"
+    assert [(name, partial.header(name=name)) for name, _ in CONTROL_HEADERS_WITHOUT_NONCE] == list(
+        CONTROL_HEADERS_WITHOUT_NONCE
+    ), "each header given is sent at its value (AC-6.2)"
+    for sent in (full, partial):
+        assert sent.header(name=HEADER_ACCEPT) == CONTENT_TYPE_JSON, "beside the transport's Accept (AC-6.2)"
+        assert media_type(value=sent.header(name=HEADER_CONTENT_TYPE)) == CONTENT_TYPE_JSON, "beside its Content-Type"
+        assert credentials_sent(request=sent) == EXPECTED_CREDENTIAL[token_type], (
+            f"beside token type {token_type!r}'s one credential header (AC-6.2)"
+        )
+        assert sent.json() == EXTERNAL_CONTROL_BODY, "the JSON body is sent unchanged"
+    assert [(name, raw.header(name=name)) for name, _ in RAW_HEADERS] == list(RAW_HEADERS), (
+        "request_raw sends a header given as request does (D5)"
+    )
+    assert raw.header(name=HEADER_CONTENT_TYPE) == CONTENT_TYPE_OCTET_STREAM, "beside the raw body's Content-Type"
+    assert raw.body == RAW_BODY_BYTES, "the raw body is sent unchanged"
+    assert credentials_sent(request=raw) == EXPECTED_CREDENTIAL[token_type], "beside the one credential header"
+
+    sent_before = len(fake_gitlab.requests)
+    not_refused: List[str] = []
+    for name, value in REFUSED_HEADERS:
+        headers = ((name, value),)
+        attempts = (
+            (client.request, dict(method="GET", path="/projects/1", headers=headers)),
+            (
+                client.request_raw,
+                dict(
+                    method="PUT",
+                    path=RAW_UPLOAD_PATH,
+                    data=RAW_BODY_BYTES,
+                    content_type=CONTENT_TYPE_OCTET_STREAM,
+                    headers=headers,
+                ),
+            ),
+        )
+        for send, arguments in attempts:
+            # A request sent despite its header is answered, so it is reported below rather than by the fake.
+            fake_gitlab.script_next(body={"id": 1})
+            if not raises_value_error(send=send, arguments=arguments):
+                not_refused.append(f"{send.__name__} with {name}: {value!r}")
+
+    assert not_refused == [], (
+        "a name the transport owns, a credential header of any token type, and a value holding CR, LF or NUL each "
+        f"raise ValueError (D5); not refused: {not_refused}"
+    )
+    assert fake_gitlab.requests[sent_before:] == [], "a refused header is refused before anything is sent (D5)"

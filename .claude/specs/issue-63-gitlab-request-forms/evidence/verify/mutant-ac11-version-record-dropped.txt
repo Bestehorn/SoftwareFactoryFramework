@@ -1,0 +1,43 @@
+# mutant ac11-version-record-dropped: AC-1.1/AC-1.4: GET /version is a record of verify#metadata-api-1
+# edit src/payload/scripts/gitlab_api/families/verify.py: '    # "Metadata API: Metadata API"; its second endpoint (issue #63, design.md D8).\n    RestOperation(\n        operation_id="verify#metadata-api-1",\n        method="GET",\n        path="/version",\n    ),\n' -> ''
+# sha256 before src/payload/scripts/gitlab_api/families/verify.py: b47c3ba0f7220ec9bed0d3d9a84d1fdbea3c8e84c9142dabe276b860087d6594  # pragma: allowlist secret
+# tests (paired): test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_verify.py test/test_gitlab_wrapper_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_verify.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-63\tmp\verify\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [85 items]
+
+.....F..F............................................................... [ 84%]
+.............                                                            [100%]
+================================== FAILURES ===================================
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:864: in test_only_the_kept_keys_are_pending
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+E   AssertionError: the records after a base record are not its section's other endpoints:
+E     missing: 'verify#metadata-api-1'
+E   assert {'verify#get-...nners/all'),)} == {'verify#meta...nners/all'),)}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mverify#metadata-api-1[39;49;00m[33m'[39;49;00m: (([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/version[39;49;00m[33m'[39;49;00m),)}[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_index_row_is_mapped_or_pending __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:589: in test_every_index_row_is_mapped_or_pending
+    assert not gaps, gap_report(gaps=gaps)
+E   AssertionError: 1 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+E     families/verify.py:
+E         ('GET', '/version'),  # rest/verify.md#metadata-api-1
+E   assert not [IndexRow(method='GET', path='/version', reference='rest/verify.md#metadata-api-1')]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_verify.py::test_only_the_kept_keys_are_pending
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_index_row_is_mapped_or_pending
+================== 2 failed, 83 passed in 128.18s (0:02:08) ===================
+exit=1
+# sha256 after restore src/payload/scripts/gitlab_api/families/verify.py: b47c3ba0f7220ec9bed0d3d9a84d1fdbea3c8e84c9142dabe276b860087d6594 match=True  # pragma: allowlist secret
+# verdict: KILLED (2 failed, 83 passed in 128.18s (0:02:08))
