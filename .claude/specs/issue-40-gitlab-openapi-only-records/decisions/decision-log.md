@@ -80,3 +80,12 @@
 **Evidence:** the lane files' Verdict lines.
 **Supersedes:** none
 **Artifacts touched:** design.md
+
+## DL-010 — 2026-11-11T10:23:19Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** Approve tasks.md after tasks review iteration 01 (both lanes READY, 0 A, 0 B; the C/D applied, 14,965 B); three waves, `call.py` with the records in wave 2 because neither goes green alone.
+**Driver:** review/test-architect/tasks-iteration-01.md; review/spec-review-agent/tasks-iteration-01.md.
+**Alternatives considered:** four waves (rejected by both lanes' reading: K's new tests need the records, F's and G's need `call.py`).
+**Evidence:** both tasks-iteration-01.md Verdict lines.
+**Supersedes:** none
+**Artifacts touched:** tasks.md
