@@ -26,3 +26,12 @@
 **Evidence:** review/review-latest.md; design.md 59,063 bytes, Residuals 10 lines.
 **Supersedes:** none
 **Artifacts touched:** design.md, review/review-latest.md
+
+## DL-004 — 2026-11-11T03:26:25Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** Approve tasks.md after tasks iteration 01 (both lanes CLEAN/READY, TEST-READY 27/27); the C/D items applied in one pass (three N helper tests named green-by-design with their verifier mutant; wave 4 runs test_layout.py).
+**Driver:** review/test-architect/tasks-iteration-01.md, review/spec-review-agent/tasks-iteration-01.md.
+**Alternatives considered:** none
+**Evidence:** tasks.md (14,887 bytes).
+**Supersedes:** none
+**Artifacts touched:** tasks.md
