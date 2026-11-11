@@ -169,9 +169,9 @@ OP_DELETE_BRANCH = "create#delete-repository-branch"
 OP_JOB_TRACE = "verify#retrieve-a-log-file-for-a-job"
 # The verify record of issue #37 (families/verify.py; rest/verify.md "Download job artifacts by job ID").
 OP_DOWNLOAD_ARTIFACTS = "verify#download-job-artifacts-by-job-id"
-# The Reference of the index row `POST /projects/:id/uploads`, a key only on plan's PENDING; and an ID the reference
-# does not hold (AC-2.1).
-OP_PENDING_ONLY = "plan#create-an-upload"
+# `plan#clone-an-issue`, the Reference of the index row `POST /projects/:id/issues/:issue_iid/clone`, a key only on
+# plan's PENDING (issue #39 keeps it pending); and an ID the reference does not hold (AC-2.1).
+OP_PENDING_ONLY = "plan#clone-an-issue"
 OP_UNDECLARED = "plan#no-such-operation"
 # The synthetic records (design.md "Testing Strategy"), each set into a module's OPERATIONS for one test.
 OP_FORM_RECORD = "plan#synthetic-create-a-form-record"
