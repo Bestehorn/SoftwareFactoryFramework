@@ -1,0 +1,259 @@
+# verify mutant m14: location BODY->QUERY: `text` of plan#render-markdown-content (AC-5: the send test must flag it)
+# target src/payload/scripts/gitlab_api/families/plan.py: original sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536  # pragma: allowlist secret
+# mutated sha256 75bd7ae985471c771e4a65fb63d34bb793825fca22776f1381009867b2c9ab4d  # pragma: allowlist secret
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [152 items]
+
+........................................................................ [ 47%]
+........................................................................ [ 94%]
+.....FF.                                                                 [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:879: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: plan#render-markdown-content: the Param 'text' is declared query, its row is In body
+E   assert not ["plan#render-markdown-content: the Param 'text' is declared query, its row is In body"]
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\test\test_gitlab_wrapper_contract.py:932: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, "\n".join(problems)
+E   AssertionError: plan#render-markdown-content: the query name 'text' (read as 'text') is not documented in the query
+E     plan#render-markdown-content: the attribute 'text' was given but is not sent in the body
+E   assert not ["plan#render-markdown-content: the query name 'text' (read as 'text') is not documented in the query", "plan#render-markdown-content: the attribute 'text' was given but is not sent in the body"]
+---------------------------- Captured stdout call -----------------------------
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+[]
+[]
+{}
+[]
+{}
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================= 2 failed, 150 passed in 24.78s ========================
+# exit=1
+# restored sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536 matches original: True  # pragma: allowlist secret

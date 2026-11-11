@@ -1,0 +1,33 @@
+# verify mutant m03: HASH->SCALAR: plan#create-a-wiki-page `front_matter` loses kind=Kind.HASH
+# target src/payload/scripts/gitlab_api/families/plan.py: original sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536  # pragma: allowlist secret
+# mutated sha256 5e93eba167c442302eae967b3f5c1889f1779853b4719791b0a7c563e69a2298  # pragma: allowlist secret
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [152 items]
+
+...F.................................................................... [ 47%]
+........................................................................ [ 94%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+_________________ test_the_typed_attributes_are_the_sections __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:697: in test_the_typed_attributes_are_the_sections
+    assert declared == TYPED_ATTRIBUTES, "the non-SCALAR Params are not the sections' (AC-3):\n" + mapping_difference(
+E   AssertionError: the non-SCALAR Params are not the sections' (AC-3):
+E     missing: ('plan#create-a-wiki-page', 'front_matter')
+E   assert {('plan#list-... 'array', ...} == {('plan#creat... 'array', ...}
+E     
+E     Omitting 54 identical items, use -vv to show
+E     Right contains 1 more item:
+E     [0m{([33m'[39;49;00m[33mplan#create-a-wiki-page[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mfront_matter[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mhash[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_plan.py::test_the_typed_attributes_are_the_sections
+======================= 1 failed, 151 passed in 41.79s ========================
+# exit=1
+# restored sha256 8f3f81edbe63de2df205f85c006a926164fde1958c938139f70830030dc2b536 matches original: True  # pragma: allowlist secret

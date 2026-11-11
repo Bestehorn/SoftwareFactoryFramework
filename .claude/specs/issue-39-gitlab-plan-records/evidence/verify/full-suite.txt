@@ -1,0 +1,17 @@
+# verify: whole-suite verdict, read through scripts/github_wrapper.py from the main checkout
+# command: python scripts/github_wrapper.py wait-run 42977947467 --timeout-seconds 540  (exit 0)
+{"run_id": 42977947467, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/42977947467"}
+# command: python scripts/github_wrapper.py get-run 42977947467 (fields read)
+name: ci; event: pull_request; head_branch: issue-39-gitlab-plan-records; pull request: 54; run_attempt: 1
+head_sha: e09f2adda21ed6eef28c2232c36371f9aa4a9997  # pragma: allowlist secret
+base sha (main): d30d02207cb9256f105636eea1f929a3c605da34  # pragma: allowlist secret
+# command: git -C .claude/worktrees/issue-39 rev-parse HEAD
+e09f2adda21ed6eef28c2232c36371f9aa4a9997  # pragma: allowlist secret
+# head_sha equals the worktree HEAD.
+# command: python scripts/github_wrapper.py get-jobs 42977947467
+130381340078   completed    success      verify (lint)
+130381340339   completed    success      verify (security)
+130381340355   completed    success      verify (types)
+130381340839   completed    success      verify (tests)
+130381882074   completed    success      report
+# verdict: GREEN (5 of 5 jobs success)
