@@ -1,0 +1,15 @@
+# green after restore (delta verification of rework-1 at 8e80256)
+# sha256 src/payload/scripts/github_api/commands/call.py: a6615a18f6ac07aee8770c0abf84b0bbf670de425c897c4c6f512b0a14f97aa4 (original: True)  # pragma: allowlist secret
+# run_tests exit: 0
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [42 items]
+
+..........................................                               [100%]
+============================= 42 passed in 7.75s ==============================
