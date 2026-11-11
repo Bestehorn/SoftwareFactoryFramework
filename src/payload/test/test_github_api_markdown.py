@@ -7,8 +7,8 @@ Installed from ``src/payload/test/test_github_api_markdown.py`` to ``test/test_g
 ``rest/markdown.md``, never read from the records:
 
 - ``UNPAGED_IDS``: every section of the family: none has a ``Paging:`` line;
-- ``RESIDUAL_PENDING``: ``markdown/render-raw``, whose request body is ``text/plain``, which ``call`` cannot send; it
-  stays pending for #46 (DL-001, AC-2), so the family's one record is ``markdown/render``.
+- ``RESIDUAL_PENDING``: empty (AC-2): ``markdown/render-raw``, whose request body is ``text/plain``, has its record
+  beside ``markdown/render``, ``call --input`` sending that body (issue #46 D4).
 
 The family has no ``Paging.LINK`` record, so this module has no per-page test (DL-006: an empty parametrization would
 run as a skip). The structural tests read the family module imported from the ``scripts`` directory beside this suite.
@@ -56,8 +56,9 @@ FAMILY_FILE = fx.SCRIPTS_DIR / fx.PACKAGE / "families" / f"{FAMILY}.py"
 ATTRIBUTE_OPERATIONS = "OPERATIONS"
 ATTRIBUTE_PENDING = "PENDING"
 
-#: AC-2: what ``PENDING`` keeps: ``markdown/render-raw``, whose ``text/plain`` body ``call`` cannot send (DL-001).
-RESIDUAL_PENDING: FrozenSet[str] = frozenset({"markdown/render-raw"})
+#: AC-2: what ``PENDING`` keeps: nothing; ``markdown/render-raw``'s ``text/plain`` body is sent by ``call --input``
+#: (issue #46 D4).
+RESIDUAL_PENDING: FrozenSet[str] = frozenset()
 
 #: The sections of the family without a ``Paging:`` line.
 UNPAGED_IDS: FrozenSet[str] = frozenset(
@@ -107,8 +108,8 @@ def _rule_problems(*, record: Any, transport: ModuleType) -> List[str]:
 
 
 def test_only_the_residual_ids_are_pending() -> None:
-    """AC-2: ``markdown.PENDING`` is exactly ``{"markdown/render-raw"}`` (DL-001); every other ID of the family
-    has its record."""
+    """AC-2: ``markdown.PENDING`` is empty; every ID of the family, ``markdown/render-raw`` included, has its record
+    (issue #46 D4)."""
     pending = frozenset(getattr(_family(), ATTRIBUTE_PENDING))
 
     assert pending == RESIDUAL_PENDING, (

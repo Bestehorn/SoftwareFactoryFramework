@@ -35,6 +35,9 @@ issue #28's criterion ids, which #46's repeat; each runs with ``run_product_case
 - AC-2.1, AC-2.2, AC-4.2: ``call repos/upload-release-asset --input`` of bytes that are not UTF-8 sends one ``POST`` of
   exactly those bytes, as ``application/octet-stream``, to the upload origin with the query ``name`` and ``label``,
   prints the ``201`` answer, and no request carries the credential to another origin.
+- AC-1.2, AC-4.3: ``call markdown/render-raw --input -``, standard input a text layer over Markdown bytes holding a CR
+  LF line end and the byte 0xFF, sends one ``POST`` of exactly those bytes, as ``text/plain``, to
+  ``https://api.github.com/markdown/raw``, and writes the HTML answer's bytes to standard output (``capsysbinary``).
 
 The input files are written under ``tmp_path`` before the run, so the rows that name one are built inside their test.
 
@@ -49,6 +52,7 @@ from __future__ import annotations
 import dataclasses
 import importlib
 import importlib.util
+import io
 import json
 import logging
 import re
@@ -1332,3 +1336,60 @@ def test_an_asset_is_uploaded_to_its_host(
     authorization = upload.header(name=fx.HEADER_AUTHORIZATION)
     assert authorization is not None and fx.FIXTURE_TOKEN in authorization, "the upload carries no credential"
     assert upload.body == ASSET_BYTES, "the upload's body is not the file's bytes"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Issue #46 AC-1.2, AC-4.3 — ``--input -``: a raw Markdown document read from standard input and rendered
+# ---------------------------------------------------------------------------------------------------------------------
+
+ISSUE_46_AC_4_3 = "AC-4.3"
+#: The ``--input`` text that reads the raw body from standard input, as ``gh api`` spells it.
+INPUT_FROM_STDIN = "-"
+#: ``rest/markdown.md`` "Render a Markdown document in raw mode": ``POST /markdown/raw``, its request body
+#: ``text/plain``, its ``200`` ``text/html``.
+MARKDOWN_RAW_PATH = "/markdown/raw"
+MEDIA_TYPE_TEXT_PLAIN = "text/plain"
+#: The ``sys`` attribute the test replaces with a text layer over the document, and that layer's encoding: strict
+#: UTF-8, which fails on ``\xff``.
+ATTRIBUTE_STDIN = "stdin"
+STDIN_ENCODING = "utf-8"
+#: A Markdown document with ``\r\n`` line ends, which a read through the text layer would translate to ``\n``, and the
+#: byte ``\xff``, which no UTF-8 decoder accepts.
+RAW_MARKDOWN = b"# Wrapper rewrite\r\n\r\nA raw body \xff in raw mode.\r\n"
+RENDERED_RAW_MARKDOWN = b"<h1>Wrapper rewrite</h1>\n<p>A raw body in raw mode.</p>\n"
+RAW_MARKDOWN_RENDERED = fx.GoldenCase(
+    name=f"{ISSUE_46}/{ISSUE_46_AC_4_3}/exit-0/raw-markdown-from-standard-input-rendered",
+    argv=(CALL, OP_MARKDOWN_RENDER_RAW, OPTION_INPUT, INPUT_FROM_STDIN),
+    stdout=fx.binary_stdout(data=RENDERED_RAW_MARKDOWN),
+    exit_code=fx.EXIT_OK,
+    routes=(
+        fx.StaticRouteSpec(
+            method=fx.METHOD_POST,
+            url=MARKDOWN_RAW_PATH,
+            replies=(fx.Reply(body=RENDERED_RAW_MARKDOWN, headers={fx.HEADER_CONTENT_TYPE: MEDIA_TYPE_HTML}),),
+        ),
+    ),
+    writes=(fx.NonGetRequest(method=fx.METHOD_POST, path=MARKDOWN_RAW_PATH, body=RAW_MARKDOWN),),
+)
+
+
+def test_a_raw_markdown_document_is_rendered(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsysbinary: pytest.CaptureFixture[bytes]
+) -> None:
+    """Issue #46 AC-1.2, AC-4.3: ``call markdown/render-raw --input -``, standard input a text layer over Markdown
+    bytes holding a CR LF line end and the byte 0xFF, exits 0 and writes the HTML answer's bytes to standard output
+    unchanged. Its one request is the ``POST`` to ``https://api.github.com/markdown/raw`` with ``content-type``
+    ``text/plain`` and a body equal to those bytes, read from standard input's binary buffer, not through the text
+    layer, which would translate the line end or fail to decode the byte."""
+    stdin = io.TextIOWrapper(buffer=io.BytesIO(initial_bytes=RAW_MARKDOWN), encoding=STDIN_ENCODING)
+    monkeypatch.setattr(target=sys, name=ATTRIBUTE_STDIN, value=stdin)
+    requests = fx.run_product_case(
+        case=RAW_MARKDOWN_RENDERED, root=tmp_path, monkeypatch=monkeypatch, capsys=capsysbinary
+    )
+
+    assert len(requests) == 1, f"{len(requests)} requests: {[request.url for request in requests]}"
+    rendering = requests[0]
+    assert rendering.method == fx.METHOD_POST, f"the rendering was a {rendering.method}"
+    assert rendering.url == f"{fx.API_ORIGIN}{MARKDOWN_RAW_PATH}", f"the rendering went to {rendering.url}"
+    assert rendering.header(name=fx.HEADER_CONTENT_TYPE) == MEDIA_TYPE_TEXT_PLAIN
+    assert rendering.body == RAW_MARKDOWN, f"the body sent is not the Markdown bytes: {rendering.body!r}"
