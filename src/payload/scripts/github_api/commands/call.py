@@ -1,10 +1,10 @@
 """The GitHub wrapper's operation call, ``call <operation-id>`` (issue #28 design D2 to D4): any record a family module
 of ``github_api/families/`` declares, sent by its operation ID.
 
-The grammar (D2)::
+The grammar (D2, and issue #46 design D1 for ``--input``)::
 
     python scripts/github_wrapper.py call <operation-id> [--path NAME=VALUE]... [--query NAME=VALUE]...
-                                          [-f|--raw-field NAME=TEXT]... [-F|--field NAME=JSON]...
+                                          [-f|--raw-field NAME=TEXT]... [-F|--field NAME=JSON]... [--input FILE]
 
 - ``<operation-id>``: the operation ID of the index (``issues/get``).
 - ``--path NAME=VALUE``: a path parameter, as text, encoded by ``registry.expand``. When the record's path names
@@ -16,21 +16,30 @@ The grammar (D2)::
 - ``-F/--field NAME=JSON``: a body member whose value is JSON parsed by ``json.loads``: a number, boolean, array,
   object, ``null`` or quoted string. Text that is not JSON, ``NaN`` and the infinities included, is refused, so a
   string is given quoted or with ``-f``.
+- ``--input FILE``: the request body is the bytes of FILE, or of standard input's binary buffer when FILE is ``-``,
+  sent unchanged under the record's ``content_type``. Only a record that has a ``content_type``, a body that is not
+  JSON, takes it; such a record called without ``--input`` sends no body. The option's ``type``, ``read_input``, reads
+  the bytes whole when the arguments are parsed; a file that cannot be read is an argparse usage error (exit 2) for
+  ``--input``, before the credential is read, whose message names only the path, rendered with ``json.dumps``.
 
 Each ``NAME=VALUE`` splits at its first ``=``. No ``=``, an empty name, and ``--field`` text that is not JSON are each
 an argparse usage error (exit 2), raised by the option's ``type`` (``assignment``, ``json_member``) before the
 credential is read; argparse names the option, and the message names the text before the first ``=`` (all of it when
 there is none) rendered with ``json.dumps``, never a value. A path or body name given twice keeps its last value. The
 two body options share one destination, so the members keep their command-line order; ``body_of`` joins them into
-one JSON object, or ``None`` when none was given, which sends no body.
+one JSON object, or ``None`` when none was given, which sends no body. The raw body ``--input`` read goes to
+``registry.send`` as its ``data``.
 
-``cmd_call`` refuses, with exit 2 (``EXIT_REFUSED``) and before any request: an ID in ``GATED_OPERATIONS``, naming
-the compatibility subcommand to use, or, for a record whose call commits to, creates, moves or renames a branch or
-creates issues (issue #28 design D8, its exceptions row), saying that no subcommand sends it; an ID no record declares
-(``registry.lookup``); and a call that gives a path, query or body name the record does not document or leaves a path
+``cmd_call`` refuses, with exit 2 (``EXIT_REFUSED``) and before any request, in this order: a raw body given together
+with one or more body members (``refuse_both_bodies``), in a message naming ``--input``, ``-f/--raw-field`` and
+``-F/--field``; an ID in ``GATED_OPERATIONS``, naming the compatibility subcommand to use, or, for a record whose call
+commits to, creates, moves or renames a branch or creates issues (issue #28 design D8, its exceptions row), saying that
+no subcommand sends it; an ID no record declares (``registry.lookup``); a raw body for a record whose ``content_type``
+is ``None`` (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that its body is given with
+``-f``/``-F``; and a call that gives a path, query or body name the record does not document or leaves a path
 parameter without a value, in one message naming each such name with its kind, each missing path parameter, then the
 record's documented path, query and body parameters (``check_call``). A refusal is logged; every name the caller gave
-is rendered with ``json.dumps``.
+is rendered with ``json.dumps``, and no byte of a raw body is.
 
 What prints (D3):
 
@@ -49,7 +58,9 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Collection, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
@@ -67,15 +78,20 @@ OPTION_RAW_FIELD_SHORT = "-f"
 OPTION_RAW_FIELD = "--raw-field"
 OPTION_FIELD_SHORT = "-F"
 OPTION_FIELD = "--field"
+OPTION_INPUT = "--input"
 #: The ``argparse.Namespace`` attributes the options are stored under; ``-f`` and ``-F`` share one.
 ARG_PATH = "path"
 ARG_QUERY = "query"
 ARG_MEMBERS = "members"
+ARG_RAW_BODY = "raw_body"
 ACTION_APPEND = "append"
 METAVAR_VALUE = "NAME=VALUE"
 METAVAR_TEXT = "NAME=TEXT"
 METAVAR_JSON = "NAME=JSON"
+METAVAR_FILE = "FILE"
 ASSIGNMENT_SEPARATOR = "="
+#: The ``--input`` text that reads the raw body from standard input rather than from a file, as ``gh api`` spells it.
+STDIN_INPUT = "-"
 
 #: The path parameters that default to the ``origin`` repository when the call gives no value for them.
 PATH_OWNER = "owner"
@@ -167,6 +183,19 @@ def json_member(text: str) -> Assignment:
     return Assignment(name=name, value=parsed)
 
 
+def read_input(text: str) -> bytes:
+    """The ``type`` of ``--input`` (issue #46 design D1): the bytes of standard input's binary buffer when ``text`` is
+    ``-``, else the bytes of the file ``text`` names, read whole by ``Path.read_bytes``, which closes the file before
+    it returns. An ``OSError`` raises ``argparse.ArgumentTypeError`` naming only the path, ``text`` as given rendered
+    with ``json.dumps``; argparse handles no other exception type of a ``type``."""
+    try:
+        if text == STDIN_INPUT:
+            return sys.stdin.buffer.read()
+        return Path(text).read_bytes()
+    except OSError:
+        raise argparse.ArgumentTypeError(f"{json.dumps(obj=text)} cannot be read") from None
+
+
 def body_of(*, members: Sequence[Assignment]) -> Optional[Dict[str, Any]]:
     """The request body ``members`` make: one JSON object of every member in command-line order, a name given twice
     holding its last value; ``None`` when no member was given, so no body is sent."""
@@ -196,6 +225,29 @@ def refuse_gated(*, operation_id: str) -> None:
         raise ValueError(f"{refused}: no subcommand sends it")
     ending = "" if operation_id in GATED_NOT_SENT else SENDS_IT
     raise ValueError(f"{refused}: use the {subcommand} subcommand{ending}")
+
+
+def refuse_both_bodies(*, raw_body: Optional[bytes], members: Sequence[Assignment]) -> None:
+    """Issue #46 design D1 step 1: refuse with ``ValueError`` a raw body given together with one or more body members,
+    in a message naming ``--input``, ``-f/--raw-field`` and ``-F/--field``."""
+    if raw_body is None or not members:
+        return
+    raise ValueError(
+        f"{CMD_CALL} refuses {OPTION_INPUT} together with {OPTION_RAW_FIELD_SHORT}/{OPTION_RAW_FIELD} or "
+        f"{OPTION_FIELD_SHORT}/{OPTION_FIELD}: a raw body is the whole request body, with no body member beside it"
+    )
+
+
+def refuse_raw_body(*, operation: RestOperation, raw_body: Optional[bytes]) -> None:
+    """Issue #46 design D1 step 4: refuse with ``ValueError`` a raw body for a record whose ``content_type`` is
+    ``None``, whose body is JSON, in a message naming its ID and ``--input`` and saying that its body is given with
+    ``-f``/``-F``."""
+    if raw_body is None or operation.content_type is not None:
+        return
+    raise ValueError(
+        f"{CMD_CALL} refuses {OPTION_INPUT} for the GitHub operation {json.dumps(obj=operation.operation_id)}: its "
+        f"body is JSON, given with {OPTION_RAW_FIELD_SHORT}/{OPTION_RAW_FIELD} or {OPTION_FIELD_SHORT}/{OPTION_FIELD}"
+    )
 
 
 def path_values(*, operation: RestOperation, given: Sequence[Assignment], owner: str, repo: str) -> Dict[str, Any]:
@@ -270,19 +322,23 @@ def print_body(*, body: bytes) -> None:
 
 
 def cmd_call(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> Optional[int]:
-    """Send the record ``args.operation_id`` names and print its response (D2 steps 1 to 7, D3).
+    """Send the record ``args.operation_id`` names and print its response (D2 steps 1 to 7, D3; issue #46 design D1).
 
-    Steps 1 to 4 decide every refusal before anything is sent: a gated ID, an ID no record declares, then the path
-    values (``owner`` and ``repo`` defaulted) and D4's check. Each refusal is a ``ValueError``, logged, and the call
-    returns ``EXIT_REFUSED``. Then the query and the body are built, and a ``Paging.LINK`` record goes through
-    ``registry.pages``, any other through ``registry.send``.
+    The steps up to D4's check decide every refusal before anything is sent: a raw body beside body members, a gated
+    ID, an ID no record declares, a raw body for a record whose body is JSON, then the path values (``owner`` and
+    ``repo`` defaulted) and D4's check. Each refusal is a ``ValueError``, logged, and the call returns
+    ``EXIT_REFUSED``. Then the query and the body are built, and a ``Paging.LINK`` record goes through
+    ``registry.pages``, any other through ``registry.send``, the raw body as its ``data``.
     """
     operation_id = str(getattr(args, ARG_OPERATION_ID))
     query_given = _given(args=args, dest=ARG_QUERY)
     members = _given(args=args, dest=ARG_MEMBERS)
+    raw_body: Optional[bytes] = getattr(args, ARG_RAW_BODY, None)
     try:
+        refuse_both_bodies(raw_body=raw_body, members=members)
         refuse_gated(operation_id=operation_id)
         operation = registry.lookup(operation_id=operation_id)
+        refuse_raw_body(operation=operation, raw_body=raw_body)
         path_params = path_values(operation=operation, given=_given(args=args, dest=ARG_PATH), owner=owner, repo=repo)
         check_call(
             operation=operation,
@@ -306,6 +362,7 @@ def cmd_call(*, transport: Transport, owner: str, repo: str, args: argparse.Name
         path_params=path_params,
         query=query,
         body=body_of(members=members),
+        data=raw_body,
     )
     print_body(body=response.body)
     return None
@@ -353,4 +410,12 @@ def register(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser])
         type=json_member,
         metavar=METAVAR_JSON,
         help="A body member whose value is JSON: a number, boolean, array, object, null or quoted string",
+    )
+    parser.add_argument(
+        OPTION_INPUT,
+        dest=ARG_RAW_BODY,
+        default=None,
+        type=read_input,
+        metavar=METAVAR_FILE,
+        help="The request body, its bytes sent unchanged (- reads standard input); only for a body that is not JSON",
     )

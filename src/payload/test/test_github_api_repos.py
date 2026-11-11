@@ -6,7 +6,7 @@ read from the records or from ``commands/call.py``:
 
 - ``REPOS_OPERATION_IDS``: the operation ID of every section whose operation line names a ``repos/`` ID, in
   ``branches.md``, ``collaborators.md``, ``commits.md``, ``deploy-keys.md``, ``deployments.md``, ``metrics.md``,
-  ``orgs.md``, ``pages.md``, ``releases.md`` and ``repos.md``; ``repos/upload-release-asset`` stays pending (DL-002);
+  ``orgs.md``, ``pages.md``, ``releases.md`` and ``repos.md``;
 - ``MULTI_SEGMENT_PARAMETERS``: for each section with one, the path parameters whose ``Parameter`` row reads "may
   contain `/` (multi-segment path)" (AC-3);
 - ``LIST_RECORDS``: each section with a ``Paging:`` line or a ``Link`` response header (AC-4), but
@@ -90,8 +90,6 @@ TEST_VALUE_PREFIX = "v"
 #: ``run_product_case`` reads standard error along with standard output; no case here withholds a value, so
 #: ``fx.assert_log`` judges the log records alone.
 STDERR_READ_BY_THE_RUN = ""
-
-UPLOAD_RELEASE_ASSET = "repos/upload-release-asset"
 
 #: Every ``repos/`` operation ID of ``rest/*.md``, one per section.
 REPOS_OPERATION_IDS = frozenset(
@@ -301,8 +299,6 @@ REPOS_OPERATION_IDS = frozenset(
         "repos/upload-release-asset",
     }
 )
-#: AC-1: the IDs ``OPERATIONS`` holds a record of, each once: every ``repos/`` ID but the one left pending.
-RECORDED_IDS = REPOS_OPERATION_IDS - {UPLOAD_RELEASE_ASSET}
 
 #: AC-3: for each ``repos/`` section with one, its path parameters whose row reads "may contain `/` (multi-segment
 #: path)".
@@ -785,19 +781,19 @@ def differences(*, declared: Mapping[str, Any], expected: Mapping[str, Any]) -> 
     ]
 
 
-def test_only_the_upload_is_pending() -> None:
-    """AC-1: ``PENDING`` is exactly ``{"repos/upload-release-asset"}`` (DL-002), and ``OPERATIONS`` holds one record of
-    every other ``repos/`` ID of the reference, none twice and none of another ID."""
+def test_no_repos_id_is_pending() -> None:
+    """AC-1: ``PENDING`` is empty, and ``OPERATIONS`` holds one record of every ``repos/`` ID of the reference, none
+    twice and none of another ID."""
     family = repos_family()
     counts = Counter(record.operation_id for record in family.OPERATIONS)
     problems = []
     pending = frozenset(family.PENDING)
-    if pending != frozenset({UPLOAD_RELEASE_ASSET}):
-        problems.append(f"PENDING holds {len(pending)} IDs, not only {UPLOAD_RELEASE_ASSET}: {sorted(pending)}")
-    missing = sorted(RECORDED_IDS - set(counts))
+    if pending:
+        problems.append(f"PENDING holds {len(pending)} IDs, none expected: {sorted(pending)}")
+    missing = sorted(REPOS_OPERATION_IDS - set(counts))
     if missing:
         problems.append(f"{len(missing)} IDs have no record: {missing}")
-    extra = sorted(set(counts) - RECORDED_IDS)
+    extra = sorted(set(counts) - REPOS_OPERATION_IDS)
     if extra:
         problems.append(f"records of IDs that are not to be recorded: {extra}")
     twice = sorted(operation_id for operation_id, count in counts.items() if count > 1)
@@ -808,12 +804,12 @@ def test_only_the_upload_is_pending() -> None:
 
 
 def test_every_record_sends_the_default_version_and_media_type() -> None:
-    """AC-3: every ``repos/`` ID but the pending one has a record, and each declares ``API_VERSION_DEFAULT`` and
-    ``ACCEPT_JSON``, so ``call`` sends them."""
+    """AC-3: every ``repos/`` ID has a record, and each declares ``API_VERSION_DEFAULT`` and ``ACCEPT_JSON``, so
+    ``call`` sends them."""
     transport = fx.import_api_module(name=TRANSPORT)
     records = records_by_id(family=repos_family())
     problems = []
-    for operation_id in sorted(RECORDED_IDS):
+    for operation_id in sorted(REPOS_OPERATION_IDS):
         record = records.get(operation_id)
         if record is None:
             problems.append(f"{json.dumps(obj=operation_id)}: no record")

@@ -34,3 +34,8 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | gitlab_api create | archive[.format], the two-:id group SSH certificate path and changelog.txt stay pending | issue-35 change.md Residuals | forms part 1 lacks; one record per Reference | open |
 | 2026-11-11 | gitlab_api create | the clone and rebase quick actions run from saved notes and descriptions on records here | issue-35 DL-004; review iteration-01 | quick actions run server-side; guarding is a mechanism | open |
 | 2026-11-11 | gitlab_api create | auth_password of update-project-pull-mirroring-settings shows in the command line | issue-35 change.md Residuals; #36 DL-003 | #41 Residuals; no failure seen | open |
+| 2026-11-11 | github_api call | a secret body value given with -f/-F still shows on the command line; --input carries no JSON body | issue-46 design.md Residuals | needs #28 D4's name check over a parsed input | open |
+| 2026-11-11 | github_api repos | release-asset upload sends octet-stream and builds its URL from the record; Transport.upload has no caller | issue-46 design.md Residuals | per-asset media type is a requirements residual | open |
+| 2026-11-11 | github_api markdown | markdown/render-raw always sends text/plain; no per-call media type | issue-46 design.md Residuals | #28 requirements residual | open |
+| 2026-11-11 | github_api transport | REST_ROOTS holds github.com roots only; GHES upload hosts are outside it | issue-46 design.md Residuals | conventions.md Hosts and base URLs; no GHES caller | open |
+| 2026-11-11 | github_api call | no guard refuses an --input path naming the credentials file; the 307 re-send is not logged | issue-46 design.md Security Considerations, Residuals | no failure seen; a guard is a mechanism | open |
