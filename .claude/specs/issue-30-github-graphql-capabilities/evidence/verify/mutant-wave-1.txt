@@ -1,0 +1,297 @@
+# mutant 1a: registry.declared_variables keeps after on a record with a connection
+diff --git a/src/payload/scripts/github_api/registry.py b/src/payload/scripts/github_api/registry.py
+index ee24596..9bcb013 100644
+--- a/src/payload/scripts/github_api/registry.py
++++ b/src/payload/scripts/github_api/registry.py
+@@ -139,7 +139,7 @@ def declared_variables(*, operation: GraphQLOperation) -> Tuple[str, ...]:
+     defined = tuple(match.group(1) for match in VARIABLE_DEFINITION_PATTERN.finditer(string=operation.document))
+     if not operation.connection:
+         return defined
+-    return tuple(name for name in defined if name != FIELD_AFTER)
++    return defined
+ 
+ 
+ def _encode_path_value(*, operation: RestOperation, name: str, value: Any) -> str:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+.................................F.........                              [100%]
+================================== FAILURES ===================================
+_______ test_variables_are_the_documents_definitions[with-a-connection] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:710: in test_variables_are_the_documents_definitions
+    assert api.registry.declared_variables(operation=operation) == case.variables
+E   AssertionError: assert ('owner', 'name', 'after') == ('owner', 'name')
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mafter[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[with-a-connection]
+======================== 1 failed, 42 passed in 5.14s =========================
+exit=1
+# mutant 1b: registry.graphql_lookup accepts an ID declared twice
+diff --git a/src/payload/scripts/github_api/registry.py b/src/payload/scripts/github_api/registry.py
+index ee24596..5d10d61 100644
+--- a/src/payload/scripts/github_api/registry.py
++++ b/src/payload/scripts/github_api/registry.py
+@@ -127,8 +127,6 @@ def graphql_lookup(*, operation_id: str) -> GraphQLOperation:
+     ]
+     if not matches:
+         raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+-    if len(matches) > 1:
+-        raise ValueError(f"The GitHub GraphQL record {json.dumps(operation_id)} is declared {len(matches)} times")
+     return matches[0]
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+..................................F........                              [100%]
+================================== FAILURES ===================================
+____________________ test_graphql_lookup_finds_one_record _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:742: in test_graphql_lookup_finds_one_record
+    with pytest.raises(ValueError) as raised:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_graphql_lookup_finds_one_record
+======================== 1 failed, 42 passed in 4.27s =========================
+exit=1
+# mutant 1c: V _capability_problems without its index check
+diff --git a/test/test_github_wrapper_coverage.py b/test/test_github_wrapper_coverage.py
+index 379d952..09550ca 100644
+--- a/test/test_github_wrapper_coverage.py
++++ b/test/test_github_wrapper_coverage.py
+@@ -377,8 +377,6 @@ def _capability_problems(
+         covered.add(record.capability)
+         if record.capability not in capabilities:
+             problems.append(f'{name}: the record {record.capability!r} is not an "Only in GraphQL" capability')
+-        if record.operation_id in index:
+-            problems.append(f"{name}: the record {record.operation_id!r} is an operation ID of the index")
+     pending = set(module.PENDING_CAPABILITIES)
+     problems.extend(
+         f'{name}: {ATTRIBUTE_PENDING_CAPABILITIES} holds {capability!r}, not an "Only in GraphQL" capability'
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+.........................................F.                              [100%]
+================================== FAILURES ===================================
+________________ test_a_graphql_record_id_is_its_own[index_id] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:717: in test_a_graphql_record_id_is_its_own
+    assert len(problems) == len(expected_named_ids), (
+E   AssertionError: _capability_problems returned [] for the records (('issues/get', 'First capability'),); expected one problem naming each of ['issues/get']
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +  and   1 = len(('issues/get',))
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[index_id]
+======================== 1 failed, 42 passed in 4.61s =========================
+exit=1
+# mutant 1d: registry.VARIABLE_DEFINITION_PATTERN without white space before the colon
+diff --git a/src/payload/scripts/github_api/registry.py b/src/payload/scripts/github_api/registry.py
+index ee24596..59f1a69 100644
+--- a/src/payload/scripts/github_api/registry.py
++++ b/src/payload/scripts/github_api/registry.py
+@@ -38,7 +38,7 @@ FAMILIES_PACKAGE = "github_api.families"
+ GRAPHQL_ID_PREFIX = "graphql/"
+ #: A GraphQL variable definition: ``$``, a Name, then ``:`` after any white space (``VariableDefinition : Variable :
+ #: Type``). A use of the variable as an argument value (``owner: $owner)``) has no ``:`` after it.
+-VARIABLE_DEFINITION_PATTERN = re.compile(r"\$([_A-Za-z][_0-9A-Za-z]*)\s*:")
++VARIABLE_DEFINITION_PATTERN = re.compile(r"\$([_A-Za-z][_0-9A-Za-z]*):")
+ MODULE_SEPARATOR = "."
+ #: A ``{name}`` placeholder of a path template (``conventions.md`` "Path parameters").
+ PATH_PARAMETER_PATTERN = re.compile(r"\{([^{}]+)\}")
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+................................FF.........                              [100%]
+================================== FAILURES ===================================
+_____ test_variables_are_the_documents_definitions[without-a-connection] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:710: in test_variables_are_the_documents_definitions
+    assert api.registry.declared_variables(operation=operation) == case.variables
+E   AssertionError: assert ('owner', 'after') == ('owner', 'name', 'after')
+E     
+E     At index 1 diff: [0m[33m'[39;49;00m[33mafter[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33mname[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Right contains one more item: [0m[33m'[39;49;00m[33mafter[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_______ test_variables_are_the_documents_definitions[with-a-connection] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:710: in test_variables_are_the_documents_definitions
+    assert api.registry.declared_variables(operation=operation) == case.variables
+E   AssertionError: assert ('owner',) == ('owner', 'name')
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mname[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[without-a-connection]
+FAILED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[with-a-connection]
+======================== 2 failed, 41 passed in 5.50s =========================
+exit=1
+# mutant 1e: V _capability_problems counts capabilities again, not operation IDs
+diff --git a/test/test_github_wrapper_coverage.py b/test/test_github_wrapper_coverage.py
+index 379d952..ebb3ec4 100644
+--- a/test/test_github_wrapper_coverage.py
++++ b/test/test_github_wrapper_coverage.py
+@@ -373,7 +373,7 @@ def _capability_problems(
+         if not isinstance(record, record_type):
+             problems.append(f"{name}: {record!r} in {ATTRIBUTE_OPERATIONS} is not a {GRAPHQL_OPERATION}")
+             continue
+-        declared.append(record.operation_id)
++        declared.append(record.capability)
+         covered.add(record.capability)
+         if record.capability not in capabilities:
+             problems.append(f'{name}: the record {record.capability!r} is not an "Only in GraphQL" capability')
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+......................................FF.F.                              [100%]
+================================== FAILURES ===================================
+_____________ test_one_module_per_family_holding_only_its_own_ids _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:668: in test_one_module_per_family_holding_only_its_own_ids
+    assert not problems, "the family and capability modules break D2's contract:\n" + "\n".join(problems)
+E   AssertionError: the family and capability modules break D2's contract:
+E     github_api.graphql_only: 'Auto-merge on or off' is declared 2 times
+E     github_api.graphql_only: 'Create, update, delete, copy or link a Projects v2 project' is declared 5 times
+E     github_api.graphql_only: 'Draft to ready and back' is declared 2 times
+E     github_api.graphql_only: 'Hide comments' is declared 2 times
+E     github_api.graphql_only: 'Pin an issue' is declared 2 times
+E     github_api.graphql_only: 'Read a merge queue, remove an entry' is declared 2 times
+E     github_api.graphql_only: 'Repository discussions' is declared 5 times
+E     github_api.graphql_only: 'Resolve review threads' is declared 3 times
+E     github_api.graphql_only: 'Sponsors' is declared 2 times
+E   assert not ["github_api.graphql_only: 'Auto-merge on or off' is declared 2 times", "github_api.graphql_only: 'Create, update, del...issue' is declared 2 times", "github_api.graphql_only: 'Read a merge queue, remove an entry' is declared 2 times", ...]
+_______________ test_a_graphql_record_id_is_its_own[shared_id] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:719: in test_a_graphql_record_id_is_its_own
+    assert len(problems) == len(expected_named_ids), (
+E   AssertionError: _capability_problems returned [] for the records (('graphql/firstMutation', 'First capability'), ('graphql/firstMutation', 'Second capability')); expected one problem naming each of ['graphql/firstMutation']
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +  and   1 = len(('graphql/firstMutation',))
+___________ test_a_graphql_record_id_is_its_own[shared_capability] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:719: in test_a_graphql_record_id_is_its_own
+    assert len(problems) == len(expected_named_ids), (
+E   AssertionError: _capability_problems returned ["synthetic_graphql_only: 'First capability' is declared 2 times"] for the records (('graphql/firstMutation', 'First capability'), ('graphql/secondMutation', 'First capability')); expected one problem naming each of []
+E   assert 1 == 0
+E    +  where 1 = len(["synthetic_graphql_only: 'First capability' is declared 2 times"])
+E    +  and   0 = len(())
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_coverage.py::test_one_module_per_family_holding_only_its_own_ids
+FAILED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_id]
+FAILED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_capability]
+======================== 3 failed, 40 passed in 4.36s =========================
+exit=1
+# restored tree: wave 1 paired tests green again
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+...........................................                              [100%]
+============================= 43 passed in 5.39s ==============================
+exit=0
+# whole-wave revert 1w: at 52a5a51, registry.py restored to c6451cd (wave 1's implementation removed), wave 1's tests run
+ M src/payload/scripts/github_api/registry.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\tmp\verify-30\wt
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+................................FFF....FFF.                              [100%]
+================================== FAILURES ===================================
+_____ test_variables_are_the_documents_definitions[without-a-connection] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:708: in test_variables_are_the_documents_definitions
+    ).build(api=api)
+      ^^^^^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:678: in build
+    return api.registry.GraphQLOperation(
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'operation_id'
+_______ test_variables_are_the_documents_definitions[with-a-connection] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:708: in test_variables_are_the_documents_definitions
+    ).build(api=api)
+      ^^^^^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:672: in build
+    return api.registry.GraphQLOperation(
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'operation_id'
+____________________ test_graphql_lookup_finds_one_record _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:736: in test_graphql_lookup_finds_one_record
+    install_graphql_records(api=api, records=(READ_RECORD, WRITE_RECORD, *TWICE_RECORDS), monkeypatch=monkeypatch)
+src\payload\test\test_github_api_registry.py:730: in install_graphql_records
+    operations = tuple(record.build(api=api) for record in records)
+                 ^^^^^
+src\payload\test\test_github_api_registry.py:730: in <genexpr>
+    operations = tuple(record.build(api=api) for record in records)
+                       ^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:678: in build
+    return api.registry.GraphQLOperation(
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'operation_id'
+_______________ test_a_graphql_record_id_is_its_own[shared_id] ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:706: in test_a_graphql_record_id_is_its_own
+    record_type(
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'operation_id'
+___________ test_a_graphql_record_id_is_its_own[shared_capability] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:706: in test_a_graphql_record_id_is_its_own
+    record_type(
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'operation_id'
+________________ test_a_graphql_record_id_is_its_own[index_id] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:706: in test_a_graphql_record_id_is_its_own
+    record_type(
+E   TypeError: GraphQLOperation.__init__() got an unexpected keyword argument 'operation_id'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[without-a-connection]
+FAILED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[with-a-connection]
+FAILED src/payload/test/test_github_api_registry.py::test_graphql_lookup_finds_one_record
+FAILED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_id]
+FAILED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_capability]
+FAILED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[index_id]
+======================== 6 failed, 37 passed in 7.35s =========================
+exit=1

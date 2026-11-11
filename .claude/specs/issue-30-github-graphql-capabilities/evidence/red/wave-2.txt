@@ -1,0 +1,458 @@
+# tasks: 2.1 2.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_git.py src/payload/test/test_github_api_repos.py test/test_github_api_call_properties.py test/test_github_wrapper_contract.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py src/payload/test/test_wrapper_delivery.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [705 items]
+
+F...F..F..F..F...F..F..F..F..F...F.......................F..F......F..F. [ 10%]
+.F..F..F..F..F..F...F.F.FF.FFF.FF.FF.F.................................. [ 20%]
+........................................................................ [ 30%]
+........................................................................ [ 40%]
+........................................................................ [ 51%]
+........................................................................ [ 61%]
+........................................................................ [ 71%]
+........................................................................ [ 81%]
+........................................................................ [ 91%]
+.........................................................                [100%]
+================================== FAILURES ===================================
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_graphql_only.py:402: in test_every_record_is_called_through_main
+    assert called, (
+E   AssertionError: graphql_only.OPERATIONS holds no record outside REFUSED_MUTATIONS, so no GraphQL call was proven: []
+E   assert []
+______________ test_a_variable_holds_the_given_json_value[text] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:456: in test_a_variable_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-0/text: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+_____________ test_a_variable_holds_the_given_json_value[number] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:456: in test_a_variable_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-0/number: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+_____________ test_a_variable_holds_the_given_json_value[boolean] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:456: in test_a_variable_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-0/boolean: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+______________ test_a_variable_holds_the_given_json_value[array] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:456: in test_a_variable_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-0/array: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+_____________ test_a_variable_holds_the_given_json_value[object] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:456: in test_a_variable_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-0/object: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+______________ test_a_variable_holds_the_given_json_value[null] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:456: in test_a_variable_holds_the_given_json_value
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.1/exit-0/null: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+____________________ test_a_merge_queue_prints_every_entry ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:488: in test_a_merge_queue_prints_every_entry
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.2/exit-0/merge-queue-entries: exit code 2, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/Repository.mergeQueue"
+____ test_a_graphql_failure_exits_1_with_its_details[errors-without-data] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:648: in test_a_graphql_failure_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:307: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.4/exit-1/errors-without-data: exit code 2, the golden is 1; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+______ test_a_graphql_failure_exits_1_with_its_details[errors-with-data] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:648: in test_a_graphql_failure_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:307: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.4/exit-1/errors-with-data: exit code 2, the golden is 1; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+__________ test_a_graphql_failure_exits_1_with_its_details[http-502] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:648: in test_a_graphql_failure_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:307: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.4/exit-1/http-502: exit code 2, the golden is 1; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+______ test_a_graphql_failure_exits_1_with_its_details[spent-rate-limit] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:648: in test_a_graphql_failure_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:307: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.4/exit-1/spent-rate-limit: exit code 2, the golden is 1; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+________ test_a_graphql_failure_exits_1_with_its_details[no-response] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:648: in test_a_graphql_failure_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:307: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.4/exit-1/no-response: exit code 2, the golden is 1; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+_ test_a_graphql_failure_exits_1_with_its_details[page-without-its-connection] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:648: in test_a_graphql_failure_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:307: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.4/exit-1/page-without-its-connection: exit code 2, the golden is 1; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/Repository.mergeQueue"
+_____ test_a_graphql_failure_exits_1_with_its_details[second-page-fails] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:648: in test_a_graphql_failure_exits_1_with_its_details
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:307: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.4/exit-1/second-page-fails: exit code 2, the golden is 1; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/Repository.mergeQueue"
+_ test_an_undeclared_variable_is_refused[AC-2.5/exit-2/variable-the-document-does-not-define] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:713: in test_an_undeclared_variable_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:308: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.5/exit-2/variable-the-document-does-not-define: no log record matches every one of ['"issue"', '\\["input"\\]']: ['No GitHub operation record declares "graphql/pinIssue"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+_ test_an_undeclared_variable_is_refused[AC-2.5/exit-2/path-and-query-names] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:713: in test_an_undeclared_variable_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:308: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.5/exit-2/path-and-query-names: no log record matches every one of ['"issue_number"', '"state"', '\\["input"\\]']: ['No GitHub operation record declares "graphql/pinIssue"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/pinIssue"
+_ test_an_undeclared_variable_is_refused[AC-2.5/exit-2/after-of-a-paging-record] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:713: in test_an_undeclared_variable_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:308: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-2.5/exit-2/after-of-a-paging-record: no log record matches every one of ['"after"', '\\["owner",\\ "name"\\]']: ['No GitHub operation record declares "graphql/Repository.discussions"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/Repository.discussions"
+__ test_a_refused_mutation_sends_nothing[graphql/enablePullRequestAutoMerge] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:751: in test_a_refused_mutation_sends_nothing
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:308: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3.1/exit-2/graphql/enablePullRequestAutoMerge: no log record matches every one of ['"graphql/enablePullRequestAutoMerge"', 'enablePullRequestAutoMerge', 'merge\\-pr', '\\A(?![\\s\\S]*which\\ sends\\ it)']: ['No GitHub operation record declares "graphql/enablePullRequestAutoMerge"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/enablePullRequestAutoMerge"
+_____ test_a_refused_mutation_sends_nothing[graphql/createCommitOnBranch] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:751: in test_a_refused_mutation_sends_nothing
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:308: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3.1/exit-2/graphql/createCommitOnBranch: no log record matches every one of ['"graphql/createCommitOnBranch"', 'createCommitOnBranch', 'no\\ subcommand\\ sends\\ it']: ['No GitHub operation record declares "graphql/createCommitOnBranch"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/createCommitOnBranch"
+______ test_a_refused_mutation_sends_nothing[graphql/revertPullRequest] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:751: in test_a_refused_mutation_sends_nothing
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:308: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3.1/exit-2/graphql/revertPullRequest: no log record matches every one of ['"graphql/revertPullRequest"', 'revertPullRequest', 'no\\ subcommand\\ sends\\ it']: ['No GitHub operation record declares "graphql/revertPullRequest"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/revertPullRequest"
+________ test_a_refused_mutation_sends_nothing[graphql/transferIssue] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:751: in test_a_refused_mutation_sends_nothing
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:308: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2724: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3.1/exit-2/graphql/transferIssue: no log record matches every one of ['"graphql/transferIssue"', 'transferIssue', 'no\\ subcommand\\ sends\\ it']: ['No GitHub operation record declares "graphql/transferIssue"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:286 No GitHub operation record declares "graphql/transferIssue"
+____________________ test_the_reference_is_read_as_written ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:939: in test_the_reference_is_read_as_written
+    members = selected_members(record=registry.graphql_lookup(operation_id=operation_id), schema=schema)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/pinIssue"
+___________________ test_every_record_matches_the_reference ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:950: in test_every_record_matches_the_reference
+    assert records, f"{GRAPHQL_ONLY}.{ATTRIBUTE_OPERATIONS} holds no record to hold to the reference"
+E   AssertionError: graphql_only.OPERATIONS holds no record to hold to the reference
+E   assert []
+___ test_the_method_rejects_a_document_that_differs[a_field_the_type_lacks] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:966: in test_the_method_rejects_a_document_that_differs
+    record = registry.graphql_lookup(operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/markPullRequestReadyForReview"
+__ test_the_method_rejects_a_document_that_differs[since_in_place_of_after] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:966: in test_the_method_rejects_a_document_that_differs
+    record = registry.graphql_lookup(operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/Repository.discussions"
+_ test_the_method_rejects_a_document_that_differs[a_variable_of_another_type] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:966: in test_the_method_rejects_a_document_that_differs
+    record = registry.graphql_lookup(operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/PullRequest.reviewThreads"
+_____ test_the_method_rejects_a_document_that_differs[another_input_type] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:966: in test_the_method_rejects_a_document_that_differs
+    record = registry.graphql_lookup(operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/pinIssue"
+_____ test_the_method_rejects_a_document_that_differs[an_unused_variable] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:966: in test_the_method_rejects_a_document_that_differs
+    record = registry.graphql_lookup(operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/pinIssue"
+_ test_the_method_rejects_a_document_that_differs[a_connection_short_of_the_path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:966: in test_the_method_rejects_a_document_that_differs
+    record = registry.graphql_lookup(operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/Repository.mergeQueue"
+_ test_the_method_rejects_a_document_that_differs[the_enabling_document_in_the_disabling_record] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:966: in test_the_method_rejects_a_document_that_differs
+    record = registry.graphql_lookup(operation_id=change.operation_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\scripts\github_api\registry.py:129: in graphql_lookup
+    raise ValueError(f"No GitHub GraphQL record declares {json.dumps(operation_id)}")
+E   ValueError: No GitHub GraphQL record declares "graphql/disablePullRequestAutoMerge"
+_____________________ test_every_capability_has_a_record ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:988: in test_every_capability_has_a_record
+    assert not missing, "capabilities no record serves:\n" + "\n".join(missing)
+E   AssertionError: capabilities no record serves:
+E     Repository discussions
+E     Create, update, delete, copy or link a Projects v2 project
+E     Auto-merge on or off
+E     Draft to ready and back
+E     Resolve review threads
+E     Hide comments
+E     Move an issue to another repo
+E     Pin an issue
+E     Revert a PR
+E     Read a merge queue, remove an entry
+E     Sponsors
+E     Multi-file commit in one call
+E     Branch protection with wildcard patterns
+E   assert not ['Repository discussions', 'Create, update, delete, copy or link a Projects v2 project', 'Auto-merge on or off', 'Draft to ready and back', 'Resolve review threads', 'Hide comments', ...]
+__________________ test_every_member_a_row_names_is_selected __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_graphql_contract.py:1007: in test_every_member_a_row_names_is_selected
+    assert not unselected, "members a row names that no record of its capability selects:\n" + "\n".join(unselected)
+E   AssertionError: members a row names that no record of its capability selects:
+E     "Repository discussions": Repository.discussions
+E     "Repository discussions": addDiscussionComment
+E     "Repository discussions": createDiscussion
+E     "Repository discussions": markDiscussionCommentAsAnswer
+E     "Create, update, delete, copy or link a Projects v2 project": copyProjectV2
+E     "Create, update, delete, copy or link a Projects v2 project": createProjectV2
+E     "Create, update, delete, copy or link a Projects v2 project": deleteProjectV2
+E     "Create, update, delete, copy or link a Projects v2 project": linkProjectV2ToRepository
+E     "Create, update, delete, copy or link a Projects v2 project": updateProjectV2
+E     "Auto-merge on or off": disablePullRequestAutoMerge
+E     "Auto-merge on or off": enablePullRequestAutoMerge
+E     "Draft to ready and back": convertPullRequestToDraft
+E     "Draft to ready and back": markPullRequestReadyForReview
+E     "Resolve review threads": PullRequest.reviewThreads
+E     "Resolve review threads": resolveReviewThread
+E     "Resolve review threads": unresolveReviewThread
+E     "Hide comments": minimizeComment
+E     "Hide comments": unminimizeComment
+E     "Move an issue to another repo": transferIssue
+E     "Pin an issue": pinIssue
+E     "Pin an issue": unpinIssue
+E     "Revert a PR": revertPullRequest
+E     "Read a merge queue, remove an entry": MergeQueue.entries
+E     "Read a merge queue, remove an entry": Repository.mergeQueue
+E     "Read a merge queue, remove an entry": dequeuePullRequest
+E     "Sponsors": createSponsorsTier
+E     "Sponsors": createSponsorship
+E     "Multi-file commit in one call": createCommitOnBranch
+E     "Branch protection with wildcard patterns": createBranchProtectionRule
+E   assert not ['"Repository discussions": Repository.discussions', '"Repository discussions": addDiscussionComment', '"Repository di...ects v2 project": copyProjectV2', '"Create, update, delete, copy or link a Projects v2 project": createProjectV2', ...]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_variable_holds_the_given_json_value[text]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_variable_holds_the_given_json_value[number]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_variable_holds_the_given_json_value[boolean]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_variable_holds_the_given_json_value[array]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_variable_holds_the_given_json_value[object]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_variable_holds_the_given_json_value[null]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_merge_queue_prints_every_entry
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[errors-without-data]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[errors-with-data]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[http-502]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[spent-rate-limit]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[no-response]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[page-without-its-connection]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[second-page-fails]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_an_undeclared_variable_is_refused[AC-2.5/exit-2/variable-the-document-does-not-define]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_an_undeclared_variable_is_refused[AC-2.5/exit-2/path-and-query-names]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_an_undeclared_variable_is_refused[AC-2.5/exit-2/after-of-a-paging-record]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_refused_mutation_sends_nothing[graphql/enablePullRequestAutoMerge]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_refused_mutation_sends_nothing[graphql/createCommitOnBranch]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_refused_mutation_sends_nothing[graphql/revertPullRequest]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_refused_mutation_sends_nothing[graphql/transferIssue]
+FAILED test/test_github_graphql_contract.py::test_the_reference_is_read_as_written
+FAILED test/test_github_graphql_contract.py::test_every_record_matches_the_reference
+FAILED test/test_github_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_field_the_type_lacks]
+FAILED test/test_github_graphql_contract.py::test_the_method_rejects_a_document_that_differs[since_in_place_of_after]
+FAILED test/test_github_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_variable_of_another_type]
+FAILED test/test_github_graphql_contract.py::test_the_method_rejects_a_document_that_differs[another_input_type]
+FAILED test/test_github_graphql_contract.py::test_the_method_rejects_a_document_that_differs[an_unused_variable]
+FAILED test/test_github_graphql_contract.py::test_the_method_rejects_a_document_that_differs[a_connection_short_of_the_path]
+FAILED test/test_github_graphql_contract.py::test_the_method_rejects_a_document_that_differs[the_enabling_document_in_the_disabling_record]
+FAILED test/test_github_graphql_contract.py::test_every_capability_has_a_record
+FAILED test/test_github_graphql_contract.py::test_every_member_a_row_names_is_selected
+================= 33 failed, 672 passed in 123.41s (0:02:03) ==================
