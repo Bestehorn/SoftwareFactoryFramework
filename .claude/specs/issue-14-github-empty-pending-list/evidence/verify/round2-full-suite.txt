@@ -1,0 +1,27 @@
+# Round 2 whole-suite verdict, read through scripts/github_wrapper.py from the main checkout (2026-11-11)
+# Worktree HEAD: git rev-parse HEAD -> 0ffd759c41545d948ebcbbbc37c998b2d5bb575c  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py list-runs --limit 3
+43035112486  in_progress  None         ci
+43028361042  completed    success      ci
+43027798450  completed    success      ci
+
+$ python scripts/github_wrapper.py get-run 43035112486   (before the wait; fields quoted)
+"head_branch": "issue-14-github-empty-pending-list",
+"head_sha": "0ffd759c41545d948ebcbbbc37c998b2d5bb575c",  # pragma: allowlist secret
+"run_number": 103,  "event": "pull_request",  "status": "in_progress",  "pull_requests": [ { "number": 64 } ]
+"base": { "ref": "main", "sha": "252c21eee209034175b1f7140b03b2b1365e98b2" }  # pragma: allowlist secret
+
+$ python scripts/github_wrapper.py wait-run 43035112486 --timeout-seconds 540
+{"run_id": 43035112486, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43035112486"}
+exit=0
+
+$ python scripts/github_wrapper.py get-jobs 43035112486
+130571769540   completed    success      verify (tests)
+130571769950   completed    success      verify (lint)
+130571769969   completed    success      verify (types)
+130571770018   completed    success      verify (security)
+130573046946   completed    success      report
+exit=0
+
+Verdict: GREEN. The run's head_sha equals the worktree HEAD, and every job is completed/success.

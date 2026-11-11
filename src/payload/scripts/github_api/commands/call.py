@@ -53,12 +53,14 @@ ID no record declares (``registry.lookup``); a raw body for a record whose ``con
 (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that its body is given with ``-f``/``-F``;
 and a call that gives a path, query or body name the record does not document or leaves a path parameter without a
 value, in one message naming each such name with its kind, each missing path parameter, then the record's documented
-path, query and body parameters (``check_call``). For a GraphQL record: an ID no record of ``graphql_only.py``
-declares, or one declared twice (``registry.graphql_lookup``); a raw body, which no GraphQL record takes
-(``refuse_graphql_raw_body``), in a message naming the ID and ``--input`` and saying that its variables are given with
-``-f``/``-F``; and a call that gives a ``--path`` or ``--query`` name or a variable the document does not declare, in
-one message naming each such name with its kind, then the variables the document declares (``check_graphql_call``).
-A refusal is logged; every name the caller gave is rendered with ``json.dumps``, and no byte of a raw body is.
+path, query and body parameters (``check_call``). A record whose body names hold ``*`` (``registry.ANY_BODY_NAME``,
+issue #14 AC-4) takes any body name; its path and query names are checked as any record's. For a GraphQL record: an
+ID no record of ``graphql_only.py`` declares, or one declared twice (``registry.graphql_lookup``); a raw body, which no
+GraphQL record takes (``refuse_graphql_raw_body``), in a message naming the ID and ``--input`` and saying that its
+variables are given with ``-f``/``-F``; and a call that gives a ``--path`` or ``--query`` name or a variable the
+document does not declare, in one message naming each such name with its kind, then the variables the document
+declares (``check_graphql_call``). A refusal is logged; every name the caller gave is rendered with ``json.dumps``,
+and no byte of a raw body is.
 
 What prints (D3):
 
@@ -144,6 +146,8 @@ GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
         "repos/delete-file": None,
         "git/create-ref": None,
         "git/update-ref": None,
+        "pulls/update-branch": None,
+        "code-scanning/commit-autofix": None,
         "agent-tasks/create-task-in-repo": None,
         "agent-merge/put-agent-merge-enrollment": None,
         "agent-automations/create-repo-automation": None,
@@ -307,11 +311,13 @@ def _undocumented(
     *, operation: RestOperation, path_names: Collection[str], query_names: Iterable[str], body_names: Iterable[str]
 ) -> List[Tuple[str, List[str]]]:
     """Each kind with the given names of that kind the record does not document, sorted; a query name is compared as
-    ``registry.query_name`` gives it and named as given."""
+    ``registry.query_name`` gives it and named as given. A record whose body names hold ``registry.ANY_BODY_NAME``
+    documents every body name (issue #14 AC-4); its path and query names are still compared."""
     documented_path = registry.path_parameters(operation=operation)
     path = {name for name in path_names if name not in documented_path}
     query = {name for name in query_names if registry.query_name(name=name) not in operation.query_params}
-    body = {name for name in body_names if name not in operation.body_params}
+    takes_any_body_name = registry.ANY_BODY_NAME in operation.body_params
+    body = {name for name in body_names if not takes_any_body_name and name not in operation.body_params}
     return [(KIND_PATH, sorted(path)), (KIND_QUERY, sorted(query)), (KIND_BODY, sorted(body))]
 
 
@@ -320,7 +326,9 @@ def check_call(
 ) -> None:
     """D4's check: refuse with ``ValueError``, in one message, every path, query or body name the record does not
     document, each with its kind, and every path parameter of the record ``path_names`` lacks; the message then names
-    the record's documented path parameters (in path order), query and body parameters."""
+    the record's documented path parameters (in path order), query and body parameters. A record whose body names hold
+    ``*`` (``registry.ANY_BODY_NAME``) takes any body name (issue #14 AC-4); its path and query names are checked as
+    any record's."""
     documented_path = list(registry.path_parameters(operation=operation))
     named = [
         f"no {kind} parameter {json.dumps(obj=names)}"

@@ -1,0 +1,30 @@
+# probe call-any-body-skips-path (UB-3, a line outside the diff): commands/call.py _undocumented skips path names of a record whose body_params hold '*'
+diff --git a/src/payload/scripts/github_api/commands/call.py b/src/payload/scripts/github_api/commands/call.py
+index 8bf8102..c77ee9e 100644
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -314,9 +314,9 @@ def _undocumented(
+     ``registry.query_name`` gives it and named as given. A record whose body names hold ``registry.ANY_BODY_NAME``
+     documents every body name (issue #14 AC-4); its path and query names are still compared."""
+     documented_path = registry.path_parameters(operation=operation)
+-    path = {name for name in path_names if name not in documented_path}
+-    query = {name for name in query_names if registry.query_name(name=name) not in operation.query_params}
+     takes_any_body_name = registry.ANY_BODY_NAME in operation.body_params
++    path = {name for name in path_names if not takes_any_body_name and name not in documented_path}
++    query = {name for name in query_names if registry.query_name(name=name) not in operation.query_params}
+     body = {name for name in body_names if not takes_any_body_name and name not in operation.body_params}
+     return [(KIND_PATH, sorted(path)), (KIND_QUERY, sorted(query)), (KIND_BODY, sorted(body))]
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+........................................................................ [ 54%]
+.............................................................            [100%]
+======================= 133 passed in 92.60s (0:01:32) ========================
+exit=0

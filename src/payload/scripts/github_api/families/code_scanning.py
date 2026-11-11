@@ -12,8 +12,9 @@ one request, as every other record does.
 Every record sends the default media type: ``code-scanning/get-analysis`` and ``code-scanning/get-codeql-database``
 print their JSON form, not the ``application/sarif+json`` analysis or the ``application/zip`` database (#31
 DL-005). ``code-scanning/upload-sarif`` takes its Base64 ``sarif`` as a field value. Every record is sent by
-``call <operation-id>`` (#28). ``code-scanning/commit-autofix`` stays pending: it commits to ``target_ref``, a branch
-write no subcommand sends (#31 DL-003), so ``call`` refuses it as an ID no record declares.
+``call <operation-id>`` (#28) but ``code-scanning/commit-autofix``: it commits to ``target_ref``, a branch write no
+subcommand sends (#31 DL-003), so ``commands/call.py`` ``GATED_OPERATIONS`` maps it to no subcommand and ``call``
+refuses it (issue #14 AC-3). No operation of the family is pending.
 """
 
 from __future__ import annotations
@@ -189,6 +190,21 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix",
         query_params=frozenset(),
         body_params=frozenset(),
+        multi_segment=frozenset(),
+        paging=Paging.NONE,
+        item_key=None,
+        api_version=API_VERSION_DEFAULT,
+        accept=ACCEPT_JSON,
+    ),
+    # rest/code-scanning.md "Commit an autofix for a code scanning alert": body ``target_ref`` and ``message``; 201
+    # with a ``code-scanning-autofix-commits-response``; it commits to ``target_ref``, so ``commands/call.py``
+    # ``GATED_OPERATIONS`` refuses it.
+    RestOperation(
+        operation_id="code-scanning/commit-autofix",
+        method="POST",
+        path="/repos/{owner}/{repo}/code-scanning/alerts/{alert_number}/autofix/commits",
+        query_params=frozenset(),
+        body_params=frozenset({"target_ref", "message"}),
         multi_segment=frozenset(),
         paging=Paging.NONE,
         item_key=None,
@@ -397,5 +413,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-#: #31 DL-003: "Commit an autofix for a code scanning alert" commits to ``target_ref``.
-PENDING: FrozenSet[str] = frozenset({"code-scanning/commit-autofix"})
+PENDING: FrozenSet[str] = frozenset()

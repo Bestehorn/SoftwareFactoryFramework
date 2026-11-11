@@ -1,0 +1,77 @@
+# round 2 mutant M3 registry-empty-query-documented (REF-1, UB-3; near-variant keyed on documented for query): _check_names also returns early for a query whose documented names are empty
+2026-11-11T14:12:57Z
+ M src/payload/scripts/github_api/registry.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-empty-query-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-every-kind.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-send-skips-query.txt
+diff --git a/src/payload/scripts/github_api/registry.py b/src/payload/scripts/github_api/registry.py
+index 606bd75..8100200 100644
+--- a/src/payload/scripts/github_api/registry.py
++++ b/src/payload/scripts/github_api/registry.py
+@@ -208,7 +208,7 @@ def _check_names(
+     """Refuse with ``ValueError`` every ``given`` name that ``documented`` lacks, before anything is sent; a query
+     name is compared through ``query_name`` and named in the message as given. A body whose ``documented`` names hold
+     ``ANY_BODY_NAME`` accepts every name; a query's ``documented`` names never do."""
+-    if kind == KIND_BODY and ANY_BODY_NAME in documented:
++    if (kind == KIND_BODY and ANY_BODY_NAME in documented) or (kind == KIND_QUERY and not documented):
+         return
+     undocumented = sorted(name for name in (given or {}) if _documented_name(kind=kind, name=name) not in documented)
+     if undocumented:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [109 items]
+
+..............................F......................................... [ 66%]
+...F...E...........F.E.................                                  [100%]
+=================================== ERRORS ====================================
+_ ERROR at teardown of test_call_refuses_an_undocumented_parameter[body-name-sent-as-query] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:239: in fake
+    host.assert_every_request_routed()
+src\payload\test\github_wrapper_fixtures.py:451: in assert_every_request_routed
+    assert not unrouted, f"the fake GitHub host received requests no route answers: {unrouted}"
+           ^^^^^^^^^^^^
+E   AssertionError: the fake GitHub host received requests no route answers: ['PATCH https://api.github.com/repos/o/r/issues/7?state=closed']
+_ ERROR at teardown of test_call_refuses_an_undocumented_parameter[path-name-sent-as-query] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:239: in fake
+    host.assert_every_request_routed()
+src\payload\test\github_wrapper_fixtures.py:451: in assert_every_request_routed
+    assert not unrouted, f"the fake GitHub host received requests no route answers: {unrouted}"
+           ^^^^^^^^^^^^
+E   AssertionError: the fake GitHub host received requests no route answers: ['PATCH https://api.github.com/repos/o/r/issues/7?issue_number=7']
+================================== FAILURES ===================================
+____________ test_the_registry_refuses_the_content_exclusion_query ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PUT https://api.github.com/orgs/acme/copilot/content_exclusion?sort=name
+____ test_call_refuses_an_undocumented_parameter[body-name-sent-as-query] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/issues/7?state=closed
+____ test_call_refuses_an_undocumented_parameter[path-name-sent-as-query] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/issues/7?issue_number=7
+=========================== short test summary info ===========================
+ERROR src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[body-name-sent-as-query]
+ERROR src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[path-name-sent-as-query]
+FAILED src/payload/test/test_github_api_copilot.py::test_the_registry_refuses_the_content_exclusion_query
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[body-name-sent-as-query]
+FAILED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[path-name-sent-as-query]
+================== 3 failed, 106 passed, 2 errors in 10.64s ===================
+exit=1
+restored; sha256 against the pre-mutant digests:
+src/payload/scripts/github_api/registry.py: OK
+src/payload/scripts/github_api/commands/call.py: OK
+src/payload/scripts/github_api/families/pulls.py: OK
+src/payload/scripts/github_api/families/code_scanning.py: OK
+src/payload/scripts/github_api/families/copilot.py: OK
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-empty-query-documented.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-every-kind.txt
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-mutant-registry-send-skips-query.txt
+2026-11-11T14:13:11Z

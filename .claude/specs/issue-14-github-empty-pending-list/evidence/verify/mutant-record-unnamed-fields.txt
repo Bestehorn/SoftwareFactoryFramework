@@ -1,0 +1,50 @@
+# mutant record-unnamed-fields (AC-1): code-scanning/commit-autofix item_key 'items' and content_type octet-stream; pulls/update-branch content_type octet-stream
+Wed Nov 11 14:38:10 WEST 2026
+ M src/payload/scripts/github_api/families/code_scanning.py
+ M src/payload/scripts/github_api/families/pulls.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/
+diff --git a/src/payload/scripts/github_api/families/code_scanning.py b/src/payload/scripts/github_api/families/code_scanning.py
+index 77df86d..d07bcf8 100644
+--- a/src/payload/scripts/github_api/families/code_scanning.py
++++ b/src/payload/scripts/github_api/families/code_scanning.py
+@@ -207,9 +207,10 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         body_params=frozenset({"target_ref", "message"}),
+         multi_segment=frozenset(),
+         paging=Paging.NONE,
+-        item_key=None,
++        item_key="items",
+         api_version=API_VERSION_DEFAULT,
+         accept=ACCEPT_JSON,
++        content_type="application/octet-stream",
+     ),
+     # rest/code-scanning.md "List instances of a code scanning alert": 200 with an array, so it pages by ``link`` with
+     # no item key.
+diff --git a/src/payload/scripts/github_api/families/pulls.py b/src/payload/scripts/github_api/families/pulls.py
+index 4c91dfd..475aa57 100644
+--- a/src/payload/scripts/github_api/families/pulls.py
++++ b/src/payload/scripts/github_api/families/pulls.py
+@@ -305,6 +305,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         item_key=None,
+         api_version=API_VERSION_DEFAULT,
+         accept=ACCEPT_JSON,
++        content_type="application/octet-stream",
+     ),
+     # rest/pulls.md "Get all requested reviewers for a pull request": one object and no ``Paging:`` line; one request.
+     RestOperation(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [133 items]
+
+........................................................................ [ 54%]
+.............................................................            [100%]
+======================= 133 passed in 134.31s (0:02:14) =======================
+exit=0
+Wed Nov 11 14:40:29 WEST 2026
+ M src/payload/scripts/github_api/families/code_scanning.py
+ M src/payload/scripts/github_api/families/pulls.py
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/

@@ -9,9 +9,10 @@ every record sends ``API_VERSION_DEFAULT`` and ``ACCEPT_JSON``. ``copilot/list-c
 documents no ``Link`` header, so ``registry.pages`` stops after the first page unless a response sends a ``rel="next"``
 target. Every other record sends one request.
 
-Every record is sent by ``call <operation-id>`` (#28); none writes a branch or creates issues.
-``copilot/set-copilot-content-exclusion-for-organization`` stays on ``PENDING``: its body is a map of any key (``*``),
-and ``call`` refuses a body name the record does not document (issue #33 DL-004).
+Every record is sent by ``call <operation-id>`` (#28); none writes a branch or creates issues, and ``PENDING`` is
+empty (issue #14 AC-2). The body of ``copilot/set-copilot-content-exclusion-for-organization`` is a map of any
+repository key, its section's only first-level body row ``*`` ("any key"), so its ``body_params`` is ``{"*"}`` and
+``call`` sends every body member given (issue #14 AC-4).
 """
 
 from __future__ import annotations
@@ -274,6 +275,18 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/orgs/{org}/copilot/content_exclusion",
         query_params=frozenset(),
         body_params=frozenset(),
+        multi_segment=frozenset(),
+        paging=Paging.NONE,
+        item_key=None,
+        api_version=API_VERSION_DEFAULT,
+        accept=ACCEPT_JSON,
+    ),
+    RestOperation(
+        operation_id="copilot/set-copilot-content-exclusion-for-organization",
+        method="PUT",
+        path="/orgs/{org}/copilot/content_exclusion",
+        query_params=frozenset(),
+        body_params=frozenset({"*"}),
         multi_segment=frozenset(),
         paging=Paging.NONE,
         item_key=None,
@@ -549,4 +562,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[str] = frozenset({"copilot/set-copilot-content-exclusion-for-organization"})
+PENDING: FrozenSet[str] = frozenset()

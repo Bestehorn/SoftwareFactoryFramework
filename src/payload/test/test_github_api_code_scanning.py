@@ -1,24 +1,29 @@
 """Tests of the GitHub wrapper's ``code-scanning`` family, ``github_api/families/code_scanning.py`` (issue #31
-``change.md``; AC-1, AC-3, AC-4, AC-6, UB-2).
+``change.md``; AC-1, AC-3, AC-4, AC-6, UB-2; issue #14 ``change.md``: AC-1, AC-2, AC-3).
 
 Every expected value here is transcribed from ``docs/api-reference/github/rest/code-scanning.md`` and
 ``conventions.md``, never read from the records or from ``commands/call.py``:
 
-- ``CODE_SCANNING_OPERATION_IDS``: the operation ID of every section of ``code-scanning.md`` (25);
-  ``code-scanning/commit-autofix``, which commits to ``target_ref``, stays pending (DL-003; AC-1);
+- ``CODE_SCANNING_OPERATION_IDS``: the operation ID of every section of ``code-scanning.md`` (25), each with its
+  record and none pending (#14 AC-1, AC-2);
 - ``MULTI_SEGMENT_PARAMETERS``: empty, as no ``Parameter`` row of ``code-scanning.md`` reads "may contain `/`
   (multi-segment path)" (AC-3);
 - ``LIST_RECORDS``: each section with a ``Paging:`` line (AC-4): its path, the key after "items in" (``None``: every
   one of these lines reads "the response body is the array", and no ``code-scanning/`` ID is in ``conventions.md``
   "Lists wrapped in an object"), and whether its ``Parameter`` table documents ``per_page``;
-  ``code-scanning/list-codeql-databases`` has no ``Paging:`` line, so it is not one of them.
+  ``code-scanning/list-codeql-databases`` has no ``Paging:`` line, so it is not one of them;
+- ``BRANCH_WRITING_CALLS``: #14 AC-3's record of this family, ``code-scanning/commit-autofix``, which commits to
+  ``target_ref``, called with every path parameter but ``owner`` and ``repo`` and every body member its section
+  documents, so only a refusal keeps the request from being sent.
 
 ``test_a_list_record_prints_every_item`` is #28 design D8's slice test: one golden case per ``Paging.LINK`` record,
 argv ``call <id>`` with ``--path NAME=VALUE`` for each path parameter but ``owner`` and ``repo``, plus ``--query
 per_page=1`` where the section documents ``per_page``, against a fake host serving two items under the record's item
-key, one per page; standard output is both as one JSON array. Each case runs with ``fx.run_product_case`` through the
-product entry script's ``main(argv=...)`` in the fixture project (``origin`` ``o/r``), which judges its exit code,
-its standard output exactly, its requests other than ``GET`` and that every request was routed.
+key, one per page; standard output is both as one JSON array. ``test_a_branch_writing_record_is_refused`` runs #14
+AC-3's call the same way and expects exit 2, no request and a log record naming the ID and that no subcommand sends
+it. Each case runs with ``fx.run_product_case`` through the product entry script's ``main(argv=...)`` in the fixture
+project (``origin`` ``o/r``), which judges its exit code, its standard output exactly, its requests other than ``GET``
+(none at all for a refusal) and that every request was routed.
 
 The fake host module is loaded by path as ``test_github_api_call.py`` loads it. No test opens a connection.
 
@@ -30,6 +35,7 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import logging
 import re
 import sys
 from collections import Counter
@@ -67,9 +73,11 @@ FAMILY_MODULE = f"{fx.PACKAGE}.families.{FAMILY}"
 FAMILY_FILE = fx.SCRIPTS_DIR / fx.PACKAGE / "families" / f"{FAMILY}.py"
 
 AC_6 = "AC-6"
+ISSUE_14_AC_3 = "#14 AC-3"
 CALL = "call"
 OPTION_PATH = "--path"
 OPTION_QUERY = "--query"
+OPTION_RAW_FIELD = "--raw-field"
 PATH_OWNER = "owner"
 PATH_REPO = "repo"
 #: The path parameters ``call`` defaults to the ``origin`` repository, so no case gives them.
@@ -79,8 +87,11 @@ QUERY_ONE_PER_PAGE = f"{fx.QUERY_PER_PAGE}=1"
 PATH_PLACEHOLDER = re.compile(r"\{([^{}]+)\}")
 NON_ALPHANUMERIC = re.compile(r"[^A-Za-z0-9]")
 TEST_VALUE_PREFIX = "v"
+#: ``run_product_case`` reads standard error along with standard output; no case here withholds a value, so
+#: ``fx.assert_log`` judges the log records alone.
+STDERR_READ_BY_THE_RUN = ""
 
-#: The one ID left pending (DL-003): "Commit an autofix for a code scanning alert" commits to ``target_ref``.
+#: #14 AC-3: "Commit an autofix for a code scanning alert" commits to ``target_ref``, so ``call`` refuses it.
 COMMIT_AUTOFIX = "code-scanning/commit-autofix"
 
 #: Every operation ID of ``rest/code-scanning.md``, one per section.
@@ -113,8 +124,9 @@ CODE_SCANNING_OPERATION_IDS = frozenset(
         "code-scanning/upload-sarif",
     }
 )
-#: AC-1: the IDs ``OPERATIONS`` holds a record of, each once: every ``code-scanning/`` ID but the one left pending.
-RECORDED_IDS = CODE_SCANNING_OPERATION_IDS - {COMMIT_AUTOFIX}
+#: AC-1, #14 AC-1: the IDs ``OPERATIONS`` holds a record of, each once: every ``code-scanning/`` ID of the reference,
+#: ``code-scanning/commit-autofix`` included.
+RECORDED_IDS = CODE_SCANNING_OPERATION_IDS
 
 #: AC-3: no ``code-scanning/`` section has a path parameter whose row reads "may contain `/` (multi-segment path)".
 MULTI_SEGMENT_PARAMETERS: Dict[str, FrozenSet[str]] = {}
@@ -166,6 +178,35 @@ LISTED_ITEMS: Tuple[Dict[str, Any], ...] = (
     {fx.FIELD_ID: 1, fx.FIELD_NAME: "first"},
     {fx.FIELD_ID: 2, fx.FIELD_NAME: "second"},
 )
+
+
+@dataclass(frozen=True)
+class BranchWritingCall:
+    """A #14 AC-3 record of this family and the arguments after ``call <id>``: every path parameter but ``owner`` and
+    ``repo``, and every body member its section documents."""
+
+    operation_id: str
+    arguments: Tuple[str, ...]
+
+
+#: #14 AC-3: the record of this family whose call commits to a branch, ``target_ref``; its section documents the path
+#: parameter ``alert_number`` and the body members ``target_ref`` and ``message``.
+BRANCH_WRITING_CALLS: Tuple[BranchWritingCall, ...] = (
+    BranchWritingCall(
+        operation_id=COMMIT_AUTOFIX,
+        arguments=(
+            OPTION_PATH,
+            "alert_number=42",
+            OPTION_RAW_FIELD,
+            "target_ref=refs/heads/main",
+            OPTION_RAW_FIELD,
+            "message=Fix the code scanning alert",
+        ),
+    ),
+)
+#: #14 AC-3's refusal: the log record says that no subcommand sends the operation (``commands/call.py`` maps it to
+#: none).
+NO_SUBCOMMAND_SENDS_IT = r"(?i)\bno\b[\w\s-]*\bsubcommand\b[\w\s-]*\bsends\b"
 
 
 @pytest.fixture(autouse=True)
@@ -225,9 +266,28 @@ def list_case(*, listed: ListRecord) -> Any:
     )
 
 
+def refusal_case(*, branch_writing: BranchWritingCall) -> Any:
+    """#14 AC-3's golden case of ``branch_writing``: exit 2, nothing on standard output, no request, and one log record
+    naming the ID as ``json.dumps`` renders it (#28 D4) and that no subcommand sends it."""
+    return fx.GoldenCase(
+        name=f"{ISSUE_14_AC_3}/exit-2/{branch_writing.operation_id}",
+        argv=(CALL, branch_writing.operation_id, *branch_writing.arguments),
+        stdout="",
+        exit_code=fx.EXIT_REFUSED,
+        log=fx.LogExpectation(
+            refusal=(re.escape(json.dumps(obj=branch_writing.operation_id)), NO_SUBCOMMAND_SENDS_IT), withheld=()
+        ),
+    )
+
+
 def list_record_name(listed: ListRecord) -> str:
     """The test id of a ``LIST_RECORDS`` row."""
     return listed.operation_id
+
+
+def branch_writing_name(branch_writing: BranchWritingCall) -> str:
+    """The test id of a ``BRANCH_WRITING_CALLS`` row."""
+    return branch_writing.operation_id
 
 
 def code_scanning_family() -> ModuleType:
@@ -256,16 +316,15 @@ def differences(*, declared: Mapping[str, Any], expected: Mapping[str, Any]) -> 
     ]
 
 
-def test_only_the_branch_writing_record_is_pending() -> None:
-    """AC-1, UB-2: ``PENDING`` is exactly ``{"code-scanning/commit-autofix"}`` (DL-003), so ``call`` still refuses it as
-    an ID no record declares, and ``OPERATIONS`` holds one record of every other ``code-scanning/`` ID of the
-    reference, none twice and none of another ID."""
+def test_nothing_is_pending() -> None:
+    """#14 AC-1, AC-2: ``PENDING`` is empty, and ``OPERATIONS`` holds one record of every ``code-scanning/`` ID of the
+    reference, ``code-scanning/commit-autofix`` included, none twice and none of another ID."""
     family = code_scanning_family()
     counts = Counter(record.operation_id for record in family.OPERATIONS)
     problems = []
-    pending = frozenset(family.PENDING)
-    if pending != frozenset({COMMIT_AUTOFIX}):
-        problems.append(f"PENDING holds {len(pending)} IDs, not only {COMMIT_AUTOFIX}: {sorted(pending)}")
+    pending = sorted(family.PENDING)
+    if pending:
+        problems.append(f"PENDING still holds {len(pending)} IDs: {pending}")
     missing = sorted(RECORDED_IDS - set(counts))
     if missing:
         problems.append(f"{len(missing)} IDs have no record: {missing}")
@@ -280,8 +339,9 @@ def test_only_the_branch_writing_record_is_pending() -> None:
 
 
 def test_every_record_sends_the_default_version_and_media_type() -> None:
-    """AC-3: every ``code-scanning/`` ID but the pending one has a record, and each declares ``API_VERSION_DEFAULT``
-    and ``ACCEPT_JSON``, so ``call`` sends them (``get-analysis`` and ``get-codeql-database`` included, DL-005)."""
+    """AC-3, #14 AC-1: every ``code-scanning/`` ID has a record, ``code-scanning/commit-autofix`` included, and each
+    declares ``API_VERSION_DEFAULT`` and ``ACCEPT_JSON``, so ``call`` sends them (``get-analysis`` and
+    ``get-codeql-database`` included, DL-005)."""
     transport = fx.import_api_module(name=TRANSPORT)
     records = records_by_id(family=code_scanning_family())
     problems = []
@@ -296,6 +356,23 @@ def test_every_record_sends_the_default_version_and_media_type() -> None:
             problems.append(f"{json.dumps(obj=operation_id)}: accept {record.accept!r}")
 
     assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+
+
+def test_the_branch_writing_record_has_no_item_key_and_no_content_type() -> None:
+    """#14 AC-1: the one record of ``code-scanning/commit-autofix`` in ``OPERATIONS``, found by its ID as a literal, has
+    ``item_key`` ``None`` (its section has no ``Paging:`` line) and ``content_type`` ``None`` (its section reads
+    "Request body (`application/json`, optional)": a JSON body)."""
+    operation_id = "code-scanning/commit-autofix"
+    matches = [record for record in code_scanning_family().OPERATIONS if record.operation_id == operation_id]
+    assert len(matches) == 1, f"{operation_id}: {FAMILY_FILE.name} declares {len(matches)} records, one expected"
+    record = matches[0]
+    problems = []
+    if record.item_key is not None:
+        problems.append(f"item_key {record.item_key!r}, None expected")
+    if record.content_type is not None:
+        problems.append(f"content_type {record.content_type!r}, None expected")
+
+    assert not problems, f"{json.dumps(obj=operation_id)}: " + "; ".join(problems)
 
 
 def test_the_multi_segment_parameters_are_the_sections() -> None:
@@ -336,3 +413,25 @@ def test_a_list_record_prints_every_item(
 
     pages = len(LISTED_ITEMS) if listed.per_page else 1
     assert len(requests) == pages, f"{listed.operation_id}: {len(requests)} requests, {pages} pages expected"
+
+
+@pytest.mark.parametrize(argnames="branch_writing", argvalues=BRANCH_WRITING_CALLS, ids=branch_writing_name)
+def test_a_branch_writing_record_is_refused(
+    branch_writing: BranchWritingCall,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """#14 AC-3: the record is declared and ``registry.lookup`` returns it, yet its complete ``call`` exits 2 with no
+    request, and a log record names the ID and that no subcommand sends it."""
+    registry = fx.import_api_module(name=REGISTRY)
+    records = records_by_id(family=code_scanning_family())
+    assert branch_writing.operation_id in records, f"{branch_writing.operation_id} has no record in {FAMILY_FILE.name}"
+    assert registry.lookup(operation_id=branch_writing.operation_id) == records[branch_writing.operation_id]
+    case = refusal_case(branch_writing=branch_writing)
+    caplog.set_level(level=logging.DEBUG)
+
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)

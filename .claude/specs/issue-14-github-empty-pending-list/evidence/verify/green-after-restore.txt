@@ -1,0 +1,30 @@
+# green after every restore: the ten files of evidence/green/wave-1.txt
+Wed Nov 11 14:47:33 WEST 2026
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/
+286f789526baa6d1a906152305e7a936e10fe75aefcb8654a4f2c2b6278033b8 *src/payload/scripts/github_api/families/pulls.py  # pragma: allowlist secret
+86cb7e70a58aea62fc445d43e5bf531b9a881d909523937e7f5f259cbbc35a32 *src/payload/scripts/github_api/families/code_scanning.py  # pragma: allowlist secret
+1eedc2c503c449dbd00d5593742d703528d135fca91013e86e3cadbe7951f632 *src/payload/scripts/github_api/families/copilot.py  # pragma: allowlist secret
+7631a26b8bde159c513ec2a8a3e5f2fe9c02e3581eb238dec271d7ff38569e08 *src/payload/scripts/github_api/commands/call.py  # pragma: allowlist secret
+dca3b47f22e03fba77b2b9a8306fdb3b42adebb4579fcac0a2f90881f9f913de *src/payload/scripts/github_api/registry.py  # pragma: allowlist secret
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_github_wrapper_fork_parity.py src/payload/test/test_wrapper_delivery.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [641 items]
+
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 33%]
+........................................................................ [ 44%]
+........................................................................ [ 56%]
+........................................................................ [ 67%]
+........................................................................ [ 78%]
+........................................................................ [ 89%]
+.................................................................        [100%]
+======================= 641 passed in 133.16s (0:02:13) =======================
+exit=0
+Wed Nov 11 14:49:48 WEST 2026
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/

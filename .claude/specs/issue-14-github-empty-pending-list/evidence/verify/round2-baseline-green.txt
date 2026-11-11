@@ -1,0 +1,295 @@
+# round 2 baseline: the delta's paired set (F pulls/code_scanning/copilot, K, R, N, V) at HEAD, before any mutant
+2026-11-11T14:08:28Z
+HEAD 0ffd759c41545d948ebcbbbc37c998b2d5bb575c  # pragma: allowlist secret
+git status --porcelain:
+?? .claude/specs/issue-14-github-empty-pending-list/evidence/verify/round2-baseline-green.txt
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 -p no:cacheprovider --color=no -v src/payload/test/test_github_api_pulls.py src/payload/test/test_github_api_code_scanning.py src/payload/test/test_github_api_copilot.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0 -- D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+hypothesis profile 'default'
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-14
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [137 items]
+
+scheduling tests via LoadScheduling
+
+src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alerts-for-repo] 
+src/payload/test/test_github_api_pulls.py::test_nothing_is_pending 
+[gw0] [  0%] PASSED src/payload/test/test_github_api_pulls.py::test_nothing_is_pending 
+src/payload/test/test_github_api_pulls.py::test_the_records_follow_the_transcription_rules 
+[gw0] [  1%] PASSED src/payload/test/test_github_api_pulls.py::test_the_records_follow_the_transcription_rules 
+src/payload/test/test_github_api_pulls.py::test_the_branch_writing_record_has_no_item_key_and_no_content_type 
+[gw0] [  2%] PASSED src/payload/test/test_github_api_pulls.py::test_the_branch_writing_record_has_no_item_key_and_no_content_type 
+src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments-for-repo] 
+[gw1] [  2%] PASSED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alerts-for-repo] 
+src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alert-instances] 
+[gw0] [  3%] PASSED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments-for-repo] 
+src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments] 
+[gw1] [  4%] PASSED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alert-instances] 
+src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-recent-analyses] 
+[gw0] [  5%] PASSED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-review-comments] 
+src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list] 
+[gw1] [  5%] PASSED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-recent-analyses] 
+src/payload/test/test_github_api_code_scanning.py::test_a_branch_writing_record_is_refused[code-scanning/commit-autofix] 
+[gw0] [  6%] PASSED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list] 
+src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-commits] 
+[gw1] [  7%] PASSED src/payload/test/test_github_api_code_scanning.py::test_a_branch_writing_record_is_refused[code-scanning/commit-autofix] 
+src/payload/test/test_github_api_copilot.py::test_nothing_is_pending 
+[gw1] [  8%] PASSED src/payload/test/test_github_api_copilot.py::test_nothing_is_pending 
+src/payload/test/test_github_api_copilot.py::test_the_records_follow_the_transcription_rules 
+[gw1] [  8%] PASSED src/payload/test/test_github_api_copilot.py::test_the_records_follow_the_transcription_rules 
+src/payload/test/test_github_api_copilot.py::test_a_paged_record_prints_every_page[AC-4/exit-0/copilot/list-copilot-coding-agent-selected-repositories-for-organization] 
+[gw0] [  9%] PASSED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-commits] 
+src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-files] 
+[gw1] [ 10%] PASSED src/payload/test/test_github_api_copilot.py::test_a_paged_record_prints_every_page[AC-4/exit-0/copilot/list-copilot-coding-agent-selected-repositories-for-organization] 
+src/payload/test/test_github_api_copilot.py::test_a_paged_record_prints_every_page[AC-4/exit-0/copilot/list-copilot-seats] 
+[gw0] [ 10%] PASSED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-files] 
+src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-reviews] 
+[gw1] [ 11%] PASSED src/payload/test/test_github_api_copilot.py::test_a_paged_record_prints_every_page[AC-4/exit-0/copilot/list-copilot-seats] 
+src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_map_is_sent_as_given 
+[gw0] [ 12%] PASSED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-reviews] 
+src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-comments-for-review] 
+[gw1] [ 13%] PASSED src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_map_is_sent_as_given 
+src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_call_checks_its_query 
+[gw0] [ 13%] PASSED src/payload/test/test_github_api_pulls.py::test_a_paged_record_prints_every_page[AC-4/exit-0/pulls/list-comments-for-review] 
+src/payload/test/test_github_api_pulls.py::test_a_branch_writing_record_is_refused 
+[gw1] [ 14%] PASSED src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_call_checks_its_query 
+src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_call_checks_its_path 
+[gw0] [ 15%] PASSED src/payload/test/test_github_api_pulls.py::test_a_branch_writing_record_is_refused 
+src/payload/test/test_github_api_code_scanning.py::test_nothing_is_pending 
+[gw0] [ 16%] PASSED src/payload/test/test_github_api_code_scanning.py::test_nothing_is_pending 
+src/payload/test/test_github_api_code_scanning.py::test_every_record_sends_the_default_version_and_media_type 
+[gw0] [ 16%] PASSED src/payload/test/test_github_api_code_scanning.py::test_every_record_sends_the_default_version_and_media_type 
+src/payload/test/test_github_api_code_scanning.py::test_the_branch_writing_record_has_no_item_key_and_no_content_type 
+[gw0] [ 17%] PASSED src/payload/test/test_github_api_code_scanning.py::test_the_branch_writing_record_has_no_item_key_and_no_content_type 
+src/payload/test/test_github_api_code_scanning.py::test_the_multi_segment_parameters_are_the_sections 
+[gw0] [ 18%] PASSED src/payload/test/test_github_api_code_scanning.py::test_the_multi_segment_parameters_are_the_sections 
+src/payload/test/test_github_api_code_scanning.py::test_every_list_record_has_a_case 
+[gw0] [ 18%] PASSED src/payload/test/test_github_api_code_scanning.py::test_every_list_record_has_a_case 
+src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alerts-for-org] 
+[gw1] [ 19%] PASSED src/payload/test/test_github_api_copilot.py::test_the_content_exclusion_call_checks_its_path 
+src/payload/test/test_github_api_copilot.py::test_the_registry_refuses_the_content_exclusion_query 
+[gw0] [ 20%] PASSED src/payload/test/test_github_api_code_scanning.py::test_a_list_record_prints_every_item[code-scanning/list-alerts-for-org] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-slash] 
+[gw1] [ 21%] PASSED src/payload/test/test_github_api_copilot.py::test_the_registry_refuses_the_content_exclusion_query 
+src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-is-merge-pr] 
+[gw0] [ 21%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-slash] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-space] 
+[gw1] [ 22%] PASSED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-is-merge-pr] 
+src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-async-is-merge-pr] 
+[gw1] [ 23%] PASSED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/pulls-merge-async-is-merge-pr] 
+src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/issues-create-is-create-issue] 
+[gw0] [ 24%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-value-with-a-space] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-parameter] 
+[gw1] [ 24%] PASSED src/payload/test/test_github_api_call.py::test_a_gated_operation_names_its_subcommand[AC-1.1/exit-2/issues-create-is-create-issue] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-parameter-and-the-origin-repository] 
+[gw0] [ 25%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-parameter] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/string-and-json-body-members] 
+[gw1] [ 26%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/path-parameter-and-the-origin-repository] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/owner-and-repo-given] 
+[gw0] [ 27%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/string-and-json-body-members] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-name-given-twice] 
+[gw1] [ 27%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/owner-and-repo-given] 
+src/payload/test/test_github_api_call.py::test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/bare-list-by-the-next-target-as-given] 
+[gw0] [ 28%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/query-name-given-twice] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/array-query-name-sent-as-written] 
+[gw1] [ 29%] PASSED src/payload/test/test_github_api_call.py::test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/bare-list-by-the-next-target-as-given] 
+src/payload/test/test_github_api_call.py::test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/items-under-the-item-key] 
+[gw0] [ 29%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/array-query-name-sent-as-written] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type] 
+[gw1] [ 30%] PASSED src/payload/test/test_github_api_call.py::test_a_list_prints_every_page_as_one_array[AC-1.4/exit-0/items-under-the-item-key] 
+src/payload/test/test_github_api_call.py::test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/json-body] 
+[gw0] [ 31%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type] 
+src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type-on-every-page] 
+[gw1] [ 32%] PASSED src/payload/test/test_github_api_call.py::test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/json-body] 
+src/payload/test/test_github_api_call.py::test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/empty-body] 
+[gw0] [ 32%] PASSED src/payload/test/test_github_api_call.py::test_an_operation_call_sends_its_record[AC-1.2/exit-0/the-record-version-and-media-type-on-every-page] 
+src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/string] 
+[gw1] [ 33%] PASSED src/payload/test/test_github_api_call.py::test_a_json_or_empty_body_prints_as_documented[AC-1.5/exit-0/empty-body] 
+src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/archive-after-a-redirect-to-storage] 
+[gw0] [ 34%] PASSED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/string] 
+src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/number] 
+[gw1] [ 35%] PASSED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/archive-after-a-redirect-to-storage] 
+src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/diff] 
+[gw0] [ 35%] PASSED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/number] 
+src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/boolean] 
+[gw1] [ 36%] PASSED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/diff] 
+src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/html] 
+[gw0] [ 37%] PASSED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/boolean] 
+src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/array] 
+[gw1] [ 37%] PASSED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/html] 
+src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/bytes-that-are-not-utf-8] 
+[gw0] [ 38%] PASSED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/array] 
+src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/object] 
+[gw1] [ 39%] PASSED src/payload/test/test_github_api_call.py::test_a_body_that_is_not_json_is_written_unchanged[AC-1.6/exit-0/bytes-that-are-not-utf-8] 
+src/payload/test/test_github_api_call.py::test_an_api_error_exits_1_with_its_details[AC-1.7/exit-1/not-found] 
+[gw0] [ 40%] PASSED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/object] 
+src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/null] 
+[gw1] [ 40%] PASSED src/payload/test/test_github_api_call.py::test_an_api_error_exits_1_with_its_details[AC-1.7/exit-1/not-found] 
+src/payload/test/test_github_api_call.py::test_an_unknown_operation_is_refused[AC-2.1/exit-2/id-not-in-the-index] 
+[gw0] [ 41%] PASSED src/payload/test/test_github_api_call.py::test_a_body_member_holds_the_given_json_value[AC-1.3/exit-0/null] 
+src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/body-name] 
+[gw1] [ 42%] PASSED src/payload/test/test_github_api_call.py::test_an_unknown_operation_is_refused[AC-2.1/exit-2/id-not-in-the-index] 
+src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/path-name] 
+[gw0] [ 43%] PASSED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/body-name] 
+src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/one-of-each-kind-in-one-message] 
+[gw1] [ 43%] PASSED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/path-name] 
+src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/query-name] 
+[gw0] [ 44%] PASSED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/one-of-each-kind-in-one-message] 
+src/payload/test/test_github_api_call.py::test_a_missing_path_parameter_is_refused[AC-2.3/exit-2/path-parameter-without-a-value] 
+[gw1] [ 45%] PASSED src/payload/test/test_github_api_call.py::test_an_undocumented_parameter_is_refused[AC-2.2/exit-2/query-name] 
+src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record] 
+[gw0] [ 45%] PASSED src/payload/test/test_github_api_call.py::test_a_missing_path_parameter_is_refused[AC-2.3/exit-2/path-parameter-without-a-value] 
+src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-nan] 
+[gw0] [ 46%] PASSED src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-nan] 
+src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-infinity] 
+[gw0] [ 47%] PASSED src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-infinity] 
+src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-negative-infinity] 
+[gw1] [ 48%] PASSED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record] 
+src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist] 
+[gw0] [ 48%] PASSED src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-negative-infinity] 
+src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-not-json] 
+[gw1] [ 49%] PASSED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist] 
+src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field] 
+[gw0] [ 50%] PASSED src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.3/exit-2/field-not-json] 
+src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.2/exit-2/path-without-an-equals-sign] 
+[gw0] [ 51%] PASSED src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.2/exit-2/path-without-an-equals-sign] 
+src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.2/exit-2/query-with-an-empty-name] 
+[gw0] [ 51%] PASSED src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.2/exit-2/query-with-an-empty-name] 
+src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.2/exit-2/raw-field-with-an-empty-name] 
+[gw0] [ 52%] PASSED src/payload/test/test_github_api_call.py::test_a_malformed_argument_is_refused_without_its_value[AC-1.2/exit-2/raw-field-with-an-empty-name] 
+src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307 
+[gw1] [ 53%] PASSED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field] 
+src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field] 
+[gw0] [ 54%] PASSED src/payload/test/test_github_api_call.py::test_a_repository_update_follows_its_307 
+src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-query-name] 
+[gw1] [ 54%] PASSED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field] 
+src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host 
+[gw0] [ 55%] PASSED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-query-name] 
+src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[query-name-sent-as-body] 
+[gw1] [ 56%] PASSED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host 
+src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered 
+[gw0] [ 56%] PASSED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[query-name-sent-as-body] 
+src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-query-name-of-a-list] 
+[gw1] [ 57%] PASSED src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered 
+src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-body-name] 
+[gw0] [ 58%] PASSED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-query-name-of-a-list] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-encodes-slash-and-space] 
+[gw0] [ 59%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-encodes-slash-and-space] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-keeps-dots-inside-a-segment] 
+[gw0] [ 59%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-keeps-dots-inside-a-segment] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-slash-and-encodes-space] 
+[gw0] [ 60%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-slash-and-encodes-space] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-a-dot-prefixed-segment] 
+[gw0] [ 61%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-keeps-a-dot-prefixed-segment] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-dot] 
+[gw0] [ 62%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-dot] 
+src/payload/test/test_github_api_registry.py::test_send_returns_the_response_of_the_record[synthetic/get-content] 
+[gw1] [ 62%] PASSED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[undocumented-body-name] 
+src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[body-name-sent-as-query] 
+[gw0] [ 63%] PASSED src/payload/test/test_github_api_registry.py::test_send_returns_the_response_of_the_record[synthetic/get-content] 
+src/payload/test/test_github_api_registry.py::test_a_query_name_ending_in_brackets_is_sent_as_written[send] 
+[gw1] [ 64%] PASSED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[body-name-sent-as-query] 
+src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[path-name-sent-as-query] 
+[gw0] [ 64%] PASSED src/payload/test/test_github_api_registry.py::test_a_query_name_ending_in_brackets_is_sent_as_written[send] 
+src/payload/test/test_github_api_registry.py::test_a_query_name_ending_in_brackets_is_sent_as_written[pages] 
+[gw1] [ 65%] PASSED src/payload/test/test_github_api_registry.py::test_call_refuses_an_undocumented_parameter[path-name-sent-as-query] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-dot-dot] 
+[gw1] [ 66%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[single-segment-dot-dot] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[owner-dot-dot] 
+[gw1] [ 67%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[owner-dot-dot] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-dot-dot] 
+[gw1] [ 67%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-dot-dot] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-dot-segment] 
+[gw1] [ 68%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-dot-segment] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-segment] 
+[gw1] [ 69%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-with-a-dot-segment] 
+src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-ending-in-dot-dot] 
+[gw1] [ 70%] PASSED src/payload/test/test_github_api_registry.py::test_expand_encodes_and_refuses_dot_segments[multi-segment-ending-in-dot-dot] 
+src/payload/test/test_github_api_registry.py::test_send_returns_the_response_of_the_record[synthetic/update-issue] 
+[gw0] [ 70%] PASSED src/payload/test/test_github_api_registry.py::test_a_query_name_ending_in_brackets_is_sent_as_written[pages] 
+src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin 
+[gw1] [ 71%] PASSED src/payload/test/test_github_api_registry.py::test_send_returns_the_response_of_the_record[synthetic/update-issue] 
+src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-label] 
+[gw1] [ 72%] PASSED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-label] 
+src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/list-workflow-runs] 
+[gw1] [ 72%] PASSED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/list-workflow-runs] 
+src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-authenticated-user] 
+[gw1] [ 73%] PASSED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-authenticated-user] 
+src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[without-a-connection] 
+[gw1] [ 74%] PASSED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[without-a-connection] 
+src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[with-a-connection] 
+[gw1] [ 75%] PASSED src/payload/test/test_github_api_registry.py::test_variables_are_the_documents_definitions[with-a-connection] 
+src/payload/test/test_github_api_registry.py::test_graphql_lookup_finds_one_record 
+[gw1] [ 75%] PASSED src/payload/test/test_github_api_registry.py::test_graphql_lookup_finds_one_record 
+src/payload/test/test_github_api_registry.py::test_graphql_call_refuses_an_undeclared_variable[graphql/syntheticWrite] 
+[gw0] [ 76%] PASSED src/payload/test/test_github_api_registry.py::test_send_sends_a_raw_record_to_its_origin 
+[gw1] [ 77%] PASSED src/payload/test/test_github_api_registry.py::test_graphql_call_refuses_an_undeclared_variable[graphql/syntheticWrite] 
+src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/update-issue] 
+src/payload/test/test_github_api_registry.py::test_graphql_call_refuses_an_undeclared_variable[graphql/Repository.discussions] 
+[gw0] [ 78%] PASSED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/update-issue] 
+[gw1] [ 78%] PASSED src/payload/test/test_github_api_registry.py::test_graphql_call_refuses_an_undeclared_variable[graphql/Repository.discussions] 
+src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-content] 
+test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[issues/create] 
+[gw0] [ 79%] PASSED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-content] 
+test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[pulls/request-reviewers] 
+[gw1] [ 80%] PASSED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[issues/create] 
+test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[issues/add-labels] 
+[gw0] [ 81%] PASSED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[pulls/request-reviewers] 
+test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[actions/get-workflow-run] 
+[gw1] [ 81%] PASSED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[issues/add-labels] 
+test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[projects/add-field-for-org] 
+[gw0] [ 82%] PASSED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[actions/get-workflow-run] 
+test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[repos/upload-release-asset] 
+[gw0] [ 83%] PASSED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[repos/upload-release-asset] 
+[gw1] [ 83%] PASSED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[projects/add-field-for-org] 
+test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section 
+test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents 
+[gw0] [ 84%] PASSED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section 
+test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[body-amount-for-budget-amount] 
+[gw0] [ 85%] PASSED test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[body-amount-for-budget-amount] 
+test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[query-year] 
+[gw0] [ 86%] PASSED test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[query-year] 
+test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[record-without-expires-at] 
+[gw0] [ 86%] PASSED test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[record-without-expires-at] 
+test/test_github_wrapper_coverage.py::test_the_reference_is_read_whole 
+[gw0] [ 87%] PASSED test/test_github_wrapper_coverage.py::test_the_reference_is_read_whole 
+test/test_github_wrapper_coverage.py::test_a_gap_is_named 
+[gw0] [ 88%] PASSED test/test_github_wrapper_coverage.py::test_a_gap_is_named 
+test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[added_id] 
+[gw0] [ 89%] PASSED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[added_id] 
+test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[pending_id_removed] 
+[gw0] [ 89%] PASSED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[pending_id_removed] 
+test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_id_removed] 
+[gw0] [ 90%] PASSED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_id_removed] 
+test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_path_changed] 
+[gw0] [ 91%] PASSED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_path_changed] 
+test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_method_changed_same_path] 
+[gw0] [ 91%] PASSED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_method_changed_same_path] 
+test/test_github_wrapper_coverage.py::test_every_operation_is_covered_or_pending 
+[gw0] [ 92%] PASSED test/test_github_wrapper_coverage.py::test_every_operation_is_covered_or_pending 
+test/test_github_wrapper_coverage.py::test_discovery_follows_the_directory 
+[gw0] [ 93%] PASSED test/test_github_wrapper_coverage.py::test_discovery_follows_the_directory 
+test/test_github_wrapper_coverage.py::test_one_module_per_family_holding_only_its_own_ids 
+[gw0] [ 94%] PASSED test/test_github_wrapper_coverage.py::test_one_module_per_family_holding_only_its_own_ids 
+test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_capability] 
+[gw0] [ 94%] PASSED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_capability] 
+test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_id] 
+[gw0] [ 95%] PASSED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[shared_id] 
+test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[index_id] 
+[gw0] [ 96%] PASSED test/test_github_wrapper_coverage.py::test_a_graphql_record_id_is_its_own[index_id] 
+test/test_github_wrapper_coverage.py::test_the_wrapper_imports_only_the_standard_library 
+[gw0] [ 97%] PASSED test/test_github_wrapper_coverage.py::test_the_wrapper_imports_only_the_standard_library 
+[gw1] [ 97%] PASSED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents 
+test/test_github_wrapper_contract.py::test_an_unreachable_call_matches_its_reference_section 
+[gw1] [ 98%] PASSED test/test_github_wrapper_contract.py::test_an_unreachable_call_matches_its_reference_section 
+test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[method-put] 
+[gw1] [ 99%] PASSED test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[method-put] 
+test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[path-budget-not-budgets] 
+[gw1] [100%] PASSED test/test_github_wrapper_contract.py::test_the_method_rejects_a_call_that_differs[path-budget-not-budgets] 
+
+======================= 137 passed in 141.86s (0:02:21) =======================
+exit=0
+2026-11-11T14:10:53Z
