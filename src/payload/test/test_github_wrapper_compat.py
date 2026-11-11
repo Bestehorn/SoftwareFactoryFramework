@@ -281,3 +281,26 @@ def test_the_module_loads_without_credential_or_network(tmp_path: Path, monkeypa
     assert list(logging.getLogger().handlers) == handlers, "loading the module added a root log handler"
     assert list(inspect.signature(wrapper.steward_delegate).parameters) == STEWARD_DELEGATE_PARAMETERS
     assert isinstance(wrapper.EXIT_DELIVERY_ELSEWHERE, int)
+
+
+# AC-4.1: what design D7's usage lines give the entry script's docstring for the operation call.
+USAGE_CALL_TEXTS = (
+    "call issues/get",
+    "--path",
+    "--query",
+    "-f/--raw-field",
+    "-F/--field",
+    "JSON array",
+    "indented JSON",
+    "bytes unchanged",
+    "exit 2",
+)
+
+
+def test_the_usage_names_the_operation_call(monkeypatch: pytest.MonkeyPatch) -> None:
+    """AC-4.1: the entry script's ``__doc__`` names ``call`` with an operation ID, its options, its print forms and its
+    refusal's exit code (design D7)."""
+    usage = load_wrapper(monkeypatch=monkeypatch).__doc__
+    assert isinstance(usage, str), f"{ENTRY_SCRIPT} has no module docstring"
+    missing = [text for text in USAGE_CALL_TEXTS if text not in usage]
+    assert missing == [], f"the usage of {ENTRY_SCRIPT} does not name: {missing}"

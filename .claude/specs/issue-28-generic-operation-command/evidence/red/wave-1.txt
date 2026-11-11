@@ -1,0 +1,100 @@
+# tasks: 1.1 1.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_registry.py src/payload/test/test_github_api_transport.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [571 items]
+
+........................F.F...F.F.FFFFF................................. [ 12%]
+...F.................................................................... [ 25%]
+........................................................................ [ 37%]
+........................................................................ [ 50%]
+........................................................................ [ 63%]
+........................................................................ [ 75%]
+........................................................................ [ 88%]
+...................................................................      [100%]
+================================== FAILURES ===================================
+____ test_send_returns_the_response_of_the_record[synthetic/update-issue] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:568: in test_send_returns_the_response_of_the_record
+    response = api.registry.send(
+               ^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'send'
+_____ test_send_returns_the_response_of_the_record[synthetic/get-content] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:568: in test_send_returns_the_response_of_the_record
+    response = api.registry.send(
+               ^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'send'
+________ test_a_query_name_ending_in_brackets_is_sent_as_written[send] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:598: in test_a_query_name_ending_in_brackets_is_sent_as_written
+    assert _sent_answer(api=api, transport=transport, documented=case) == case.answer
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:539: in _sent_answer
+    response = api.registry.send(
+               ^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'send'
+_______ test_a_query_name_ending_in_brackets_is_sent_as_written[pages] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:598: in test_a_query_name_ending_in_brackets_is_sent_as_written
+    assert _sent_answer(api=api, transport=transport, documented=case) == case.answer
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_github_api_registry.py:535: in _sent_answer
+    listed = api.registry.pages(
+src\payload\scripts\github_api\registry.py:180: in pages
+    _check_names(operation=operation, kind=KIND_QUERY, given=query, documented=operation.query_params)
+src\payload\scripts\github_api\registry.py:140: in _check_names
+    raise ValueError(
+E   ValueError: The GitHub operation "synthetic/list-workflow-runs" documents no query parameter ["status[]"]; its query parameters are ["page", "per_page", "status"]
+_ test_path_parameters_are_the_placeholders_in_order[synthetic/update-issue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:634: in test_path_parameters_are_the_placeholders_in_order
+    assert api.registry.path_parameters(operation=operation) == case.names
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'path_parameters'
+__ test_path_parameters_are_the_placeholders_in_order[synthetic/get-content] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:634: in test_path_parameters_are_the_placeholders_in_order
+    assert api.registry.path_parameters(operation=operation) == case.names
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'path_parameters'
+___ test_path_parameters_are_the_placeholders_in_order[synthetic/get-label] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:634: in test_path_parameters_are_the_placeholders_in_order
+    assert api.registry.path_parameters(operation=operation) == case.names
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'path_parameters'
+_ test_path_parameters_are_the_placeholders_in_order[synthetic/list-workflow-runs] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:634: in test_path_parameters_are_the_placeholders_in_order
+    assert api.registry.path_parameters(operation=operation) == case.names
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'path_parameters'
+_ test_path_parameters_are_the_placeholders_in_order[synthetic/get-authenticated-user] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:634: in test_path_parameters_are_the_placeholders_in_order
+    assert api.registry.path_parameters(operation=operation) == case.names
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'github_api.registry' has no attribute 'path_parameters'
+____________________ test_link_pages_send_the_given_accept ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_transport.py:376: in test_link_pages_send_the_given_accept
+    listed = list(transport.pages(path=COMMENTS_PATH, query={"per_page": 1}, accept=ACCEPT_FULL))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Transport.pages() got an unexpected keyword argument 'accept'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_send_returns_the_response_of_the_record[synthetic/update-issue]
+FAILED src/payload/test/test_github_api_registry.py::test_send_returns_the_response_of_the_record[synthetic/get-content]
+FAILED src/payload/test/test_github_api_registry.py::test_a_query_name_ending_in_brackets_is_sent_as_written[send]
+FAILED src/payload/test/test_github_api_registry.py::test_a_query_name_ending_in_brackets_is_sent_as_written[pages]
+FAILED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/update-issue]
+FAILED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-content]
+FAILED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-label]
+FAILED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/list-workflow-runs]
+FAILED src/payload/test/test_github_api_registry.py::test_path_parameters_are_the_placeholders_in_order[synthetic/get-authenticated-user]
+FAILED src/payload/test/test_github_api_transport.py::test_link_pages_send_the_given_accept
+================== 10 failed, 561 passed in 69.59s (0:01:09) ==================

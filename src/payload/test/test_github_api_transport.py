@@ -52,6 +52,7 @@ VERSION_UNSUPPORTED = "2099-01-01"
 
 METHOD_GET = "GET"
 METHOD_POST = "POST"
+HEADER_ACCEPT = "accept"
 HEADER_API_VERSION = "x-github-api-version"
 HEADER_AUTHORIZATION = "authorization"
 HEADER_CONTENT_TYPE = "content-type"
@@ -356,6 +357,30 @@ def test_wrapped_pages_return_the_item_key_items(case: LinkCase, fake: Any, slee
     listed = list(transport.pages(path=case.path, query=dict(case.query), item_key=FIELD_WORKFLOW_RUNS))
     assert listed == case.items(), "the item-key lists of every page, in page order"
     assert fake.urls() == [page.url for page in case.pages]
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# #28 AC-1.2 — every Link page sends the Accept it is given
+# ---------------------------------------------------------------------------------------------------------------------
+
+ACCEPT_FULL = "application/vnd.github.full+json"
+COMMENTS_PATH = "/repos/o/r/issues/5/comments"
+
+
+def test_link_pages_send_the_given_accept(fake: Any, sleep: RecordingSleep) -> None:
+    api = load_api()
+    transport = make_transport(api=api, sleep=sleep)
+    assert ACCEPT_FULL != api.transport.ACCEPT_JSON, "a media type other than the transport's default"
+    fake.list_route(url=COMMENTS_PATH, items=list(numbered(1, 2)))
+
+    listed = list(transport.pages(path=COMMENTS_PATH, query={"per_page": 1}, accept=ACCEPT_FULL))
+    assert listed == list(numbered(1, 2)), "the items of both pages, in page order"
+    assert fake.urls() == [
+        f"{API}{COMMENTS_PATH}?per_page=1",
+        f"{API}{COMMENTS_PATH}?per_page=1&page=2",
+    ], "the first page, then its rel=next target"
+    sent = [(request.url, request.header(name=HEADER_ACCEPT)) for request in fake.requests]
+    assert sent == [(request.url, ACCEPT_FULL) for request in fake.requests], "the given Accept on every page"
 
 
 # ---------------------------------------------------------------------------------------------------------------------

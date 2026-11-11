@@ -1,0 +1,69 @@
+# tasks: 3.1 (red against mutant M3: coverage_gaps and _family_problems return [])
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test\test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-28
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+.FFFFFF....                                                              [100%]
+================================== FAILURES ===================================
+__________ test_a_regenerated_index_names_each_changed_id[added_id] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:553: in test_a_regenerated_index_names_each_changed_id
+    assert gaps == expected_gaps, f"coverage_gaps returned {gaps} for the regenerated index {regenerated}"
+E   AssertionError: coverage_gaps returned [] for the regenerated index {'gamma/get-widget': ('GET', '/widgets/{widget_id}'), 'gamma/list-widgets': ('GET', '/widgets'), 'gamma/delete-widget': ('DELETE', '/widgets/{widget_id}')}
+E   assert [] == ['gamma/delete-widget']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mgamma/delete-widget[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____________________________ test_a_gap_is_named _____________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:484: in test_a_gap_is_named
+    assert gaps == sorted([SYNTHETIC_GAP_ID, SYNTHETIC_GAP_CAPABILITY])
+E   AssertionError: assert [] == ['Uncovered c...delete-thing']
+E     
+E     Right contains 2 more items, first extra item: [0m[33m'[39;49;00m[33mUncovered capability[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____ test_a_regenerated_index_names_each_changed_id[pending_id_removed] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:554: in test_a_regenerated_index_names_each_changed_id
+    assert len(problems) == len(expected_problems), (
+E   AssertionError: _family_problems returned [] for the regenerated index {'gamma/get-widget': ('GET', '/widgets/{widget_id}')}; expected one problem per [("'gamma/list-widgets'",)]
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +  and   1 = len([("'gamma/list-widgets'",)])
+______ test_a_regenerated_index_names_each_changed_id[record_id_removed] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:554: in test_a_regenerated_index_names_each_changed_id
+    assert len(problems) == len(expected_problems), (
+E   AssertionError: _family_problems returned [] for the regenerated index {'gamma/list-widgets': ('GET', '/widgets')}; expected one problem per [("'gamma/get-widget'",)]
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +  and   1 = len([("'gamma/get-widget'",)])
+_____ test_a_regenerated_index_names_each_changed_id[record_path_changed] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:554: in test_a_regenerated_index_names_each_changed_id
+    assert len(problems) == len(expected_problems), (
+E   AssertionError: _family_problems returned [] for the regenerated index {'gamma/get-widget': ('GET', '/widgets/{widget_number}'), 'gamma/list-widgets': ('GET', '/widgets')}; expected one problem per [("'gamma/get-widget'", "('GET', '/widgets/{widget_id}')", "('GET', '/widgets/{widget_number}')")]
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +  and   1 = len([("'gamma/get-widget'", "('GET', '/widgets/{widget_id}')", "('GET', '/widgets/{widget_number}')")])
+_ test_a_regenerated_index_names_each_changed_id[record_method_changed_same_path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_coverage.py:554: in test_a_regenerated_index_names_each_changed_id
+    assert len(problems) == len(expected_problems), (
+E   AssertionError: _family_problems returned [] for the regenerated index {'gamma/get-widget': ('PUT', '/widgets/{widget_id}'), 'gamma/list-widgets': ('GET', '/widgets')}; expected one problem per [("'gamma/get-widget'", "('GET', '/widgets/{widget_id}')", "('PUT', '/widgets/{widget_id}')")]
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +  and   1 = len([("'gamma/get-widget'", "('GET', '/widgets/{widget_id}')", "('PUT', '/widgets/{widget_id}')")])
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[added_id]
+FAILED test/test_github_wrapper_coverage.py::test_a_gap_is_named - AssertionE...
+FAILED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[pending_id_removed]
+FAILED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_id_removed]
+FAILED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_path_changed]
+FAILED test/test_github_wrapper_coverage.py::test_a_regenerated_index_names_each_changed_id[record_method_changed_same_path]
+========================= 6 failed, 5 passed in 3.61s =========================

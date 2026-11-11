@@ -6,8 +6,10 @@ the body comes from ``--body`` or from the UTF-8 file ``--body-file`` names (rea
 is exactly what is posted, past any shell quoting), and supplying both is a ``GitHubAPIError`` rather than a silent
 precedence rule. The printers write a command's result to standard output as the fork's ``print`` calls write it:
 ``print_json`` as ``json.dumps(value, indent=2)`` (how the fork echoes a response), ``print_compact_json`` as
-``json.dumps(value)`` (its one-line verdicts), ``print_line`` one line of text. Diagnostics go to ``logging``, never
-through these.
+``json.dumps(value)`` (its one-line verdicts), ``print_line`` one line of text. ``print_bytes`` writes a body that is
+not a JSON document as its bytes unchanged, with no line end added (issue #28 design D3): ``sys.stdout`` is flushed
+first, so the text already written comes before the bytes, which go to ``sys.stdout.buffer``. Diagnostics go to
+``logging``, never through these. ``EXIT_REFUSED`` is the exit code of a refusal decided before any request is sent.
 
 Not a command module: the entry script skips every ``_``-prefixed module of ``github_api.commands`` (D6).
 """
@@ -45,6 +47,10 @@ BOTH_BODIES_REFUSAL = "pass either --body or --body-file, not both"
 JSON_INDENT = 2
 LINE_END = "\n"
 
+#: A refusal before any request is sent: the code of argparse's usage error and of the entry script's credential and
+#: repository refusals.
+EXIT_REFUSED = 2
+
 
 def add_body_arguments(*, parser: argparse.ArgumentParser) -> None:
     """Register ``--body`` and ``--body-file`` on ``parser`` as the fork registers them on each command that posts a
@@ -78,3 +84,11 @@ def print_json(*, value: Any) -> None:
 def print_compact_json(*, value: Any) -> None:
     """Write ``value`` as one line of JSON, as the fork's ``print(json.dumps(value))``."""
     print_line(text=json.dumps(obj=value))
+
+
+def print_bytes(*, data: bytes) -> None:
+    """Write ``data`` to standard output unchanged, with no line end added: ``sys.stdout`` is flushed first, then the
+    bytes go to ``sys.stdout.buffer`` (Python docs, ``sys.stdout``: "to write bytes to stdout, use
+    ``sys.stdout.buffer.write``")."""
+    sys.stdout.flush()
+    sys.stdout.buffer.write(data)  # positional: a binary stream's write takes its bytes positional-only

@@ -1,4 +1,4 @@
-"""The GitHub wrapper's operation records, their discovery, and the two calls that send them (design D4).
+"""The GitHub wrapper's operation records, their discovery, and the calls that send them (design D4).
 
 A ``RestOperation`` is one row of ``operations-index.md`` as data: its operation ID, method and path template, the
 query and body parameter names its reference section documents, the path parameters that may span several segments,
@@ -7,9 +7,12 @@ its paging kind and item key, its API version and media type. A ``GraphQLOperati
 ``discover_families`` finds every such module by being there, as the hook runtime's gate discovery finds a gate, so no
 file lists them.
 
-``call`` and ``pages`` send a record through the ``Transport``: a query or body name the record does not document is
-refused with ``ValueError`` before anything is sent, and ``expand`` percent-encodes every path value, refusing a ``.``
-or ``..`` segment with ``GitHubAPIError``. Every caller-supplied value a message names is rendered with ``json.dumps``.
+``send``, ``call`` and ``pages`` send a record through the ``Transport`` with its method, API version and media type:
+``send`` returns the ``Response``, ``call`` its parsed JSON, ``pages`` the items of every page. A query or body name
+the record does not document is refused with ``ValueError`` before anything is sent; a query name may end in ``[]``,
+``conventions.md`` "Query strings"'s spelling of an array, and is sent as written. ``expand`` percent-encodes every
+path value, refusing a ``.`` or ``..`` segment with ``GitHubAPIError``. Every caller-supplied value a message names is
+rendered with ``json.dumps``.
 """
 
 from __future__ import annotations
@@ -25,7 +28,7 @@ from typing import AbstractSet, Any, FrozenSet, Iterator, List, Mapping, Optiona
 from urllib.parse import quote
 
 from github_api.errors import GitHubAPIError
-from github_api.transport import Transport
+from github_api.transport import Response, Transport
 
 FAMILIES_PACKAGE = "github_api.families"
 MODULE_SEPARATOR = "."
@@ -37,6 +40,8 @@ SAFE_MULTI_SEGMENT = SEGMENT_SEPARATOR
 DOT_SEGMENTS = frozenset({".", ".."})
 KIND_QUERY = "query"
 KIND_BODY = "body"
+#: How ``conventions.md`` "Query strings" spells an array query name: ``repository_ids[]=1&repository_ids[]=2``.
+QUERY_ARRAY_SUFFIX = "[]"
 
 
 class Paging(Enum):
@@ -131,16 +136,58 @@ def expand(operation: RestOperation, path_params: Mapping[str, Any]) -> str:
     return PATH_PARAMETER_PATTERN.sub(repl=replace, string=operation.path)
 
 
+def path_parameters(*, operation: RestOperation) -> Tuple[str, ...]:
+    """The names of the ``{name}`` placeholders of ``operation``'s path, in the order the path names them."""
+    return tuple(match.group(1) for match in PATH_PARAMETER_PATTERN.finditer(string=operation.path))
+
+
+def query_name(*, name: str) -> str:
+    """The documented query name a given ``name`` stands for: ``name`` with one trailing ``[]`` removed."""
+    return name[: -len(QUERY_ARRAY_SUFFIX)] if name.endswith(QUERY_ARRAY_SUFFIX) else name
+
+
+def _documented_name(*, kind: str, name: str) -> str:
+    """The name ``_check_names`` looks up in a record's ``kind`` parameters: a query name through ``query_name``, a
+    body name as given."""
+    return query_name(name=name) if kind == KIND_QUERY else name
+
+
 def _check_names(
     *, operation: RestOperation, kind: str, given: Optional[Mapping[str, Any]], documented: AbstractSet[str]
 ) -> None:
-    """Refuse with ``ValueError`` every ``given`` name that ``documented`` lacks, before anything is sent."""
-    undocumented = sorted(name for name in (given or {}) if name not in documented)
+    """Refuse with ``ValueError`` every ``given`` name that ``documented`` lacks, before anything is sent; a query
+    name is compared through ``query_name`` and named in the message as given."""
+    undocumented = sorted(name for name in (given or {}) if _documented_name(kind=kind, name=name) not in documented)
     if undocumented:
         raise ValueError(
             f"The GitHub operation {json.dumps(operation.operation_id)} documents no {kind} parameter "
             f"{json.dumps(undocumented)}; its {kind} parameters are {json.dumps(sorted(documented))}"
         )
+
+
+def send(
+    transport: Transport,
+    operation_id: str,
+    *,
+    path_params: Mapping[str, Any],
+    query: Optional[Mapping[str, Any]] = None,
+    body: Optional[Mapping[str, Any]] = None,
+) -> Response:
+    """Send the record ``operation_id`` once, with its method, its expanded path, ``query``, ``body`` and the record's
+    API version and media type, and return the transport's ``Response``. Its names and path are checked first, so a
+    refusal comes before anything is sent."""
+    operation = lookup(operation_id=operation_id)
+    _check_names(operation=operation, kind=KIND_QUERY, given=query, documented=operation.query_params)
+    _check_names(operation=operation, kind=KIND_BODY, given=body, documented=operation.body_params)
+    path = expand(operation=operation, path_params=path_params)
+    return transport.request(
+        method=operation.method,
+        path=path,
+        query=query,
+        body=body,
+        api_version=operation.api_version,
+        accept=operation.accept,
+    )
 
 
 def call(
@@ -151,19 +198,9 @@ def call(
     query: Optional[Mapping[str, Any]] = None,
     body: Optional[Mapping[str, Any]] = None,
 ) -> Any:
-    """Send the record ``operation_id`` once and return the response's parsed JSON (``None`` for an empty body)."""
-    operation = lookup(operation_id=operation_id)
-    _check_names(operation=operation, kind=KIND_QUERY, given=query, documented=operation.query_params)
-    _check_names(operation=operation, kind=KIND_BODY, given=body, documented=operation.body_params)
-    path = expand(operation=operation, path_params=path_params)
-    response = transport.request(
-        method=operation.method,
-        path=path,
-        query=query,
-        body=body,
-        api_version=operation.api_version,
-        accept=operation.accept,
-    )
+    """Send the record ``operation_id`` once through ``send`` and return the response's parsed JSON (``None`` for an
+    empty body)."""
+    response = send(transport=transport, operation_id=operation_id, path_params=path_params, query=query, body=body)
     return response.json()
 
 
@@ -174,9 +211,16 @@ def pages(
     path_params: Mapping[str, Any],
     query: Optional[Mapping[str, Any]] = None,
 ) -> Iterator[Any]:
-    """The items of every page of the list record ``operation_id``, in page order. The record, its query names and
-    its path are checked here, so a refusal comes before anything is sent."""
+    """The items of every page of the list record ``operation_id``, in page order, each page asked for with the
+    record's API version and media type. The record, its query names and its path are checked here, so a refusal
+    comes before anything is sent."""
     operation = lookup(operation_id=operation_id)
     _check_names(operation=operation, kind=KIND_QUERY, given=query, documented=operation.query_params)
     path = expand(operation=operation, path_params=path_params)
-    return transport.pages(path=path, query=query, item_key=operation.item_key, api_version=operation.api_version)
+    return transport.pages(
+        path=path,
+        query=query,
+        item_key=operation.item_key,
+        api_version=operation.api_version,
+        accept=operation.accept,
+    )
