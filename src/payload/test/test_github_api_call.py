@@ -22,6 +22,25 @@ such a row as ``run_product_case`` does and returns its standard error, which mu
 the option and the name as ``json.dumps`` renders it, and must not hold the value (Security Considerations
 "Command-line input").
 
+Issue #46's rows are named ``issue-46/<criterion>/…`` and are not in ``CALL_CASES``, whose rows ``rows_of`` keys by
+issue #28's criterion ids, which #46's repeat; each runs with ``run_product_case`` as a row of ``CALL_CASES`` does:
+
+- AC-3.1: ``call repos/update`` answered ``307`` with a relative ``Location`` and then ``200`` sends its ``PATCH``
+  again, once, with the same body bytes, to the resolved ``Location``, and prints the second answer.
+- AC-1.1: ``--input`` on ``issues/update``, a record whose body is JSON, is refused with a log record naming the ID
+  and ``--input``; ``--input`` naming a file that does not exist is argparse's usage error for ``--input``, naming the
+  path as ``json.dumps`` renders it (``run_reading_stderr``). Each exits 2 with no request.
+- AC-1.3: ``-f`` or ``-F`` beside ``--input`` is refused with one log record naming ``--input``, ``-f/--raw-field`` and
+  ``-F/--field``, exit 2 and no request.
+- AC-2.1, AC-2.2, AC-4.2: ``call repos/upload-release-asset --input`` of bytes that are not UTF-8 sends one ``POST`` of
+  exactly those bytes, as ``application/octet-stream``, to the upload origin with the query ``name`` and ``label``,
+  prints the ``201`` answer, and no request carries the credential to another origin.
+- AC-1.2, AC-4.3: ``call markdown/render-raw --input -``, standard input a text layer over Markdown bytes holding a CR
+  LF line end and the byte 0xFF, sends one ``POST`` of exactly those bytes, as ``text/plain``, to
+  ``https://api.github.com/markdown/raw``, and writes the HTML answer's bytes to standard output (``capsysbinary``).
+
+The input files are written under ``tmp_path`` before the run, so the rows that name one are built inside their test.
+
 The fork has no ``call``, so ``CASES`` holds none of these rows and the fork parity test never runs them. No test opens
 a connection.
 
@@ -33,6 +52,7 @@ from __future__ import annotations
 import dataclasses
 import importlib
 import importlib.util
+import io
 import json
 import logging
 import re
@@ -1029,3 +1049,347 @@ def test_a_malformed_argument_is_refused_without_its_value(
     assert any(rendered in message for message in messages), f"{name}: no usage error names {rendered}: {messages}"
     leaking = [value for value in malformed.withheld if value in stderr]
     assert leaking == [], f"{name}: standard error holds the value {leaking}: {stderr!r}"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Issue #46 AC-3.1 — a repository update answered 307 is sent again, once, to the resolved Location
+# ---------------------------------------------------------------------------------------------------------------------
+
+ISSUE_46 = "issue-46"
+ISSUE_46_AC_3_1 = "AC-3.1"
+OP_REPOS_UPDATE = "repos/update"
+#: ``conventions.md`` "Downloads and redirects": the ``307`` GitHub answers a ``PATCH`` of a renamed or transferred
+#: repository with.
+STATUS_TEMPORARY_REDIRECT = 307
+MOVED_REPOSITORY_PATH = "/repositories/42"
+FIELD_DESCRIPTION = "description"
+FIELD_FULL_NAME = "full_name"
+UPDATED_DESCRIPTION = "d"
+UPDATED_REPOSITORY_BODY = {FIELD_DESCRIPTION: UPDATED_DESCRIPTION}
+UPDATED_REPOSITORY = {
+    fx.FIELD_ID: 42,
+    FIELD_FULL_NAME: f"{fx.OWNER}/{fx.REPOSITORY}",
+    FIELD_DESCRIPTION: UPDATED_DESCRIPTION,
+}
+REPOSITORY_UPDATE_AFTER_A_307 = fx.GoldenCase(
+    name=f"{ISSUE_46}/{ISSUE_46_AC_3_1}/exit-0/repository-update-follows-its-307",
+    argv=(CALL, OP_REPOS_UPDATE, OPTION_RAW_FIELD, f"{FIELD_DESCRIPTION}={UPDATED_DESCRIPTION}"),
+    stdout=fx.printed_json(value=UPDATED_REPOSITORY),
+    exit_code=fx.EXIT_OK,
+    routes=(
+        fx.StaticRouteSpec(
+            method=fx.METHOD_PATCH,
+            url=fx.REPOSITORY_PATH,
+            replies=(fx.redirect(status=STATUS_TEMPORARY_REDIRECT, location=MOVED_REPOSITORY_PATH),),
+        ),
+        fx.StaticRouteSpec(
+            method=fx.METHOD_PATCH, url=MOVED_REPOSITORY_PATH, replies=(fx.Reply(body=UPDATED_REPOSITORY),)
+        ),
+    ),
+    writes=(
+        fx.NonGetRequest(method=fx.METHOD_PATCH, path=fx.REPOSITORY_PATH, body=UPDATED_REPOSITORY_BODY),
+        fx.NonGetRequest(method=fx.METHOD_PATCH, path=MOVED_REPOSITORY_PATH, body=UPDATED_REPOSITORY_BODY),
+    ),
+)
+
+
+def test_a_repository_update_follows_its_307(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #46 AC-3.1: ``call repos/update --raw-field description=d``, answered ``307`` with the relative
+    ``Location`` ``/repositories/42`` and then ``200``, prints the second answer's JSON and exits 0; its writes are two
+    ``PATCH`` requests with the same body, the second to the ``Location`` resolved against the first one's URL."""
+    requests = fx.run_product_case(
+        case=REPOSITORY_UPDATE_AFTER_A_307, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys
+    )
+
+    assert [request.method for request in requests] == [fx.METHOD_PATCH, fx.METHOD_PATCH]
+    first, second = requests
+    assert second.url == f"{fx.API_ORIGIN}{MOVED_REPOSITORY_PATH}"
+    assert second.body == first.body, "the re-sent PATCH carries the first one's body bytes"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Issue #46 AC-1.1, AC-1.3, AC-2.1, AC-2.2, AC-4.2 — ``--input FILE``: the raw body, its refusals and the asset upload
+# ---------------------------------------------------------------------------------------------------------------------
+
+ISSUE_46_AC_1_1 = "AC-1.1"
+ISSUE_46_AC_1_3 = "AC-1.3"
+ISSUE_46_AC_4_2 = "AC-4.2"
+OPTION_INPUT = "--input"
+OP_MARKDOWN_RENDER_RAW = "markdown/render-raw"
+OP_REPOS_UPLOAD_RELEASE_ASSET = "repos/upload-release-asset"
+#: ``rest/releases.md`` "Upload a release asset": "Host: `https://uploads.github.com` (not `https://api.github.com`)".
+UPLOAD_ORIGIN = "https://uploads.github.com"
+RELEASE_3_ASSETS_PATH = f"{fx.REPOSITORY_PATH}/releases/3/assets"
+QUERY_NAME = "name"
+QUERY_LABEL = "label"
+FIELD_LABEL = "label"
+FIELD_CONTENT_TYPE = "content_type"
+FIELD_SIZE = "size"
+ASSET_STATE_UPLOADED = "uploaded"
+ASSET_FILE = "dist.zip"
+ASSET_LABEL = "Build"
+#: A zip archive's local file header and then bytes no UTF-8 decoder accepts (``\xb7`` continues no sequence, ``\xff``
+#: starts none), with a ``\r\n`` that a read through the text layer would translate.
+ASSET_BYTES = b"PK\x03\x04\x14\x00\x00\x00\x08\x00\xb7J\r\n\xff\xfe\x00\x80"
+UPLOADED_ASSET = {
+    fx.FIELD_ID: 7,
+    fx.FIELD_NAME: ASSET_FILE,
+    FIELD_LABEL: ASSET_LABEL,
+    FIELD_CONTENT_TYPE: MEDIA_TYPE_OCTET_STREAM,
+    FIELD_SIZE: len(ASSET_BYTES),
+    fx.FIELD_STATE: ASSET_STATE_UPLOADED,
+}
+#: The files ``--input`` names, each under ``tmp_path``; ``MISSING_INPUT_FILE`` is never written.
+JSON_INPUT_FILE = "body.json"
+MARKDOWN_INPUT_FILE = "README.md"
+MISSING_INPUT_FILE = "missing.md"
+#: A JSON document: ``--input`` sends no JSON body, even to a record whose body is JSON (design D1).
+JSON_INPUT = json.dumps(obj={FIELD_TITLE: UPDATED_TITLE}).encode(encoding="utf-8")
+MARKDOWN_INPUT = b"# Wrapper rewrite\r\n\r\nA raw body.\r\n"
+#: AC-1.3: the body member beside ``--input`` on ``markdown/render-raw``, each with its slug.
+BODY_MEMBERS_BESIDE_A_RAW_BODY: Tuple[Tuple[str, Tuple[str, str]], ...] = (
+    ("raw-field", (OPTION_RAW_FIELD_SHORT, "text=T")),
+    ("field", (OPTION_FIELD_SHORT, 'text="T"')),
+)
+#: AC-1.3's refusal names both inputs: ``--input`` and each body option as argparse names it.
+BOTH_BODIES_NAMED = (re.escape(OPTION_INPUT), re.escape(NAMED_RAW_FIELD), re.escape(NAMED_FIELD))
+
+
+@dataclass(frozen=True)
+class RawBodyRefusal:
+    """A row of ``RAW_BODY_REFUSALS`` (issue #46 AC-1.1): ``call <operation_id> <arguments> --input <path>``, where
+    ``path`` is ``file_name`` under ``tmp_path``, holding ``content`` when ``written`` and absent otherwise. The call
+    exits 2 with nothing on standard output and no request; ``log`` holds the patterns one log record must match (none:
+    the log is not judged), and ``usage_error`` says whether standard error must hold argparse's usage error for
+    ``--input`` naming the path as ``json.dumps`` renders it."""
+
+    slug: str
+    operation_id: str
+    arguments: Tuple[str, ...]
+    file_name: str
+    written: bool
+    content: bytes = b""
+    log: Tuple[str, ...] = ()
+    usage_error: bool = False
+
+
+RAW_BODY_REFUSALS = (
+    RawBodyRefusal(
+        slug="input-for-a-json-record",
+        operation_id=OP_ISSUES_UPDATE,
+        arguments=(OPTION_PATH, "issue_number=5"),
+        file_name=JSON_INPUT_FILE,
+        written=True,
+        content=JSON_INPUT,
+        log=(named(name=OP_ISSUES_UPDATE), re.escape(OPTION_INPUT)),
+    ),
+    RawBodyRefusal(
+        slug="input-file-that-does-not-exist",
+        operation_id=OP_MARKDOWN_RENDER_RAW,
+        arguments=(),
+        file_name=MISSING_INPUT_FILE,
+        written=False,
+        usage_error=True,
+    ),
+)
+
+
+def raw_body_refusal_name(refusal: RawBodyRefusal) -> str:
+    """The test id of a ``RAW_BODY_REFUSALS`` row."""
+    return refusal.slug
+
+
+def _origin_of(*, url: str) -> Tuple[str, str, int]:
+    """The origin of the absolute ``url``: its scheme, host and port (the scheme's default when it names none)."""
+    endpoint = fx.Endpoint.of(url=url)
+    return endpoint.scheme, endpoint.host, endpoint.port
+
+
+def _asset_upload(*, asset: Path) -> Any:
+    """AC-4.2's row: ``call repos/upload-release-asset`` of the file ``asset`` to release 3 of ``o/r``, named
+    ``dist.zip`` and labelled ``Build``; its one write is the ``POST`` of ``ASSET_BYTES`` with that query, which the
+    route on the upload origin answers with ``201`` and the asset as JSON."""
+    query = {QUERY_NAME: ASSET_FILE, QUERY_LABEL: ASSET_LABEL}
+    return fx.GoldenCase(
+        name=f"{ISSUE_46}/{ISSUE_46_AC_4_2}/exit-0/asset-uploaded-to-its-host",
+        argv=(
+            CALL,
+            OP_REPOS_UPLOAD_RELEASE_ASSET,
+            OPTION_PATH,
+            "release_id=3",
+            OPTION_QUERY,
+            f"{QUERY_NAME}={ASSET_FILE}",
+            OPTION_QUERY,
+            f"{QUERY_LABEL}={ASSET_LABEL}",
+            OPTION_INPUT,
+            str(asset),
+        ),
+        stdout=fx.printed_json(value=UPLOADED_ASSET),
+        exit_code=fx.EXIT_OK,
+        routes=(
+            fx.StaticRouteSpec(
+                method=fx.METHOD_POST,
+                url=f"{UPLOAD_ORIGIN}{RELEASE_3_ASSETS_PATH}",
+                replies=(fx.Reply(status=fx.CREATED, body=UPLOADED_ASSET),),
+                query=query,
+            ),
+        ),
+        writes=(
+            fx.NonGetRequest(
+                method=fx.METHOD_POST, path=RELEASE_3_ASSETS_PATH, body=ASSET_BYTES, query=fx.query_of(values=query)
+            ),
+        ),
+    )
+
+
+@pytest.mark.parametrize(argnames="refusal", argvalues=RAW_BODY_REFUSALS, ids=raw_body_refusal_name)
+def test_a_raw_body_the_call_cannot_send_is_refused(
+    refusal: RawBodyRefusal,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #46 AC-1.1 (design D1): ``--input`` on ``issues/update``, a record whose body is JSON, is refused, a JSON
+    document included, and a log record names the ID as ``json.dumps`` renders it and ``--input``; ``--input`` naming
+    a file that does not exist is argparse's usage error, whose ``argument --input:`` message names the path as
+    ``json.dumps`` renders it. Each exits 2 with nothing on standard output and no request."""
+    caplog.set_level(level=logging.DEBUG)
+    path = tmp_path / refusal.file_name
+    if refusal.written:
+        path.write_bytes(data=refusal.content)
+    case = fx.GoldenCase(
+        name=f"{ISSUE_46}/{ISSUE_46_AC_1_1}/exit-2/{refusal.slug}",
+        argv=(CALL, refusal.operation_id, *refusal.arguments, OPTION_INPUT, str(path)),
+        stdout="",
+        exit_code=fx.EXIT_REFUSED,
+        log=fx.LogExpectation(refusal=refusal.log, withheld=()) if refusal.log else None,
+    )
+    stderr = run_reading_stderr(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+
+    fx.assert_log(case=case, records=caplog.records, stderr=stderr)
+    if refusal.usage_error:
+        named_option = argument_named(option=OPTION_INPUT)
+        messages = [line.split(named_option, 1)[1] for line in stderr.splitlines() if named_option in line]
+        assert messages, f"{case.name}: no usage error names the option {OPTION_INPUT}: {stderr!r}"
+        rendered = json.dumps(obj=str(path))
+        assert any(rendered in message for message in messages), (
+            f"{case.name}: no usage error names the path {rendered}: {messages}"
+        )
+
+
+@pytest.mark.parametrize(
+    argnames=("slug", "member"),
+    argvalues=BODY_MEMBERS_BESIDE_A_RAW_BODY,
+    ids=[slug for slug, _ in BODY_MEMBERS_BESIDE_A_RAW_BODY],
+)
+def test_a_raw_body_with_body_members_is_refused(
+    slug: str,
+    member: Tuple[str, str],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #46 AC-1.3 (design D1 step 1): ``-f text=T`` or ``-F text="T"`` beside ``--input`` of a file under
+    ``tmp_path`` on ``markdown/render-raw`` exits 2 with nothing on standard output and no request, and one log record
+    names ``--input``, ``-f/--raw-field`` and ``-F/--field``."""
+    path = tmp_path / MARKDOWN_INPUT_FILE
+    path.write_bytes(data=MARKDOWN_INPUT)
+    case = fx.GoldenCase(
+        name=f"{ISSUE_46}/{ISSUE_46_AC_1_3}/exit-2/{slug}-beside-input",
+        argv=(CALL, OP_MARKDOWN_RENDER_RAW, *member, OPTION_INPUT, str(path)),
+        stdout="",
+        exit_code=fx.EXIT_REFUSED,
+        log=fx.LogExpectation(refusal=BOTH_BODIES_NAMED, withheld=()),
+    )
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+
+
+def test_an_asset_is_uploaded_to_its_host(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #46 AC-2.1, AC-2.2, AC-4.2: ``call repos/upload-release-asset --path release_id=3 --query name=dist.zip
+    --query label=Build --input <a file of bytes that are not UTF-8>`` exits 0 and prints the ``201`` answer as JSON.
+    Its one request is the ``POST`` of exactly the file's bytes to the expanded path, with the query ``name`` and
+    ``label``, on the origin of ``https://uploads.github.com``, with ``content-type`` ``application/octet-stream`` and
+    the credential; no request carries the credential to any other origin."""
+    asset = tmp_path / ASSET_FILE
+    asset.write_bytes(data=ASSET_BYTES)
+    requests = fx.run_product_case(
+        case=_asset_upload(asset=asset), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys
+    )
+
+    upload_origin = _origin_of(url=UPLOAD_ORIGIN)
+    credentialed_elsewhere = [
+        f"{request.method} {request.url}"
+        for request in requests
+        if request.header(name=fx.HEADER_AUTHORIZATION) is not None and _origin_of(url=request.url) != upload_origin
+    ]
+    assert credentialed_elsewhere == [], f"the credential reached another origin: {credentialed_elsewhere}"
+    assert len(requests) == 1, f"{len(requests)} requests: {[request.url for request in requests]}"
+    upload = requests[0]
+    assert _origin_of(url=upload.url) == upload_origin, f"the upload went to {upload.url}"
+    assert upload.header(name=fx.HEADER_CONTENT_TYPE) == MEDIA_TYPE_OCTET_STREAM
+    authorization = upload.header(name=fx.HEADER_AUTHORIZATION)
+    assert authorization is not None and fx.FIXTURE_TOKEN in authorization, "the upload carries no credential"
+    assert upload.body == ASSET_BYTES, "the upload's body is not the file's bytes"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Issue #46 AC-1.2, AC-4.3 — ``--input -``: a raw Markdown document read from standard input and rendered
+# ---------------------------------------------------------------------------------------------------------------------
+
+ISSUE_46_AC_4_3 = "AC-4.3"
+#: The ``--input`` text that reads the raw body from standard input, as ``gh api`` spells it.
+INPUT_FROM_STDIN = "-"
+#: ``rest/markdown.md`` "Render a Markdown document in raw mode": ``POST /markdown/raw``, its request body
+#: ``text/plain``, its ``200`` ``text/html``.
+MARKDOWN_RAW_PATH = "/markdown/raw"
+MEDIA_TYPE_TEXT_PLAIN = "text/plain"
+#: The ``sys`` attribute the test replaces with a text layer over the document, and that layer's encoding: strict
+#: UTF-8, which fails on ``\xff``.
+ATTRIBUTE_STDIN = "stdin"
+STDIN_ENCODING = "utf-8"
+#: A Markdown document with ``\r\n`` line ends, which a read through the text layer would translate to ``\n``, and the
+#: byte ``\xff``, which no UTF-8 decoder accepts.
+RAW_MARKDOWN = b"# Wrapper rewrite\r\n\r\nA raw body \xff in raw mode.\r\n"
+RENDERED_RAW_MARKDOWN = b"<h1>Wrapper rewrite</h1>\n<p>A raw body in raw mode.</p>\n"
+RAW_MARKDOWN_RENDERED = fx.GoldenCase(
+    name=f"{ISSUE_46}/{ISSUE_46_AC_4_3}/exit-0/raw-markdown-from-standard-input-rendered",
+    argv=(CALL, OP_MARKDOWN_RENDER_RAW, OPTION_INPUT, INPUT_FROM_STDIN),
+    stdout=fx.binary_stdout(data=RENDERED_RAW_MARKDOWN),
+    exit_code=fx.EXIT_OK,
+    routes=(
+        fx.StaticRouteSpec(
+            method=fx.METHOD_POST,
+            url=MARKDOWN_RAW_PATH,
+            replies=(fx.Reply(body=RENDERED_RAW_MARKDOWN, headers={fx.HEADER_CONTENT_TYPE: MEDIA_TYPE_HTML}),),
+        ),
+    ),
+    writes=(fx.NonGetRequest(method=fx.METHOD_POST, path=MARKDOWN_RAW_PATH, body=RAW_MARKDOWN),),
+)
+
+
+def test_a_raw_markdown_document_is_rendered(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsysbinary: pytest.CaptureFixture[bytes]
+) -> None:
+    """Issue #46 AC-1.2, AC-4.3: ``call markdown/render-raw --input -``, standard input a text layer over Markdown
+    bytes holding a CR LF line end and the byte 0xFF, exits 0 and writes the HTML answer's bytes to standard output
+    unchanged. Its one request is the ``POST`` to ``https://api.github.com/markdown/raw`` with ``content-type``
+    ``text/plain`` and a body equal to those bytes, read from standard input's binary buffer, not through the text
+    layer, which would translate the line end or fail to decode the byte."""
+    stdin = io.TextIOWrapper(buffer=io.BytesIO(initial_bytes=RAW_MARKDOWN), encoding=STDIN_ENCODING)
+    monkeypatch.setattr(target=sys, name=ATTRIBUTE_STDIN, value=stdin)
+    requests = fx.run_product_case(
+        case=RAW_MARKDOWN_RENDERED, root=tmp_path, monkeypatch=monkeypatch, capsys=capsysbinary
+    )
+
+    assert len(requests) == 1, f"{len(requests)} requests: {[request.url for request in requests]}"
+    rendering = requests[0]
+    assert rendering.method == fx.METHOD_POST, f"the rendering was a {rendering.method}"
+    assert rendering.url == f"{fx.API_ORIGIN}{MARKDOWN_RAW_PATH}", f"the rendering went to {rendering.url}"
+    assert rendering.header(name=fx.HEADER_CONTENT_TYPE) == MEDIA_TYPE_TEXT_PLAIN
+    assert rendering.body == RAW_MARKDOWN, f"the body sent is not the Markdown bytes: {rendering.body!r}"

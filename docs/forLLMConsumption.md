@@ -34,7 +34,8 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   `test_github_wrapper_coverage.py` (every API-reference operation covered by a record or pending) and
   `test_github_wrapper_fork_parity.py`. The product wrapper calls any declared record by its operation ID:
   `python scripts/github_wrapper.py call issues/get --path issue_number=5` (`--path`, `--query`, `-f/--raw-field`,
-  `-F/--field`; a refusal exits 2). `test/test_github_wrapper_contract.py` checks each record against its
+  `-F/--field`, and `--input FILE` for the two bodies that are not JSON, `repos/upload-release-asset` and
+  `markdown/render-raw`; a refusal exits 2). `test/test_github_wrapper_contract.py` checks each record against its
   `rest/<category>.md` section. A GraphQL-only capability is a record of `graphql_only.py`, called the same way:
   `python scripts/github_wrapper.py call graphql/pinIssue -F 'input={"issueId": "<node id>"}'` (`-f`/`-F` give the
   document's variables). `test/test_github_graphql_contract.py` checks each document against `graphql/`. Not yet

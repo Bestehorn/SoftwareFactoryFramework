@@ -37,6 +37,10 @@ Usage:
         # an empty body as nothing, any other body as its bytes unchanged. An unknown operation,
         # an undocumented parameter, a missing path parameter, and pulls/merge and issues/create (use merge-pr
         # and create-issue) are refused before any request: exit 2.
+    python scripts/github_wrapper.py call markdown/render-raw --input README.md   # a body that is not JSON
+        # --input FILE (- reads standard input): the request body, its bytes sent unchanged with the record's media
+        # type, for repos/upload-release-asset (sent to uploads.github.com) and markdown/render-raw; --input for any
+        # other operation, or together with -f/-F, is refused before any request: exit 2.
     python scripts/github_wrapper.py call graphql/pinIssue -F 'input={"issueId": "<node id>"}'   # a GraphQL record
         # -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes one, input, its input object,
         # whose IDs are a REST response's node_id or an id a GraphQL record printed. A connection prints as one

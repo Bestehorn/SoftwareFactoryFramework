@@ -1,0 +1,170 @@
+# Wave 4 mutants — issue #46 verification, 2026-11-11T09:32:32
+worktree HEAD 10a22235371adeb3e4d1195fea1f0d8ab5dcde86  # pragma: allowlist secret
+paired tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+git status --porcelain before:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## W4-01 — markdown/render-raw content_type changed
+file src/payload/scripts/github_api/families/markdown.py sha256 before fb92f2fd02c5aa783dee4286447d6ec782bfd6d59b016a503e9727f8b9cdaa0b  # pragma: allowlist secret
+edit src/payload/scripts/github_api/families/markdown.py: '        content_type=CONTENT_TYPE_TEXT,' -> '        content_type="text/x-markdown",'
+file src/payload/scripts/github_api/families/markdown.py sha256 mutated f1c91aff7d597b5e351602f56965b6761a001c13f4ea152ee0be5e3143f6834f  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/families/markdown.py sha256 restored fb92f2fd02c5aa783dee4286447d6ec782bfd6d59b016a503e9727f8b9cdaa0b identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 76 items / 67 deselected / 9 selected
+
+src\payload\test\test_github_api_call.py ....F                           [ 55%]
+src\payload\test\test_github_api_markdown.py ..                          [ 77%]
+test\test_github_wrapper_contract.py .                                   [ 88%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: assert 'text/x-markdown' == 'text/plain'
+      
+      - text/plain
+      + text/x-markdown
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1394: AssertionError: assert 'text/x-markdown' == 'text/plain'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered
+=========== 1 failed, 8 passed, 67 deselected in 116.34s (0:01:56) ============
+
+--- exit 1; summary: 1 failed, 8 passed, 67 deselected in 116.34s (0:01:56)
+VERDICT W4-01: KILLED (1 failing ids)
+
+## W4-02 — markdown/render-raw sent to the upload origin
+file src/payload/scripts/github_api/families/markdown.py sha256 before fb92f2fd02c5aa783dee4286447d6ec782bfd6d59b016a503e9727f8b9cdaa0b  # pragma: allowlist secret
+edit src/payload/scripts/github_api/families/markdown.py: '        content_type=CONTENT_TYPE_TEXT,' -> '        content_type=CONTENT_TYPE_TEXT,\n        root="https://uploads.github.com",'
+file src/payload/scripts/github_api/families/markdown.py sha256 mutated a440aa78d45d977cc204faeac1473b893ba286793ddabaa6ebfcf3b599918876  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/families/markdown.py sha256 restored fb92f2fd02c5aa783dee4286447d6ec782bfd6d59b016a503e9727f8b9cdaa0b identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 76 items / 67 deselected / 9 selected
+
+src\payload\test\test_github_api_call.py ....F                           [ 55%]
+src\payload\test\test_github_api_markdown.py ..                          [ 77%]
+test\test_github_wrapper_contract.py F                                   [ 88%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+the fake GitHub host has no route for POST https://uploads.github.com/markdown/raw
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://uploads.github.com/markdown/raw
+E   AssertionError: 1 problems calling 1252 records:
+      "markdown/render-raw": the fake host has no route for its request; log []; stderr ''
+    assert not ['"markdown/render-raw": the fake host has no route for its request; log []; stderr \'\'']
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\test\test_github_wrapper_contract.py:859: AssertionError: 1 problems calling 1252 records:
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+=========== 2 failed, 7 passed, 67 deselected in 116.30s (0:01:56) ============
+
+--- exit 1; summary: 2 failed, 7 passed, 67 deselected in 116.30s (0:01:56)
+VERDICT W4-02: KILLED (2 failing ids)
+
+## W4-03 — markdown/render-raw back on PENDING
+file src/payload/scripts/github_api/families/markdown.py sha256 before fb92f2fd02c5aa783dee4286447d6ec782bfd6d59b016a503e9727f8b9cdaa0b  # pragma: allowlist secret
+edit src/payload/scripts/github_api/families/markdown.py: 'PENDING: FrozenSet[str] = frozenset()' -> 'PENDING: FrozenSet[str] = frozenset({"markdown/render-raw"})'
+file src/payload/scripts/github_api/families/markdown.py sha256 mutated 18b887aab1b3e6596838c7e1834489910011c0eaae4277e656014571ccace6cc  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/families/markdown.py sha256 restored fb92f2fd02c5aa783dee4286447d6ec782bfd6d59b016a503e9727f8b9cdaa0b identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 76 items / 67 deselected / 9 selected
+
+src\payload\test\test_github_api_call.py .....                           [ 55%]
+src\payload\test\test_github_api_markdown.py F.                          [ 77%]
+test\test_github_wrapper_contract.py .                                   [ 88%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: github_api.families.markdown.PENDING holds ['markdown/render-raw'], expected []
+    assert frozenset({'m.../render-raw'}) == frozenset()
+      
+      Extra items in the left set:
+      'markdown/render-raw'
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_markdown.py:115: AssertionError: github_api.families.markdown.PENDING holds ['markdown/render-raw'], expected []
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_markdown.py::test_only_the_residual_ids_are_pending
+=========== 1 failed, 8 passed, 67 deselected in 117.43s (0:01:57) ============
+
+--- exit 1; summary: 1 failed, 8 passed, 67 deselected in 117.43s (0:01:57)
+VERDICT W4-03: KILLED (1 failing ids)
+
+## W4-04 — read_input reads standard input through the text layer (task 2.5's stdin branch, test 4.1)
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '            return sys.stdin.buffer.read()' -> '            return sys.stdin.read().encode("utf-8")'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated fabae200a0df63780f92ce10c05501bbadf7cc44a397bee96f08a47b130b9e3b  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 76 items / 67 deselected / 9 selected
+
+src\payload\test\test_github_api_call.py ....F                           [ 55%]
+src\payload\test\test_github_api_markdown.py ..                          [ 77%]
+test\test_github_wrapper_contract.py .                                   [ 88%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: issue-46/AC-4.3/exit-0/raw-markdown-from-standard-input-rendered: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2713: AssertionError: issue-46/AC-4.3/exit-0/raw-markdown-from-standard-input-rendered: exit code 2, the golden is 0; stdout ''
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered
+=========== 1 failed, 8 passed, 67 deselected in 115.84s (0:01:55) ============
+
+--- exit 1; summary: 1 failed, 8 passed, 67 deselected in 115.84s (0:01:55)
+VERDICT W4-04: KILLED (1 failing ids)
+
+## Re-confirm green on the restored tree
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py src/payload/test/test_github_api_markdown.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_markdown_document_is_rendered or only_the_residual_ids_are_pending or records_follow_the_transcription_rules or raw_body_with_body_members_is_refused or raw_body_the_call_cannot_send_is_refused or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 76 items / 67 deselected / 9 selected
+
+src\payload\test\test_github_api_call.py .....                           [ 55%]
+src\payload\test\test_github_api_markdown.py ..                          [ 77%]
+test\test_github_wrapper_contract.py .                                   [ 88%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================ 9 passed, 67 deselected in 118.27s (0:01:58) =================
+
+--- exit 0; summary: 9 passed, 67 deselected in 118.27s (0:01:58)
+GREEN-AFTER-RESTORE: yes
+git status --porcelain after:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## Summary
+W4-01 KILLED exit=1 :: 1 failed, 8 passed, 67 deselected in 116.34s (0:01:56)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered
+W4-02 KILLED exit=1 :: 2 failed, 7 passed, 67 deselected in 116.30s (0:01:56)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered
+    FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+W4-03 KILLED exit=1 :: 1 failed, 8 passed, 67 deselected in 117.43s (0:01:57)
+    FAILED src/payload/test/test_github_api_markdown.py::test_only_the_residual_ids_are_pending
+W4-04 KILLED exit=1 :: 1 failed, 8 passed, 67 deselected in 115.84s (0:01:55)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_markdown_document_is_rendered

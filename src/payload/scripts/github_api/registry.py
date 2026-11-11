@@ -2,20 +2,25 @@
 
 A ``RestOperation`` is one row of ``operations-index.md`` as data: its operation ID, method and path template, the
 query and body parameter names its reference section documents, the path parameters that may span several segments,
-its paging kind and item key, its API version and media type. A ``GraphQLOperation`` is one GraphQL operation serving
-a capability of the "Only in GraphQL" table: its ``graphql/<member>`` operation ID, the capability, the document, and
-the key path of the connection it pages (``()`` when it pages none); a capability may have several. REST records live
-in ``github_api/families/<family>.py`` (``FAMILY``, ``OPERATIONS``, ``PENDING``); ``discover_families`` finds every
-such module by being there, as the hook runtime's gate discovery finds a gate, so no file lists them. GraphQL records
-live in ``github_api/graphql_only.py``; ``graphql_lookup`` finds one by its ID, and ``declared_variables`` names the
+its paging kind and item key, its API version and media type, the ``root`` its path is sent under (``API_ROOT`` unless
+its section names another host) and, for a body that is not JSON, that body's ``content_type`` (``None`` for every
+record whose body is JSON). A ``GraphQLOperation`` is one GraphQL operation serving a capability of the "Only in
+GraphQL" table: its ``graphql/<member>`` operation ID, the capability, the document, and the key path of the
+connection it pages (``()`` when it pages none); a capability may have several. REST records live in
+``github_api/families/<family>.py`` (``FAMILY``, ``OPERATIONS``, ``PENDING``); ``discover_families`` finds every such
+module by being there, as the hook runtime's gate discovery finds a gate, so no file lists them. GraphQL records live
+in ``github_api/graphql_only.py``; ``graphql_lookup`` finds one by its ID, and ``declared_variables`` names the
 variables its document defines that a caller gives.
 
 ``send``, ``call`` and ``pages`` send a record through the ``Transport`` with its method, API version and media type:
-``send`` returns the ``Response``, ``call`` its parsed JSON, ``pages`` the items of every page. A query or body name
-the record does not document is refused with ``ValueError`` before anything is sent; a query name may end in ``[]``,
-``conventions.md`` "Query strings"'s spelling of an array, and is sent as written. ``expand`` percent-encodes every
-path value, refusing a ``.`` or ``..`` segment with ``GitHubAPIError``. Every caller-supplied value a message names is
-rendered with ``json.dumps``.
+``send`` returns the ``Response``, ``call`` its parsed JSON, ``pages`` the items of every page. ``send`` takes one of
+two paths: a record whose ``content_type`` is ``None`` goes through ``Transport.request``, its body as JSON, to
+``API_ROOT``, and raw ``data`` for it is refused with ``ValueError`` before anything is sent; any other record goes
+through ``Transport.request_raw``, ``data`` unchanged under the record's ``content_type``, to the record's ``root``. A
+query or body name the record does not document is refused with ``ValueError`` before anything is sent; a query name
+may end in ``[]``, ``conventions.md`` "Query strings"'s spelling of an array, and is sent as written. ``expand``
+percent-encodes every path value, refusing a ``.`` or ``..`` segment with ``GitHubAPIError``. Every caller-supplied
+value a message names is rendered with ``json.dumps``.
 """
 
 from __future__ import annotations
@@ -31,7 +36,7 @@ from typing import AbstractSet, Any, FrozenSet, Iterator, List, Mapping, Optiona
 from urllib.parse import quote
 
 from github_api.errors import GitHubAPIError
-from github_api.transport import FIELD_AFTER, Response, Transport
+from github_api.transport import API_ROOT, FIELD_AFTER, Response, Transport
 
 FAMILIES_PACKAGE = "github_api.families"
 #: The operation ID prefix of every GraphQL record: ``graphql/`` and the member it runs (design D2).
@@ -65,7 +70,8 @@ class RestOperation:
     """One REST operation of the index: the row's ``operation_id``, ``method`` and ``path`` template; the documented
     ``query_params`` and ``body_params``; the path parameters in ``multi_segment``, whose value keeps its ``/``; its
     ``paging``; the ``item_key`` a wrapped list's items sit under (``None`` for a bare list); ``api_version`` and
-    ``accept``."""
+    ``accept``; the ``root`` the path is sent under; and ``content_type``, the media type of a body that is not JSON
+    (``None`` when the body is JSON)."""
 
     operation_id: str
     method: str
@@ -77,6 +83,8 @@ class RestOperation:
     item_key: Optional[str]
     api_version: str
     accept: str
+    root: str = API_ROOT
+    content_type: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -209,19 +217,37 @@ def send(
     path_params: Mapping[str, Any],
     query: Optional[Mapping[str, Any]] = None,
     body: Optional[Mapping[str, Any]] = None,
+    data: Optional[bytes] = None,
 ) -> Response:
-    """Send the record ``operation_id`` once, with its method, its expanded path, ``query``, ``body`` and the record's
-    API version and media type, and return the transport's ``Response``. Its names and path are checked first, so a
-    refusal comes before anything is sent."""
+    """Send the record ``operation_id`` once, with its method, its expanded path, ``query`` and the record's API
+    version and media type, and return the transport's ``Response``. A record whose ``content_type`` is ``None`` sends
+    ``body`` as JSON to ``API_ROOT``, and ``data`` for it raises ``ValueError``; any other record sends ``data``, its
+    bytes unchanged under the record's ``content_type`` (no body when ``data`` is ``None``), to the record's ``root``.
+    Its ``data``, names and path are checked first, so a refusal comes before anything is sent."""
     operation = lookup(operation_id=operation_id)
+    if operation.content_type is None and data is not None:
+        raise ValueError(
+            f"The GitHub operation {json.dumps(operation.operation_id)} takes a JSON body: it sends no raw bytes"
+        )
     _check_names(operation=operation, kind=KIND_QUERY, given=query, documented=operation.query_params)
     _check_names(operation=operation, kind=KIND_BODY, given=body, documented=operation.body_params)
     path = expand(operation=operation, path_params=path_params)
-    return transport.request(
+    if operation.content_type is None:
+        return transport.request(
+            method=operation.method,
+            path=path,
+            query=query,
+            body=body,
+            api_version=operation.api_version,
+            accept=operation.accept,
+        )
+    return transport.request_raw(
         method=operation.method,
+        root=operation.root,
         path=path,
         query=query,
-        body=body,
+        data=data,
+        content_type=operation.content_type,
         api_version=operation.api_version,
         accept=operation.accept,
     )

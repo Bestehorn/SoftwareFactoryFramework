@@ -1,0 +1,502 @@
+# Wave 2 mutants — issue #46 verification, 2026-11-11T09:05:02
+worktree HEAD 10a22235371adeb3e4d1195fea1f0d8ab5dcde86  # pragma: allowlist secret
+paired tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+git status --porcelain before:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## W2-01 — refuse_both_bodies removed
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '        refuse_both_bodies(raw_body=raw_body, members=members)' -> '        pass'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated 3dd15070ecff9b8ac5d7cce13d32b9073ea033b8dab52c6cb598fc8996388b18  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py ..FF.                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: issue-46/AC-1.3/exit-2/raw-field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2731: AssertionError: issue-46/AC-1.3/exit-2/raw-field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+E   AssertionError: issue-46/AC-1.3/exit-2/field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2731: AssertionError: issue-46/AC-1.3/exit-2/field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field]
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field]
+========== 2 failed, 15 passed, 107 deselected in 124.07s (0:02:04) ===========
+
+--- exit 1; summary: 2 failed, 15 passed, 107 deselected in 124.07s (0:02:04)
+VERDICT W2-01: KILLED (4 failing ids)
+
+## W2-02 — refuse_both_bodies moved after the request
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '        refuse_both_bodies(raw_body=raw_body, members=members)' -> '        pass'
+edit src/payload/scripts/github_api/commands/call.py: '    print_body(body=response.body)' -> '    refuse_both_bodies(raw_body=raw_body, members=members)\n    print_body(body=response.body)'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated c54ed92c361966a78128c43190bc07526cc9eb19ccd83eb64c61c150318f098d  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py ..FF.                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: issue-46/AC-1.3/exit-2/raw-field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2731: AssertionError: issue-46/AC-1.3/exit-2/raw-field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+E   AssertionError: issue-46/AC-1.3/exit-2/field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+------------------------------ Captured log call ------------------------------
+ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2731: AssertionError: issue-46/AC-1.3/exit-2/field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field]
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field]
+========== 2 failed, 15 passed, 107 deselected in 129.85s (0:02:09) ===========
+
+--- exit 1; summary: 2 failed, 15 passed, 107 deselected in 129.85s (0:02:09)
+VERDICT W2-02: KILLED (4 failing ids)
+
+## W2-03 — refuse_raw_body removed
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '        refuse_raw_body(operation=operation, raw_body=raw_body)' -> '        pass'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated e8f87efd1b29f6d430a77bbbea3f82ff6222acffa0a0509378e14a1f3986bf8c  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py F....                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   ValueError: The GitHub operation "issues/update" takes a JSON body: it sends no raw bytes
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_api\registry.py:191: ValueError: The GitHub operation "issues/update" takes a JSON body: it sends no raw bytes
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record]
+========== 1 failed, 16 passed, 107 deselected in 123.70s (0:02:03) ===========
+
+--- exit 1; summary: 1 failed, 16 passed, 107 deselected in 123.70s (0:02:03)
+VERDICT W2-03: KILLED (1 failing ids)
+
+## W2-04 — refuse_raw_body moved after the request
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '        refuse_raw_body(operation=operation, raw_body=raw_body)' -> '        pass'
+edit src/payload/scripts/github_api/commands/call.py: '    print_body(body=response.body)' -> '    refuse_raw_body(operation=operation, raw_body=raw_body)\n    print_body(body=response.body)'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated 4684dd1808aefc9a104cc32db96987266eb8e7f3cc1fe039b28aef1e39046e60  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py F....                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   ValueError: The GitHub operation "issues/update" takes a JSON body: it sends no raw bytes
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\scripts\github_api\registry.py:191: ValueError: The GitHub operation "issues/update" takes a JSON body: it sends no raw bytes
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record]
+========== 1 failed, 16 passed, 107 deselected in 136.79s (0:02:16) ===========
+
+--- exit 1; summary: 1 failed, 16 passed, 107 deselected in 136.79s (0:02:16)
+VERDICT W2-04: KILLED (1 failing ids)
+
+## W2-05 — --input accepted on a JSON-body record (refuse_raw_body and the registry check removed)
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+file src/payload/scripts/github_api/registry.py sha256 before 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '        refuse_raw_body(operation=operation, raw_body=raw_body)' -> '        pass'
+edit src/payload/scripts/github_api/registry.py: '    if operation.content_type is None and data is not None:' -> '    if False:'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated e8f87efd1b29f6d430a77bbbea3f82ff6222acffa0a0509378e14a1f3986bf8c  # pragma: allowlist secret
+file src/payload/scripts/github_api/registry.py sha256 mutated e78226da8b20a4b6ad8e68db268eef4090143f418eada909d31db54a86b8049d  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+file src/payload/scripts/github_api/registry.py sha256 restored 81f59bfea0551576c19dc58a98aa57dc9d787e3231dba1f3fa234fd8e1c4290d identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py F....                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/issues/5
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for PATCH https://api.github.com/repos/o/r/issues/5
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record]
+========== 1 failed, 16 passed, 107 deselected in 126.73s (0:02:06) ===========
+
+--- exit 1; summary: 1 failed, 16 passed, 107 deselected in 126.73s (0:02:06)
+VERDICT W2-05: KILLED (1 failing ids)
+
+## W2-06 — read_input reads the file as text
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '        return Path(text).read_bytes()' -> '        return Path(text).read_text(encoding="utf-8", errors="replace").encode("utf-8")'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated 16f5fe01bf34b619180fd72f4a1862ee1a75bc218cfb614c1e5fdbd9466c394c  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py ....F                           [ 29%]
+test\test_github_api_call_properties.py FF                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: issue-46/AC-4.2/exit-0/asset-uploaded-to-its-host: the requests other than GET differ from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:2718: AssertionError: issue-46/AC-4.2/exit-0/asset-uploaded-to-its-host: the requests other than GET differ from the golden
+E   AssertionError: read_input did not return the file's bytes
+    assert b'\xef\xbf\xbd' == b'\x80'
+      
+      At index 0 diff: b'\xef' != b'\x80'
+      Use -v to get more diff
+    Failing test case: test_any_bytes_are_sent_as_given(
+        media_type='application/octet-stream',
+        body=b'\x80',
+    )
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\test\test_github_api_call_properties.py:164: AssertionError: read_input did not return the file's bytes
+E   AssertionError: read_input did not return the file's bytes
+    assert b'\xef\xbf\xbd' == b'\x80'
+      
+      At index 0 diff: b'\xef' != b'\x80'
+      Use -v to get more diff
+    Failing test case: test_any_bytes_are_sent_as_given(
+        media_type='text/plain',
+        body=b'\x80',
+    )
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\test\test_github_api_call_properties.py:164: AssertionError: read_input did not return the file's bytes
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host
+FAILED test/test_github_api_call_properties.py::test_any_bytes_are_sent_as_given[octet-stream]
+FAILED test/test_github_api_call_properties.py::test_any_bytes_are_sent_as_given[text-plain]
+=========== 3 failed, 14 passed, 107 deselected in 99.23s (0:01:39) ===========
+
+--- exit 1; summary: 3 failed, 14 passed, 107 deselected in 99.23s (0:01:39)
+VERDICT W2-06: KILLED (3 failing ids)
+
+## W2-07 — read_input lets the OSError through (no ArgumentTypeError)
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: '    except OSError:' -> '    except KeyError:'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated b969d95034dc467c8a657d30b6821b44c2a5fc46353c77e864589924b702d14b  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py .F...                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1170\\test_a_raw_body_the_call_canno1\\missing.md'
+C:\Program Files\Python314\Lib\pathlib\__init__.py:771: FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1170\\test_a_raw_body_the_call_canno1\\missing.md'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist]
+========== 1 failed, 16 passed, 107 deselected in 138.45s (0:02:18) ===========
+
+--- exit 1; summary: 1 failed, 16 passed, 107 deselected in 138.45s (0:02:18)
+VERDICT W2-07: KILLED (1 failing ids)
+
+## W2-08 — read_input's message names the path without json.dumps
+file src/payload/scripts/github_api/commands/call.py sha256 before b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81  # pragma: allowlist secret
+edit src/payload/scripts/github_api/commands/call.py: 'raise argparse.ArgumentTypeError(f"{json.dumps(obj=text)} cannot be read") from None' -> 'raise argparse.ArgumentTypeError(f"{text} cannot be read") from None'
+file src/payload/scripts/github_api/commands/call.py sha256 mutated 41e4b8d3a1a5b0d594bafcd2ca30cddf4a79ce4551cca92daf76dab22ec88213  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/commands/call.py sha256 restored b48690abbccd9ae8d947d0e69adaec3f9edf421727e1ea5d6655bac391a8db81 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py .F...                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: issue-46/AC-1.1/exit-2/input-file-that-does-not-exist: no usage error names the path "D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1175\\test_a_raw_body_the_call_canno1\\missing.md": ['D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1175\\test_a_raw_body_the_call_canno1\\missing.md cannot be read']
+    assert False
+     +  where False = any(<generator object test_a_raw_body_the_call_cannot_send_is_refused.<locals>.<genexpr> at 0x0000010779DD90E0>)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1278: AssertionError: issue-46/AC-1.1/exit-2/input-file-that-does-not-exist: no usage error names the path "D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1175\\test_a_raw_body_the_call_canno1\\missing.md": ['D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1175\\test_a_raw_body_the_call_canno1\\missing.md cannot be read']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist]
+========== 1 failed, 16 passed, 107 deselected in 120.11s (0:02:00) ===========
+
+--- exit 1; summary: 1 failed, 16 passed, 107 deselected in 120.11s (0:02:00)
+VERDICT W2-08: KILLED (1 failing ids)
+
+## W2-09 — repos/upload-release-asset root changed to the API root
+file src/payload/scripts/github_api/families/repos.py sha256 before 8823843d3cd12c7023f799a6abf27b089eb2cac38aa4aede20cd83e873edb6bd  # pragma: allowlist secret
+edit src/payload/scripts/github_api/families/repos.py: '        root=UPLOAD_ORIGIN,' -> '        root="https://api.github.com",'
+file src/payload/scripts/github_api/families/repos.py sha256 mutated 1cc3cd1f6e1e36c193b2c0e2e1c63e48b236202fb47353792920f2ca9f6f992b  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/families/repos.py sha256 restored 8823843d3cd12c7023f799a6abf27b089eb2cac38aa4aede20cd83e873edb6bd identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py ....F                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py ......F                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\github_wrapper_fixtures.py:440: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/releases/3/assets?name=dist.zip&label=Build
+E   AssertionError: 1 problems calling 1252 records:
+      "repos/upload-release-asset": the fake host has no route for its request; log []; stderr ''
+    assert not ['"repos/upload-release-asset": the fake host has no route for its request; log []; stderr \'\'']
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\test\test_github_wrapper_contract.py:859: AssertionError: 1 problems calling 1252 records:
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+========== 2 failed, 15 passed, 107 deselected in 114.62s (0:01:54) ===========
+
+--- exit 1; summary: 2 failed, 15 passed, 107 deselected in 114.62s (0:01:54)
+VERDICT W2-09: KILLED (2 failing ids)
+
+## W2-10 — repos/upload-release-asset media type changed
+file src/payload/scripts/github_api/families/repos.py sha256 before 8823843d3cd12c7023f799a6abf27b089eb2cac38aa4aede20cd83e873edb6bd  # pragma: allowlist secret
+edit src/payload/scripts/github_api/families/repos.py: '        content_type=CONTENT_TYPE_OCTET_STREAM,' -> '        content_type="application/zip",'
+file src/payload/scripts/github_api/families/repos.py sha256 mutated 205effd6cd377307b36f31201fca02a13e23f6631e1c075eb4c80f9f0dbcb8a6  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/families/repos.py sha256 restored 8823843d3cd12c7023f799a6abf27b089eb2cac38aa4aede20cd83e873edb6bd identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py ....F                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: assert 'application/zip' == 'application/octet-stream'
+      
+      - application/octet-stream
+      + application/zip
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_call.py:1335: AssertionError: assert 'application/zip' == 'application/octet-stream'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host
+========== 1 failed, 16 passed, 107 deselected in 117.25s (0:01:57) ===========
+
+--- exit 1; summary: 1 failed, 16 passed, 107 deselected in 117.25s (0:01:57)
+VERDICT W2-10: KILLED (1 failing ids)
+
+## W2-11 — repos/upload-release-asset back on PENDING
+file src/payload/scripts/github_api/families/repos.py sha256 before 8823843d3cd12c7023f799a6abf27b089eb2cac38aa4aede20cd83e873edb6bd  # pragma: allowlist secret
+edit src/payload/scripts/github_api/families/repos.py: 'PENDING: FrozenSet[str] = frozenset()' -> 'PENDING: FrozenSet[str] = frozenset({"repos/upload-release-asset"})'
+file src/payload/scripts/github_api/families/repos.py sha256 mutated b883fd1076f19b3ab65cbc05d798f3d7d5b212b77efb21ccdc31654b8c99f5dc  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file src/payload/scripts/github_api/families/repos.py sha256 restored 8823843d3cd12c7023f799a6abf27b089eb2cac38aa4aede20cd83e873edb6bd identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py .....                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py F.                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: PENDING holds 1 IDs, none expected: ['repos/upload-release-asset']
+    assert not ["PENDING holds 1 IDs, none expected: ['repos/upload-release-asset']"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\src\payload\test\test_github_api_repos.py:803: AssertionError: PENDING holds 1 IDs, none expected: ['repos/upload-release-asset']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_repos.py::test_no_repos_id_is_pending
+========== 1 failed, 16 passed, 107 deselected in 121.82s (0:02:01) ===========
+
+--- exit 1; summary: 1 failed, 16 passed, 107 deselected in 121.82s (0:02:01)
+VERDICT W2-11: KILLED (1 failing ids)
+
+## W2-12 — N's section reader leaves host at its default (tasks 2.4's named mutant)
+file test/test_github_wrapper_contract.py sha256 before f766ac28adf712f7d9440d58b4cef89bc79e48509446509a40b208563b7ab838  # pragma: allowlist secret
+edit test/test_github_wrapper_contract.py: '                self._host = host.group(GROUP_HOST)' -> '                self._host = REST_API_HOST'
+file test/test_github_wrapper_contract.py sha256 mutated 74044a6f086198580e12b140e008f4e5b67c43f5e192c489d866f6d0924b7d09  # pragma: allowlist secret
+command: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --workers 1 src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+file test/test_github_wrapper_contract.py sha256 restored f766ac28adf712f7d9440d58b4cef89bc79e48509446509a40b208563b7ab838 identical=True  # pragma: allowlist secret
+--- test output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py .....                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .....FF                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+================================== FAILURES ===================================
+E   AssertionError: assert ReferenceSect...i.github.com') == ReferenceSect...s.github.com')
+      
+      Omitting 6 identical items, use -vv to show
+      Differing attributes:
+      ['host']
+      
+      Drill down into differing attribute host:
+        host: 'https://api.github.com' != 'https://uploads.github.com'...
+      
+      ...Full output truncated, use '-vv' to show
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\test\test_github_wrapper_contract.py:807: AssertionError: assert ReferenceSect...i.github.com') == ReferenceSect...s.github.com')
+E   AssertionError: 1 problems calling 1252 records:
+      "repos/upload-release-asset": the fake host has no route for its request; log []; stderr ''
+    assert not ['"repos/upload-release-asset": the fake host has no route for its request; log []; stderr \'\'']
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46\test\test_github_wrapper_contract.py:859: AssertionError: 1 problems calling 1252 records:
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[repos/upload-release-asset]
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+========== 2 failed, 15 passed, 107 deselected in 121.47s (0:02:01) ===========
+
+--- exit 1; summary: 2 failed, 15 passed, 107 deselected in 121.47s (0:02:01)
+VERDICT W2-12: KILLED (2 failing ids)
+
+## Re-confirm green on the restored tree
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors src/payload/test/test_github_api_call.py test/test_github_api_call_properties.py src/payload/test/test_github_api_repos.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py -k raw_body_the_call_cannot_send_is_refused or raw_body_with_body_members_is_refused or an_asset_is_uploaded_to_its_host or any_bytes_are_sent_as_given or no_repos_id_is_pending or every_record_sends_the_default_version_and_media_type or section_is_read_as_the_reference_writes_it or every_record_is_sent_as_its_section_documents or every_operation_is_covered_or_pending -pno:cacheprovider --tb=line --color=no
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-46
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 124 items / 107 deselected / 17 selected
+
+src\payload\test\test_github_api_call.py .....                           [ 29%]
+test\test_github_api_call_properties.py ..                               [ 41%]
+src\payload\test\test_github_api_repos.py ..                             [ 52%]
+test\test_github_wrapper_contract.py .......                             [ 94%]
+test\test_github_wrapper_coverage.py .                                   [100%]
+
+=============== 17 passed, 107 deselected in 136.37s (0:02:16) ================
+
+--- exit 0; summary: 17 passed, 107 deselected in 136.37s (0:02:16)
+GREEN-AFTER-RESTORE: yes
+git status --porcelain after:
+?? .claude/specs/issue-46-github-call-raw-bodies/evidence/verify/
+
+## Summary
+W2-01 KILLED exit=1 :: 2 failed, 15 passed, 107 deselected in 124.07s (0:02:04)
+    ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+    ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field]
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field]
+W2-02 KILLED exit=1 :: 2 failed, 15 passed, 107 deselected in 129.85s (0:02:09)
+    ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+    ERROR    github_api.commands.call:call.py:350 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field]
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field]
+W2-03 KILLED exit=1 :: 1 failed, 16 passed, 107 deselected in 123.70s (0:02:03)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record]
+W2-04 KILLED exit=1 :: 1 failed, 16 passed, 107 deselected in 136.79s (0:02:16)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record]
+W2-05 KILLED exit=1 :: 1 failed, 16 passed, 107 deselected in 126.73s (0:02:06)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-for-a-json-record]
+W2-06 KILLED exit=1 :: 3 failed, 14 passed, 107 deselected in 99.23s (0:01:39)
+    FAILED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host
+    FAILED test/test_github_api_call_properties.py::test_any_bytes_are_sent_as_given[octet-stream]
+    FAILED test/test_github_api_call_properties.py::test_any_bytes_are_sent_as_given[text-plain]
+W2-07 KILLED exit=1 :: 1 failed, 16 passed, 107 deselected in 138.45s (0:02:18)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist]
+W2-08 KILLED exit=1 :: 1 failed, 16 passed, 107 deselected in 120.11s (0:02:00)
+    FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[input-file-that-does-not-exist]
+W2-09 KILLED exit=1 :: 2 failed, 15 passed, 107 deselected in 114.62s (0:01:54)
+    FAILED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host
+    FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+W2-10 KILLED exit=1 :: 1 failed, 16 passed, 107 deselected in 117.25s (0:01:57)
+    FAILED src/payload/test/test_github_api_call.py::test_an_asset_is_uploaded_to_its_host
+W2-11 KILLED exit=1 :: 1 failed, 16 passed, 107 deselected in 121.82s (0:02:01)
+    FAILED src/payload/test/test_github_api_repos.py::test_no_repos_id_is_pending
+W2-12 KILLED exit=1 :: 2 failed, 15 passed, 107 deselected in 121.47s (0:02:01)
+    FAILED test/test_github_wrapper_contract.py::test_a_section_is_read_as_the_reference_writes_it[repos/upload-release-asset]
+    FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
