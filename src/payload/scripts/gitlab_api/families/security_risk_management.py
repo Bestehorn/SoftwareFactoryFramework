@@ -6,9 +6,12 @@ Each record is transcribed from the attribute table of its section of
 issue #41 design.md D8): the method, the path as ``operations-index.md`` writes it, and one ``Param`` per query or body
 attribute with the table's Type column as its ``Kind`` (``object`` a ``HASH``, ``array`` and ``string array`` an
 ``ARRAY``). A ``GET`` section headed "List", and "Retrieve project external status check services", pages by offset;
-every other record does not page. "Create a dependency list export" has three endpoints and one ID, so its record maps
-the ``/projects/:id/`` endpoint and ``PENDING`` holds the other two (DL-003); every other index key of the family has
-its record.
+every other record does not page. "Create a dependency list export" has three endpoints and one ID, so it has one
+record per endpoint (issue #63, design.md D1, D8): its base record, the first of its ID, maps the ``/projects/:id/``
+endpoint its endpoint line lists first, and the records after it the line's other two, in its order, each a copy of the
+base record but for its path and any ``Param`` naming a path parameter of its own path. ``call`` sends the base record
+without ``--endpoint`` and another when ``--endpoint 'POST /groups/:id/dependency_list_exports'`` names it. Every index
+key of the family has its record, so ``PENDING`` is empty.
 
 Standard library only; Python 3.9.
 """
@@ -35,11 +38,31 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/admin/security/compliance_policy_settings",
         params=(Param(name="csp_namespace_id", location=Location.BODY, required=True),),
     ),
-    # "Dependency list export API: Create a dependency list export"; its group and pipeline endpoints are pending.
+    # "Dependency list export API: Create a dependency list export"; the base record, its `/projects/:id/` endpoint.
     RestOperation(
         operation_id="security-risk-management#create-a-dependency-list-export",
         method="POST",
         path="/projects/:id/dependency_list_exports",
+        params=(
+            Param(name="export_type", location=Location.BODY, required=True),
+            Param(name="send_email", location=Location.BODY),
+        ),
+    ),
+    # "Dependency list export API: Create a dependency list export"; its group endpoint (issue #63, design.md D8).
+    RestOperation(
+        operation_id="security-risk-management#create-a-dependency-list-export",
+        method="POST",
+        path="/groups/:id/dependency_list_exports",
+        params=(
+            Param(name="export_type", location=Location.BODY, required=True),
+            Param(name="send_email", location=Location.BODY),
+        ),
+    ),
+    # "Dependency list export API: Create a dependency list export"; its pipeline endpoint (issue #63, design.md D8).
+    RestOperation(
+        operation_id="security-risk-management#create-a-dependency-list-export",
+        method="POST",
+        path="/pipelines/:id/dependency_list_exports",
         params=(
             Param(name="export_type", location=Location.BODY, required=True),
             Param(name="send_email", location=Location.BODY),
@@ -381,11 +404,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-# The other two endpoints of "Create a dependency list export": one record per ID, and its record maps the
-# `/projects/:id/` endpoint (change.md AC-1, AC-2; DL-003).
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("POST", "/groups/:id/dependency_list_exports"),
-        ("POST", "/pipelines/:id/dependency_list_exports"),
-    }
-)
+# Every index key of the family has its record: the two endpoints this held are records of "Create a dependency list
+# export" (issue #63 AC-1.1, AC-1.3).
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

@@ -6,10 +6,11 @@ Every expected value is a literal table transcribed from the reference, never re
 ``docs/api-reference/gitlab/rest/plan.md`` (each section's endpoints, its heading, and the ``In``, ``Type`` and
 ``Required`` columns of its ``| Attribute | In | Type | Required |`` table). What is pinned:
 
-- AC-1: ``PENDING`` is exactly the keys of the two IDs kept pending (DL-003) and, of each section with several
-  endpoints, every endpoint but its record's (the first under ``/projects/:id/``); ``OPERATIONS`` declares every
-  Reference of the family but those two IDs and ``plan#promote-an-issue-to-an-epic``, whose key is the one
-  ``plan#create-an-issue-note`` declares;
+- AC-1 (as issue #63 design.md D9 restates it): ``PENDING`` is exactly the keys of the two IDs kept pending (DL-003);
+  ``OPERATIONS`` declares every Reference of the family but those two IDs and ``plan#promote-an-issue-to-an-epic``,
+  whose key is the one ``plan#create-an-issue-note`` declares, each key of an ID once; a section with several endpoints
+  has one record per endpoint, its base record (the first under ``/projects/:id/``) first and the others in the order
+  its endpoint line lists them (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
 - AC-3: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``FILE`` for an ``In`` ``form`` row, ``ARRAY`` for a
   Type holding ``array``, ``HASH`` for ``Hash`` or ``object``); the ``required`` ``Param``s, exactly the Required
   ``yes`` rows that are not path rows; a JSON body and no ``fixed`` pairs on every record;
@@ -17,7 +18,10 @@ Every expected value is a literal table transcribed from the reference, never re
   and no record is ``Paging.KEYSET``;
 - AC-6: each ``Paging.OFFSET`` record, called through the product's ``main(argv=["call", ...])`` with ``--path`` for
   every placeholder of its path against a fake host serving one item on each of two pages chained by ``x-next-page``,
-  exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``).
+  exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``);
+- issue #63 AC-2.1, AC-2.2, AC-8.3: "Add an emoji reaction to a resource" called with ``--endpoint`` naming its
+  merge-request endpoint sends one ``POST`` to that endpoint, and called without it sends its base endpoint, the issue
+  one.
 
 AC-2 and AC-5 are proven by ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
 
@@ -80,12 +84,19 @@ PROJECT_ID = 4242
 CALL = "call"
 EXIT_OK = 0
 OPTION_PATH = "--path"
+OPTION_RAW_FIELD = "-f"
+# `call --endpoint 'METHOD path'` names one endpoint of a Reference with several (issue #63, design.md D1).
+OPTION_ENDPOINT = "--endpoint"
 ASSIGNED = "="
 ID_SEPARATOR = "#"
 METHOD_GET = "GET"
+METHOD_POST = "POST"
+STATUS_CREATED = 201
 REST_BASE = fixtures.REST_BASE
 TEXT_ENCODING = "utf-8"
 HEADER_CONTENT_TYPE = "Content-Type"
+# The configured token's header for the default token type, matched case-insensitively by `RecordedRequest.header`.
+HEADER_PRIVATE_TOKEN = "PRIVATE-TOKEN"
 HEADER_NEXT_PAGE = "x-next-page"
 CONTENT_TYPE_JSON = "application/json"
 # The query of a list's first page: the transport adds `per_page=100` (conventions.md "Offset-based", #13 AC-2.5), and
@@ -112,6 +123,19 @@ PAGE_ITEMS: Tuple[Dict[str, Any], ...] = ({FIELD_ID: 1}, {FIELD_ID: 2})
 KIND_ARRAY = "array"
 KIND_HASH = "hash"
 KIND_FILE = "file"
+
+# Issue #63 AC-2.1, AC-2.2: "Add an emoji reaction to a resource" (rest/plan.md), its `id` the configured project; the
+# merge-request endpoint named by `--endpoint` with `--path merge_request_iid=5`, and the base endpoint, the issue one,
+# with `--path issue_iid=4`; each with `-f name=thumbsup`, its JSON body.
+OP_ADD_EMOJI_TO_RESOURCE = "plan#add-an-emoji-reaction-to-a-resource"
+MERGE_REQUEST_ENDPOINT = "POST /projects/:id/merge_requests/:merge_request_iid/award_emoji"
+MERGE_REQUEST_PATH_VALUE = "merge_request_iid=5"
+MERGE_REQUEST_EMOJI_URL = f"{REST_BASE}/projects/{PROJECT_ID}/merge_requests/5/award_emoji"
+ISSUE_PATH_VALUE = "issue_iid=4"
+ISSUE_EMOJI_URL = f"{REST_BASE}/projects/{PROJECT_ID}/issues/4/award_emoji"
+EMOJI_NAME_VALUE = "name=thumbsup"
+EMOJI_BODY: Dict[str, Any] = {"name": "thumbsup"}
+EMOJI_ANSWER: Dict[str, Any] = {"id": 1, "name": "thumbsup"}
 
 # --- The tables, transcribed from docs/api-reference/gitlab ----------------------------------------------------------
 
@@ -347,24 +371,43 @@ KEPT_PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
 # The index's other Reference on the key `plan#create-an-issue-note` declares (`POST .../issues/:issue_iid/notes`):
 # no record of its own.
 SHARED_KEY_ID = "plan#promote-an-issue-to-an-epic"
-# The endpoints of the sections with several endpoints that are not their record's: the merge-request and snippet
-# endpoints of the four resource sections of "Emoji reactions API", and the group endpoints of "Retrieve notification
-# settings" and "Update group or project notification settings".
-SECOND_ENDPOINT_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
+# The sections with several endpoints (issue #63, design.md D1, D8): the four resource sections of "Emoji reactions
+# API" and "Retrieve notification settings" and "Update group or project notification settings". Each ID's base record
+# takes the section's first endpoint under `/projects/:id/` ...
+BASE_ENDPOINTS: Dict[str, Tuple[str, str]] = {
+    "plan#list-all-emoji-reactions-for-a-resource": ("GET", "/projects/:id/issues/:issue_iid/award_emoji"),
+    "plan#retrieve-an-emoji-reaction-from-a-resource": ("GET", "/projects/:id/issues/:issue_iid/award_emoji/:award_id"),
+    "plan#add-an-emoji-reaction-to-a-resource": ("POST", "/projects/:id/issues/:issue_iid/award_emoji"),
+    "plan#delete-an-emoji-reaction-from-a-resource": (
+        "DELETE",
+        "/projects/:id/issues/:issue_iid/award_emoji/:award_id",
+    ),
+    "plan#retrieve-notification-settings": ("GET", "/projects/:id/notification_settings"),
+    "plan#update-group-or-project-notification-settings": ("PUT", "/projects/:id/notification_settings"),
+}
+# ... and the records after it take the section's other endpoints, in the order its endpoint line lists them: the
+# merge-request then the snippet endpoint of each emoji section, the group endpoint of each notification section.
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "plan#list-all-emoji-reactions-for-a-resource": (
         ("GET", "/projects/:id/merge_requests/:merge_request_iid/award_emoji"),
         ("GET", "/projects/:id/snippets/:snippet_id/award_emoji"),
+    ),
+    "plan#retrieve-an-emoji-reaction-from-a-resource": (
         ("GET", "/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id"),
         ("GET", "/projects/:id/snippets/:snippet_id/award_emoji/:award_id"),
+    ),
+    "plan#add-an-emoji-reaction-to-a-resource": (
         ("POST", "/projects/:id/merge_requests/:merge_request_iid/award_emoji"),
         ("POST", "/projects/:id/snippets/:snippet_id/award_emoji"),
+    ),
+    "plan#delete-an-emoji-reaction-from-a-resource": (
         ("DELETE", "/projects/:id/merge_requests/:merge_request_iid/award_emoji/:award_id"),
         ("DELETE", "/projects/:id/snippets/:snippet_id/award_emoji/:award_id"),
-        ("GET", "/groups/:id/notification_settings"),
-        ("PUT", "/groups/:id/notification_settings"),
-    }
-)
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = KEPT_PENDING_KEYS | SECOND_ENDPOINT_KEYS
+    ),
+    "plan#retrieve-notification-settings": (("GET", "/groups/:id/notification_settings"),),
+    "plan#update-group-or-project-notification-settings": (("PUT", "/groups/:id/notification_settings"),),
+}
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = KEPT_PENDING_KEYS
 
 # rest/plan.md: every query, body and form row whose Kind is not SCALAR, by (record ID, attribute name) — FILE for an
 # `In` `form` row, ARRAY for a Type holding `array`, HASH for `Hash` or `object` (AC-3). A name is the table's, `[]`
@@ -619,6 +662,26 @@ def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, An
     return "\n".join(line for line in lines if line)
 
 
+def endpoints_by_id(*, records: Sequence[Any]) -> Dict[str, Tuple[Tuple[str, str], ...]]:
+    """``{operation_id: ((method, path), ...)}`` over ``records``, each ID's keys in declaration order."""
+    declared: Dict[str, List[Tuple[str, str]]] = {}
+    for record in records:
+        declared.setdefault(record.operation_id, []).append((record.method, record.path))
+    return {operation_id: tuple(keys) for operation_id, keys in declared.items()}
+
+
+def repeated_keys(*, endpoints: Mapping[str, Sequence[Tuple[str, str]]]) -> List[Tuple[str, Tuple[str, str]]]:
+    """Each ``(operation_id, key)`` that ``endpoints`` holds more than once for its ID, sorted."""
+    return sorted(
+        {(operation_id, key) for operation_id, keys in endpoints.items() for key in keys if list(keys).count(key) > 1}
+    )
+
+
+def sent(*, fake: Any) -> List[Tuple[str, str]]:
+    """``(method, URL)`` of every request the fake host recorded, in order."""
+    return [(request.method, request.url) for request in fake.requests]
+
+
 def path_values(*, path: str) -> Dict[str, str]:
     """A distinct number for each placeholder of ``path``, in path order: ``101``, ``102``, ..."""
     names = dict.fromkeys(match.group(GROUP_NAME) for match in PLACEHOLDER.finditer(string=path))
@@ -665,19 +728,29 @@ def list_params() -> List[Any]:
 
 
 def test_only_the_kept_keys_are_pending() -> None:
-    """AC-1, UB-2: ``PENDING`` is the kept IDs' keys and the second endpoints, and ``OPERATIONS`` declares, once each,
-    every index Reference of the family but the kept IDs and the one whose key another record declares."""
+    """AC-1, UB-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is the kept IDs' keys, and ``OPERATIONS``
+    declares every index Reference of the family but the kept IDs and the one whose key another record declares, each
+    key of an ID once; an ID of several records is a section's, its base record first and then its other endpoints in
+    the section's order."""
     plan = gitlab_module(name=PLAN)
     pending = frozenset(plan.PENDING)
     assert pending == PENDING_KEYS, "plan.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
         declared=pending, expected=PENDING_KEYS
     )
-    declared = [record.operation_id for record in plan.OPERATIONS]
+    endpoints = endpoints_by_id(records=plan.OPERATIONS)
+    repeated = repeated_keys(endpoints=endpoints)
+    assert not repeated, f"plan.OPERATIONS declares these keys of one ID more than once: {repeated}"
     expected = set(INDEX_REFERENCES) - KEPT_PENDING_IDS - {SHARED_KEY_ID}
-    repeated = sorted({operation_id for operation_id in declared if declared.count(operation_id) > 1})
-    assert not repeated, f"plan.OPERATIONS declares these IDs more than once: {repeated}"
-    assert set(declared) == expected, "plan.OPERATIONS does not declare the family's References (AC-1):\n" + (
-        set_difference(declared=set(declared), expected=expected)
+    assert set(endpoints) == expected, "plan.OPERATIONS does not declare the family's References (AC-1):\n" + (
+        set_difference(declared=set(endpoints), expected=expected)
+    )
+    bases = {operation_id: keys[0] for operation_id, keys in endpoints.items() if operation_id in BASE_ENDPOINTS}
+    assert bases == BASE_ENDPOINTS, "each section's first record is not its base record (issue #63 D1):\n" + (
+        mapping_difference(declared=bases, expected=BASE_ENDPOINTS)
+    )
+    others = {operation_id: keys[1:] for operation_id, keys in endpoints.items() if len(keys) > 1}
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+        mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
     )
 
 
@@ -765,3 +838,45 @@ def test_a_list_record_prints_every_item(
     assert captured.out == printed_json(value=list(PAGE_ITEMS)), (
         f"one JSON array of both items, in page order, as print_json writes it (AC-6):\n{captured.out}"
     )
+
+
+# --- Issue #63 AC-2.1, AC-2.2: an endpoint named by its method and path ---------------------------------------------
+
+
+def test_an_other_endpoint_is_sent_when_named(
+    project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #63 AC-2.1, AC-2.2, AC-8.3: ``call plan#add-an-emoji-reaction-to-a-resource --endpoint 'POST
+    /projects/:id/merge_requests/:merge_request_iid/award_emoji' --path merge_request_iid=5 -f name=thumbsup`` sends one
+    ``POST`` to the project's merge request 5, its JSON body ``name``, the configured token in its header; without
+    ``--endpoint``, ``--path issue_iid=4`` sends the base endpoint, the project's issue 4."""
+    fake_gitlab.script(method=METHOD_POST, url=MERGE_REQUEST_EMOJI_URL, status=STATUS_CREATED, body=EMOJI_ANSWER)
+    fake_gitlab.script(method=METHOD_POST, url=ISSUE_EMOJI_URL, status=STATUS_CREATED, body=EMOJI_ANSWER)
+    named = [
+        OP_ADD_EMOJI_TO_RESOURCE,
+        OPTION_ENDPOINT,
+        MERGE_REQUEST_ENDPOINT,
+        OPTION_PATH,
+        MERGE_REQUEST_PATH_VALUE,
+        OPTION_RAW_FIELD,
+        EMOJI_NAME_VALUE,
+    ]
+    code = run_call(root=project, argv=named)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {named} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(METHOD_POST, MERGE_REQUEST_EMOJI_URL)], (
+        "one POST to the endpoint --endpoint names, merge_request_iid in its place (AC-2.1)"
+    )
+    request = fake_gitlab.requests[0]
+    assert request.header(name=HEADER_CONTENT_TYPE) == CONTENT_TYPE_JSON, "a JSON body (AC-8.3)"
+    assert request.json() == EMOJI_BODY, f"the JSON body names the -f attribute: {request.body!r}"
+    assert request.header(name=HEADER_PRIVATE_TOKEN) == TOKEN, "the configured token travels in its one header"
+    default = [OP_ADD_EMOJI_TO_RESOURCE, OPTION_PATH, ISSUE_PATH_VALUE, OPTION_RAW_FIELD, EMOJI_NAME_VALUE]
+    code = run_call(root=project, argv=default)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {default} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab)[1:] == [(METHOD_POST, ISSUE_EMOJI_URL)], (
+        "without --endpoint, one POST to the base endpoint, the issue one (AC-2.2)"
+    )
+    assert fake_gitlab.requests[1].json() == EMOJI_BODY, "the base endpoint's JSON body names the -f attribute"
+    assert fake_gitlab.remaining() == [], "both scripted answers were served"

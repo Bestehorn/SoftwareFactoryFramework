@@ -1,33 +1,42 @@
 """Tests for ``gitlab_api/families/software_supply_chain_security.py``, the ``software-supply-chain-security`` endpoint
 family of the GitLab wrapper (issue #42, the security slice of the wrapper rewrite; ``change.md`` AC-1, AC-2, AC-4,
-AC-5 and AC-7).
+AC-5 and AC-7; issue #63, the request forms the records lacked, ``design.md`` D8 to D10).
 
 Every expected value is a literal table transcribed from the reference, never read from the records:
 ``docs/api-reference/gitlab/operations-index.md`` (the rows whose Reference is
 ``rest/software-supply-chain-security.md``) and ``docs/api-reference/gitlab/rest/software-supply-chain-security.md``
-(each section's endpoints, its heading, and the ``In``, ``Type``, ``Required`` and ``Notes`` columns of its
-``| Attribute | In | Type |`` table). A "new record" is one whose ID is not part 1's (``#as-a-regular-user``,
-``GET /users``; ``#as-a-regular-user-1``, ``GET /user``), which ``test_gitlab_wrapper_compat.py`` pins. What is
-pinned:
+(each section's endpoints, its heading, its ``- Request headers:`` line, and the ``In``, ``Type``, ``Required`` and
+``Notes`` columns of its ``| Attribute | In | Type |`` table). A "new record" is one whose ID is not part 1's
+(``#as-a-regular-user``, ``GET /users``; ``#as-a-regular-user-1``, ``GET /user``), which
+``test_gitlab_wrapper_compat.py`` pins. What is pinned:
 
-- AC-1: ``{(method, path): operation_id}`` over the new records is every key ``PENDING`` held at 3beba95 but AC-2's,
-  each with the Reference of one of its rows: ``PUT /application/appearance`` by ``#update-application-appearance``,
-  ``GET /users/:id`` by ``#retrieve-a-single-user-as-a-regular-user``, and a section with several endpoints by its
-  ``/projects/:id/`` endpoint, else its first;
-- AC-2: ``PENDING`` is the other endpoints of those sections ("Custom Attributes API", the four access-request
-  sections, "Set your user status"), ``GET https://HOST/oauth/token/info`` and the external control's status ``PATCH``
-  (DL-003);
+- AC-1, with #63 AC-1.1: ``{(method, path): operation_id}`` over the first new record of each ID is every key
+  ``PENDING`` held at 3beba95 but AC-2's, each with the Reference of one of its rows (``PUT /application/appearance``
+  by ``#update-application-appearance``, ``GET /users/:id`` by ``#retrieve-a-single-user-as-a-regular-user``, and a
+  section with several endpoints by its ``/projects/:id/`` endpoint, else its first), and #63's two new IDs:
+  ``GET https://HOST/oauth/token/info`` by ``#retrieve-the-token-information`` and the external control's status
+  ``PATCH`` by ``#set-status-of-an-external-control``;
+- #63 AC-1.1 (D1, D9): the records after the first of an ID are its section's other endpoints, in the order its
+  endpoint line lists them ("Custom Attributes API", the four access-request sections, "Set your user status"), and no
+  key is declared twice;
+- AC-2, as #63 AC-1.1 restates it (D9): ``PENDING`` is empty;
 - AC-3, its ``body`` and ``fixed`` clause: every record, part 1's two included, has ``body`` ``BodyFormat.JSON`` and
   no ``fixed`` pair, and the family declares a record;
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``FILE`` for a row noted "file upload" and for
   ``avatar`` on ``PUT /user/avatar``, ``POST /users`` and ``PUT /users/:id``; ``ARRAY_OF_HASHES`` for an ``array`` row
   with ``name[].…`` rows; ``ARRAY`` for any other Type naming an array), and the ``required`` ``Param`` names of each
-  record, exactly its Required ``yes`` query and body rows (a ``name[].…`` row is its parent's, no ``Param``);
+  record, exactly its Required ``yes`` query and body rows (a ``name[].…`` row is its parent's, no ``Param``) and,
+  #63 D8, each name its ``- Request headers:`` line marks ``(required)``;
 - AC-5: the new ``Paging.OFFSET`` records are the ``GET`` sections headed "List" or "Get all" but
   ``#list-all-token-associations``, which answers one object; no record is ``Paging.KEYSET``;
 - AC-7: each such record, called through the product's ``main(argv=["call", ...])`` with ``--path`` for every
   placeholder of its path against a fake host serving one item on each of two pages chained by ``x-next-page: 2``,
-  exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``).
+  exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``);
+- #63 AC-2.1, AC-5.1 and AC-6.2, each through ``main`` (AC-8.3): ``--endpoint 'PATCH /user/status'`` sends
+  ``PATCH /api/v4/user/status``; the token information is sent to ``https://<hostname>/oauth/token/info``, outside
+  ``/api/v4``, with the configured credential header alone; the external control's status call carries each
+  ``--header`` given at its value, beside ``Accept``, its ``Content-Type`` and the credential header, and no request
+  header it does not give.
 
 AC-3 and AC-6 are proven by ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
 
@@ -91,14 +100,30 @@ PROJECT_ID = 4242
 CALL = "call"
 EXIT_OK = 0
 OPTION_PATH = "--path"
+OPTION_RAW_FIELD = "-f"
+# call's endpoint and request-header options (#63 design.md D1, D5).
+OPTION_ENDPOINT = "--endpoint"
+OPTION_HEADER = "--header"
 ASSIGNED = "="
 ID_SEPARATOR = "#"
 METHOD_GET = "GET"
+METHOD_PATCH = "PATCH"
 REST_BASE = fixtures.REST_BASE
+# operations-index.md: "paths are relative to `https://HOST/api/v4` unless they start with `https://HOST`", the
+# configured host's root (#63 AC-5.1).
+HOST_ROOT = f"https://{fixtures.HOST}"
 TEXT_ENCODING = "utf-8"
+HEADER_ACCEPT = "Accept"
 HEADER_CONTENT_TYPE = "Content-Type"
 HEADER_NEXT_PAGE = "x-next-page"
+# The three credential headers a request may carry (conventions.md "Credential types and how to send them").
+HEADER_PRIVATE_TOKEN = "PRIVATE-TOKEN"
+HEADER_AUTHORIZATION = "Authorization"
+HEADER_JOB_TOKEN = "JOB-TOKEN"
+# The configured token_type is the default, `private`: the token in PRIVATE-TOKEN and in no other credential header.
+CONFIGURED_CREDENTIAL: Tuple[Any, ...] = (TOKEN, None, None)
 CONTENT_TYPE_JSON = "application/json"
+MEDIA_TYPE_SEPARATOR = ";"
 # The query of a list's first page: the transport adds `per_page=100` (conventions.md "Offset-based", #13 AC-2.5), and
 # the next page repeats it with `page` set to the `x-next-page` value.
 FIRST_PAGE_QUERY = "per_page=100"
@@ -138,7 +163,8 @@ PART_ONE_IDS: FrozenSet[str] = frozenset(
 # with the Reference, written `software-supply-chain-security#<anchor>`, of the one row that maps it (AC-1). Of the
 # keys with several rows, `PUT /application/appearance` (also "Update application logo") and `GET /users/:id` (also
 # "As an administrator") are mapped as AC-1 names. Of a section with several endpoints the key is its
-# `/projects/:id/` endpoint, else its first.
+# `/projects/:id/` endpoint, else its first: the key of the ID's first record (#63 design.md D1). #63 AC-1.1 adds the
+# keys of its two new IDs, "Retrieve the token information" (F4) and "Set status of an external control" (F5).
 KEY_IDS: Dict[Tuple[str, str], str] = {
     ("DELETE", "/admin/token"): "software-supply-chain-security#revoke-a-token",
     ("DELETE", "/applications/:id"): "software-supply-chain-security#delete-an-application",
@@ -287,12 +313,16 @@ KEY_IDS: Dict[Tuple[str, str], str] = {
     ("GET", "/users/:user_id/impersonation_tokens/:impersonation_token_id"): (
         "software-supply-chain-security#retrieve-an-impersonation-token-for-a-user"
     ),
+    ("GET", "https://HOST/oauth/token/info"): "software-supply-chain-security#retrieve-the-token-information",
     ("PATCH", "/groups/:id/enterprise_users/:user_id"): "software-supply-chain-security#update-an-enterprise-user",
     ("PATCH", "/groups/:id/enterprise_users/:user_id/disable_two_factor"): (
         "software-supply-chain-security#disable-two-factor-authentication-for-an-enterprise-user"
     ),
     ("PATCH", "/groups/:id/saml/:uid"): "software-supply-chain-security#update-extern_uid-field-for-a-saml-identity",
     ("PATCH", "/groups/:id/service_accounts/:user_id"): "software-supply-chain-security#update-a-group-service-account",
+    ("PATCH", "/projects/:id/compliance_external_controls/:external_control_id/status"): (
+        "software-supply-chain-security#set-status-of-an-external-control"
+    ),
     ("PATCH", "/projects/:id/service_accounts/:user_id"): (
         "software-supply-chain-security#update-a-project-service-account"
     ),
@@ -373,30 +403,42 @@ KEY_IDS: Dict[Tuple[str, str], str] = {
     ("PUT", "/users/:id"): "software-supply-chain-security#modify-a-user",
 }
 
-# AC-2 (DL-003): the endpoints of the sections with several endpoints that are not their record's — the `/users/:id/`
-# and `/groups/:id/` endpoints of the four "Custom Attributes API" sections, the `/groups/:id/` endpoints of the four
-# "Group and project access requests API" sections, and `PATCH /user/status` of "Set your user status" — plus the
-# `https://HOST` path of "Retrieve the token information" and the endpoint of "Set status of an external control",
-# whose required `X-Gitlab-*` request headers #41 does not build.
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
+# #63 AC-1.1 (design.md D1, D8, D9): of each section with several endpoints, the endpoints after the one its first
+# record takes (`KEY_IDS`), in the order the section's endpoint line lists them, by the section's Reference — the
+# `/users/:id/` and `/groups/:id/` endpoints of the four "Custom Attributes API" sections, the `/groups/:id/` endpoint
+# of the four "Group and project access requests API" sections, and `PATCH /user/status` of "Set your user status".
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "software-supply-chain-security#list-all-custom-attributes": (
         ("GET", "/users/:id/custom_attributes"),
         ("GET", "/groups/:id/custom_attributes"),
+    ),
+    "software-supply-chain-security#retrieve-a-custom-attribute": (
         ("GET", "/users/:id/custom_attributes/:key"),
         ("GET", "/groups/:id/custom_attributes/:key"),
+    ),
+    "software-supply-chain-security#update-a-custom-attribute": (
         ("PUT", "/users/:id/custom_attributes/:key"),
         ("PUT", "/groups/:id/custom_attributes/:key"),
+    ),
+    "software-supply-chain-security#delete-custom-attribute": (
         ("DELETE", "/users/:id/custom_attributes/:key"),
         ("DELETE", "/groups/:id/custom_attributes/:key"),
+    ),
+    "software-supply-chain-security#list-all-access-requests-for-a-group-or-project": (
         ("GET", "/groups/:id/access_requests"),
-        ("POST", "/groups/:id/access_requests"),
+    ),
+    "software-supply-chain-security#request-access-to-a-group-or-project": (("POST", "/groups/:id/access_requests"),),
+    "software-supply-chain-security#approve-an-access-request": (
         ("PUT", "/groups/:id/access_requests/:user_id/approve"),
-        ("DELETE", "/groups/:id/access_requests/:user_id"),
-        ("PATCH", "/user/status"),
-        ("GET", "https://HOST/oauth/token/info"),
-        ("PATCH", "/projects/:id/compliance_external_controls/:external_control_id/status"),
-    }
-)
+    ),
+    "software-supply-chain-security#deny-an-access-request": (("DELETE", "/groups/:id/access_requests/:user_id"),),
+    "software-supply-chain-security#set-your-user-status": (("PATCH", "/user/status"),),
+}
+
+# AC-2 as #63 AC-1.1 restates it (design.md D9): every key the base kept pending (DL-003) has its record — the other
+# endpoints of the sections with several (`OTHER_ENDPOINT_KEYS`), the `https://HOST` path of "Retrieve the token
+# information" and the endpoint of "Set status of an external control" (`KEY_IDS`) — so none stays pending.
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset()
 
 # rest/software-supply-chain-security.md: every query, body or form row of a new record whose Kind is not SCALAR, by
 # (record ID, attribute name) (AC-4). FILE: the four rows of "Update application appearance" noted "file upload
@@ -430,7 +472,8 @@ TYPED_ATTRIBUTES: Dict[Tuple[str, str], str] = {
 
 # rest/software-supply-chain-security.md: the query and body rows whose Required reads `yes`, in table order, by new
 # record (AC-4). `conditional` is not `yes`, and a `granular_scopes[].…` row is part of `granular_scopes`, no Param.
-# No other new record has such a row.
+# #63 design.md D8: each name the `- Request headers:` line of "Set status of an external control" marks `(required)`
+# is a required `Location.HEADER` Param, spelled as the line spells it. No other new record has such a row or name.
 REQUIRED_ATTRIBUTES: Dict[str, FrozenSet[str]] = {
     "software-supply-chain-security#add-a-gpg-key": frozenset({"key"}),
     "software-supply-chain-security#add-a-gpg-key-for-a-user": frozenset({"key"}),
@@ -463,6 +506,9 @@ REQUIRED_ATTRIBUTES: Dict[str, FrozenSet[str]] = {
     ),
     "software-supply-chain-security#script-to-set-up-a-google-cloud-integration": frozenset(
         {"enable_google_cloud_artifact_registry", "google_cloud_artifact_registry_project_id"}
+    ),
+    "software-supply-chain-security#set-status-of-an-external-control": frozenset(
+        {"status", "X-Gitlab-Timestamp", "X-Gitlab-Nonce", "X-Gitlab-Hmac-Sha256"}
     ),
     "software-supply-chain-security#update-a-custom-attribute": frozenset({"value"}),
     "software-supply-chain-security#update-plan-limits": frozenset({"plan_name"}),
@@ -523,6 +569,59 @@ LIST_ENDPOINTS: Tuple[Tuple[str, str], ...] = (
         "/users/:id/memberships",
     ),
 )
+
+# #63 AC-2.1: "Set your user status" lists `PUT /user/status`, then `PATCH /user/status`; the call names the second.
+OP_SET_YOUR_USER_STATUS = "software-supply-chain-security#set-your-user-status"
+USER_STATUS_ENDPOINT = "PATCH /user/status"
+USER_STATUS_URL = f"{REST_BASE}/user/status"
+FIELD_AVAILABILITY = "availability"  # a body row of the section, Values `busy`, `not_set`
+AVAILABILITY_BUSY = "busy"
+
+# #63 AC-5.1: "Retrieve the token information", `GET https://HOST/oauth/token/info`, on the configured host's root.
+OP_RETRIEVE_THE_TOKEN_INFORMATION = "software-supply-chain-security#retrieve-the-token-information"
+TOKEN_INFORMATION_URL = f"{HOST_ROOT}/oauth/token/info"
+
+# #63 AC-6.2: "Set status of an external control", `PATCH /projects/:id/compliance_external_controls/
+# :external_control_id/status`, its `- Request headers:` line `X-Gitlab-Timestamp`, `X-Gitlab-Nonce`,
+# `X-Gitlab-Hmac-Sha256`, each with AC-6.2's value; `id` is the configured project.
+OP_SET_STATUS_OF_AN_EXTERNAL_CONTROL = "software-supply-chain-security#set-status-of-an-external-control"
+EXTERNAL_CONTROL_ID = "3"
+EXTERNAL_CONTROL_URL = f"{REST_BASE}/projects/{PROJECT_ID}/compliance_external_controls/3/status"
+FIELD_STATUS = "status"
+STATUS_PASS = "pass"
+HEADER_TIMESTAMP = "X-Gitlab-Timestamp"
+HEADER_NONCE = "X-Gitlab-Nonce"
+HEADER_HMAC = "X-Gitlab-Hmac-Sha256"
+CONTROL_HEADER_NAMES: Tuple[str, ...] = (HEADER_TIMESTAMP, HEADER_NONCE, HEADER_HMAC)
+CONTROL_HEADERS: Tuple[Tuple[str, str], ...] = (
+    (HEADER_TIMESTAMP, "1700000000"),
+    (HEADER_NONCE, "n1"),
+    (HEADER_HMAC, "ab12"),
+)
+CONTROL_HEADERS_WITHOUT_NONCE: Tuple[Tuple[str, str], ...] = ((HEADER_TIMESTAMP, "1700000000"), (HEADER_HMAC, "ab12"))
+# #63 design.md D5 and D7: the names a request carries that are not a caller's — the transport's (`Accept`, the
+# `Content-Type`, the credential header of any token type) and urllib's (`AbstractHTTPHandler.do_request_`), lower-cased
+# as RFC 9110 section 5.1 compares field names.
+TRANSPORT_HEADER_NAMES: FrozenSet[str] = frozenset(
+    {
+        "accept",
+        "content-type",
+        "content-length",
+        "transfer-encoding",
+        "host",
+        "user-agent",
+        "private-token",
+        "authorization",
+        "job-token",
+    }
+)
+
+# What the fake host answers each call with: a JSON object, which the call prints with `print_json`.
+FIELD_RESOURCE_OWNER_ID = "resource_owner_id"
+FIELD_SCOPE = "scope"
+USER_STATUS_ANSWER: Dict[str, Any] = {FIELD_AVAILABILITY: AVAILABILITY_BUSY}
+TOKEN_INFORMATION_ANSWER: Dict[str, Any] = {FIELD_RESOURCE_OWNER_ID: 1, FIELD_SCOPE: ["api"]}
+EXTERNAL_CONTROL_ANSWER: Dict[str, Any] = {FIELD_STATUS: STATUS_PASS}
 
 
 # --- Fixtures and helpers ---------------------------------------------------------------------------------------
@@ -630,26 +729,80 @@ def list_params() -> List[Any]:
     ]
 
 
+def sent(*, fake: Any) -> List[Tuple[str, str]]:
+    """``(method, url)`` of every request the fake host recorded, in order."""
+    return [(request.method, request.url) for request in fake.requests]
+
+
+def media_type(*, value: Any) -> str:
+    """A ``Content-Type`` value without its parameters (``application/json; charset=utf-8`` → ``application/json``)."""
+    return str(value or "").partition(MEDIA_TYPE_SEPARATOR)[0].strip()
+
+
+def credentials(*, request: Any) -> Tuple[Any, ...]:
+    """The values of the three credential headers a recorded request may carry: PRIVATE-TOKEN, Authorization,
+    JOB-TOKEN (``None`` for one it does not carry; names compared ignoring case)."""
+    return (
+        request.header(name=HEADER_PRIVATE_TOKEN),
+        request.header(name=HEADER_AUTHORIZATION),
+        request.header(name=HEADER_JOB_TOKEN),
+    )
+
+
+def caller_header_names(*, request: Any) -> List[str]:
+    """The lower-cased names a recorded request carries but ``TRANSPORT_HEADER_NAMES``, sorted: the caller's."""
+    return sorted(name.lower() for name in request.headers if name.lower() not in TRANSPORT_HEADER_NAMES)
+
+
+def control_status_argv(*, headers: Sequence[Tuple[str, str]]) -> List[str]:
+    """AC-6.2's call of the external control's status: ``--path external_control_id=3 -f status=pass`` and one
+    ``--header NAME=VALUE`` per header of ``headers``, in order."""
+    return [
+        OP_SET_STATUS_OF_AN_EXTERNAL_CONTROL,
+        OPTION_PATH,
+        f"external_control_id{ASSIGNED}{EXTERNAL_CONTROL_ID}",
+        OPTION_RAW_FIELD,
+        f"{FIELD_STATUS}{ASSIGNED}{STATUS_PASS}",
+        *(part for name, value in headers for part in (OPTION_HEADER, f"{name}{ASSIGNED}{value}")),
+    ]
+
+
 # --- AC-1, AC-2: the records and what stays pending -------------------------------------------------------------
 
 
 def test_every_key_has_its_record() -> None:
-    """AC-1: each key ``PENDING`` held at 3beba95 but AC-2's is the method and path of one new record, whose ID is the
-    Reference of one of its rows; no key and no ID is declared twice."""
+    """AC-1 and #63 AC-1.1, as #63 design.md D9 restates it: no key is declared twice; the first record of each new ID
+    is the key ``KEY_IDS`` maps to it, so its ID is the Reference of one of the key's rows; and the records after the
+    first of an ID, in declaration order, are its section's other endpoints, ``OTHER_ENDPOINT_KEYS`` — an ID of no
+    section with several endpoints, part 1's two included, is declared once."""
     family = gitlab_module(name=FAMILY_MODULE)
     keys = [(record.method, record.path) for record in family.OPERATIONS]
     assert repeated(items=keys) == [], f"keys declared by more than one record: {repeated(items=keys)}"
-    operation_ids = [record.operation_id for record in family.OPERATIONS]
-    assert repeated(items=operation_ids) == [], f"IDs declared more than once: {repeated(items=operation_ids)}"
-    declared = {(record.method, record.path): record.operation_id for record in new_records()}
-    assert declared == KEY_IDS, "the new records are not the pending keys and their References (AC-1):\n" + (
+    endpoints: Dict[str, List[Tuple[str, str]]] = {}
+    for record in family.OPERATIONS:
+        endpoints.setdefault(record.operation_id, []).append((record.method, record.path))
+    declared = {
+        records_of_id[0]: operation_id
+        for operation_id, records_of_id in endpoints.items()
+        if operation_id not in PART_ONE_IDS
+    }
+    assert declared == KEY_IDS, "the first new record of each ID is not its key and Reference (AC-1, #63 D1):\n" + (
         mapping_difference(declared=declared, expected=KEY_IDS)
+    )
+    others = {
+        operation_id: tuple(records_of_id[1:])
+        for operation_id, records_of_id in endpoints.items()
+        if len(records_of_id) > 1
+    }
+    assert others == OTHER_ENDPOINT_KEYS, (
+        "the records after the first of an ID are not its section's other endpoints, in their order (#63 AC-1.1):\n"
+        + mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
     )
 
 
 def test_only_the_unmapped_keys_are_pending() -> None:
-    """AC-2: ``PENDING`` is exactly the second endpoints, the ``https://HOST`` path and the external control's
-    status ``PATCH``."""
+    """AC-2 as #63 AC-1.1 restates it (D9): ``PENDING`` is empty — the second endpoints, the ``https://HOST`` path and
+    the external control's status ``PATCH`` it held at the base each have their record."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, "software_supply_chain_security.PENDING is not the keys AC-2 keeps pending:\n" + (
@@ -698,7 +851,7 @@ def test_every_kind_is_its_rows_type() -> None:
 
 def test_the_required_attributes_are_the_sections() -> None:
     """AC-4: ``{operation_id: names}`` of the ``required`` ``Param``s, over the new records with any, is the table of
-    the Required ``yes`` query and body rows."""
+    the Required ``yes`` query and body rows and, #63 D8, the ``(required)`` request headers."""
     required = {
         record.operation_id: frozenset(param.name for param in record.params if param.required)
         for record in new_records()
@@ -751,4 +904,107 @@ def test_a_list_record_prints_every_item(
     assert fake_gitlab.remaining() == [], "every scripted page was served"
     assert captured.out == printed_json(value=list(PAGE_ITEMS)), (
         f"one JSON array of both items, in page order, as print_json writes it (AC-7):\n{captured.out}"
+    )
+
+
+# --- #63 AC-2.1, AC-5.1, AC-6.2: an endpoint named, the host root, request headers (AC-8.3) --------------------------
+
+
+def test_the_user_status_patch_is_sent_when_named(
+    project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#63 AC-2.1: ``call software-supply-chain-security#set-your-user-status --endpoint 'PATCH /user/status'
+    -f availability=busy`` sends one ``PATCH /api/v4/user/status`` — the endpoint named, not the section's first,
+    ``PUT /user/status`` — whose JSON body is the attribute given, with the configured credential header alone, and
+    prints the answer."""
+    fake_gitlab.script(method=METHOD_PATCH, url=USER_STATUS_URL, body=USER_STATUS_ANSWER)
+    argv = (
+        OP_SET_YOUR_USER_STATUS,
+        OPTION_ENDPOINT,
+        USER_STATUS_ENDPOINT,
+        OPTION_RAW_FIELD,
+        f"{FIELD_AVAILABILITY}{ASSIGNED}{AVAILABILITY_BUSY}",
+    )
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(METHOD_PATCH, USER_STATUS_URL)], (
+        "one PATCH /api/v4/user/status, the endpoint --endpoint names (#63 AC-2.1)"
+    )
+    request = fake_gitlab.requests[0]
+    assert request.header(name=HEADER_ACCEPT) == CONTENT_TYPE_JSON, "the transport's Accept"
+    content_type = request.header(name=HEADER_CONTENT_TYPE)
+    assert media_type(value=content_type) == CONTENT_TYPE_JSON, f"the body's Content-Type: {content_type!r}"
+    assert request.json() == {FIELD_AVAILABILITY: AVAILABILITY_BUSY}, "the JSON body is the attribute given"
+    assert credentials(request=request) == CONFIGURED_CREDENTIAL, "the configured token in its one header"
+    assert captured.out == printed_json(value=USER_STATUS_ANSWER), (
+        f"the answer, as print_json writes it:\n{captured.out}"
+    )
+
+
+def test_the_token_information_is_sent_outside_the_api(
+    project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#63 AC-5.1: ``call software-supply-chain-security#retrieve-the-token-information`` sends one
+    ``GET https://<hostname>/oauth/token/info`` — on the configured host's root, outside ``/api/v4`` — with no body,
+    carrying the configured ``PRIVATE-TOKEN`` and no other credential header, and prints the answer."""
+    fake_gitlab.script(method=METHOD_GET, url=TOKEN_INFORMATION_URL, body=TOKEN_INFORMATION_ANSWER)
+    argv = (OP_RETRIEVE_THE_TOKEN_INFORMATION,)
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(METHOD_GET, TOKEN_INFORMATION_URL)], (
+        f"one GET {TOKEN_INFORMATION_URL}, on the host's root and not under /api/v4 (#63 AC-5.1)"
+    )
+    request = fake_gitlab.requests[0]
+    assert request.body is None, "a GET of the token information carries no body"
+    assert request.header(name=HEADER_ACCEPT) == CONTENT_TYPE_JSON, "the transport's Accept"
+    assert credentials(request=request) == CONFIGURED_CREDENTIAL, (
+        "the configured token type's one credential header and no other (#63 AC-5.1)"
+    )
+    assert captured.out == printed_json(value=TOKEN_INFORMATION_ANSWER), (
+        f"the answer, as print_json writes it:\n{captured.out}"
+    )
+
+
+@pytest.mark.parametrize(
+    argnames="headers",
+    argvalues=[
+        pytest.param(CONTROL_HEADERS, id="every-request-header"),
+        pytest.param(CONTROL_HEADERS_WITHOUT_NONCE, id="without-x-gitlab-nonce"),
+    ],
+)
+def test_the_external_control_status_carries_its_headers(
+    headers: Tuple[Tuple[str, str], ...], project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#63 AC-6.2: ``call software-supply-chain-security#set-status-of-an-external-control --path external_control_id=3
+    -f status=pass`` with ``--header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Nonce=n1 --header
+    X-Gitlab-Hmac-Sha256=ab12`` sends one ``PATCH /api/v4/projects/<project_id>/compliance_external_controls/3/status``
+    carrying each header given at its value — names compared ignoring case, as urllib stores ``X-gitlab-nonce`` —
+    beside ``Accept``, ``Content-Type: application/json`` and the configured credential header, with the JSON body
+    ``{"status": "pass"}``; the same call without ``--header X-Gitlab-Nonce`` sends no ``X-Gitlab-Nonce``, and no
+    request carries a caller header it was not given."""
+    fake_gitlab.script(method=METHOD_PATCH, url=EXTERNAL_CONTROL_URL, body=EXTERNAL_CONTROL_ANSWER)
+    argv = control_status_argv(headers=headers)
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(METHOD_PATCH, EXTERNAL_CONTROL_URL)], (
+        "one PATCH of the external control's status, the configured project as its id (#63 AC-6.2)"
+    )
+    request = fake_gitlab.requests[0]
+    given = dict(headers)
+    assert {name: request.header(name=name) for name in CONTROL_HEADER_NAMES} == {
+        name: given.get(name) for name in CONTROL_HEADER_NAMES
+    }, "each request header given is sent at its value, and one not given is not sent (#63 AC-6.2)"
+    assert caller_header_names(request=request) == sorted(name.lower() for name in given), (
+        "the request carries no caller header beyond those given (#63 AC-6.2)"
+    )
+    assert request.header(name=HEADER_ACCEPT) == CONTENT_TYPE_JSON, "beside the transport's Accept (#63 AC-6.2)"
+    content_type = request.header(name=HEADER_CONTENT_TYPE)
+    assert media_type(value=content_type) == CONTENT_TYPE_JSON, f"beside its Content-Type: {content_type!r}"
+    assert credentials(request=request) == CONFIGURED_CREDENTIAL, "beside the configured credential header alone"
+    assert request.json() == {FIELD_STATUS: STATUS_PASS}, 'the JSON body {"status": "pass"} (#63 AC-6.2)'
+    assert captured.out == printed_json(value=EXTERNAL_CONTROL_ANSWER), (
+        f"the answer, as print_json writes it:\n{captured.out}"
     )

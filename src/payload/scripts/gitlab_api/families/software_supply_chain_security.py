@@ -11,16 +11,21 @@ API with access token"), and the one record maps them all.
 
 Issue #42 (``change.md`` AC-1 to AC-5) adds one record for every other key of the family, in page order, its ID the
 Reference of the key's row; of two rows on one key the record is the first section ("Update application appearance",
-"Retrieve a single user as a regular user"), and a section with several endpoints is recorded by its ``/projects/:id/``
-endpoint, else its first. A ``form`` row is a BODY ``Param``; a ``name[].…`` row is part of its parent, no ``Param``.
-A row noted "file upload" and ``avatar`` of ``PUT /user/avatar``, ``POST /users`` and ``PUT /users/:id`` are
-``Kind.FILE``, an ``array`` row with ``name[].…`` rows ``ARRAY_OF_HASHES``, any other Type naming an array ``ARRAY``.
-A ``GET`` section headed "List" or "Get all" is ``Paging.OFFSET`` but "List all token associations", which answers
-one object. The administrator sections have no record of their own (DL-005).
+"Retrieve a single user as a regular user"), and a section with several endpoints is recorded first by its
+``/projects/:id/`` endpoint, else its first: its base record. A ``form`` row is a BODY ``Param``; a ``name[].…`` row is
+part of its parent, no ``Param``. A row noted "file upload" and ``avatar`` of ``PUT /user/avatar``, ``POST /users`` and
+``PUT /users/:id`` are ``Kind.FILE``, an ``array`` row with ``name[].…`` rows ``ARRAY_OF_HASHES``, any other Type naming
+an array ``ARRAY``. A ``GET`` section headed "List" or "Get all" is ``Paging.OFFSET`` but "List all token
+associations", which answers one object. The administrator sections have no record of their own (DL-005).
 
-``PENDING`` holds the keys no record maps (DL-003): the other endpoints of the sections with several (one record per
-ID), the ``https://HOST`` path of "Retrieve the token information", and "Set status of an external control", whose
-required ``X-Gitlab-*`` request headers the transport does not send. No other family links any of them.
+Issue #63 (``design.md`` D1, D4, D5, D8) records the keys #42 left pending. Each other endpoint of a section with
+several is a record with the section's ID, declared after its base record in the order the section's endpoint line
+lists them, with the base record's ``Param``s less any naming a path parameter of its own path, and its ``body`` and
+``paging``; ``call --endpoint 'METHOD path'`` names it, and a call naming none sends the base record. "Retrieve the
+token information" keeps its path ``https://HOST/oauth/token/info``, which ``registry.base_of`` reads as the configured
+host's root, outside ``/api/v4``. Each name the ``- Request headers:`` line of "Set status of an external control"
+marks ``(required)`` is a required ``Location.HEADER`` ``Param``, spelled as the line spells it, after the table's
+rows; ``call --header NAME=VALUE`` gives it. ``PENDING`` is empty: every key of the family has its record.
 
 Standard library only; Python 3.9.
 """
@@ -215,39 +220,92 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="size", location=Location.QUERY),
         ),
     ),
-    # "Custom Attributes API: List all custom attributes"; of the section's endpoints the record is its `/projects/:id/`
-    # endpoint; `GET /users/:id/custom_attributes`, `GET /groups/:id/custom_attributes` stay pending (one record per
-    # ID).
+    # "Custom Attributes API: List all custom attributes"; of the section's endpoints the base record is its
+    # `/projects/:id/` endpoint, its `/users/:id/` and `/groups/:id/` endpoints the records after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#list-all-custom-attributes",
         method="GET",
         path="/projects/:id/custom_attributes",
         paging=Paging.OFFSET,
     ),
-    # "Custom Attributes API: Retrieve a custom attribute"; of the section's endpoints the record is its
-    # `/projects/:id/` endpoint; `GET /users/:id/custom_attributes/:key`, `GET /groups/:id/custom_attributes/:key` stay
-    # pending (one record per ID).
+    RestOperation(
+        operation_id="software-supply-chain-security#list-all-custom-attributes",
+        method="GET",
+        path="/users/:id/custom_attributes",
+        paging=Paging.OFFSET,
+    ),
+    RestOperation(
+        operation_id="software-supply-chain-security#list-all-custom-attributes",
+        method="GET",
+        path="/groups/:id/custom_attributes",
+        paging=Paging.OFFSET,
+    ),
+    # "Custom Attributes API: Retrieve a custom attribute"; of the section's endpoints the base record is its
+    # `/projects/:id/` endpoint, its `/users/:id/` and `/groups/:id/` endpoints the records after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#retrieve-a-custom-attribute",
         method="GET",
         path="/projects/:id/custom_attributes/:key",
     ),
-    # "Custom Attributes API: Update a custom attribute"; of the section's endpoints the record is its `/projects/:id/`
-    # endpoint; `PUT /users/:id/custom_attributes/:key`, `PUT /groups/:id/custom_attributes/:key` stay pending (one
-    # record per ID).
+    RestOperation(
+        operation_id="software-supply-chain-security#retrieve-a-custom-attribute",
+        method="GET",
+        path="/users/:id/custom_attributes/:key",
+    ),
+    RestOperation(
+        operation_id="software-supply-chain-security#retrieve-a-custom-attribute",
+        method="GET",
+        path="/groups/:id/custom_attributes/:key",
+    ),
+    # "Custom Attributes API: Update a custom attribute"; of the section's endpoints the base record is its
+    # `/projects/:id/` endpoint, its `/users/:id/` and `/groups/:id/` endpoints the records after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#update-a-custom-attribute",
         method="PUT",
         path="/projects/:id/custom_attributes/:key",
         params=(Param(name="value", location=Location.BODY, required=True),),
     ),
-    # "Custom Attributes API: Delete custom attribute"; of the section's endpoints the record is its `/projects/:id/`
-    # endpoint; `DELETE /users/:id/custom_attributes/:key`, `DELETE /groups/:id/custom_attributes/:key` stay pending
-    # (one record per ID).
+    RestOperation(
+        operation_id="software-supply-chain-security#update-a-custom-attribute",
+        method="PUT",
+        path="/users/:id/custom_attributes/:key",
+        params=(Param(name="value", location=Location.BODY, required=True),),
+    ),
+    RestOperation(
+        operation_id="software-supply-chain-security#update-a-custom-attribute",
+        method="PUT",
+        path="/groups/:id/custom_attributes/:key",
+        params=(Param(name="value", location=Location.BODY, required=True),),
+    ),
+    # "Custom Attributes API: Delete custom attribute"; of the section's endpoints the base record is its
+    # `/projects/:id/` endpoint, its `/users/:id/` and `/groups/:id/` endpoints the records after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#delete-custom-attribute",
         method="DELETE",
         path="/projects/:id/custom_attributes/:key",
+    ),
+    RestOperation(
+        operation_id="software-supply-chain-security#delete-custom-attribute",
+        method="DELETE",
+        path="/users/:id/custom_attributes/:key",
+    ),
+    RestOperation(
+        operation_id="software-supply-chain-security#delete-custom-attribute",
+        method="DELETE",
+        path="/groups/:id/custom_attributes/:key",
+    ),
+    # "External controls API: Set status of an external control"; each name its `- Request headers:` line marks
+    # `(required)` is a required HEADER Param, after the table's `status` row (#63 D5, D8).
+    RestOperation(
+        operation_id="software-supply-chain-security#set-status-of-an-external-control",
+        method="PATCH",
+        path="/projects/:id/compliance_external_controls/:external_control_id/status",
+        params=(
+            Param(name="status", location=Location.BODY, required=True),
+            Param(name="X-Gitlab-Timestamp", location=Location.HEADER, required=True),
+            Param(name="X-Gitlab-Nonce", location=Location.HEADER, required=True),
+            Param(name="X-Gitlab-Hmac-Sha256", location=Location.HEADER, required=True),
+        ),
     ),
     # "Google Cloud integration API: Workload identity federation creation script".
     RestOperation(
@@ -333,8 +391,8 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/groups/:id/access_tokens/:token_id",
     ),
     # "Group and project access requests API: List all access requests for a group or project"; of the section's
-    # endpoints the record is its `/projects/:id/` endpoint; `GET /groups/:id/access_requests` stays pending (one record
-    # per ID).
+    # endpoints the base record is its `/projects/:id/` endpoint, its `/groups/:id/` endpoint the record after it (#63
+    # D1).
     RestOperation(
         operation_id="software-supply-chain-security#list-all-access-requests-for-a-group-or-project",
         method="GET",
@@ -345,27 +403,53 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         ),
         paging=Paging.OFFSET,
     ),
+    RestOperation(
+        operation_id="software-supply-chain-security#list-all-access-requests-for-a-group-or-project",
+        method="GET",
+        path="/groups/:id/access_requests",
+        params=(
+            Param(name="page", location=Location.QUERY),
+            Param(name="per_page", location=Location.QUERY),
+        ),
+        paging=Paging.OFFSET,
+    ),
     # "Group and project access requests API: Request access to a group or project"; of the section's endpoints the
-    # record is its `/projects/:id/` endpoint; `POST /groups/:id/access_requests` stays pending (one record per ID).
+    # base record is its `/projects/:id/` endpoint, its `/groups/:id/` endpoint the record after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#request-access-to-a-group-or-project",
         method="POST",
         path="/projects/:id/access_requests",
     ),
-    # "Group and project access requests API: Approve an access request"; of the section's endpoints the record is its
-    # `/projects/:id/` endpoint; `PUT /groups/:id/access_requests/:user_id/approve` stays pending (one record per ID).
+    RestOperation(
+        operation_id="software-supply-chain-security#request-access-to-a-group-or-project",
+        method="POST",
+        path="/groups/:id/access_requests",
+    ),
+    # "Group and project access requests API: Approve an access request"; of the section's endpoints the base record is
+    # its `/projects/:id/` endpoint, its `/groups/:id/` endpoint the record after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#approve-an-access-request",
         method="PUT",
         path="/projects/:id/access_requests/:user_id/approve",
         params=(Param(name="access_level", location=Location.BODY),),
     ),
-    # "Group and project access requests API: Deny an access request"; of the section's endpoints the record is its
-    # `/projects/:id/` endpoint; `DELETE /groups/:id/access_requests/:user_id` stays pending (one record per ID).
+    RestOperation(
+        operation_id="software-supply-chain-security#approve-an-access-request",
+        method="PUT",
+        path="/groups/:id/access_requests/:user_id/approve",
+        params=(Param(name="access_level", location=Location.BODY),),
+    ),
+    # "Group and project access requests API: Deny an access request"; of the section's endpoints the base record is
+    # its `/projects/:id/` endpoint, its `/groups/:id/` endpoint the record after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#deny-an-access-request",
         method="DELETE",
         path="/projects/:id/access_requests/:user_id",
+    ),
+    RestOperation(
+        operation_id="software-supply-chain-security#deny-an-access-request",
+        method="DELETE",
+        path="/groups/:id/access_requests/:user_id",
     ),
     # "Group enterprise users API: List all enterprise users".
     RestOperation(
@@ -500,6 +584,13 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="software-supply-chain-security#remove-member-role-of-a-group",
         method="DELETE",
         path="/groups/:id/member_roles/:member_role_id",
+    ),
+    # "OAuth 2.0 identity provider API: Retrieve the token information"; its path starts `https://HOST`, so it is sent
+    # on the configured host's root, outside `/api/v4` (#63 D4). The section has no attribute table, so no Param.
+    RestOperation(
+        operation_id="software-supply-chain-security#retrieve-the-token-information",
+        method="GET",
+        path="https://HOST/oauth/token/info",
     ),
     # "Personal access tokens API: List all personal access tokens".
     RestOperation(
@@ -1398,11 +1489,22 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/users/:id_or_username/status",
     ),
-    # "Users API: Set your user status"; of the section's endpoints the record is its first endpoint;
-    # `PATCH /user/status` stays pending (one record per ID).
+    # "Users API: Set your user status"; of the section's endpoints the base record is its first, `PUT /user/status`,
+    # and `PATCH /user/status` the record after it (#63 D1).
     RestOperation(
         operation_id="software-supply-chain-security#set-your-user-status",
         method="PUT",
+        path="/user/status",
+        params=(
+            Param(name="emoji", location=Location.BODY),
+            Param(name="message", location=Location.BODY),
+            Param(name="availability", location=Location.BODY),
+            Param(name="clear_status_after", location=Location.BODY),
+        ),
+    ),
+    RestOperation(
+        operation_id="software-supply-chain-security#set-your-user-status",
+        method="PATCH",
         path="/user/status",
         params=(
             Param(name="emoji", location=Location.BODY),
@@ -1527,22 +1629,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("GET", "/groups/:id/access_requests"),
-        ("POST", "/groups/:id/access_requests"),
-        ("DELETE", "/groups/:id/access_requests/:user_id"),
-        ("PUT", "/groups/:id/access_requests/:user_id/approve"),
-        ("GET", "/groups/:id/custom_attributes"),
-        ("DELETE", "/groups/:id/custom_attributes/:key"),
-        ("GET", "/groups/:id/custom_attributes/:key"),
-        ("PUT", "/groups/:id/custom_attributes/:key"),
-        ("PATCH", "/projects/:id/compliance_external_controls/:external_control_id/status"),
-        ("PATCH", "/user/status"),
-        ("GET", "/users/:id/custom_attributes"),
-        ("DELETE", "/users/:id/custom_attributes/:key"),
-        ("GET", "/users/:id/custom_attributes/:key"),
-        ("PUT", "/users/:id/custom_attributes/:key"),
-        ("GET", "https://HOST/oauth/token/info"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

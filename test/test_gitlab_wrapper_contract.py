@@ -6,8 +6,9 @@ Issue #41, design.md D5. The reference is `docs/api-reference/gitlab/rest/<stem>
 - the REFERENCE half: `reference_sections` reads every page once into `Section`s (the endpoints of the first non-empty
   line under a `###` heading, the rows of its `| Attribute | In | Type |` table, the effective `Offering:`), and
   `record_problems` names every difference between a `RestOperation` and its section;
-- the CALL half: `sent_call` reads a request the fake host recorded (method, path after `/api/v4`, the names of its
-  query pairs and body members), and `call_problems` names every difference between it and the section.
+- the CALL half: `sent_call` reads a request the fake host recorded (method, where it was sent, its path after that
+  base's root, the names of its query pairs, body members and request headers), and `call_problems` names every
+  difference between it and the section.
 
 A path parameter is a `:name`, or a `*name` glob whose value keeps its `/` (issue #40, design.md D3); a name continues
 past a `-` that a name character follows, so `:module-name` is one parameter (issue #43, design.md D4). The call half
@@ -27,6 +28,31 @@ value with its own replacement and never calls `registry.route`.
 `is_unreachable` states D5's rule: an operation no `sff-test-*` project on GitLab.com can reach, by its index row's
 path (`/admin/`, `/geo/`, `/hooks/`) or by an effective `Offering:` that does not name `GitLab.com`. For such an
 operation the two halves are the whole proof (AC-3.1, AC-3.2).
+
+The request forms (issue #63, design.md D7), each read with N's own patterns, never with `registry.lookup`, `expand` or
+`base_of`; a record field the base lacks is read with its default (`getattr(record, "positional_names", ())`):
+
+- F1, several records under one ID: the records a family declares with one ID are its section's endpoints, the first
+  the base record. `test_each_record_of_an_id_copies_its_base_record` holds each later one to the first's `Param`s
+  less those naming a path parameter of its own path, and to its `body`, `paging` and `fixed`; `record_call` names
+  such a record's endpoint with `--endpoint 'METHOD path'`, and the send test judges it against that endpoint alone
+  (`own_endpoint_section`).
+- F2, one value per place: each place of a name in a record's `positional_names` takes its own value, `v1`, `v2`, ...,
+  given as repeated `--path`, and `expanded_path` writes a list value one item per place.
+- F3, the `[.name]` suffix: written as `.` and its value when one is given, else as nothing; `record_call` gives none.
+- F4, another base: an endpoint path starting `https://HOST/` is sent at the configured host's root outside
+  `/api/v4`, and one starting `/http(s)://${CI_REGISTRY}/` to `https://` and `CONTAINER_REGISTRY_HOST`, each
+  `${NAME}` a path parameter (`endpoint_base`). `SentCall.base` is `rest` under `https://<HOST>/api/v4`, `host`
+  elsewhere on that host, or the URL's origin; the send test queues a container-registry record the answers of
+  design.md D4's steps 1 to 3 and judges it on its last request.
+- F5, request headers: `Section.headers` are the names of a section's `- Request headers:` line and its `header`
+  rows; a `Param` whose location's value is `header` (`IN_HEADER`) is a request header, `header_problems` names a
+  record whose header `Param`s differ from them ignoring case, `call_problems` a sent header the section does not name
+  and a given one not sent, and `record_call` gives each with `--header NAME=VALUE`.
+- F6, two-level members: `PARENT_KEY` reads one or more `[key]` levels, so a FORM-body record declares
+  `override_params[container_expiration_policy_attributes][cadence]` under its full name. The S3 import, which
+  `GATED_OPERATIONS` refuses and the send test skips, is sent by `test_a_two_level_member_is_read_and_sent_as_written`
+  with the gate lifted for that test alone.
 
 The anchor rule is `scripts/api_reference/verify.py` `anchors`, restated here: the module imports neither `verify.py`
 (PyYAML) nor the generator's `common.Slugger`. The registry is imported inside the functions and tests that use it, and
@@ -49,7 +75,7 @@ import urllib.parse
 from dataclasses import dataclass, replace
 from email.message import Message
 from pathlib import Path
-from types import ModuleType
+from types import MappingProxyType, ModuleType
 from typing import Any, Callable, Dict, FrozenSet, Iterable, Iterator, List, Mapping, NamedTuple, Optional, Tuple
 
 import pytest
@@ -107,16 +133,21 @@ OFFERING_SEPARATOR = ","
 GITLAB_COM = "GitLab.com"
 UNREACHABLE_PREFIXES = ("/admin/", "/geo/", "/hooks/")
 
-# The `In` column: `form`, a multipart part, is read as `body`; `header` is a request form part 1 does not build.
+# The `In` column: `form`, a multipart part, is read as `body`; `header` is a request header (issue #63, design.md D5),
+# and a `Param` is one when its location's value is `IN_HEADER` (design.md D7).
 IN_PATH = "path"
 IN_QUERY = "query"
 IN_BODY = "body"
 IN_FORM = "form"
+IN_HEADER = "header"
 SENT_PLACES = (IN_QUERY, IN_BODY)
+# A section's line naming its request headers, each backticked: `` - Request headers: `X-Gitlab-Nonce` (required) ``.
+HEADERS_LINE_START = "- Request headers:"
 # The row of a raw-body record's section that is the request body, not an attribute (issue #40, design.md D5).
 RAW_BODY_ROW = "file"
-# `parent[key]`: the hash member a query pair or a FORM-body pair names (`not[labels]`, `context[user]`).
-PARENT_KEY = re.compile(pattern=r"[A-Za-z_][A-Za-z0-9_]*\[[A-Za-z0-9_]+\]")
+# `parent[key]`: the hash member a query pair or a FORM-body pair names (`not[labels]`, `context[user]`), at one or
+# more levels (`override_params[container_expiration_policy_attributes][cadence]`; issue #63, design.md D6, D7).
+PARENT_KEY = re.compile(pattern=r"[A-Za-z_][A-Za-z0-9_]*(?:\[[A-Za-z0-9_]+\])+")
 BRACKET = "["
 # A path parameter: `:name`, one segment, or `*name`, a glob whose value keeps its `/` (`/packages/npm/*package_name`).
 # A name continues past a `-` that a name character follows (`:module-name`); `:name-/` still ends before its `-`.
@@ -134,6 +165,48 @@ PREFIX_LINE_START = "`<route-prefix>` on this page is one of:"
 PREFIX_VALUE = re.compile(pattern=r"`(?P<value>[^`]+)`")
 GROUP_VALUE = "value"
 NO_ROUTE_PREFIXES: Tuple[str, ...] = ()
+NO_HEADERS: Tuple[str, ...] = ()
+# The request forms of issue #63 (design.md D7), restated with N's own patterns. A `[.name]` suffix is the path
+# parameter `name`, written as `.` and its value, or as nothing (D3).
+OPTIONAL_SUFFIX = re.compile(pattern=r"\[\.(?P<name>[A-Za-z_][A-Za-z0-9_]*)\]")
+SUFFIX_SEPARATOR = "."
+# The roots of the paths the index does not write under `/api/v4` (operations-index.md; D4), each followed by `/`: the
+# configured host's root, and the container registry, whose `${NAME}` parts are path parameters.
+PATH_SEPARATOR = "/"
+HOST_ROOT = "https://HOST"
+CONTAINER_REGISTRY_ROOT = "/http(s)://${CI_REGISTRY}"
+REGISTRY_NAME = re.compile(pattern=r"\$\{(?P<name>[A-Za-z_][A-Za-z0-9_]*)\}")
+# Where a call is sent (`SentCall.base`): under `https://<HOST>/api/v4`, elsewhere on that host, or the URL's origin;
+# the registry is the authority of the `container_registry_image_prefix` the send test scripts (design.md D4, D7).
+SENT_BASE_REST = "rest"
+SENT_BASE_HOST = "host"
+HTTPS_ORIGIN_START = "https://"
+CONTAINER_REGISTRY_HOST = "registry.example.com"
+CONTAINER_REGISTRY_ORIGIN = HTTPS_ORIGIN_START + CONTAINER_REGISTRY_HOST
+ENDPOINT_ROOTS: Tuple[Tuple[str, str], ...] = (
+    (HOST_ROOT, SENT_BASE_HOST),
+    (CONTAINER_REGISTRY_ROOT, CONTAINER_REGISTRY_ORIGIN),
+)
+# The headers the transport sets, those urllib adds, and every token type's credential header, lower-cased as RFC 9110
+# section 5.1 compares names: a sent call's `headers` are the recorded names but these (design.md D5, D7).
+TRANSPORT_HEADERS = frozenset(
+    {
+        "accept",
+        "content-type",
+        "content-length",
+        "transfer-encoding",
+        "host",
+        "user-agent",
+        "private-token",
+        "job-token",
+        "authorization",
+    }
+)
+# The record field of F2 the base lacks, read with `getattr` and its default (design.md D7).
+FIELD_POSITIONAL_NAMES = "positional_names"
+NO_POSITIONAL_NAMES: Tuple[str, ...] = ()
+# The fields an F1 record copies from its base record beside its `Param`s (design.md D8 Rules).
+COPIED_FIELDS = ("body", "paging", "fixed")
 
 # conventions.md "Offset-based" and "Keyset-based": the query names a paged record may send or not, by the value of
 # its `registry.Paging` member.
@@ -178,8 +251,15 @@ OPTION_RAW_FIELD = "-f"
 OPTION_FIELD = "-F"
 OPTION_FILE = "--file"
 OPTION_ROUTE_PREFIX = "--route-prefix"
+# Issue #63, design.md D1 and D5: the endpoint of an ID several records declare, `METHOD path`, and a request header.
+OPTION_ENDPOINT = "--endpoint"
+OPTION_HEADER = "--header"
+ENDPOINT_SEPARATOR = " "
 ASSIGNED = "="
 TEST_VALUE = "v1"
+# The value of the k-th place of a positional name, from 1: `v1`, `v2`, ... (design.md D7).
+PLACE_VALUE = "v{place}"
+FIRST_PLACE = 1
 TYPED_VALUES: Dict[str, Any] = {
     "array": [TEST_VALUE],
     "hash": {"k": TEST_VALUE},
@@ -189,6 +269,16 @@ UPLOAD_NAME = "upload.bin"
 UPLOAD_BYTES = b"v1 upload"
 EMPTY_PAGE: List[Any] = []
 EMPTY_OBJECT: Dict[str, Any] = {}
+# design.md D4's answers to steps 1 to 3 of a container-registry call: the `GET /user` login, the project's
+# `container_registry_image_prefix` on the registry, and the `/jwt/auth` registry token.
+FIELD_USERNAME = "username"
+FIELD_IMAGE_PREFIX = "container_registry_image_prefix"
+FIELD_REGISTRY_TOKEN = "token"  # an answer field name, not a secret
+REGISTRY_STEP_ANSWERS: Tuple[Dict[str, Any], ...] = (
+    {FIELD_USERNAME: "contract-user"},
+    {FIELD_IMAGE_PREFIX: f"{CONTAINER_REGISTRY_HOST}/group/project"},
+    {FIELD_REGISTRY_TOKEN: "registry-token-contract-test"},  # pragma: allowlist secret
+)
 
 # gitlab-dedicated#update-a-geo-site (`PUT /geo_sites/:id`), unreachable by the Offering arm: its page names only
 # GitLab Self-Managed. The record a slice writes from "Update a Geo site", every body row a SCALAR but the `array`
@@ -242,6 +332,8 @@ def load_fixtures() -> ModuleType:
 fixtures = load_fixtures()
 
 CONFIG: Dict[str, Any] = {FIELD_HOSTNAME: fixtures.HOST, FIELD_PROJECT_ID: PROJECT_ID, FIELD_TOKEN: TOKEN}
+# The configured origin, which a call under `/api/v4` and one at the host's root are sent to (design.md D4, D7).
+CONFIGURED_ORIGIN = HTTPS_ORIGIN_START + fixtures.HOST
 
 
 @pytest.fixture(autouse=True)
@@ -278,13 +370,15 @@ NO_ROW = Row(location="")
 @dataclass(frozen=True)
 class Section:
     """One `###` section of a `rest/<stem>.md` page, keyed `<stem>#<anchor>`, with the prefix values of its page's
-    `<route-prefix>` line, in the line's order (none for a page without one)."""
+    `<route-prefix>` line, in the line's order (none for a page without one), and its request headers: the names of its
+    `- Request headers:` line, then those of its `header` rows, each once (issue #63, design.md D7)."""
 
     operation_id: str
     endpoints: Tuple[Tuple[str, str], ...]
     rows: Mapping[str, Row]
     offering: Optional[str]
     route_prefixes: Tuple[str, ...] = NO_ROUTE_PREFIXES
+    headers: Tuple[str, ...] = NO_HEADERS
 
     @property
     def attributes(self) -> Dict[str, str]:
@@ -387,6 +481,19 @@ def table_rows(*, lines: Iterable[str], attribute_name: Callable[..., str]) -> D
     }
 
 
+def section_headers(*, lines: Iterable[str], rows: Mapping[str, Row]) -> Tuple[str, ...]:
+    """The backticked names of the first line beginning with `HEADERS_LINE_START`, then the names of the `header`
+    rows, each once, in that order (issue #63, design.md D7)."""
+    named: List[str] = []
+    for line in lines:
+        if line.startswith(HEADERS_LINE_START):
+            listed = line[len(HEADERS_LINE_START) :]
+            named.extend(match.group(GROUP_VALUE) for match in PREFIX_VALUE.finditer(string=listed))
+            break
+    named.extend(name for name, row in rows.items() if row.location == IN_HEADER)
+    return tuple(dict.fromkeys(named))
+
+
 def page_sections(*, stem: str, text: str, attribute_name: Callable[..., str]) -> Iterator[Section]:
     """The `###` sections of one page; a section runs from its heading to the next heading, and a page's offering and
     prefix values are the ones on the `Docs page:` and `<route-prefix>` lines under its `##` heading."""
@@ -401,12 +508,14 @@ def page_sections(*, stem: str, text: str, attribute_name: Callable[..., str]) -
             page_offering = line_offering(lines=body, start=PAGE_LINE_START)
             page_prefixes = line_route_prefixes(lines=body)
         elif level == SECTION_LEVEL:
+            rows = table_rows(lines=body, attribute_name=attribute_name)
             yield Section(
                 operation_id=f"{stem}{ID_SEPARATOR}{anchor}",
                 endpoints=section_endpoints(lines=body),
-                rows=table_rows(lines=body, attribute_name=attribute_name),
+                rows=rows,
                 offering=line_offering(lines=body, start=SECTION_LINE_START) or page_offering,
                 route_prefixes=page_prefixes,
+                headers=section_headers(lines=body, rows=rows),
             )
 
 
@@ -494,11 +603,19 @@ def is_member_name_allowed(*, record: Any, param: Any, registry: ModuleType) -> 
     return bool(PARENT_KEY.fullmatch(string=param.name)) and in_hash
 
 
+def is_header_param(*, param: Any) -> bool:
+    """A `Param` that is a request header: its location's value is `IN_HEADER` (issue #63, design.md D7)."""
+    return bool(param.location.value == IN_HEADER)
+
+
 def param_problems(*, record: Any, section: Section, registry: ModuleType) -> List[str]:
-    """Each `Param` that matches no row, sits elsewhere than its row's `In`, or names a member it may not."""
+    """Each `Param` that matches no row, sits elsewhere than its row's `In`, or names a member it may not; a request
+    header `Param` is `header_problems`' to judge, not this function's (issue #63, design.md D7)."""
     problems: List[str] = []
     optional = paging_parameters(record=record)
     for param in record.params:
+        if is_header_param(param=param):
+            continue
         row = section.rows.get(param.name)
         if row is None and param.name not in optional:
             problems.append(f"the Param {param.name!r} matches no row of the section's table")
@@ -511,6 +628,25 @@ def param_problems(*, record: Any, section: Section, registry: ModuleType) -> Li
                 f"the Param {param.name!r} holds '[' or ':' but is no parent[key] name of a query Param or of a"
                 " FORM-body record"
             )
+    return problems
+
+
+def header_problems(*, record: Any, section: Section) -> List[str]:
+    """Each request header `Param` of the record that is none of the section's `headers`, and each of those the record
+    declares no `Param` of, names compared ignoring case (RFC 9110 section 5.1; issue #63 AC-8.2, design.md D7)."""
+    declared = [param.name for param in record.params if is_header_param(param=param)]
+    documented = {name.lower() for name in section.headers}
+    declared_lower = {name.lower() for name in declared}
+    problems = [
+        f"the request header Param {name!r} is no request header of the section"
+        for name in declared
+        if name.lower() not in documented
+    ]
+    problems.extend(
+        f"the section's request header {name!r} is not declared by the record"
+        for name in section.headers
+        if name.lower() not in declared_lower
+    )
     return problems
 
 
@@ -536,6 +672,7 @@ def record_problems(*, record: Any, section: Optional[Section]) -> List[str]:
         if section.rows.get(name, NO_ROW).location != IN_QUERY
     )
     problems.extend(prefix_problems(record=record, section=section))
+    problems.extend(header_problems(record=record, section=section))
     return [f"{record.operation_id}: {problem}" for problem in problems]
 
 
@@ -544,13 +681,17 @@ def record_problems(*, record: Any, section: Optional[Section]) -> List[str]:
 
 @dataclass(frozen=True)
 class SentCall:
-    """The shape of one sent request: its method, its path after `/api/v4`, the names of its query pairs and of its
-    body members, in the order sent."""
+    """The shape of one sent request: its method, its path after its base's root, the names of its query pairs and of
+    its body members, in the order sent; where it was sent, `SENT_BASE_REST` under `https://<HOST>/api/v4`,
+    `SENT_BASE_HOST` elsewhere on that host, or the URL's origin; and the names of its request headers but the
+    `TRANSPORT_HEADERS`, as recorded (issue #63, design.md D7)."""
 
     method: str
     path: str
     query: Tuple[str, ...] = ()
     body: Tuple[str, ...] = ()
+    base: str = SENT_BASE_REST
+    headers: Tuple[str, ...] = NO_HEADERS
 
 
 def media_type(*, content_type: str) -> str:
@@ -586,12 +727,34 @@ def body_members(*, request: Any) -> Tuple[str, ...]:
     raise AssertionError(f"{request.method} {request.url} sent a body of the media type {media}")
 
 
+def sent_base(*, url: str) -> Tuple[str, str]:
+    """Where a recorded URL was sent and its path after that base's root (issue #63, design.md D7): `SENT_BASE_REST`
+    and the path after `/api/v4` for a URL under `https://<HOST>/api/v4`, `SENT_BASE_HOST` and the path for any other
+    URL on the configured origin, and the URL's origin and its path for a URL on any other."""
+    split = urllib.parse.urlsplit(url=url)
+    origin = f"{split.scheme}://{split.netloc}"
+    if origin != CONFIGURED_ORIGIN:
+        return origin, split.path
+    if split.path.startswith(REST_PREFIX + PATH_SEPARATOR):
+        return SENT_BASE_REST, split.path[len(REST_PREFIX) :]
+    return SENT_BASE_HOST, split.path
+
+
 def sent_call(*, request: Any) -> SentCall:
-    """The shape of a request the fake host recorded (a `RecordedRequest`)."""
+    """The shape of a request the fake host recorded (a `RecordedRequest`): its base and path by `sent_base`, and as
+    its headers every recorded name but the `TRANSPORT_HEADERS` (issue #63, design.md D7)."""
     split = urllib.parse.urlsplit(url=request.url)
-    path = split.path[len(REST_PREFIX) :] if split.path.startswith(REST_PREFIX) else split.path
+    base, path = sent_base(url=request.url)
     query = tuple(name for name, _ in urllib.parse.parse_qsl(qs=split.query, keep_blank_values=True))
-    return SentCall(method=request.method, path=path, query=query, body=body_members(request=request))
+    headers = tuple(name for name in request.headers if name.lower() not in TRANSPORT_HEADERS)
+    return SentCall(
+        method=request.method,
+        path=path,
+        query=query,
+        body=body_members(request=request),
+        base=base,
+        headers=headers,
+    )
 
 
 def documented_name(*, name: str, documented: Iterable[str]) -> str:
@@ -601,35 +764,98 @@ def documented_name(*, name: str, documented: Iterable[str]) -> str:
     return max(matches, key=len) if matches else name.partition(BRACKET)[0]
 
 
+def is_list_value(*, value: Any) -> bool:
+    """A value given one item per place of its path parameter (issue #63, design.md D7)."""
+    return isinstance(value, (list, tuple))
+
+
 def expanded_path(*, path: str, values: Mapping[str, Any]) -> Optional[str]:
-    """``path`` as a call with ``values`` writes it (issue #40, design.md D3): each unescaped `(` and `)` dropped, so
-    every optional group is written; then the backslash of each escaped parenthesis dropped; then each `:name` and
-    `*name` replaced by its value. ``None`` when a placeholder has no value."""
-    names = [match.group(GROUP_NAME) for match in PATH_PLACEHOLDER.finditer(string=path)]
-    if any(name not in values for name in names):
+    """``path`` as a call with ``values`` writes it (issue #40, design.md D3; issue #63, design.md D7): each `[.name]`
+    suffix written as `.` and its value when one is given, else as nothing; then each unescaped `(` and `)` dropped, so
+    every optional group is written; then the backslash of each escaped parenthesis dropped; then each `:name`,
+    `*name` and `${NAME}` replaced by its value, a list value one item per place, in path order. ``None`` when a path
+    parameter has no value, or a list value has another number of items than its name has places."""
+    held = [
+        match.group(GROUP_NAME)
+        for pattern in (PATH_PLACEHOLDER, REGISTRY_NAME)
+        for match in pattern.finditer(string=path)
+    ]
+    if any(name not in values for name in held):
         return None
-    grouped = UNESCAPED_PARENTHESIS.sub(repl="", string=path)
+    lists = {name: values[name] for name in held if is_list_value(value=values[name])}
+    if any(len(items) != held.count(name) for name, items in lists.items()):
+        return None
+    places = {name: iter(items) for name, items in lists.items()}
+
+    def suffix(match: re.Match[str]) -> str:
+        value = values.get(match.group(GROUP_NAME))
+        return "" if value is None else f"{SUFFIX_SEPARATOR}{value}"
+
+    def written(match: re.Match[str]) -> str:
+        name = match.group(GROUP_NAME)
+        place = places.get(name)
+        return str(values[name] if place is None else next(place))
+
+    suffixed = OPTIONAL_SUFFIX.sub(repl=suffix, string=path)
+    grouped = UNESCAPED_PARENTHESIS.sub(repl="", string=suffixed)
     literal = ESCAPED_PARENTHESIS.sub(repl=lambda match: match.group(GROUP_PARENTHESIS), string=grouped)
-    return PATH_PLACEHOLDER.sub(repl=lambda match: str(values[match.group(GROUP_NAME)]), string=literal)
+    return REGISTRY_NAME.sub(repl=written, string=PATH_PLACEHOLDER.sub(repl=written, string=literal))
+
+
+def endpoint_base(*, path: str) -> Tuple[str, str]:
+    """Where a section's endpoint path is sent and the rest of it, by N's own reading of the roots (issue #63,
+    design.md D7): `SENT_BASE_HOST` for a path starting `https://HOST/`, `CONTAINER_REGISTRY_ORIGIN` for one starting
+    `/http(s)://${CI_REGISTRY}/`, each with the path after its root, and `SENT_BASE_REST` with the path for any
+    other."""
+    for root, base in ENDPOINT_ROOTS:
+        if path.startswith(root + PATH_SEPARATOR):
+            return base, path[len(root) :]
+    return SENT_BASE_REST, path
 
 
 def route_problems(*, section: Section, values: Mapping[str, Any], sent: SentCall) -> List[str]:
-    """A method other than the section's; a path other than each of the section's paths as `expanded_path` writes it
-    with the values: its optional groups written, its escaped parentheses unescaped, each `:name` and `*name` replaced
-    by its value."""
+    """A method other than the section's; a base and path other than each of the section's endpoints', its base as
+    `endpoint_base` reads it and the rest as `expanded_path` writes it with the values: its suffix written when given,
+    its optional groups written, its escaped parentheses unescaped, each `:name`, `*name` and `${NAME}` replaced by its
+    value (issue #63, design.md D7)."""
     methods = sorted({method for method, _ in section.endpoints})
-    paths = [expanded_path(path=path, values=values) for _, path in section.endpoints]
+    routes: List[Tuple[str, Optional[str]]] = []
+    for _, path in section.endpoints:
+        base, rest = endpoint_base(path=path)
+        routes.append((base, expanded_path(path=rest, values=values)))
     problems: List[str] = []
     if sent.method not in methods:
         problems.append(f"the method {sent.method!r} is not the section's ({', '.join(methods)})")
-    if sent.path not in paths:
-        problems.append(f"the path {sent.path!r} is none of the section's paths with the values {paths}")
+    if (sent.base, sent.path) not in routes:
+        problems.append(
+            f"the path {sent.path!r} sent to {sent.base!r} is none of the section's paths with the values, each with"
+            f" where it is sent: {routes}"
+        )
+    return problems
+
+
+def header_call_problems(*, section: Section, values: Mapping[str, Any], sent: SentCall) -> List[str]:
+    """A sent request header that is none of the section's `headers`, and a value given for one of them that is not
+    sent, names compared ignoring case (RFC 9110 section 5.1; issue #63 AC-8.2, design.md D7)."""
+    documented = {name.lower() for name in section.headers}
+    sent_lower = {name.lower() for name in sent.headers}
+    problems = [
+        f"the request header {name!r} was sent but is no request header of the section"
+        for name in sent.headers
+        if name.lower() not in documented
+    ]
+    problems.extend(
+        f"the request header {name!r} was given but is not sent"
+        for name in values
+        if name.lower() in documented and name.lower() not in sent_lower
+    )
     return problems
 
 
 def call_problems(*, section: Section, values: Mapping[str, Any], sent: SentCall) -> List[str]:
-    """Every difference between a sent call and its section (D5): the method, the path, a sent query or body name the
-    section does not document in that place, a given attribute missing from the place the section documents it in."""
+    """Every difference between a sent call and its section (D5): the method, the base and path, a sent query or body
+    name the section does not document in that place, a given attribute missing from the place the section documents
+    it in, and a request header sent or given that `header_call_problems` names (issue #63, design.md D7)."""
     problems = route_problems(section=section, values=values, sent=sent)
     read: Dict[str, List[str]] = {}
     for place, names in ((IN_QUERY, sent.query), (IN_BODY, sent.body)):
@@ -646,6 +872,7 @@ def call_problems(*, section: Section, values: Mapping[str, Any], sent: SentCall
         row = section.rows.get(name, NO_ROW)
         if name not in path_names and row.location in read and name not in read[row.location]:
             problems.append(f"the attribute {name!r} was given but is not sent in the {row.location}")
+    problems.extend(header_call_problems(section=section, values=values, sent=sent))
     return problems
 
 
@@ -686,6 +913,12 @@ def routed_section(*, section: Section, prefix: Optional[str]) -> Section:
     return replace(section, endpoints=endpoints)
 
 
+def own_endpoint_section(*, section: Section, record: Any) -> Section:
+    """The section with the record's own method and path as its one endpoint: how a record of an ID several records
+    declare is judged, against its own endpoint alone (issue #63, design.md D7)."""
+    return replace(section, endpoints=((record.method, record.path),))
+
+
 # --- Records and calls the tests build ----------------------------------------------------------------------------
 
 
@@ -694,8 +927,89 @@ def rest_records(*, registry: ModuleType) -> List[Any]:
     return [record for family in registry.discover_families() for record in family.OPERATIONS]
 
 
+def several_record_ids(*, registry: ModuleType) -> Dict[str, List[Any]]:
+    """Each ID that several REST records of one family declare, with those records in declaration order, the base
+    record first (issue #63, design.md D1, D7)."""
+    several: Dict[str, List[Any]] = {}
+    for family in registry.discover_families():
+        by_id: Dict[str, List[Any]] = {}
+        for record in family.OPERATIONS:
+            by_id.setdefault(record.operation_id, []).append(record)
+        several.update({operation_id: records for operation_id, records in by_id.items() if len(records) > 1})
+    return several
+
+
+def declared_record(*, registry: ModuleType, operation_id: str, endpoint: Optional[Tuple[str, str]] = None) -> Any:
+    """The first REST record discovery finds declared with ``operation_id`` and, given an ``endpoint``, on that method
+    and path; an assertion names the ID and the endpoint when no record is."""
+    records = [
+        record
+        for record in rest_records(registry=registry)
+        if record.operation_id == operation_id and endpoint in (None, (record.method, record.path))
+    ]
+    assert records, f"no family declares a record of {operation_id}" + (f" on {endpoint}" if endpoint else "")
+    return records[0]
+
+
+def param_shape(*, param: Any) -> Tuple[str, str, str, bool]:
+    """A `Param` as D8's copy rule compares it: its name, location, kind and required."""
+    return param.name, param.location.value, param.kind.value, param.required
+
+
+def copy_problems(*, base: Any, record: Any) -> List[str]:
+    """What ``record``, declared after ``base`` with its ID, does not copy of it (issue #63, design.md D8 Rules):
+    ``base``'s `Param`s less those naming a path parameter of ``record``'s own path, in order, and ``base``'s `body`,
+    `paging` and `fixed`."""
+    own = path_names(path=record.path)
+    expected = [param_shape(param=param) for param in base.params if param.name not in own]
+    declared = [param_shape(param=param) for param in record.params]
+    endpoint = f"{record.operation_id} {record.method} {record.path}"
+    problems: List[str] = []
+    if declared != expected:
+        problems.append(
+            f"{endpoint}: its Params {declared} are not the base record's less its own path parameters, {expected}"
+        )
+    problems.extend(
+        f"{endpoint}: its {field} {getattr(record, field)!r} is not the base record's {getattr(base, field)!r}"
+        for field in COPIED_FIELDS
+        if getattr(record, field) != getattr(base, field)
+    )
+    return problems
+
+
+def is_container_registry(*, path: str) -> bool:
+    """A path sent to the container registry: it starts with `/http(s)://${CI_REGISTRY}/` (design.md D4, D7)."""
+    return path.startswith(CONTAINER_REGISTRY_ROOT + PATH_SEPARATOR)
+
+
+def queue_answers(*, fake: Any, record: Any, registry: ModuleType) -> int:
+    """Queue on ``fake`` the answers one call of ``record`` is served: for a container-registry record first D4's
+    answers to steps 1 to 3 (`REGISTRY_STEP_ANSWERS`), then `[]` for a paged record and `{}` for any other; the number
+    of step answers queued, so the record is judged on the request after them (issue #63, design.md D7)."""
+    steps = REGISTRY_STEP_ANSWERS if is_container_registry(path=record.path) else ()
+    for answer in steps:
+        fake.script_next(body=answer)
+    fake.script_next(body=EMPTY_OBJECT if record.paging is registry.Paging.NONE else EMPTY_PAGE)
+    return len(steps)
+
+
+def recorded_request(
+    *, method: str, url: str, headers: Optional[Mapping[str, str]] = None, body: Optional[bytes] = None
+) -> Any:
+    """A `RecordedRequest` of the fake host, as it records one the transport sent."""
+    return fixtures.RecordedRequest(method=method, url=url, headers=dict(headers or {}), body=body)
+
+
+def option_texts(*, argv: List[str], option: str) -> List[str]:
+    """The text after each ``option`` of an argv, in order."""
+    return [argv[index + 1] for index, item in enumerate(argv[:-1]) if item == option]
+
+
 def typed_argument(*, param: Any, registry: ModuleType, upload: Path) -> Tuple[str, str, Any]:
-    """The option, its text and the value it gives one `Param`, by its `Kind` and location (D5's table)."""
+    """The option, its text and the value it gives one `Param`, by its `Kind` and location (D5's table); a request
+    header `Param` is given with `--header` (issue #63, design.md D7)."""
+    if is_header_param(param=param):
+        return OPTION_HEADER, TEST_VALUE, TEST_VALUE
     if param.kind is registry.Kind.FILE:
         return OPTION_FILE, str(upload), upload
     if param.kind is registry.Kind.SCALAR:
@@ -713,24 +1027,48 @@ def call_prefix(*, record: Any, section: Section) -> Optional[str]:
     return None
 
 
+def path_values(*, record: Any, registry: ModuleType, path: str) -> Dict[str, Any]:
+    """The value `record_call` gives each path parameter of ``path`` (issue #63, design.md D7): a list of one value per
+    place, `v1`, `v2`, ..., in path order, for a name of the record's `positional_names`; none for a `[.name]` suffix;
+    `TEST_VALUE` for every other."""
+    suffixes = {match.group(GROUP_NAME) for match in OPTIONAL_SUFFIX.finditer(string=path)}
+    held = [match.group(GROUP_NAME) for match in PATH_PLACEHOLDER.finditer(string=path)]
+    positional = getattr(record, FIELD_POSITIONAL_NAMES, NO_POSITIONAL_NAMES)
+    values: Dict[str, Any] = {}
+    for name in dict.fromkeys(registry.placeholders(path=path)):
+        if name in suffixes:
+            continue
+        if name in positional:
+            places = range(FIRST_PLACE, FIRST_PLACE + held.count(name))
+            values[name] = [PLACE_VALUE.format(place=place) for place in places]
+        else:
+            values[name] = TEST_VALUE
+    return values
+
+
 def record_call(
-    *, record: Any, registry: ModuleType, upload: Path, prefix: Optional[str] = None
+    *, record: Any, registry: ModuleType, upload: Path, prefix: Optional[str] = None, endpoint: bool = False
 ) -> Tuple[List[str], Dict[str, Any]]:
     """The `call` argv that gives every path parameter and `Param` of ``record`` a typed value, and those values. Given
     a ``prefix``, the argv ends with `--route-prefix <prefix>`, and the path parameters are those of the record's path
-    with `/<route-prefix>` replaced by it (`routed_path`; issue #43, design.md D4)."""
+    with `/<route-prefix>` replaced by it (`routed_path`; issue #43, design.md D4). Each place of a positional name is
+    given its own `--path` with its own value, a `[.name]` suffix no value (`path_values`), and a request header
+    `Param` its `--header`; given ``endpoint``, the argv ends with `--endpoint 'METHOD path'`, the record's own, as a
+    record of an ID several records declare is called (issue #63, design.md D7)."""
     argv = [CALL_COMMAND, record.operation_id]
-    values: Dict[str, Any] = {}
     path = record.path if prefix is None else routed_path(path=record.path, prefix=prefix)
-    for name in dict.fromkeys(registry.placeholders(path=path)):
-        argv.extend([OPTION_PATH, f"{name}{ASSIGNED}{TEST_VALUE}"])
-        values[name] = TEST_VALUE
+    values = path_values(record=record, registry=registry, path=path)
+    for name, given in values.items():
+        for value in given if is_list_value(value=given) else [given]:
+            argv.extend([OPTION_PATH, f"{name}{ASSIGNED}{value}"])
     for param in record.params:
         option, text, value = typed_argument(param=param, registry=registry, upload=upload)
         argv.extend([option, f"{param.name}{ASSIGNED}{text}"])
         values[param.name] = value
     if prefix is not None:
         argv.extend([OPTION_ROUTE_PREFIX, prefix])
+    if endpoint:
+        argv.extend([OPTION_ENDPOINT, f"{record.method}{ENDPOINT_SEPARATOR}{record.path}"])
     return argv, values
 
 
@@ -1244,7 +1582,10 @@ def test_every_record_is_sent_as_its_section_documents(
 ) -> None:
     """Every discovered REST record outside `GATED_OPERATIONS` runs as `call` through the product's `main`, one
     temporary project and one fake host, every path parameter and `Param` given a typed value (D5's table), answered
-    `[]` (paged) or `{}`; each exits 0 and sends one request the call half finds no difference in."""
+    `[]` (paged) or `{}`; each exits 0 and sends one request the call half finds no difference in. A record of an ID
+    several records declare names its endpoint and is judged against it alone; a container-registry record is first
+    answered D4's steps 1 to 3 and judged on its last request, every other on the configured origin (issue #63,
+    design.md D7)."""
     call = gitlab_module(name="commands.call")
     registry = gitlab_module(name="registry")
     sections = reference_sections(rest_dir=REST_DIR)
@@ -1253,6 +1594,7 @@ def test_every_record_is_sent_as_its_section_documents(
     upload.write_bytes(data=UPLOAD_BYTES)
     wrapper = fixtures.load_wrapper(module_name=WRAPPER_MODULE)
     fake = fake_gitlab
+    several = several_record_ids(registry=registry)
     problems: List[str] = []
     for record in rest_records(registry=registry):
         if record.operation_id in call.GATED_OPERATIONS:
@@ -1261,9 +1603,11 @@ def test_every_record_is_sent_as_its_section_documents(
         if section is None:
             problems.append(f"{record.operation_id}: no section of rest/*.md has this id")
             continue
+        named = record.operation_id in several
+        judged = own_endpoint_section(section=section, record=record) if named else section
         prefix = call_prefix(record=record, section=section)
-        argv, values = record_call(record=record, registry=registry, upload=upload, prefix=prefix)
-        fake.script_next(body=EMPTY_OBJECT if record.paging is registry.Paging.NONE else EMPTY_PAGE)
+        argv, values = record_call(record=record, registry=registry, upload=upload, prefix=prefix, endpoint=named)
+        steps = queue_answers(fake=fake, record=record, registry=registry)
         sent_before, logged_before = len(fake.requests), len(caplog.records)
         code = fixtures.run_main(wrapper=wrapper, argv=argv)
         requests = fake.requests[sent_before:]
@@ -1271,15 +1615,15 @@ def test_every_record_is_sent_as_its_section_documents(
         problems.extend(
             sent_record_problems(
                 record=record,
-                section=routed_section(section=section, prefix=prefix),
+                section=routed_section(section=judged, prefix=prefix),
                 values=values,
                 code=code,
-                requests=requests,
+                requests=requests[steps:],
                 logged=logged,
             )
         )
-        if not requests:
-            # The answer queued for this call was never served; the next record gets a fake host of its own.
+        if len(requests) <= steps:
+            # An answer queued for this call was never served; the next record gets a fake host of its own.
             fake = fixtures.FakeGitLab().install(monkeypatch=monkeypatch)
     assert not problems, "\n".join(problems)
 
@@ -1316,3 +1660,278 @@ def test_an_unreachable_call_matches_its_reference_section(
     values = {**GEO_SITE_PATH_VALUES, **GEO_SITE_VALUES}
     assert call_problems(section=section, values=values, sent=sent_call(request=request)) == []
     assert request.json() == GEO_SITE_VALUES
+
+
+# --- Issue #63 AC-1.2, AC-7.2, AC-8.1, AC-8.2: the request forms, read and sent as written (design.md D7) -------------
+
+# F1: two References each of which several records declare, one record per endpoint of its section (design.md D8),
+# and the snippet endpoint of the first, judged alone against an issue path that the whole section passes.
+EMOJI_ADD_ID = "plan#add-an-emoji-reaction-to-a-resource"
+LATEST_RELEASE_ID = "verify#get-the-latest-release"
+COPIED_IDS = (EMOJI_ADD_ID, LATEST_RELEASE_ID)
+EMOJI_METHOD = "POST"
+EMOJI_SNIPPET_PATH = "/projects/:id/snippets/:snippet_id/award_emoji"
+EMOJI_PATH_VALUES: Dict[str, Any] = {name: TEST_VALUE for name in ("id", "issue_iid", "snippet_id")}
+EMOJI_SNIPPET_SENT_PATH = "/projects/v1/snippets/v1/award_emoji"
+EMOJI_ISSUE_SENT_PATH = "/projects/v1/issues/v1/award_emoji"
+# F2: the group SSH certificate delete, its `:id` twice; the path its two values write, and two that write one value at
+# both places.
+SSH_CERTIFICATE_ID = "create#delete-a-group-ssh-certificate"
+SSH_CERTIFICATE_METHOD = "DELETE"
+SSH_CERTIFICATE_NAME = "id"
+SSH_CERTIFICATE_VALUES = [TEST_VALUE, "v2"]
+SSH_CERTIFICATE_SENT_PATH = "/groups/v1/ssh_certificates/v2"
+SSH_CERTIFICATE_ONE_VALUE_PATHS = ("/groups/v2/ssh_certificates/v2", "/groups/v1/ssh_certificates/v1")
+# F3: the archive, sent without a suffix and with `zip`, never as its template.
+ARCHIVE_METHOD = "GET"
+ARCHIVE_SUFFIX = "format"
+ARCHIVE_FORMAT = "zip"
+ARCHIVE_SENT_PATH = "/projects/v1/repository/archive"
+ARCHIVE_ZIP_SENT_PATH = "/projects/v1/repository/archive.zip"
+ARCHIVE_TEMPLATE_SENT_PATH = "/projects/v1/repository/archive[.format]"
+# F4: the token information at the host's root, and the registry delete on the registry's origin.
+TOKEN_INFORMATION_ID = "software-supply-chain-security#retrieve-the-token-information"
+TOKEN_INFORMATION_METHOD = "GET"
+TOKEN_INFORMATION_SENT_PATH = "/oauth/token/info"
+REGISTRY_DELETE_METHOD = "DELETE"
+REGISTRY_DELETE_SENT_PATH = "/v2/v1/tags/reference/v1"
+# F5: the external control's `- Request headers:` line, the NuGet symbol downloads' `header` row, the external control
+# as a call sends it with the transport's headers recorded beside its own, and a header no section names.
+EXTERNAL_CONTROL_ID = "software-supply-chain-security#set-status-of-an-external-control"
+EXTERNAL_CONTROL_HEADERS = ("X-Gitlab-Timestamp", "X-Gitlab-Nonce", "X-Gitlab-Hmac-Sha256")
+EXTERNAL_CONTROL_NONCE = "X-Gitlab-Nonce"
+EXTERNAL_CONTROL_METHOD = "PATCH"
+EXTERNAL_CONTROL_SENT_PATH = "/projects/v1/compliance_external_controls/v1/status"
+EXTERNAL_CONTROL_BODY = {"status": "pass"}
+OTHER_HEADER = "X-Other"
+NUGET_SYMBOL_IDS = (
+    "openapi-only#the-nuget-symbol-file-download-endpoint",
+    "openapi-only#the-nuget-symbol-file-download-endpoint-1",
+)
+SYMBOL_CHECKSUM = "Symbolchecksum"
+# How urllib records the transport's headers (`Request.add_header` stores `str.capitalize` names), none a header N
+# judges.
+RECORDED_TRANSPORT_HEADERS: Dict[str, str] = {
+    "Accept": CONTENT_TYPE_JSON,
+    "Content-type": CONTENT_TYPE_JSON,
+    "Private-token": TOKEN,
+    "Host": fixtures.HOST,
+    "User-agent": "Python-urllib/3.9",
+}
+# F6: the S3 import, a FORM-body record whose rows are all members of `override_params` at one or two levels; AC-7.1's
+# form call gives each required row, the visibility, the two-level `cadence` and the `tag_list` array.
+S3_IMPORT_ID = "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket"
+S3_REQUIRED = ("access_key_id", "bucket_name", "file_key", "path", "region", "secret_access_key")
+S3_VISIBILITY = "override_params[visibility]"
+S3_CADENCE = "override_params[container_expiration_policy_attributes][cadence]"
+S3_TAG_LIST = "override_params[tag_list]"
+S3_TAGS = ("a", "b")
+S3_ARRAY_SUFFIX = "[]"
+S3_CALL_VALUES: Dict[str, Any] = {
+    **{name: TEST_VALUE for name in S3_REQUIRED},
+    S3_VISIBILITY: "private",
+    S3_CADENCE: "7d",
+}
+S3_BOGUS_MEMBERS = ("override_params[container_expiration_policy_attributes][bogus]", "override_params[bogus]")
+
+
+def s3_import_call() -> Tuple[List[str], Dict[str, Any]]:
+    """AC-7.1's form call of the S3 import, and the values it gives: each of `S3_CALL_VALUES` with `-f`, the
+    `tag_list` array with `-F`."""
+    argv = [CALL_COMMAND, S3_IMPORT_ID]
+    for name, value in S3_CALL_VALUES.items():
+        argv.extend([OPTION_RAW_FIELD, f"{name}{ASSIGNED}{value}"])
+    argv.extend([OPTION_FIELD, f"{S3_TAG_LIST}{ASSIGNED}{json.dumps(obj=list(S3_TAGS))}"])
+    return argv, {**S3_CALL_VALUES, S3_TAG_LIST: list(S3_TAGS)}
+
+
+def test_each_record_of_an_id_copies_its_base_record() -> None:
+    """For every ID that several REST records of one family declare, each record after the first declares the first's
+    `Param`s (name, location, kind, required) less those naming a path parameter of its own path, in order, and the
+    first's `body`, `paging` and `fixed`; the IDs judged include the emoji-reaction add and the latest release (issue
+    #63 AC-1.2, design.md D7, D8 Rules)."""
+    registry = gitlab_module(name="registry")
+    several = several_record_ids(registry=registry)
+    missing = [operation_id for operation_id in COPIED_IDS if operation_id not in several]
+    assert not missing, f"no family declares several records of {missing}"
+
+    problems = [
+        problem
+        for records in several.values()
+        for record in records[1:]
+        for problem in copy_problems(base=records[0], record=record)
+    ]
+    assert not problems, "\n".join(problems)
+
+
+def test_a_two_level_member_is_read_and_sent_as_written(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fake_gitlab: Any
+) -> None:
+    """The reader holds the S3 import's two-level `cadence` row as an attribute of its own; `record_problems` passes
+    the declared FORM-body record, names its members on the record built `BodyFormat.JSON`, and names the `cadence`
+    row of the record built without it. With `GATED_OPERATIONS` lifted for this test only, AC-7.1's form call exits 0
+    and sends one form request `call_problems` passes, `tag_list` once per item; `call_problems` names a sent
+    `...[container_expiration_policy_attributes][bogus]` and `override_params[bogus]` (issue #63 AC-7.2, AC-8.1,
+    design.md D6, D7)."""
+    registry = gitlab_module(name="registry")
+    sections = reference_sections(rest_dir=REST_DIR)
+    section = sections[S3_IMPORT_ID]
+    assert section.rows[S3_CADENCE] == Row(location=IN_BODY)
+    assert S3_CADENCE in section.attributes
+    assert PARENT_KEY.fullmatch(string=S3_CADENCE)
+
+    record = declared_record(registry=registry, operation_id=S3_IMPORT_ID)
+    assert record_problems(record=record, section=section) == []
+    as_json = record_problems(record=replace(record, body=registry.BodyFormat.JSON), section=section)
+    assert any(repr(S3_CADENCE) in problem for problem in as_json), as_json
+    without = replace(record, params=tuple(param for param in record.params if param.name != S3_CADENCE))
+    assert record_problems(record=without, section=section) == [
+        f"{S3_IMPORT_ID}: the {IN_BODY} row {S3_CADENCE!r} is not declared by the record"
+    ]
+
+    call = gitlab_module(name="commands.call")
+    assert S3_IMPORT_ID in call.GATED_OPERATIONS
+    lifted = {gated: subcommand for gated, subcommand in call.GATED_OPERATIONS.items() if gated != S3_IMPORT_ID}
+    monkeypatch.setattr(target=call, name="GATED_OPERATIONS", value=MappingProxyType(lifted))
+    contract_project(root=tmp_path, monkeypatch=monkeypatch)
+    fake_gitlab.script_next(body=EMPTY_OBJECT)
+    argv, values = s3_import_call()
+
+    code = fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=argv)
+
+    assert code == 0
+    assert len(fake_gitlab.requests) == 1, [(request.method, request.url) for request in fake_gitlab.requests]
+    request = fake_gitlab.requests[0]
+    assert media_type(content_type=str(request.header(name=HEADER_CONTENT_TYPE))) == CONTENT_TYPE_FORM
+    sent = sent_call(request=request)
+    assert call_problems(section=section, values=values, sent=sent) == []
+    assert S3_CADENCE in sent.body
+    assert sent.body.count(S3_TAG_LIST + S3_ARRAY_SUFFIX) == len(S3_TAGS)
+    for member in S3_BOGUS_MEMBERS:
+        problems = call_problems(section=section, values=values, sent=replace(sent, body=sent.body + (member,)))
+        assert any(repr(member) in problem for problem in problems), (member, problems)
+
+
+def test_an_endpoint_a_place_a_suffix_and_a_base_are_read_as_written() -> None:
+    """On the declared records: the call half passes the SSH certificate delete at `/groups/v1/ssh_certificates/v2`,
+    its two places given `v1` and `v2`, and names a path writing one value at both; passes the archive at `/archive`
+    with no suffix and at `/archive.zip` with `zip`, and names its template; passes the token information at the host's
+    root and names it under `/api/v4`; passes the registry delete on the registry's origin and names it on the
+    configured one; and, judged against the snippet endpoint alone, names the issue path the whole section passes
+    (issue #63 AC-8.1, design.md D7)."""
+    registry = gitlab_module(name="registry")
+    sections = reference_sections(rest_dir=REST_DIR)
+    upload = Path(UPLOAD_NAME)
+    certificate = declared_record(registry=registry, operation_id=SSH_CERTIFICATE_ID)
+    archive = declared_record(registry=registry, operation_id=ARCHIVE_ID)
+    token_information = declared_record(registry=registry, operation_id=TOKEN_INFORMATION_ID)
+    registry_delete = declared_record(registry=registry, operation_id=REGISTRY_DELETE_ID)
+    snippet = declared_record(registry=registry, operation_id=EMOJI_ADD_ID, endpoint=(EMOJI_METHOD, EMOJI_SNIPPET_PATH))
+
+    argv, values = record_call(record=certificate, registry=registry, upload=upload)
+    assert values == {SSH_CERTIFICATE_NAME: SSH_CERTIFICATE_VALUES}
+    assert option_texts(argv=argv, option=OPTION_PATH) == [
+        f"{SSH_CERTIFICATE_NAME}{ASSIGNED}{value}" for value in SSH_CERTIFICATE_VALUES
+    ]
+    section = own_endpoint_section(section=sections[SSH_CERTIFICATE_ID], record=certificate)
+    sent = SentCall(method=SSH_CERTIFICATE_METHOD, path=SSH_CERTIFICATE_SENT_PATH)
+    assert route_problems(section=section, values=values, sent=sent) == []
+    for path in SSH_CERTIFICATE_ONE_VALUE_PATHS:
+        problems = route_problems(section=section, values=values, sent=replace(sent, path=path))
+        assert any(repr(path) in problem for problem in problems), (path, problems)
+
+    _, values = record_call(record=archive, registry=registry, upload=upload)
+    assert ARCHIVE_SUFFIX not in values
+    section = own_endpoint_section(section=sections[ARCHIVE_ID], record=archive)
+    sent = SentCall(method=ARCHIVE_METHOD, path=ARCHIVE_SENT_PATH)
+    assert route_problems(section=section, values=values, sent=sent) == []
+    zipped = {**values, ARCHIVE_SUFFIX: ARCHIVE_FORMAT}
+    assert route_problems(section=section, values=zipped, sent=replace(sent, path=ARCHIVE_ZIP_SENT_PATH)) == []
+    problems = route_problems(section=section, values=values, sent=replace(sent, path=ARCHIVE_TEMPLATE_SENT_PATH))
+    assert any(repr(ARCHIVE_TEMPLATE_SENT_PATH) in problem for problem in problems), problems
+
+    _, values = record_call(record=token_information, registry=registry, upload=upload)
+    section = own_endpoint_section(section=sections[TOKEN_INFORMATION_ID], record=token_information)
+    url = f"{CONFIGURED_ORIGIN}{TOKEN_INFORMATION_SENT_PATH}"
+    sent = sent_call(request=recorded_request(method=TOKEN_INFORMATION_METHOD, url=url))
+    assert (sent.base, sent.path) == (SENT_BASE_HOST, TOKEN_INFORMATION_SENT_PATH)
+    assert route_problems(section=section, values=values, sent=sent) == []
+    url = f"{CONFIGURED_ORIGIN}{REST_PREFIX}{TOKEN_INFORMATION_SENT_PATH}"
+    sent = sent_call(request=recorded_request(method=TOKEN_INFORMATION_METHOD, url=url))
+    assert (sent.base, sent.path) == (SENT_BASE_REST, TOKEN_INFORMATION_SENT_PATH)
+    problems = route_problems(section=section, values=values, sent=sent)
+    assert any(repr(SENT_BASE_REST) in problem for problem in problems), problems
+
+    _, values = record_call(record=registry_delete, registry=registry, upload=upload)
+    section = own_endpoint_section(section=sections[REGISTRY_DELETE_ID], record=registry_delete)
+    url = f"{CONTAINER_REGISTRY_ORIGIN}{REGISTRY_DELETE_SENT_PATH}"
+    sent = sent_call(request=recorded_request(method=REGISTRY_DELETE_METHOD, url=url))
+    assert (sent.base, sent.path) == (CONTAINER_REGISTRY_ORIGIN, REGISTRY_DELETE_SENT_PATH)
+    assert route_problems(section=section, values=values, sent=sent) == []
+    for base, root in ((SENT_BASE_HOST, CONFIGURED_ORIGIN), (SENT_BASE_REST, CONFIGURED_ORIGIN + REST_PREFIX)):
+        url = f"{root}{REGISTRY_DELETE_SENT_PATH}"
+        sent = sent_call(request=recorded_request(method=REGISTRY_DELETE_METHOD, url=url))
+        problems = route_problems(section=section, values=values, sent=sent)
+        assert any(repr(base) in problem for problem in problems), (url, problems)
+
+    argv, _ = record_call(record=snippet, registry=registry, upload=upload, endpoint=True)
+    assert argv[-2:] == [OPTION_ENDPOINT, f"{EMOJI_METHOD}{ENDPOINT_SEPARATOR}{EMOJI_SNIPPET_PATH}"]
+    whole = sections[EMOJI_ADD_ID]
+    alone = own_endpoint_section(section=whole, record=snippet)
+    issue_sent = SentCall(method=EMOJI_METHOD, path=EMOJI_ISSUE_SENT_PATH)
+    assert route_problems(section=whole, values=EMOJI_PATH_VALUES, sent=issue_sent) == []
+    snippet_sent = replace(issue_sent, path=EMOJI_SNIPPET_SENT_PATH)
+    assert route_problems(section=alone, values=EMOJI_PATH_VALUES, sent=snippet_sent) == []
+    problems = route_problems(section=alone, values=EMOJI_PATH_VALUES, sent=issue_sent)
+    assert any(repr(EMOJI_ISSUE_SENT_PATH) in problem for problem in problems), problems
+
+
+def test_a_request_header_is_read_and_sent_as_written() -> None:
+    """`Section.headers` of the external control are its `- Request headers:` names, and of both NuGet symbol
+    downloads `Symbolchecksum`. On the declared records, `record_problems` passes the external control and
+    `header_problems` the NuGet downloads; `header_problems` names the external control built without
+    `X-Gitlab-Nonce` and with an `X-Other`. `record_call` gives each header with `--header`; `sent_call` reads the
+    recorded headers but the transport's; `call_problems` passes them sent as urllib records them and lower-cased, and
+    names a sent `X-Other` and a given `X-Gitlab-Nonce` not sent (issue #63 AC-6.1, AC-8.2, design.md D7)."""
+    registry = gitlab_module(name="registry")
+    sections = reference_sections(rest_dir=REST_DIR)
+    section = sections[EXTERNAL_CONTROL_ID]
+    assert section.headers == EXTERNAL_CONTROL_HEADERS
+    assert {operation_id: sections[operation_id].headers for operation_id in NUGET_SYMBOL_IDS} == {
+        operation_id: (SYMBOL_CHECKSUM,) for operation_id in NUGET_SYMBOL_IDS
+    }
+
+    control = declared_record(registry=registry, operation_id=EXTERNAL_CONTROL_ID)
+    assert record_problems(record=control, section=section) == []
+    for operation_id in NUGET_SYMBOL_IDS:
+        nuget = declared_record(registry=registry, operation_id=operation_id)
+        assert header_problems(record=nuget, section=sections[operation_id]) == [], operation_id
+    other = registry.Param(name=OTHER_HEADER, location=registry.Location(IN_HEADER))
+    kept = tuple(param for param in control.params if param.name != EXTERNAL_CONTROL_NONCE)
+    problems = header_problems(record=replace(control, params=kept + (other,)), section=section)
+    assert len(problems) == 2, problems
+    assert any(repr(EXTERNAL_CONTROL_NONCE) in problem for problem in problems), problems
+    assert any(repr(OTHER_HEADER) in problem for problem in problems), problems
+
+    argv, values = record_call(record=control, registry=registry, upload=Path(UPLOAD_NAME))
+    assert sorted(option_texts(argv=argv, option=OPTION_HEADER)) == sorted(
+        f"{name}{ASSIGNED}{TEST_VALUE}" for name in EXTERNAL_CONTROL_HEADERS
+    )
+    body = json.dumps(obj=EXTERNAL_CONTROL_BODY).encode(encoding=TEXT_ENCODING)
+    recorded = {name.capitalize(): TEST_VALUE for name in EXTERNAL_CONTROL_HEADERS}
+    request = recorded_request(
+        method=EXTERNAL_CONTROL_METHOD,
+        url=f"{CONFIGURED_ORIGIN}{REST_PREFIX}{EXTERNAL_CONTROL_SENT_PATH}",
+        headers={**RECORDED_TRANSPORT_HEADERS, **recorded},
+        body=body,
+    )
+    sent = sent_call(request=request)
+    assert sent.headers == tuple(recorded)
+    assert call_problems(section=section, values=values, sent=sent) == []
+    lowered = replace(sent, headers=tuple(name.lower() for name in EXTERNAL_CONTROL_HEADERS))
+    assert call_problems(section=section, values=values, sent=lowered) == []
+    problems = call_problems(section=section, values=values, sent=replace(sent, headers=sent.headers + (OTHER_HEADER,)))
+    assert any(repr(OTHER_HEADER) in problem for problem in problems), problems
+    unsent = tuple(name for name in sent.headers if name.lower() != EXTERNAL_CONTROL_NONCE.lower())
+    problems = call_problems(section=section, values=values, sent=replace(sent, headers=unsent))
+    assert any(repr(EXTERNAL_CONTROL_NONCE) in problem for problem in problems), problems

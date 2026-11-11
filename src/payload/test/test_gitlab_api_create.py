@@ -6,9 +6,10 @@ Every expected value is a literal table transcribed from the reference, never re
 ``docs/api-reference/gitlab/rest/create.md`` (each section's endpoints, its heading, and the ``In``, ``Type`` and
 ``Required`` columns of its ``| Attribute | In | Type |`` table). What is pinned:
 
-- AC-1: ``PENDING`` is exactly the keys of the IDs kept pending and the second endpoint of "Generate changelog data";
-  ``OPERATIONS`` declares, once each, every Reference of the family but the kept IDs (both References of ``GET /keys``
-  included);
+- AC-1 (as issue #63 design.md D9 restates it): ``PENDING`` is exactly the keys of the IDs kept pending;
+  ``OPERATIONS`` declares every Reference of the family but the kept IDs (both References of ``GET /keys`` included),
+  each key of an ID once; "Generate changelog data" has a record per endpoint, its base record (the first) first
+  (issue #63 AC-1.1, AC-1.3, design.md D1, D8);
 - AC-2, AC-3: the ``Kind`` of every ``Param`` that is not ``SCALAR`` or is a query member row (``range[end]``):
   ``ARRAY_OF_HASHES`` for an ``array of hashes`` row and the ``files`` of "Retrieve multiple blobs in a single
   request", ``ARRAY`` for any other Type holding ``array``, ``HASH`` for ``hash``; the ``required`` ``Param`` names,
@@ -19,7 +20,12 @@ Every expected value is a literal table transcribed from the reference, never re
   every placeholder of its path against a fake host serving one item on each of two pages chained by ``x-next-page``,
   exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``);
 - AC-7: "Retrieve raw blob content", answered with bytes that are not UTF-8 as ``application/octet-stream``, exits 0
-  and writes those bytes unchanged (read with ``capsysbinary``).
+  and writes those bytes unchanged (read with ``capsysbinary``);
+- issue #63 AC-3.1, AC-3.2, AC-8.3: "Delete a group SSH certificate" with ``--path id=7 --path id=12345`` sends one
+  ``DELETE`` to ``/groups/7/ssh_certificates/12345``;
+- issue #63 AC-4.1, AC-8.3: "Retrieve file archive from a repository" with ``--path format=<format>`` sends one ``GET``
+  to ``archive.<format>`` for each format the docs page lists, and without ``--path format`` to ``archive``; no URL
+  holds ``[``.
 
 The names and ``In`` of every ``Param`` (AC-2) and one call of every record (AC-5) are proven by
 ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
@@ -87,12 +93,16 @@ PROJECT_ID = 4242
 
 EXIT_OK = 0
 METHOD_GET = "GET"
+METHOD_DELETE = "DELETE"
+STATUS_NO_CONTENT = 204
 OPTION_PATH = "--path"
 ASSIGNED = "="
 ID_SEPARATOR = "#"
 TEXT_ENCODING = "utf-8"
 DECODE_ERRORS = "replace"
 HEADER_CONTENT_TYPE = "Content-Type"
+# The configured token's header for the default token type, matched case-insensitively by `RecordedRequest.header`.
+HEADER_PRIVATE_TOKEN = "PRIVATE-TOKEN"
 HEADER_NEXT_PAGE = "x-next-page"
 CONTENT_TYPE_JSON = "application/json"
 CONTENT_TYPE_OCTET_STREAM = "application/octet-stream"
@@ -131,6 +141,24 @@ PATH_SHA = "sha"
 BLOB_SHA = "7d70e02"
 RAW_BLOB_URL = f"{REST_BASE}/projects/{PROJECT_ID}/repository/blobs/{BLOB_SHA}/raw"
 NOT_UTF8_BYTES = b"\x89PNG\r\n\x1a\n\x00\xff\xfe\xfd"
+
+# Issue #63 AC-3.2: "Delete a group SSH certificate" (`DELETE /groups/:id/ssh_certificates/:id`), the group's `id`
+# given first and the certificate's second; GitLab answers `204`.
+OP_DELETE_GROUP_SSH_CERTIFICATE = "create#delete-a-group-ssh-certificate"
+SSH_CERTIFICATE_ID_VALUES: Tuple[str, ...] = ("id=7", "id=12345")
+SSH_CERTIFICATE_URL = f"{REST_BASE}/groups/7/ssh_certificates/12345"
+
+# Issue #63 AC-4.1: "Retrieve file archive from a repository" (`GET /projects/:id/repository/archive[.format]`), its
+# `id` the configured project; the formats docs.gitlab.com `repositories` "Available options" lists (design.md D3),
+# each given as `--path format=<format>` and sent as the suffix `.<format>`; without it the path ends at `archive`.
+OP_RETRIEVE_FILE_ARCHIVE = "create#retrieve-file-archive-from-a-repository"
+PATH_FORMAT = "format"
+ARCHIVE_FORMATS: Tuple[str, ...] = ("bz2", "tar", "tar.bz2", "tar.gz", "tb2", "tbz", "tbz2", "zip")
+ARCHIVE_URL = f"{REST_BASE}/projects/{PROJECT_ID}/repository/archive"
+SUFFIX_SEPARATOR = "."
+UNEXPANDED_MARK = "["
+NO_FORMAT_CASE = "no-format"
+ARCHIVE_BYTES = b"\x1f\x8b\x08\x00\xff\xfe\xfd"
 
 # --- The tables, transcribed from docs/api-reference/gitlab ----------------------------------------------------------
 
@@ -307,8 +335,8 @@ INDEX_REFERENCES: Tuple[str, ...] = (
     "create#update-snippet",
 )
 
-# AC-1: the IDs kept pending — the twelve that commit to, create or rewrite a branch, the `archive[.format]` path and
-# the group SSH certificate path with two `:id` — each with the one index row it has.
+# AC-1: the IDs kept pending — the twelve that commit to, create or rewrite a branch — each with the one index row it
+# has. Issue #63 declares the `archive[.format]` path and the group SSH certificate path with two `:id`.
 KEPT_PENDING: Dict[str, Tuple[str, str]] = {
     "create#create-repository-branch": ("POST", "/projects/:id/repository/branches"),
     "create#create-a-commit": ("POST", "/projects/:id/repository/commits"),
@@ -322,13 +350,16 @@ KEPT_PENDING: Dict[str, Tuple[str, str]] = {
     "create#apply-a-suggestion": ("PUT", "/suggestions/:id/apply"),
     "create#apply-multiple-suggestions": ("PUT", "/suggestions/batch_apply"),
     "create#start-the-pull-mirroring-process-for-a-project": ("POST", "/projects/:id/mirror/pull"),
-    "create#retrieve-file-archive-from-a-repository": ("GET", "/projects/:id/repository/archive[.format]"),
-    "create#delete-a-group-ssh-certificate": ("DELETE", "/groups/:id/ssh_certificates/:id"),
 }
-# "Generate changelog data" lists `GET .../changelog` first and `GET .../changelog.txt` second; its record takes the
-# first, so the second stays pending.
-SECOND_ENDPOINT_KEY: Tuple[str, str] = ("GET", "/projects/:id/repository/changelog.txt")
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(KEPT_PENDING.values()) | {SECOND_ENDPOINT_KEY}
+# "Generate changelog data" lists `GET .../changelog` first and `GET .../changelog.txt` second; its base record takes
+# the first, and the record after it the second (issue #63, design.md D1, D8).
+BASE_ENDPOINTS: Dict[str, Tuple[str, str]] = {
+    "create#generate-changelog-data": ("GET", "/projects/:id/repository/changelog"),
+}
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "create#generate-changelog-data": (("GET", "/projects/:id/repository/changelog.txt"),),
+}
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(KEPT_PENDING.values())
 
 # rest/create.md: every query or body row of a declared record whose Kind is not SCALAR, and every query member row
 # (`range[end]`, its own QUERY Param, AC-2), by record. A body member row (`position[base_sha]`, `files:content`,
@@ -513,6 +544,36 @@ def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, An
     return "\n".join(line for line in lines if line)
 
 
+def endpoints_by_id(*, records: Sequence[Any]) -> Dict[str, Tuple[Tuple[str, str], ...]]:
+    """``{operation_id: ((method, path), ...)}`` over ``records``, each ID's keys in declaration order."""
+    declared: Dict[str, List[Tuple[str, str]]] = {}
+    for record in records:
+        declared.setdefault(record.operation_id, []).append((record.method, record.path))
+    return {operation_id: tuple(keys) for operation_id, keys in declared.items()}
+
+
+def repeated_keys(*, endpoints: Mapping[str, Sequence[Tuple[str, str]]]) -> List[Tuple[str, Tuple[str, str]]]:
+    """Each ``(operation_id, key)`` that ``endpoints`` holds more than once for its ID, sorted."""
+    return sorted(
+        {(operation_id, key) for operation_id, keys in endpoints.items() for key in keys if list(keys).count(key) > 1}
+    )
+
+
+def archive_params() -> List[Any]:
+    """One case per entry of ``ARCHIVE_FORMATS``, with its ``--path format=`` text and the URL it is sent to, and one
+    case giving no format; each named by its format."""
+    cases = [
+        pytest.param(
+            [OPTION_PATH, f"{PATH_FORMAT}{ASSIGNED}{archive_format}"],
+            f"{ARCHIVE_URL}{SUFFIX_SEPARATOR}{archive_format}",
+            id=archive_format,
+        )
+        for archive_format in ARCHIVE_FORMATS
+    ]
+    cases.append(pytest.param([], ARCHIVE_URL, id=NO_FORMAT_CASE))
+    return cases
+
+
 def is_member(*, name: str) -> bool:
     """Whether a ``Param`` name is a member row's (``range[end]``): it holds ``[`` or ``:``."""
     return any(mark in name for mark in MEMBER_MARKS)
@@ -591,19 +652,28 @@ def list_params() -> List[Any]:
 
 
 def test_only_the_kept_keys_are_pending() -> None:
-    """AC-1, UB-2: ``PENDING`` is the kept IDs' keys and the changelog's second endpoint, and ``OPERATIONS`` declares,
-    once each, every index Reference of the family but the kept IDs."""
+    """AC-1, UB-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is the kept IDs' keys, and ``OPERATIONS``
+    declares every index Reference of the family but the kept IDs, each key of an ID once; the changelog's ID has its
+    base record first and then its second endpoint."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, "create.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
         declared=pending, expected=PENDING_KEYS
     )
-    declared = [record.operation_id for record in family.OPERATIONS]
+    endpoints = endpoints_by_id(records=family.OPERATIONS)
+    repeated = repeated_keys(endpoints=endpoints)
+    assert not repeated, f"create.OPERATIONS declares these keys of one ID more than once: {repeated}"
     expected = frozenset(INDEX_REFERENCES) - frozenset(KEPT_PENDING)
-    repeated = sorted({operation_id for operation_id in declared if declared.count(operation_id) > 1})
-    assert not repeated, f"create.OPERATIONS declares these IDs more than once: {repeated}"
-    assert frozenset(declared) == expected, "create.OPERATIONS does not declare the family's References (AC-1):\n" + (
-        set_difference(declared=frozenset(declared), expected=expected)
+    assert frozenset(endpoints) == expected, "create.OPERATIONS does not declare the family's References (AC-1):\n" + (
+        set_difference(declared=frozenset(endpoints), expected=expected)
+    )
+    bases = {operation_id: keys[0] for operation_id, keys in endpoints.items() if operation_id in BASE_ENDPOINTS}
+    assert bases == BASE_ENDPOINTS, "the section's first record is not its base record (issue #63 D1):\n" + (
+        mapping_difference(declared=bases, expected=BASE_ENDPOINTS)
+    )
+    others = {operation_id: keys[1:] for operation_id, keys in endpoints.items() if len(keys) > 1}
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+        mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
     )
 
 
@@ -698,4 +768,57 @@ def test_a_raw_download_is_written_unchanged(
     assert sent(fake=fake_gitlab) == [(METHOD_GET, RAW_BLOB_URL)], "one GET to the blob's raw path, id the project"
     assert captured.out == NOT_UTF8_BYTES, (
         f"the body's bytes unchanged, no line end added (AC-7); standard output: {captured.out!r}"
+    )
+
+
+# --- Issue #63 AC-3.1, AC-3.2: one value per place ------------------------------------------------------------------
+
+
+def test_each_id_of_the_certificate_path_takes_its_place(
+    project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #63 AC-3.1, AC-3.2, AC-8.3: ``call create#delete-a-group-ssh-certificate --path id=7 --path id=12345``
+    sends one ``DELETE`` to ``/groups/7/ssh_certificates/12345``, the configured token in its header."""
+    fake_gitlab.script(method=METHOD_DELETE, url=SSH_CERTIFICATE_URL, status=STATUS_NO_CONTENT)
+    argv = [
+        OP_DELETE_GROUP_SSH_CERTIFICATE,
+        *(part for value in SSH_CERTIFICATE_ID_VALUES for part in (OPTION_PATH, value)),
+    ]
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(METHOD_DELETE, SSH_CERTIFICATE_URL)], (
+        "one DELETE, the group's id at the first place and the certificate's at the second (AC-3.2)"
+    )
+    assert fake_gitlab.requests[0].header(name=HEADER_PRIVATE_TOKEN) == TOKEN, (
+        "the configured token travels in its one header"
+    )
+
+
+# --- Issue #63 AC-4.1: the archive format ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames=("format_options", "url"), argvalues=archive_params())
+def test_the_archive_format_is_sent_as_its_suffix(
+    format_options: List[str], url: str, project: Path, fake_gitlab: Any, capsysbinary: pytest.CaptureFixture[bytes]
+) -> None:
+    """Issue #63 AC-4.1, AC-8.3: ``call create#retrieve-file-archive-from-a-repository --path format=<format>`` sends
+    one ``GET`` to the configured project's ``archive.<format>``, and with no ``--path format`` to its ``archive``; no
+    URL holds ``[``, and the configured token travels in its header."""
+    fake_gitlab.script(
+        method=METHOD_GET,
+        url=url,
+        headers=((HEADER_CONTENT_TYPE, CONTENT_TYPE_OCTET_STREAM),),
+        body=ARCHIVE_BYTES,
+    )
+    argv = [OP_RETRIEVE_FILE_ARCHIVE, *format_options]
+    code = run_call(root=project, argv=argv)
+    captured = capsysbinary.readouterr()
+    stderr = captured.err.decode(encoding=TEXT_ENCODING, errors=DECODE_ERRORS)
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{stderr}"
+    assert sent(fake=fake_gitlab) == [(METHOD_GET, url)], "one GET, the format written as the path's suffix (AC-4.1)"
+    unexpanded = [request.url for request in fake_gitlab.requests if UNEXPANDED_MARK in request.url]
+    assert unexpanded == [], f"no URL holds the [.format] template (AC-4.1): {unexpanded}"
+    assert fake_gitlab.requests[0].header(name=HEADER_PRIVATE_TOKEN) == TOKEN, (
+        "the configured token travels in its one header"
     )

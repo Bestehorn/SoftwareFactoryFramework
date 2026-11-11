@@ -1,14 +1,18 @@
 """Tests for ``gitlab_api/families/openapi_only.py``: the records of the operations only GitLab's OpenAPI file names,
 and the path forms and uploads they declare (issue #40, design.md D4 and D6; AC-1.1, AC-1.3 to AC-1.6, AC-2.1 to
-AC-2.3, AC-2.5, AC-2.6, AC-3.1, AC-3.2, AC-3.4 and UB-2).
+AC-2.3, AC-2.5, AC-2.6, AC-3.1, AC-3.2, AC-3.4 and UB-2), and the request header of the NuGet symbol file downloads
+(issue #63, design.md D5, D8 and D9; AC-1.2, AC-6.2 and AC-8.3).
 
 What is pinned:
 
 - nothing is pending, and the records' operation IDs are the References of the index rows that link
   ``rest/openapi-only.md``, but the three ``ml_models`` file anchors, whose keys are ``deploy``'s (AC-1.1, AC-1.6);
-- every ``Param`` is typed as its row: the ``Kind`` of its Type, ``required`` where Required reads ``yes``; the three
-  raw-body records declare ``application/octet-stream`` and send every ``Param`` in the query; every record has a JSON
-  body and no ``fixed`` pairs (AC-1.3, AC-3.2);
+- every ``Param`` is typed as its row: the ``Kind`` of its Type, ``required`` where Required reads ``yes``, the
+  ``header`` row ``Symbolchecksum`` of both NuGet symbol file downloads included (#63 D8); the three raw-body records
+  declare ``application/octet-stream`` and send every ``Param`` in the query; every record has a JSON body and no
+  ``fixed`` pairs (AC-1.3, AC-3.2);
+- each NuGet symbol file download, called with ``--header Symbolchecksum=SHA256:ab``, sends that header at that value
+  beside the configured credential (#63 AC-6.2, AC-8.3);
 - no ``Param`` names a path parameter, though a ``query``, ``body`` or ``form`` row may name a ``*name`` glob (AC-1.4);
 - the eight ``GET`` records whose section has the ``page`` and ``per_page`` query rows are ``Paging.OFFSET`` and declare
   both rows, every other record is ``Paging.NONE`` (AC-1.5); each, called against two pages, the second asked for by
@@ -468,10 +472,11 @@ KINDS: Dict[str, Dict[str, str]] = {
     "openapi-only#track-multiple-internal-gitlab-events": {"events": KIND_ARRAY_OF_HASHES},
 }
 
-# The `query`, `body` and `form` rows whose Required reads `yes`, by record, in table order. A record with none is not
-# listed. No `Param`, so never required (design.md D4): a `path` row; a row naming a `*name` glob of the record's path
-# (the Debian `distribution`, the NPM `package_name`, the generic `package_version`, ...); a `header` row (the NuGet
-# symbol file downloads' `Symbolchecksum`); a raw-body record's `file` row.
+# The `query`, `body`, `form` and `header` rows whose Required reads `yes`, by record, in table order. A record with
+# none is not listed. A `header` row is a `Location.HEADER` `Param` (issue #63, design.md D5 and D8): the NuGet symbol
+# file downloads' `Symbolchecksum`. No `Param`, so never required (design.md D4): a `path` row; a row naming a `*name`
+# glob of the record's path (the Debian `distribution`, the NPM `package_name`, the generic `package_version`, the
+# NuGet `file_name`, ...); a raw-body record's `file` row.
 REQUIRED: Dict[str, Tuple[str, ...]] = {
     "openapi-only#internal-endpoint-that-reports-persistent-verification-failures-to-the-primary": (
         "geo_node_id",
@@ -488,6 +493,7 @@ REQUIRED: Dict[str, Tuple[str, ...]] = {
         "data",
         "output",
     ),
+    "openapi-only#the-nuget-symbol-file-download-endpoint": ("Symbolchecksum",),
     "openapi-only#add-an-emoji-reaction-to-an-epic": ("name",),
     "openapi-only#add-an-emoji-reaction-to-an-epic-comment": ("name",),
     "openapi-only#create-or-update-the-apple-app-store-integration": (
@@ -526,6 +532,7 @@ REQUIRED: Dict[str, Tuple[str, ...]] = {
     "openapi-only#change-approval-related-configuration": ("approvals_required",),
     "openapi-only#add-an-emoji-reaction-to-a-merge-request-comment": ("name",),
     "openapi-only#authorize-debian-package-upload": ("component",),
+    "openapi-only#the-nuget-symbol-file-download-endpoint-1": ("Symbolchecksum",),
     "openapi-only#create-or-update-the-apple-app-store-integration-2": (
         "app_store_issuer_id",
         "app_store_key_id",
@@ -887,6 +894,39 @@ RAW_UPLOAD_CASES = (
 ATTRIBUTE_TOKEN = "token"
 RUNNER_TOKEN = "runner-token"  # pragma: allowlist secret
 REQUEST_A_JOB_URL = f"{REST_BASE}/jobs/request"
+
+# Issue #63 AC-6.2 (design.md D5, Correctness Properties): both NuGet symbol file downloads with `--header
+# Symbolchecksum=SHA256:ab`, the header their section's `header` row names, and a value for each `*name` glob of the
+# path. The header's name is compared case-insensitively (RFC 9110 section 5.1; `RecordedRequest.header`).
+OPTION_HEADER = "--header"
+HEADER_SYMBOL_CHECKSUM = "Symbolchecksum"
+SYMBOL_CHECKSUM = "SHA256:ab"
+SYMBOL_FILE_ARGV: Tuple[str, ...] = (
+    OPTION_PATH,
+    "file_name=lib.pdb",
+    OPTION_PATH,
+    "signature=abc123",
+    OPTION_PATH,
+    "same_file_name=lib.pdb",
+)
+SYMBOL_DOWNLOAD_CASES = (
+    pytest.param(
+        SentCase(
+            argv=("openapi-only#the-nuget-symbol-file-download-endpoint", OPTION_PATH, "id=12", *SYMBOL_FILE_ARGV),
+            method=METHOD_GET,
+            url=f"{REST_BASE}/groups/12/-/packages/nuget/symbolfiles/lib.pdb/abc123/lib.pdb",
+        ),
+        id="the-nuget-symbol-file-download-endpoint",
+    ),
+    pytest.param(
+        SentCase(
+            argv=("openapi-only#the-nuget-symbol-file-download-endpoint-1", *SYMBOL_FILE_ARGV),
+            method=METHOD_GET,
+            url=f"{REST_BASE}/projects/{PROJECT_ID}/packages/nuget/symbolfiles/lib.pdb/abc123/lib.pdb",
+        ),
+        id="the-nuget-symbol-file-download-endpoint-1",
+    ),
+)
 
 
 # --- Fixtures and helpers ---------------------------------------------------------------------------------------
@@ -1266,3 +1306,26 @@ def test_a_token_attribute_is_the_value_given(
     assert request.header(name=HEADER_PRIVATE_TOKEN) == TOKEN, "the configured token travels in its one header"
     carrying = [each.url for each in fake_gitlab.requests if TOKEN.encode(encoding=TEXT_ENCODING) in (each.body or b"")]
     assert carrying == [], f"the configured token is in no body (UB-2): {carrying}"
+
+
+# --- Issue #63 AC-6.2: the request header of the NuGet symbol file downloads ------------------------------------------
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=SYMBOL_DOWNLOAD_CASES)
+def test_the_symbol_download_sends_its_checksum_header(
+    case: SentCase, project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#63 AC-6.2, AC-8.3: ``--header Symbolchecksum=SHA256:ab`` on a NuGet symbol file download exits 0 and sends one
+    ``GET`` to the record's route, each glob value in its place and no query, carrying ``Symbolchecksum`` (its name
+    compared case-insensitively) at ``SHA256:ab`` beside the configured token in its one header."""
+    argv = (*case.argv, OPTION_HEADER, f"{HEADER_SYMBOL_CHECKSUM}{ASSIGNED}{SYMBOL_CHECKSUM}")
+    fake_gitlab.script_next(body=ANSWER)
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(case.method, case.url)], "one GET to the record's route, no query"
+    request = fake_gitlab.requests[0]
+    assert request.header(name=HEADER_SYMBOL_CHECKSUM) == SYMBOL_CHECKSUM, (
+        f"the request carries {HEADER_SYMBOL_CHECKSUM}: {SYMBOL_CHECKSUM} (#63 AC-6.2); headers sent: {request.headers}"
+    )
+    assert request.header(name=HEADER_PRIVATE_TOKEN) == TOKEN, "the configured token travels in its one header"

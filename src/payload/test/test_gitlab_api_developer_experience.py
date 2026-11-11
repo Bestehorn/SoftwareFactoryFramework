@@ -7,12 +7,13 @@ Every expected value is a literal table transcribed from the reference, never re
 ``rest/tenant-scale.md`` (each section's endpoints, its heading, and the ``In``, ``Type``, ``Required`` and ``Notes``
 columns of its ``| Attribute | In | Type |`` table). What is pinned:
 
-- AC-1, UB-2: ``OPERATIONS`` as ``{operation_id: (method, path)}`` is ``RECORD_ENDPOINTS``, each ID declared once: every
-  Reference of those rows but the IDs AC-2 keeps, the three ``tenant-scale#`` References whose keys (``GET /projects``,
-  ``DELETE /projects/:id/share/:group_id``) sort to this module (DL-003) among them, with its section's endpoint (of
-  several, the first ``/projects/:id/...`` one, else the first);
-- AC-2: ``PENDING`` is exactly the second and third endpoints of "File path, branches, and tags name", whose record
-  takes the first;
+- AC-1, UB-2 (as issue #63 design.md D9 restates them): ``OPERATIONS``, each ID's first record as
+  ``{operation_id: (method, path)}``, is ``RECORD_ENDPOINTS``, each key of an ID declared once: every Reference of those
+  rows, the three ``tenant-scale#`` References whose keys (``GET /projects``, ``DELETE /projects/:id/share/:group_id``)
+  sort to this module (DL-003) among them, with its section's endpoint (of several, the first ``/projects/:id/...``
+  one, else the first); "File path, branches, and tags name" then has a record for each of its other two endpoints, in
+  the section's order (``OTHER_ENDPOINT_KEYS``; issue #63 AC-1.1, AC-2.3);
+- AC-2: ``PENDING`` is empty: the endpoints it held are records of their section's ID (issue #63 AC-1.1, AC-1.3);
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``ARRAY`` for an ``array of string`` row, ``HASH`` for
   ``hash``); the ``required`` names of every record, exactly its query and body rows whose Required reads ``yes``; a
   JSON body and no ``fixed`` pairs on every record;
@@ -20,7 +21,9 @@ columns of its ``| Attribute | In | Type |`` table). What is pinned:
   for every other, none ``KEYSET``; "Sudo" by its ``page`` row;
 - AC-7: each ``Paging.OFFSET`` record, called through the product's ``main(argv=["call", ...])`` with ``--path`` for
   every placeholder of its path against a fake host serving one item on each of two pages chained by ``x-next-page``,
-  exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``).
+  exits 0, requests both pages at their exact URLs and prints both items as one JSON array (``print_json``);
+- issue #63 AC-2.3, AC-8.3: each endpoint of "File path, branches, and tags name", named with ``--endpoint`` and no
+  ``--path``, sends one ``GET`` to ``/api/v4`` and its path verbatim, ``%2F`` kept.
 
 AC-3 and AC-6 are proven by ``test/test_gitlab_wrapper_contract.py``, which finds every record by discovery.
 
@@ -89,9 +92,14 @@ PROJECT_ID = 4242
 EXIT_OK = 0
 METHOD_GET = "GET"
 OPTION_PATH = "--path"
+# `call --endpoint 'METHOD path'` names one endpoint of a Reference with several (issue #63, design.md D1).
+OPTION_ENDPOINT = "--endpoint"
+ENDPOINT_SEPARATOR = " "
 ASSIGNED = "="
 TEXT_ENCODING = "utf-8"
 HEADER_CONTENT_TYPE = "Content-Type"
+# The configured token's header for the default token type, matched case-insensitively by `RecordedRequest.header`.
+HEADER_PRIVATE_TOKEN = "PRIVATE-TOKEN"
 ID_SEPARATOR = "#"
 HEADER_NEXT_PAGE = "x-next-page"
 CONTENT_TYPE_JSON = "application/json"
@@ -126,10 +134,11 @@ NO_FIXED: Tuple[Tuple[str, str], ...] = ()
 
 # --- The tables, transcribed from docs/api-reference/gitlab -----------------------------------------------------------
 
-# operations-index.md and rest/developer-experience.md: every record, by ID, sorted: each Reference of the rows whose
-# key sorts to this module (`key_families`), but AC-2's, with the method and path of its section's endpoint (AC-1). The
-# three `tenant-scale#` IDs are References of the rows of `GET /projects` and `DELETE /projects/:id/share/:group_id`,
-# keys that sort to `developer_experience` (DL-003). The first two sections are examples with literal paths.
+# operations-index.md and rest/developer-experience.md: every ID, sorted, with its first record's method and path: each
+# Reference of the rows whose key sorts to this module (`key_families`), with its section's endpoint, of several the
+# first (AC-1). The three `tenant-scale#` IDs are References of the rows of `GET /projects` and
+# `DELETE /projects/:id/share/:group_id`, keys that sort to `developer_experience` (DL-003). The first two sections are
+# examples with literal paths.
 RECORD_ENDPOINTS: Dict[str, Tuple[str, str]] = {
     "developer-experience#file-path-branches-and-tags-name": ("GET", "/projects/1/repository/files/src%2FREADME.md"),
     "developer-experience#namespaced-paths": ("GET", "/projects/diaspora%2Fdiaspora"),
@@ -140,15 +149,27 @@ RECORD_ENDPOINTS: Dict[str, Tuple[str, str]] = {
     "tenant-scale#list-all-projects-assigned-to-a-topic": ("GET", "/projects"),
 }
 
-# AC-2: "File path, branches, and tags name" lists `GET /projects/1/repository/files/src%2FREADME.md` first, then the
-# two below; no endpoint is a `/projects/:id/...` one, so its record takes the first and the others stay pending.
-OTHER_ENDPOINT_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
+# "File path, branches, and tags name" lists `GET /projects/1/repository/files/src%2FREADME.md` first, then the two
+# below; no endpoint is a `/projects/:id/...` one, so its base record takes the first, and a record after it takes each
+# of the other two, in the section's order (issue #63, design.md D1, D8; no path parameter, so no `id` default).
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "developer-experience#file-path-branches-and-tags-name": (
         ("GET", "/projects/1/branches/my%2Fbranch/commits"),
         ("GET", "/projects/1/repository/tags/my%2Ftag"),
-    }
+    ),
+}
+# AC-2 as issue #63 AC-1.1 restates it: nothing of the module's rows stays pending.
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset()
+
+# Issue #63 AC-2.3: the section's three endpoints as `call --endpoint` names them, `METHOD path`, each sent to
+# `/api/v4` and its path verbatim; the section documents no attribute, so the call gives none.
+OP_FILE_PATH_BRANCHES_AND_TAGS = "developer-experience#file-path-branches-and-tags-name"
+LITERAL_ENDPOINTS: Tuple[Tuple[str, str], ...] = (
+    ("GET", "/projects/1/repository/files/src%2FREADME.md"),
+    ("GET", "/projects/1/branches/my%2Fbranch/commits"),
+    ("GET", "/projects/1/repository/tags/my%2Ftag"),
 )
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = OTHER_ENDPOINT_KEYS
+LITERAL_ANSWER: Dict[str, Any] = {FIELD_ID: 1}
 
 # rest/developer-experience.md and rest/tenant-scale.md: every query and body row of a record whose Kind is not SCALAR
 # (AC-4). Every other row's Type is `string`, `boolean`, `integer`, `integer (int32)`, `string (date-time)`,
@@ -217,6 +238,26 @@ def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, An
     return "\n".join(line for line in lines if line)
 
 
+def endpoints_by_id(*, records: Sequence[Any]) -> Dict[str, Tuple[Tuple[str, str], ...]]:
+    """``{operation_id: ((method, path), ...)}`` over ``records``, each ID's keys in declaration order."""
+    declared: Dict[str, List[Tuple[str, str]]] = {}
+    for record in records:
+        declared.setdefault(record.operation_id, []).append((record.method, record.path))
+    return {operation_id: tuple(keys) for operation_id, keys in declared.items()}
+
+
+def repeated_keys(*, endpoints: Mapping[str, Sequence[Tuple[str, str]]]) -> List[Tuple[str, Tuple[str, str]]]:
+    """Each ``(operation_id, key)`` that ``endpoints`` holds more than once for its ID, sorted."""
+    return sorted(
+        {(operation_id, key) for operation_id, keys in endpoints.items() for key in keys if list(keys).count(key) > 1}
+    )
+
+
+def literal_endpoint_params() -> List[Any]:
+    """One case per entry of ``LITERAL_ENDPOINTS``, named by its path."""
+    return [pytest.param(method, path, id=path) for method, path in LITERAL_ENDPOINTS]
+
+
 def path_values(*, path: str) -> Dict[str, str]:
     """A distinct number for each placeholder of ``path``, in path order: ``101``, ``102``, ..."""
     names = dict.fromkeys(match.group(GROUP_NAME) for match in PLACEHOLDER.finditer(string=path))
@@ -268,21 +309,26 @@ def list_params() -> List[Any]:
 
 
 def test_every_reference_has_its_record() -> None:
-    """AC-1, UB-2: ``OPERATIONS`` declares, once each, every Reference of the module's index rows but AC-2's, each with
-    the method and path of its section's endpoint."""
+    """AC-1, UB-2, issue #63 AC-1.1 (design.md D9): ``OPERATIONS`` declares every Reference of the module's index rows,
+    each key of an ID once, each ID's first record with the method and path of its section's endpoint and the records
+    after it with the section's other endpoints, in the section's order."""
     family = gitlab_module(name=FAMILY_MODULE)
-    declared_ids = [record.operation_id for record in family.OPERATIONS]
-    repeated = sorted({operation_id for operation_id in declared_ids if declared_ids.count(operation_id) > 1})
-    assert repeated == [], f"{FAMILY}.OPERATIONS declares these IDs more than once: {repeated}"
-    declared = {record.operation_id: (record.method, record.path) for record in family.OPERATIONS}
+    endpoints = endpoints_by_id(records=family.OPERATIONS)
+    repeated = repeated_keys(endpoints=endpoints)
+    assert repeated == [], f"{FAMILY}.OPERATIONS declares these keys of one ID more than once: {repeated}"
+    declared = {operation_id: keys[0] for operation_id, keys in endpoints.items()}
     assert declared == RECORD_ENDPOINTS, f"{FAMILY}.OPERATIONS is not the family's References (AC-1):\n" + (
         mapping_difference(declared=declared, expected=RECORD_ENDPOINTS)
+    )
+    others = {operation_id: keys[1:] for operation_id, keys in endpoints.items() if len(keys) > 1}
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+        mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
     )
 
 
 def test_only_the_kept_keys_are_pending() -> None:
-    """AC-2: ``PENDING`` is exactly the second and third endpoints of "File path, branches, and tags name", whose
-    record takes the first."""
+    """AC-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is empty: the second and third endpoints of "File
+    path, branches, and tags name" are records of its ID."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, f"{FAMILY}.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(
@@ -366,4 +412,26 @@ def test_a_list_record_prints_every_page(
     assert fake_gitlab.remaining() == [], "every scripted page was served"
     assert captured.out == printed_json(value=list(PAGE_ITEMS)), (
         f"one JSON array of both items, in page order, as print_json writes it (AC-7):\n{captured.out}"
+    )
+
+
+# --- Issue #63 AC-2.3: the literal endpoints -------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames=("method", "path"), argvalues=literal_endpoint_params())
+def test_the_literal_endpoints_are_sent_as_written(
+    method: str, path: str, project: Path, fake_gitlab: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Issue #63 AC-2.3, AC-8.3: ``call developer-experience#file-path-branches-and-tags-name --endpoint 'GET <path>'``,
+    no ``--path``, sends one ``GET`` to ``/api/v4`` and the path verbatim, ``%2F`` kept, the configured token in its
+    header."""
+    url = f"{REST_BASE}{path}"
+    fake_gitlab.script(method=method, url=url, body=LITERAL_ANSWER)
+    argv = [OP_FILE_PATH_BRANCHES_AND_TAGS, OPTION_ENDPOINT, f"{method}{ENDPOINT_SEPARATOR}{path}"]
+    code = run_call(root=project, argv=argv)
+    captured = capsys.readouterr()
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [(method, url)], "one request to the endpoint named, its path as written (AC-2.3)"
+    assert fake_gitlab.requests[0].header(name=HEADER_PRIVATE_TOKEN) == TOKEN, (
+        "the configured token travels in its one header"
     )

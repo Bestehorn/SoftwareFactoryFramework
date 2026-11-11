@@ -7,11 +7,12 @@ Every expected value is a literal table transcribed from the reference, never re
 endpoints, its heading, and the ``In``, ``Type``, ``Required`` and ``Notes`` columns of its
 ``| Attribute | In | Type |`` table). What is pinned:
 
-- AC-1, UB-2: ``OPERATIONS`` as ``{operation_id: (method, path)}`` is ``RECORD_ENDPOINTS``, each ID declared once: every
-  Reference of those rows but the IDs AC-2 keeps, with its section's endpoint (of several, the first
-  ``/projects/:id/...`` one, else the first);
-- AC-2: ``PENDING`` is exactly ``DELETE /groups/:id/ldap_group_links/:provider/:cn``, the second endpoint of "Delete an
-  LDAP group link (deprecated)", whose record takes the first;
+- AC-1, UB-2 (as issue #63 design.md D9 restates them): ``OPERATIONS``, each ID's first record as
+  ``{operation_id: (method, path)}``, is ``RECORD_ENDPOINTS``, each key of an ID declared once: every Reference of those
+  rows, with its section's endpoint (of several, the first ``/projects/:id/...`` one, else the first); "Delete an LDAP
+  group link (deprecated)" then has a record for its second endpoint (``OTHER_ENDPOINT_KEYS``; issue #63 AC-1.1);
+- AC-2: ``PENDING`` is empty: ``DELETE /groups/:id/ldap_group_links/:provider/:cn``, which it held, is a record of its
+  section's ID (issue #63 AC-1.1, AC-1.3);
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (no row of the module is of a Type that is not a scalar);
   the ``required`` names of every record, exactly its query and body rows whose Required reads ``yes``; a JSON body and
   no ``fixed`` pairs on every record;
@@ -124,8 +125,9 @@ NO_FIXED: Tuple[Tuple[str, str], ...] = ()
 
 # --- The tables, transcribed from docs/api-reference/gitlab -----------------------------------------------------------
 
-# operations-index.md and rest/fulfillment.md: every record, by ID, sorted: each Reference of the rows whose key sorts
-# to this module (`key_families`), but AC-2's, with the method and path of its section's endpoint (AC-1).
+# operations-index.md and rest/fulfillment.md: every ID, sorted, with its first record's method and path: each
+# Reference of the rows whose key sorts to this module (`key_families`), with its section's endpoint, of several the
+# first (AC-1).
 RECORD_ENDPOINTS: Dict[str, Tuple[str, str]] = {
     "fulfillment#add-an-ldap-group-link-with-cn-or-filter": ("POST", "/groups/:id/ldap_group_links"),
     "fulfillment#create-a-license": ("POST", "/license"),
@@ -144,14 +146,14 @@ RECORD_ENDPOINTS: Dict[str, Tuple[str, str]] = {
     "fulfillment#update-extern_uid-field-for-a-scim-identity": ("PATCH", "/groups/:groups_id/scim/:uid"),
 }
 
-# AC-2: "Delete an LDAP group link (deprecated)" lists `DELETE /groups/:id/ldap_group_links/:cn` first and
-# `DELETE /groups/:id/ldap_group_links/:provider/:cn` second; its record takes the first, so the second stays pending.
-OTHER_ENDPOINT_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("DELETE", "/groups/:id/ldap_group_links/:provider/:cn"),
-    }
-)
-PENDING_KEYS: FrozenSet[Tuple[str, str]] = OTHER_ENDPOINT_KEYS
+# "Delete an LDAP group link (deprecated)" lists `DELETE /groups/:id/ldap_group_links/:cn` first and
+# `DELETE /groups/:id/ldap_group_links/:provider/:cn` second; its base record takes the first, and the record after it
+# the second (issue #63, design.md D1, D8).
+OTHER_ENDPOINT_KEYS: Dict[str, Tuple[Tuple[str, str], ...]] = {
+    "fulfillment#delete-an-ldap-group-link-deprecated": (("DELETE", "/groups/:id/ldap_group_links/:provider/:cn"),),
+}
+# AC-2 as issue #63 AC-1.1 restates it: nothing of the module's rows stays pending.
+PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset()
 
 # rest/fulfillment.md: no query or body row of a record is of a Kind other than SCALAR (AC-4); every such row's Type is
 # `string`, `integer` or `integer or string`.
@@ -219,6 +221,21 @@ def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, An
     return "\n".join(line for line in lines if line)
 
 
+def endpoints_by_id(*, records: Sequence[Any]) -> Dict[str, Tuple[Tuple[str, str], ...]]:
+    """``{operation_id: ((method, path), ...)}`` over ``records``, each ID's keys in declaration order."""
+    declared: Dict[str, List[Tuple[str, str]]] = {}
+    for record in records:
+        declared.setdefault(record.operation_id, []).append((record.method, record.path))
+    return {operation_id: tuple(keys) for operation_id, keys in declared.items()}
+
+
+def repeated_keys(*, endpoints: Mapping[str, Sequence[Tuple[str, str]]]) -> List[Tuple[str, Tuple[str, str]]]:
+    """Each ``(operation_id, key)`` that ``endpoints`` holds more than once for its ID, sorted."""
+    return sorted(
+        {(operation_id, key) for operation_id, keys in endpoints.items() for key in keys if list(keys).count(key) > 1}
+    )
+
+
 def path_values(*, path: str) -> Dict[str, str]:
     """A distinct number for each placeholder of ``path``, in path order: ``101``, ``102``, ..."""
     names = dict.fromkeys(match.group(GROUP_NAME) for match in PLACEHOLDER.finditer(string=path))
@@ -270,21 +287,26 @@ def list_params() -> List[Any]:
 
 
 def test_every_reference_has_its_record() -> None:
-    """AC-1, UB-2: ``OPERATIONS`` declares, once each, every Reference of the module's index rows but AC-2's, each with
-    the method and path of its section's endpoint."""
+    """AC-1, UB-2, issue #63 AC-1.1 (design.md D9): ``OPERATIONS`` declares every Reference of the module's index rows,
+    each key of an ID once, each ID's first record with the method and path of its section's endpoint and the records
+    after it with the section's other endpoints, in the section's order."""
     family = gitlab_module(name=FAMILY_MODULE)
-    declared_ids = [record.operation_id for record in family.OPERATIONS]
-    repeated = sorted({operation_id for operation_id in declared_ids if declared_ids.count(operation_id) > 1})
-    assert repeated == [], f"{FAMILY}.OPERATIONS declares these IDs more than once: {repeated}"
-    declared = {record.operation_id: (record.method, record.path) for record in family.OPERATIONS}
+    endpoints = endpoints_by_id(records=family.OPERATIONS)
+    repeated = repeated_keys(endpoints=endpoints)
+    assert repeated == [], f"{FAMILY}.OPERATIONS declares these keys of one ID more than once: {repeated}"
+    declared = {operation_id: keys[0] for operation_id, keys in endpoints.items()}
     assert declared == RECORD_ENDPOINTS, f"{FAMILY}.OPERATIONS is not the family's References (AC-1):\n" + (
         mapping_difference(declared=declared, expected=RECORD_ENDPOINTS)
+    )
+    others = {operation_id: keys[1:] for operation_id, keys in endpoints.items() if len(keys) > 1}
+    assert others == OTHER_ENDPOINT_KEYS, "the records after a base record are not its section's other endpoints:\n" + (
+        mapping_difference(declared=others, expected=OTHER_ENDPOINT_KEYS)
     )
 
 
 def test_only_the_kept_keys_are_pending() -> None:
-    """AC-2: ``PENDING`` is exactly the second endpoint of "Delete an LDAP group link (deprecated)", whose record
-    takes the first."""
+    """AC-2, issue #63 AC-1.1, AC-1.3 (design.md D9): ``PENDING`` is empty: the second endpoint of "Delete an LDAP
+    group link (deprecated)" is a record of its ID."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, f"{FAMILY}.PENDING is not the keys AC-2 keeps pending:\n" + set_difference(

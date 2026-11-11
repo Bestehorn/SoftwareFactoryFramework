@@ -9,22 +9,27 @@ a ``Param`` of its own as well. The Type column gives the ``Kind``: ``ARRAY_OF_H
 the ``files`` of "Retrieve multiple blobs in a single request", ``ARRAY`` for any other array, ``HASH`` for ``hash``,
 ``SCALAR`` for every other; ``required`` is set where Required reads ``yes``. Every record sends a JSON body and fixes
 no query value. A ``GET`` section headed "List", or whose table has a ``page`` row, pages by offset (``conventions.md``
-"Pagination"); none is keyset-only. ``GET /keys`` has two records, one per Reference; "Generate changelog data" takes
-its first endpoint; "Retrieve raw blob content" answers with the blob's bytes, which ``call`` writes unchanged. Part 1's
-record is the one the ``delete-branch`` command sends (design.md D6), whose branch name ``registry.expand`` writes as
-one encoded segment.
+"Pagination"); none is keyset-only. ``GET /keys`` has two records, one per Reference; "Retrieve raw blob content"
+answers with the blob's bytes, which ``call`` writes unchanged. Part 1's record is the one the ``delete-branch`` command
+sends (design.md D6), whose branch name ``registry.expand`` writes as one encoded segment.
 
-``PENDING`` holds the ``(method, path)`` keys no record maps, each kept for a reason of issue #35:
+Three sections take a request form of issue #63 (its design.md D1 to D3, D8):
 
-- the twelve IDs that commit to, create or rewrite a branch (creating a branch, a commit, a cherry-pick or a revert;
-  adding changelog data; creating, updating or deleting a file; updating a submodule; applying one suggestion or
-  several; starting a pull mirror): ``call`` would send them ungated, since ``GATED_OPERATIONS`` refuses an ID only by
-  naming the subcommand that sends it, and no subcommand sends these;
-- "Retrieve file archive from a repository": ``registry.expand`` would send its ``archive[.format]`` literally;
-- "Delete a group SSH certificate": its path holds ``:id`` twice, so one value would stand for both;
-- ``changelog.txt``, the second endpoint of "Generate changelog data": a record maps one endpoint of its Reference.
+- a section with several endpoints has one record per endpoint, each with its Reference's ID: the base record on the
+  first endpoint, then one per other endpoint in the order the section's endpoint line lists them, each a copy of the
+  base record but for its method, its path and any ``Param`` naming a path parameter of its own path; "Generate
+  changelog data" has two, ``changelog`` and then ``changelog.txt``, which ``call --endpoint`` names;
+- "Delete a group SSH certificate" holds ``:id`` twice, the group's and then the certificate's: its
+  ``positional_names`` is ``("id",)``, so each place takes its own ``--path id=`` value, in command-line order;
+- "Retrieve file archive from a repository" ends in ``archive[.format]``: its ``suffix_values`` are the formats
+  docs.gitlab.com ``repositories`` "Available options" lists, one given as ``--path format=``; without it the path ends
+  at ``archive``.
 
-No other family links any of them.
+``PENDING`` holds the ``(method, path)`` keys no record maps: those of the twelve IDs that commit to, create or rewrite
+a branch (creating a branch, a commit, a cherry-pick or a revert; adding changelog data; creating, updating or deleting
+a file; updating a submodule; applying one suggestion or several; starting a pull mirror), kept for issue #35's reason:
+``call`` would send them ungated, since ``GATED_OPERATIONS`` refuses an ID only by naming the subcommand that sends it,
+and no subcommand sends these. No other family links any of them.
 
 Standard library only; Python 3.9.
 """
@@ -602,6 +607,14 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="title", location=Location.BODY, required=True),
         ),
     ),
+    # "Group SSH certificates API: Delete a group SSH certificate"; `:id` is the group's at its first place and the
+    # certificate's at its second, each given its own value (issue #63, design.md D2).
+    RestOperation(
+        operation_id="create#delete-a-group-ssh-certificate",
+        method="DELETE",
+        path="/groups/:id/ssh_certificates/:id",
+        positional_names=("id",),
+    ),
     # "Group-level protected branches API: List protected branches".
     RestOperation(
         operation_id="create#list-protected-branches",
@@ -1130,6 +1143,21 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/projects/:id/repository/blobs/batch",
         params=(Param(name="files", location=Location.BODY, kind=Kind.ARRAY_OF_HASHES, required=True),),
     ),
+    # "Repositories API: Retrieve file archive from a repository"; its `[.format]` suffix takes one of the formats
+    # docs.gitlab.com `repositories` "Available options" lists, or none (issue #63, design.md D3).
+    RestOperation(
+        operation_id="create#retrieve-file-archive-from-a-repository",
+        method="GET",
+        path="/projects/:id/repository/archive[.format]",
+        params=(
+            Param(name="exclude_paths", location=Location.QUERY),
+            Param(name="include_lfs_blobs", location=Location.QUERY),
+            Param(name="path", location=Location.QUERY),
+            Param(name="sha", location=Location.QUERY),
+            Param(name="ref_type", location=Location.QUERY),
+        ),
+        suffix_values=("bz2", "tar", "tar.bz2", "tar.gz", "tb2", "tbz", "tbz2", "zip"),
+    ),
     # "Repositories API: Compare branches, tags, or commits".
     RestOperation(
         operation_id="create#compare-branches-tags-or-commits",
@@ -1202,12 +1230,26 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         ),
         paging=Paging.OFFSET,
     ),
-    # "Repositories API: Generate changelog data"; the first of its two endpoints; `changelog.txt`, the second, stays
-    # pending.
+    # "Repositories API: Generate changelog data"; its base record, on the first of its two endpoints.
     RestOperation(
         operation_id="create#generate-changelog-data",
         method="GET",
         path="/projects/:id/repository/changelog",
+        params=(
+            Param(name="version", location=Location.QUERY, required=True),
+            Param(name="config_file", location=Location.QUERY),
+            Param(name="config_file_ref", location=Location.QUERY),
+            Param(name="date", location=Location.QUERY),
+            Param(name="from", location=Location.QUERY),
+            Param(name="to", location=Location.QUERY),
+            Param(name="trailer", location=Location.QUERY),
+        ),
+    ),
+    # "Repositories API: Generate changelog data"; its second endpoint, a copy of the base record (issue #63, D1, D8).
+    RestOperation(
+        operation_id="create#generate-changelog-data",
+        method="GET",
+        path="/projects/:id/repository/changelog.txt",
         params=(
             Param(name="version", location=Location.QUERY, required=True),
             Param(name="config_file", location=Location.QUERY),
@@ -1464,12 +1506,9 @@ OPERATIONS: Tuple[RestOperation, ...] = (
 
 PENDING: FrozenSet[Tuple[str, str]] = frozenset(
     {
-        ("DELETE", "/groups/:id/ssh_certificates/:id"),
         ("POST", "/projects/:id/mirror/pull"),
-        ("GET", "/projects/:id/repository/archive[.format]"),
         ("POST", "/projects/:id/repository/branches"),
         ("POST", "/projects/:id/repository/changelog"),
-        ("GET", "/projects/:id/repository/changelog.txt"),
         ("POST", "/projects/:id/repository/commits"),
         ("POST", "/projects/:id/repository/commits/:sha/cherry_pick"),
         ("POST", "/projects/:id/repository/commits/:sha/revert"),

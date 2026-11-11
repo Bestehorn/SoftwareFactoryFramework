@@ -1,13 +1,15 @@
 """Tests for ``gitlab_api/families/package.py``: the records of the package stage group, and the route-prefix,
 hyphenated-name, glob and upload forms they declare (issue #43, design.md D5 to D7; AC-1.1 to AC-1.7, AC-2.1 to AC-2.3,
-AC-2.5, AC-3.1 to AC-3.3, AC-4.1, AC-4.2 and AC-4.4).
+AC-2.5, AC-3.1 to AC-3.3, AC-4.1, AC-4.2 and AC-4.4), and the container-registry calls of issue #63 (its design.md D4,
+D8 and D9; #63 AC-1.1, AC-1.3, AC-5.2, AC-5.3, AC-8.3 and UB-2).
 
 What is pinned:
 
-- ``PENDING`` holds exactly the kept keys: the project endpoint of every Conan v1 entry, the ``/v2`` endpoint of NuGet
-  "Upload a package file", the two registry-host keys and ``PUT /projects/:id/``; the records' operation IDs are every
-  other Reference of the index rows that link ``rest/package.md`` (AC-1.1, AC-1.3, AC-1.7);
-- an entry listing two endpoints maps the one it lists first, and the other stays pending (AC-1.2);
+- ``PENDING`` holds exactly the kept key, ``PUT /projects/:id/``; the records' operation IDs are every other Reference
+  of the index rows that link ``rest/package.md``, each key declared once, and the only records on the registry's own
+  host are its two keys' (AC-1.1, AC-1.3, AC-1.7, restated by #63 design.md D9 for #63 AC-1.1 and D8);
+- an entry listing two endpoints maps the one it lists first, then the other, which is on no ``PENDING`` (AC-1.2,
+  restated by #63 design.md D9 for #63 D1 and D8);
 - every ``Param`` is typed as its row: the ``Kind`` of its Type, ``required`` where Required reads ``yes``; the raw-body
   uploads declare their body's media type and send every ``Param`` in the query; every record has a JSON body and no
   ``fixed`` pairs (AC-1.4, AC-4.2); no ``Param`` names a path parameter, ``:module-name`` included (AC-1.5);
@@ -19,27 +21,37 @@ What is pinned:
 - the hyphenated names of "Upload module" are sent as one segment each, and a glob record without a prefix is sent with
   its slashes, refused for a ``..`` part and for no value (AC-3.1, AC-3.2, AC-3.3);
 - each ``--file`` upload sends the file as the part its attribute names, and each raw upload sends the ``--input``
-  bytes, ``\\r\\n`` and ``\\xff`` included, unchanged as its body; a raw-body record refuses ``--file`` (AC-4.2).
+  bytes, ``\\r\\n`` and ``\\xff`` included, unchanged as its body; a raw-body record refuses ``--file`` (AC-4.2);
+- a container-registry record is sent as ``GET /user``, ``GET /projects/<project_id>``, the ``/jwt/auth`` request for
+  its scope with ``Authorization: Basic`` of the login and the configured token as its only credential, then its own
+  request to the registry of the project's ``container_registry_image_prefix`` with ``Authorization: Bearer`` of the
+  registry token alone (#63 AC-5.2, UB-2); a registry token that cannot be obtained sends only the steps up to the
+  failing one and nothing to the registry, and exits 1 (#63 AC-5.3); no log record holds the configured token, the
+  Base64 of the login and the token, or the registry token.
 
 Every expected ID, key, ``Kind``, required name, prefix value, paged ID, media type, URL and body is a literal table
-transcribed from ``docs/api-reference/gitlab/operations-index.md`` and ``rest/package.md``, never read from the
-records. The names and ``In`` of every ``Param``, and one call of every record, are proven by
+transcribed from ``docs/api-reference/gitlab/operations-index.md`` and ``rest/package.md`` (the container-registry
+URLs and answers from #63 design.md D4 and docs.gitlab.com ``container_registry``), never read from the records. The
+names and ``In`` of every ``Param``, and one call of every record, are proven by
 ``test/test_gitlab_wrapper_contract.py``.
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; the
 family module is imported inside each test. The fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``,
-loaded by path) are installed for every test.
+loaded by path) are installed for every test; the fake serves the registry's origin as it serves the configured one.
 
 Run: ``python scripts/run_tests.py src/payload/test/test_gitlab_api_package.py`` (no network).
 """
 
 from __future__ import annotations
 
+import base64
 import importlib
 import importlib.util
 import json
 import logging
 import sys
+import urllib.parse
+from collections import Counter
 from email.message import Message
 from pathlib import Path
 from types import ModuleType
@@ -85,13 +97,19 @@ REST_BASE = fixtures.REST_BASE
 FIELD_HOSTNAME = "hostname"
 FIELD_PROJECT_ID = "project_id"
 FIELD_TOKEN = "token"  # a config key name, not a secret
+FIELD_TOKEN_TYPE = "token_type"  # a config key name, not a secret
 TOKEN = "glpat-gitlab-api-package-test"  # pragma: allowlist secret
+TOKEN_TYPE_BEARER = "bearer"
 PROJECT_ID = 4242
 
 EXIT_OK = 0
 EXIT_API_ERROR = 1
 EXIT_REFUSED = 2
+STATUS_OK = 200
 STATUS_CREATED = 201
+STATUS_ACCEPTED = 202
+STATUS_UNAUTHORIZED = 401
+STATUS_NOT_FOUND = 404
 TEXT_ENCODING = "utf-8"
 ASCII_ENCODING = "ascii"
 HEADER_CONTENT_TYPE = "Content-Type"
@@ -139,85 +157,35 @@ KIND_FILE = "FILE"
 PAGING_OFFSET = "OFFSET"
 LOCATION_QUERY = "QUERY"
 
-# AC-1.3: the paths no record may have — the container registry's own host, and the project update.
+# AC-1.3, restated by #63 design.md D9: the container registry's own host, whose keys only the two records of
+# `REGISTRY_RECORDS` have (#63 AC-1.1, D8), and the project update, which no record may have.
 REGISTRY_HOST_PREFIX = "/http(s)://"
 PROJECT_UPDATE_PATH = "/projects/:id/"
 
 # --- The tables, transcribed from the reference -----------------------------------------------------------------
 
-# The keys `package.PENDING` keeps (design.md D6 "The kept keys"; AC-1.2, AC-1.3): the second endpoint of every Conan v1
-# entry, `/projects/:id/packages/conan/v1/...`, in page order; the second endpoint of NuGet "Upload a package file"; the
-# two keys whose path starts with `/http(s)://${CI_REGISTRY}`; and "Change the visibility of the container registry".
-KEPT: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("GET", "/projects/:id/packages/conan/v1/users/authenticate"),
-        ("GET", "/projects/:id/packages/conan/v1/ping"),
-        ("GET", "/projects/:id/packages/conan/v1/conans/search"),
-        ("GET", "/projects/:id/packages/conan/v1/users/check_credentials"),
-        ("GET", "/projects/:id/packages/conan/v1/conans/:package_version/:package_username/:package_channel"),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls",
-        ),
-        (
-            "POST",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls",
-        ),
-        (
-            "POST",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
-        ),
-        (
-            "PUT",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
-        ),
-        (
-            "PUT",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
-        ),
-        (
-            "DELETE",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search",
-        ),
-        ("PUT", "/projects/:id/packages/nuget/v2"),
-        ("DELETE", "/http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}"),
-        ("GET", "/http(s)://${CI_REGISTRY}/v2/_catalog"),
-        ("PUT", "/projects/:id/"),
-    }
-)
+# The key `package.PENDING` keeps (design.md D6 "The kept keys"; AC-1.3), restated by #63 design.md D9: "Change the
+# visibility of the container registry". #63 maps the other keys #43 kept (#63 AC-1.1, D8): the second endpoint of every
+# Conan v1 entry and of NuGet "Upload a package file", each now a record after its entry's base record
+# (`FIRST_ENDPOINTS`), and the two keys whose path starts with `/http(s)://${CI_REGISTRY}` (`REGISTRY_RECORDS`).
+KEPT: FrozenSet[Tuple[str, str]] = frozenset({("PUT", "/projects/:id/")})
+
+# The two records on the registry's own host (#63 AC-1.1, design.md D8), by ID: the method and path of their index rows.
+OP_DELETE_IMAGE_TAGS = "package#delete-image-tags-by-reference"
+OP_LIST_CONTAINER_REPOSITORIES = "package#listing-all-container-repositories"
+REGISTRY_RECORDS: Dict[str, Tuple[str, str]] = {
+    OP_DELETE_IMAGE_TAGS: (
+        "DELETE",
+        "/http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}",
+    ),
+    OP_LIST_CONTAINER_REPOSITORIES: ("GET", "/http(s)://${CI_REGISTRY}/v2/_catalog"),
+}
 
 # The Reference of every row of operations-index.md that links rest/package.md, written `package#<anchor>`, once each,
-# in the page order of rest/package.md, but the three References of the kept keys of AC-1.3: "Change the visibility of
-# the container registry", "Delete image tags by reference" and "Listing all container repositories" (Container
-# registry API). A Conan v1 Reference, and NuGet "Upload a package file", carries two rows (AC-1.2).
+# in the page order of rest/package.md, but the Reference of the kept key of AC-1.3, "Change the visibility of the
+# container registry" (Container registry API); restated by #63 design.md D9, "Delete image tags by reference" and
+# "Listing all container repositories" included (#63 AC-1.1, D8). A Conan v1 Reference, and NuGet "Upload a package
+# file", carries two rows (AC-1.2), and #63 declares a record for each (`RECORD_IDS`).
 OPERATION_IDS: Tuple[str, ...] = (
     # Composer API
     "package#retrieve-repository-url-templates",
@@ -271,6 +239,8 @@ OPERATION_IDS: Tuple[str, ...] = (
     "package#retrieve-details-of-a-registry-repository-tag",
     "package#delete-a-registry-repository-tag",
     "package#delete-registry-repository-tags-in-bulk",
+    OP_DELETE_IMAGE_TAGS,
+    OP_LIST_CONTAINER_REPOSITORIES,
     # Container registry protection tag rules API
     "package#list-container-registry-protection-tag-rules",
     "package#create-a-container-registry-protection-tag-rule",
@@ -462,8 +432,8 @@ OP_MAVEN_VIRTUAL_UPLOAD = "package#upload-a-package"
 
 
 class TwoEndpoints(NamedTuple):
-    """The two endpoints an entry lists, as ``(method, path)`` keys: the ``first``, which its record maps, and the
-    ``other``, which stays pending (AC-1.2)."""
+    """The two endpoints an entry lists, as ``(method, path)`` keys: the ``first``, which its base record maps (AC-1.2),
+    and the ``other``, which #63 maps with a record after it (#63 design.md D1, D8)."""
 
     first: Tuple[str, str]
     other: Tuple[str, str]
@@ -623,6 +593,10 @@ FIRST_ENDPOINTS: Dict[str, TwoEndpoints] = {
         other=("PUT", "/projects/:id/packages/nuget/v2"),
     ),
 }
+
+# The ID of every record, once per record (#63 design.md D9: "each key once"): a two-endpoint entry's ID twice, for its
+# base record and the record of its other endpoint (#63 D1, D8), every other ID once.
+RECORD_IDS: Tuple[str, ...] = (*OPERATION_IDS, *FIRST_ENDPOINTS)
 
 # Every `Param` whose Kind is not SCALAR, by record: the `query` and `body` rows typed `array of string` or `string
 # array` (ARRAY) — `components` and `architectures` of the Debian distribution list, create, update and delete entries
@@ -1257,6 +1231,195 @@ RAW_UPLOAD_CASES = (
     ),
 )
 
+# --- The container registry (#63 design.md D4; #63 AC-5.2, AC-5.3, UB-2) -------------------------------------------
+
+# The answer fields D4's steps read: step 1's login (`GET /user`), step 2's image prefix ("Retrieve a project"), whose
+# text before the first `/` is the registry's host, and step 3's registry token (`/jwt/auth`); the registry's error
+# shape (the OCI distribution spec's `errors`).
+FIELD_USERNAME = "username"
+FIELD_IMAGE_PREFIX = "container_registry_image_prefix"
+FIELD_REGISTRY_TOKEN = "token"  # an answer field name, not a secret
+FIELD_REPOSITORIES = "repositories"
+FIELD_ERRORS = "errors"
+FIELD_CODE = "code"
+USERNAME = "package-test-user"
+IMAGE_PREFIX = "registry.example.com/group/project"
+REGISTRY_TOKEN = "registry-token-for-the-package-test"  # pragma: allowlist secret
+
+# The credential headers, by lower-cased name (conventions.md "Credential types"); what each request carries: the
+# configured `PRIVATE-TOKEN` on the configured host's API, `Authorization: Basic` of `<login>:<token>` (RFC 7617
+# section 2) on `/jwt/auth`, `Authorization: Bearer` of the registry token on the registry (D4 steps 1 to 4).
+HEADER_PRIVATE_TOKEN = "private-token"
+HEADER_JOB_TOKEN = "job-token"
+HEADER_AUTHORIZATION = "authorization"
+CREDENTIAL_HEADER_NAMES = frozenset({HEADER_PRIVATE_TOKEN, HEADER_JOB_TOKEN, HEADER_AUTHORIZATION})
+LOGIN_AND_TOKEN_BASE64 = base64.b64encode(s=f"{USERNAME}:{TOKEN}".encode(encoding=TEXT_ENCODING)).decode(
+    encoding=ASCII_ENCODING
+)
+CONFIGURED_CREDENTIAL = {HEADER_PRIVATE_TOKEN: TOKEN}
+BASIC_CREDENTIAL = {HEADER_AUTHORIZATION: f"Basic {LOGIN_AND_TOKEN_BASE64}"}
+BEARER_CREDENTIAL = {HEADER_AUTHORIZATION: f"Bearer {REGISTRY_TOKEN}"}
+# The texts no request off the configured host, and no log record, may hold (UB-2; D4 "AC-5.3").
+CONFIGURED_SECRETS: Dict[str, str] = {
+    "the configured token": TOKEN,
+    "the Base64 of <login>:<token>": LOGIN_AND_TOKEN_BASE64,
+}
+SECRETS: Dict[str, str] = {**CONFIGURED_SECRETS, "the registry token": REGISTRY_TOKEN}
+
+# The requests of D4's four steps: `GET /user`, `GET /projects/<project_id>`, `/jwt/auth` with the record's scope
+# (`repository:group/project:delete`, `registry:catalog:*`) in its query, then the registry's own request.
+HOST_ROOT = f"https://{fixtures.HOST}"
+REGISTRY_ORIGIN = "https://registry.example.com"
+USER_URL = f"{REST_BASE}/user"
+PROJECT_URL = f"{REST_BASE}/projects/{PROJECT_ID}"
+DELETE_TAGS_JWT_URL = f"{HOST_ROOT}/jwt/auth?service=container_registry&scope=repository%3Agroup%2Fproject%3Adelete"
+CATALOG_JWT_URL = f"{HOST_ROOT}/jwt/auth?service=container_registry&scope=registry%3Acatalog%3A%2A"
+DELETE_TAGS_URL = f"{REGISTRY_ORIGIN}/v2/group/project/tags/reference/1a2b3c4"
+CATALOG_URL = f"{REGISTRY_ORIGIN}/v2/_catalog"
+DELETE_TAGS_ARGV: Tuple[str, ...] = (
+    OP_DELETE_IMAGE_TAGS,
+    OPTION_PATH,
+    "CI_REGISTRY_IMAGE=group/project",
+    OPTION_PATH,
+    "CI_COMMIT_SHORT_SHA=1a2b3c4",
+)
+CATALOG_ANSWER: Dict[str, Any] = {FIELD_REPOSITORIES: ["group/project"]}
+MANIFEST_UNKNOWN_ANSWER: Dict[str, Any] = {
+    FIELD_ERRORS: [{FIELD_CODE: "MANIFEST_UNKNOWN", FIELD_MESSAGE: "manifest unknown"}]
+}
+
+
+class Answer(NamedTuple):
+    """A scripted answer of the configured host: its status and its JSON body."""
+
+    status: int
+    body: Any
+
+
+USER_ANSWER = Answer(status=STATUS_OK, body={FIELD_ID: 7, FIELD_USERNAME: USERNAME})
+PROJECT_ANSWER = Answer(status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: IMAGE_PREFIX})
+JWT_ANSWER = Answer(status=STATUS_OK, body={FIELD_REGISTRY_TOKEN: REGISTRY_TOKEN})
+UNAUTHORIZED_ANSWER = Answer(status=STATUS_UNAUTHORIZED, body={FIELD_MESSAGE: "401 Unauthorized"})
+
+
+class RegistryCase(NamedTuple):
+    """A call of a container-registry record (#63 AC-5.2): the arguments after ``call``, the ``/jwt/auth`` URL of its
+    scope, the method and URL of its registry request, the registry's answer to it, the exit code, and the JSON value
+    that prints (``None``: nothing prints)."""
+
+    argv: Tuple[str, ...]
+    jwt_url: str
+    method: str
+    url: str
+    answer: Answer
+    code: int
+    printed: Any = None
+
+
+# #63 AC-5.2 (design.md Correctness Properties): each registry record sent, and the delete answered 404 at step 4.
+REGISTRY_CASES = (
+    pytest.param(
+        RegistryCase(
+            argv=DELETE_TAGS_ARGV,
+            jwt_url=DELETE_TAGS_JWT_URL,
+            method=METHOD_DELETE,
+            url=DELETE_TAGS_URL,
+            answer=Answer(status=STATUS_ACCEPTED, body=None),
+            code=EXIT_OK,
+        ),
+        id="delete-image-tags-by-reference",
+    ),
+    pytest.param(
+        RegistryCase(
+            argv=(OP_LIST_CONTAINER_REPOSITORIES,),
+            jwt_url=CATALOG_JWT_URL,
+            method=METHOD_GET,
+            url=CATALOG_URL,
+            answer=Answer(status=STATUS_OK, body=CATALOG_ANSWER),
+            code=EXIT_OK,
+            printed=CATALOG_ANSWER,
+        ),
+        id="listing-all-container-repositories",
+    ),
+    pytest.param(
+        RegistryCase(
+            argv=DELETE_TAGS_ARGV,
+            jwt_url=DELETE_TAGS_JWT_URL,
+            method=METHOD_DELETE,
+            url=DELETE_TAGS_URL,
+            answer=Answer(status=STATUS_NOT_FOUND, body=MANIFEST_UNKNOWN_ANSWER),
+            code=EXIT_API_ERROR,
+        ),
+        id="delete-image-tags-answered-404",
+    ),
+)
+
+
+class NoTokenCase(NamedTuple):
+    """A delete-by-reference call whose registry token cannot be obtained (#63 AC-5.3): the requests it sends — those
+    of D4's steps up to the failing one, its own included — the configured ``token_type`` (``None``: none configured,
+    so ``private``), and the answers of steps 1 to 3."""
+
+    sent: Tuple[Tuple[str, str], ...]
+    token_type: Optional[str] = None
+    user: Answer = USER_ANSWER
+    project: Answer = PROJECT_ANSWER
+    jwt: Answer = JWT_ANSWER
+
+
+STEP_1_SENT: Tuple[Tuple[str, str], ...] = ((METHOD_GET, USER_URL),)
+STEPS_1_TO_2_SENT: Tuple[Tuple[str, str], ...] = (*STEP_1_SENT, (METHOD_GET, PROJECT_URL))
+STEPS_1_TO_3_SENT: Tuple[Tuple[str, str], ...] = (*STEPS_1_TO_2_SENT, (METHOD_GET, DELETE_TAGS_JWT_URL))
+
+# #63 AC-5.3 (design.md Correctness Properties): a `bearer` token (no step is sent); `GET /user` answering 401; a
+# project answer without `container_registry_image_prefix`, or with one whose registry host is empty or holds `#` or
+# `@`; `/jwt/auth` answering 401, or `{}`.
+NO_TOKEN_CASES = (
+    pytest.param(NoTokenCase(sent=(), token_type=TOKEN_TYPE_BEARER), id="bearer-token"),
+    pytest.param(NoTokenCase(sent=STEP_1_SENT, user=UNAUTHORIZED_ANSWER), id="user-answers-401"),
+    pytest.param(
+        NoTokenCase(sent=STEPS_1_TO_2_SENT, project=Answer(status=STATUS_OK, body={FIELD_ID: PROJECT_ID})),
+        id="no-image-prefix",
+    ),
+    pytest.param(
+        NoTokenCase(
+            sent=STEPS_1_TO_2_SENT,
+            project=Answer(status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: ""}),
+        ),
+        id="empty-image-prefix",
+    ),
+    pytest.param(
+        NoTokenCase(
+            sent=STEPS_1_TO_2_SENT,
+            project=Answer(status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: "/group/project"}),
+        ),
+        id="image-prefix-without-a-host",
+    ),
+    pytest.param(
+        NoTokenCase(
+            sent=STEPS_1_TO_2_SENT,
+            project=Answer(
+                status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: "registry.example.com#/x"}
+            ),
+        ),
+        id="image-prefix-host-with-a-fragment",
+    ),
+    pytest.param(
+        NoTokenCase(
+            sent=STEPS_1_TO_2_SENT,
+            project=Answer(
+                status=STATUS_OK, body={FIELD_ID: PROJECT_ID, FIELD_IMAGE_PREFIX: "user@registry.example.com/x"}
+            ),
+        ),
+        id="image-prefix-host-with-userinfo",
+    ),
+    pytest.param(NoTokenCase(sent=STEPS_1_TO_3_SENT, jwt=UNAUTHORIZED_ANSWER), id="jwt-auth-answers-401"),
+    pytest.param(
+        NoTokenCase(sent=STEPS_1_TO_3_SENT, jwt=Answer(status=STATUS_OK, body={})),
+        id="jwt-auth-answers-no-token",
+    ),
+)
+
 
 # --- Fixtures and helpers ---------------------------------------------------------------------------------------
 
@@ -1285,10 +1448,13 @@ def gitlab_module(*, name: str) -> ModuleType:
     return importlib.import_module(name=f"{PACKAGE}{MODULE_SEPARATOR}{name}")
 
 
-def run_call(*, root: Path, argv: Sequence[str]) -> Any:
-    """Write ``config/gitlab.json`` (hostname the fake host's) under ``root``, the working directory, and return the
-    exit code of the product's ``main(argv=["call", *argv])``."""
+def run_call(*, root: Path, argv: Sequence[str], token_type: Optional[str] = None) -> Any:
+    """Write ``config/gitlab.json`` (hostname the fake host's; ``token_type`` when one is given, else none, which is
+    ``private``) under ``root``, the working directory, and return the exit code of the product's
+    ``main(argv=["call", *argv])``."""
     config: Dict[str, Any] = {FIELD_HOSTNAME: fixtures.HOST, FIELD_PROJECT_ID: PROJECT_ID, FIELD_TOKEN: TOKEN}
+    if token_type is not None:
+        config[FIELD_TOKEN_TYPE] = token_type
     fixtures.write_config(root=root, config=config)
     return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
 
@@ -1363,6 +1529,15 @@ def set_difference(*, declared: AbstractSet[Any], expected: AbstractSet[Any]) ->
     return "\n".join(lines)
 
 
+def count_difference(*, declared: Sequence[Any], expected: Sequence[Any]) -> str:
+    """Each item ``declared`` holds fewer or more times than ``expected``, sorted, one occurrence per line."""
+    declared_counts = Counter(declared)
+    expected_counts = Counter(expected)
+    lines = [f"missing: {item!r}" for item in sorted((expected_counts - declared_counts).elements())]
+    lines.extend(f"not expected: {item!r}" for item in sorted((declared_counts - expected_counts).elements()))
+    return "\n".join(lines)
+
+
 def mapping_difference(*, declared: Mapping[Any, Any], expected: Mapping[Any, Any]) -> str:
     """The keys ``declared`` lacks or has beyond ``expected``, and each key whose value differs."""
     lines = [set_difference(declared=set(declared), expected=set(expected))]
@@ -1400,53 +1575,97 @@ def write_upload(*, root: Path, file_name: str) -> Path:
     return upload
 
 
+def script_steps(*, fake: Any, jwt_url: str, user: Answer, project: Answer, jwt: Answer) -> None:
+    """Script the configured host's answers to #63 design.md D4's steps 1 to 3 at their exact URLs: ``GET /user``,
+    ``GET /projects/<project_id>`` and the ``/jwt/auth`` request at ``jwt_url``."""
+    fake.script(method=METHOD_GET, url=USER_URL, status=user.status, body=user.body)
+    fake.script(method=METHOD_GET, url=PROJECT_URL, status=project.status, body=project.body)
+    fake.script(method=METHOD_GET, url=jwt_url, status=jwt.status, body=jwt.body)
+
+
+def credentials_sent(*, request: Any) -> Dict[str, str]:
+    """Every credential header the recorded request carried, by lower-cased name."""
+    return {name.lower(): value for name, value in request.headers.items() if name.lower() in CREDENTIAL_HEADER_NAMES}
+
+
+def secrets_in(*, texts: Sequence[str], secrets: Mapping[str, str]) -> List[str]:
+    """The name of each of ``secrets`` whose value one of ``texts`` holds."""
+    return [name for name, secret in secrets.items() if any(secret in text for text in texts)]
+
+
+def reported_texts(*, caplog: pytest.LogCaptureFixture, err: str) -> List[str]:
+    """What the call reported: the message of every log record, every record as captured (its exception text
+    included), and standard error."""
+    return [*(record.getMessage() for record in caplog.records), caplog.text, err]
+
+
+def off_host_requests(*, fake: Any) -> List[Tuple[str, str]]:
+    """``(method, URL)`` of every recorded request whose host is not the configured one, in order."""
+    return [
+        (method, url) for method, url in sent(fake=fake) if urllib.parse.urlsplit(url=url).hostname != fixtures.HOST
+    ]
+
+
 # --- AC-1.1, AC-1.3, AC-1.7: nothing is pending but the kept keys ---------------------------------------------------
 
 
 def test_nothing_is_pending_but_the_kept_keys() -> None:
-    """AC-1.1, AC-1.3, AC-1.7: ``PENDING`` is exactly the kept keys, ``OPERATIONS`` declares one record per Reference
-    of the family's index rows but those of the kept keys of AC-1.3, each ID once, and no record's path is the
-    registry host's or ``/projects/:id/``."""
+    """AC-1.1, AC-1.3, AC-1.7, restated by #63 design.md D9 (#63 AC-1.1, AC-1.3): ``PENDING`` is exactly the kept
+    key; ``OPERATIONS`` declares the records of every Reference of the family's index rows but the kept key's, one per
+    Reference and two for a two-endpoint entry, each key once (each such entry's records start with its base record:
+    ``test_a_two_endpoint_entry_maps_its_first_endpoint``); the records on the registry host are its two keys', and no
+    record's path is ``/projects/:id/``."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
     assert pending == KEPT, (
-        f"PENDING holds {len(pending)} key(s), the kept keys are {len(KEPT)} (AC-1.2, AC-1.3, AC-1.7):\n"
+        f"PENDING holds {len(pending)} key(s), the kept keys are {len(KEPT)} (AC-1.3; #63 AC-1.1, design.md D9):\n"
         + set_difference(declared=pending, expected=KEPT)
     )
-    declared = sorted(record.operation_id for record in family.OPERATIONS)
-    repeated = sorted({operation_id for operation_id in declared if declared.count(operation_id) > 1})
-    assert declared == sorted(OPERATION_IDS), (
-        f"OPERATIONS declares {len(declared)} record(s), the index has {len(OPERATION_IDS)} to map (AC-1.1); "
-        f"declared more than once: {repeated}\n" + set_difference(declared=set(declared), expected=set(OPERATION_IDS))
+    declared = [record.operation_id for record in family.OPERATIONS]
+    assert sorted(declared) == sorted(RECORD_IDS), (
+        f"OPERATIONS declares {len(declared)} record(s), the index has {len(RECORD_IDS)} to map: one per Reference, "
+        "two for a two-endpoint entry (AC-1.1; #63 AC-1.1, design.md D1, D8):\n"
+        + count_difference(declared=declared, expected=RECORD_IDS)
     )
-    unsendable = [
-        (record.operation_id, record.path)
+    keys = [(record.method, record.path) for record in family.OPERATIONS]
+    repeated = sorted(key for key, count in Counter(keys).items() if count > 1)
+    assert repeated == [], f"each key is declared once (#63 design.md D1, D9): {repeated}"
+    on_registry_host = {
+        record.operation_id: (record.method, record.path)
         for record in family.OPERATIONS
-        if record.path.startswith(REGISTRY_HOST_PREFIX) or record.path == PROJECT_UPDATE_PATH
-    ]
-    assert unsendable == [], (
-        f"the registry host and the project update stay pending, with no record (AC-1.3): {unsendable}"
+        if record.path.startswith(REGISTRY_HOST_PREFIX)
+    }
+    assert on_registry_host == REGISTRY_RECORDS, (
+        "the records on the registry host are its two keys' (#63 AC-1.1, design.md D8):\n"
+        + mapping_difference(declared=on_registry_host, expected=REGISTRY_RECORDS)
     )
+    project_updates = [record.operation_id for record in family.OPERATIONS if record.path == PROJECT_UPDATE_PATH]
+    assert project_updates == [], f"the project update stays pending, with no record (AC-1.3): {project_updates}"
 
 
 # --- AC-1.2: a two-endpoint entry maps its first endpoint -------------------------------------------------------------
 
 
 def test_a_two_endpoint_entry_maps_its_first_endpoint() -> None:
-    """AC-1.2: the record of every Conan v1 entry, and of NuGet "Upload a package file", maps the endpoint its entry
-    lists first, and the entry's other endpoint stays in ``PENDING``."""
+    """AC-1.2, restated by #63 design.md D9 (#63 AC-1.1, D1, D8): the records of every Conan v1 entry, and of NuGet
+    "Upload a package file", map the endpoint its entry lists first, its base record, then the entry's other endpoint,
+    which is on no ``PENDING``."""
     family = gitlab_module(name=FAMILY_MODULE)
-    mapped = {
-        record.operation_id: (record.method, record.path)
-        for record in family.OPERATIONS
-        if record.operation_id in FIRST_ENDPOINTS
-    }
-    expected = {operation_id: endpoints.first for operation_id, endpoints in FIRST_ENDPOINTS.items()}
-    assert mapped == expected, "a two-endpoint entry's record does not map its first endpoint (AC-1.2):\n" + (
-        mapping_difference(declared=mapped, expected=expected)
+    mapped: Dict[str, List[Tuple[str, str]]] = {}
+    for record in family.OPERATIONS:
+        if record.operation_id in FIRST_ENDPOINTS:
+            mapped.setdefault(record.operation_id, []).append((record.method, record.path))
+    expected = {operation_id: [endpoints.first, endpoints.other] for operation_id, endpoints in FIRST_ENDPOINTS.items()}
+    assert mapped == expected, (
+        "a two-endpoint entry's records map its first endpoint, then its other one (AC-1.2; #63 design.md D1, D8):\n"
+        + mapping_difference(declared=mapped, expected=expected)
     )
-    unkept = sorted(endpoints.other for endpoints in FIRST_ENDPOINTS.values() if endpoints.other not in family.PENDING)
-    assert unkept == [], f"the other endpoint of a two-endpoint entry stays in PENDING (AC-1.2): {unkept}"
+    still_pending = sorted(
+        endpoints.other for endpoints in FIRST_ENDPOINTS.values() if endpoints.other in family.PENDING
+    )
+    assert still_pending == [], (
+        f"the other endpoint of a two-endpoint entry is on no PENDING (#63 AC-1.1): {still_pending}"
+    )
 
 
 # --- AC-1.4, AC-4.2: every Param typed as its row ---------------------------------------------------------------------
@@ -1703,3 +1922,80 @@ def test_a_raw_upload_sends_the_bytes_as_its_body(
         f"(design.md D5); stderr:\n{refusal.err}"
     )
     assert sent(fake=fake_gitlab) == [(case.method, case.url)], "the refused --file call sends no request (AC-4.2)"
+
+
+# --- #63 AC-5.2, AC-5.3, UB-2: the container registry --------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=REGISTRY_CASES)
+def test_a_registry_record_is_sent_to_the_registry_with_its_token(
+    case: RegistryCase,
+    project: Path,
+    fake_gitlab: Any,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """#63 AC-5.2, UB-2 (design.md D4): the call sends, in order, ``GET /user`` and ``GET /projects/<project_id>`` with
+    the configured header, the ``/jwt/auth`` request for the record's scope with ``Authorization: Basic`` of
+    ``<username>:<token>`` as its only credential header, then the record's request to the registry of the project's
+    ``container_registry_image_prefix``, each ``${NAME}`` written, with ``Authorization: Bearer <registry token>`` as
+    its only credential and neither the configured token nor its Base64 credential; it exits 0 and prints the
+    registry's answer, or, answered 404, exits 1; no log record holds the configured token, the Base64 of the login
+    and the token, or the registry token."""
+    caplog.set_level(level=logging.DEBUG)
+    script_steps(fake=fake_gitlab, jwt_url=case.jwt_url, user=USER_ANSWER, project=PROJECT_ANSWER, jwt=JWT_ANSWER)
+    fake_gitlab.script(method=case.method, url=case.url, status=case.answer.status, body=case.answer.body)
+    code = run_call(root=project, argv=case.argv)
+    captured = capsys.readouterr()
+    assert code == case.code, f"call {list(case.argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+    assert sent(fake=fake_gitlab) == [
+        (METHOD_GET, USER_URL),
+        (METHOD_GET, PROJECT_URL),
+        (METHOD_GET, case.jwt_url),
+        (case.method, case.url),
+    ], "the login, the project's registry, the registry token for the record's scope, then the registry (D4 steps 1-4)"
+    user_request, project_request, jwt_request, registry_request = fake_gitlab.requests
+    assert credentials_sent(request=user_request) == CONFIGURED_CREDENTIAL, "step 1 carries the configured header"
+    assert credentials_sent(request=project_request) == CONFIGURED_CREDENTIAL, "step 2 carries the configured header"
+    assert credentials_sent(request=jwt_request) == BASIC_CREDENTIAL, (
+        "/jwt/auth carries Basic of <username>:<token> as its only credential header (D4 step 3, RFC 7617)"
+    )
+    assert credentials_sent(request=registry_request) == BEARER_CREDENTIAL, (
+        "the registry request carries the registry token as its only credential (D4 step 4)"
+    )
+    registry_texts = [registry_request.url, *registry_request.headers.values()]
+    assert secrets_in(texts=registry_texts, secrets=CONFIGURED_SECRETS) == [], (
+        "the configured token reaches no request off the configured origin (UB-2)"
+    )
+    expected_out = "" if case.printed is None else printed_json(value=case.printed)
+    assert captured.out == expected_out, f"what the call prints:\n{captured.out}"
+    reported = secrets_in(texts=reported_texts(caplog=caplog, err=captured.err), secrets=SECRETS)
+    assert reported == [], f"no log record holds a secret (D4 AC-5.3, UB-2): {reported}"
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=NO_TOKEN_CASES)
+def test_no_registry_token_sends_nothing_to_the_registry(
+    case: NoTokenCase,
+    project: Path,
+    fake_gitlab: Any,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """#63 AC-5.3, UB-2 (design.md D4): a delete-by-reference call whose registry token cannot be obtained — a
+    ``bearer`` token, an error answer, or an answer without the field its step reads or with a registry host the step
+    refuses — exits 1 with an ERROR record; it sends nothing to the registry, and exactly the requests of the steps up
+    to the failing one, its own included; no log record holds the configured token, the Base64 of the login and the
+    token, or the registry token."""
+    caplog.set_level(level=logging.DEBUG)
+    script_steps(fake=fake_gitlab, jwt_url=DELETE_TAGS_JWT_URL, user=case.user, project=case.project, jwt=case.jwt)
+    fake_gitlab.script(method=METHOD_DELETE, url=DELETE_TAGS_URL, status=STATUS_ACCEPTED)
+    code = run_call(root=project, argv=DELETE_TAGS_ARGV, token_type=case.token_type)
+    captured = capsys.readouterr()
+    assert code == EXIT_API_ERROR, (
+        f"call {list(DELETE_TAGS_ARGV)} exits {EXIT_API_ERROR}, got {code} (AC-5.3); stderr:\n{captured.err}"
+    )
+    assert off_host_requests(fake=fake_gitlab) == [], "nothing is sent to the registry (AC-5.3, AC-8.3)"
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests of the steps up to the failing one (D4)"
+    assert error_messages(caplog=caplog), "an ERROR record says why the registry token was not obtained (#41 AC-1.7)"
+    reported = secrets_in(texts=reported_texts(caplog=caplog, err=captured.err), secrets=SECRETS)
+    assert reported == [], f"no log record holds a secret (D4 AC-5.3, UB-2): {reported}"

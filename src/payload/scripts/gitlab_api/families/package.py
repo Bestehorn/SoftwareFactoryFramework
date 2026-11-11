@@ -5,7 +5,11 @@ Each record is transcribed from its row of ``docs/api-reference/gitlab/operation
 ``###`` headings. The operation ID is ``package#`` and the anchor of the row's Reference, a ``-1``, ``-2`` ... suffix
 included; the method and the path are the row's, verbatim, with its ``*name`` globs, its ``/<route-prefix>``, its ``$``
 and its hyphenated ``:module-name`` as the row writes them. An entry that lists two endpoints, each Conan v1 entry (the
-instance endpoint, then the project one) and NuGet "Upload a package file", is mapped by the endpoint it lists first.
+instance endpoint, then the project one) and NuGet "Upload a package file", has one record per endpoint, in the order
+it lists them (issue #63, design.md D1, D8): its base record, the first of its ID, maps the endpoint it lists first, and
+the record after it the other, a copy of the base record but for its path and any ``Param`` naming a path parameter of
+its own path. ``call`` sends the base record without ``--endpoint`` and the other when ``--endpoint`` names it (``call
+package#upload-a-package-file-5 --endpoint 'PUT /projects/:id/packages/nuget/v2'``).
 
 A record declares one ``Param`` per ``query``, ``body`` or ``form`` row of its section's table, in table order, named
 as the row writes it (``Symbolchecksum``, ``terraform-get``): a ``query`` row in the query, a ``body`` or ``form`` row
@@ -34,12 +38,18 @@ attribute is a ``Location.QUERY`` ``Param``, where it is sent. NuGet "Upload a p
 package file", Helm "Upload a chart", PyPI "Upload a package" and the Maven virtual registry's "Upload a package" take
 their file with ``--file`` and send it, and every other body attribute, as a ``multipart/form-data`` body.
 
-``PENDING`` holds the keys kept without a record: the project endpoint of each Conan v1 entry and the ``/v2`` endpoint
-of NuGet "Upload a package file", each the endpoint its entry lists second; the two container registry keys whose path
-starts with ``/http(s)://${CI_REGISTRY}``, the registry's own host and not this API; and ``PUT /projects/:id/``, the
-project update "Change the visibility of the container registry" names, which can also configure a pull mirror. A
-secret attribute (an upstream registry's ``password``) is given as text like any other value; the configured token
-travels only in its header.
+The two container registry records whose path starts with ``/http(s)://${CI_REGISTRY}``, "Delete image tags by
+reference" and "Listing all container repositories", are sent to the registry's own host, not this API (issue #63,
+design.md D4): ``registry.send`` passes them to ``gitlab_api/container_registry.py``, which asks the configured instance
+for a registry token and sends the record's request with that token alone. Each ``${NAME}`` of the path is a path
+parameter given with ``--path``, and each record holds the ``token_scope`` its registry token is asked for,
+docs.gitlab.com ``container_registry``'s: ``repository:${CI_REGISTRY_IMAGE}:delete`` and ``registry:catalog:*``.
+Neither section has an attribute table, so neither declares a ``Param``.
+
+``PENDING`` holds the one key kept without a record, ``PUT /projects/:id/``: the project update "Change the visibility
+of the container registry" names, which can also configure a pull mirror. A secret attribute (an upstream registry's
+``password``) is given as text like any other value; the configured token travels only in its header, and the
+registry token only to the registry.
 
 Standard library only; Python 3.9.
 """
@@ -59,6 +69,10 @@ DEBIAN_ROUTE_PREFIXES: Tuple[str, ...] = ("/projects/:id/packages/debian", "/gro
 NPM_ROUTE_PREFIXES: Tuple[str, ...] = ("/packages/npm", "/projects/:id/packages/npm", "/groups/:id/-/packages/npm")
 # "NuGet API": the values of its `<route-prefix>` line, verbatim and in line order.
 NUGET_ROUTE_PREFIXES: Tuple[str, ...] = ("/groups/:id/-/packages/nuget", "/projects/:id/packages/nuget")
+# "Container registry API": the scope of the registry token of "Delete image tags by reference" and of "Listing all
+# container repositories", docs.gitlab.com `container_registry`'s, `${CI_REGISTRY_IMAGE}` the call's value (D4).
+REGISTRY_DELETE_SCOPE = "repository:${CI_REGISTRY_IMAGE}:delete"
+REGISTRY_CATALOG_SCOPE = "registry:catalog:*"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # "Composer API: Retrieve repository URL templates".
@@ -108,11 +122,23 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/packages/conan/v1/users/authenticate",
     ),
+    # "Conan v1 API: Create an authentication token": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#create-an-authentication-token",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/users/authenticate",
+    ),
     # "Conan v1 API: Verify availability of a Conan repository".
     RestOperation(
         operation_id="package#verify-availability-of-a-conan-repository",
         method="GET",
         path="/packages/conan/v1/ping",
+    ),
+    # "Conan v1 API: Verify availability of a Conan repository": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#verify-availability-of-a-conan-repository",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/ping",
     ),
     # "Conan v1 API: Search for a Conan package".
     RestOperation(
@@ -124,11 +150,27 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="ignorecase", location=Location.QUERY),
         ),
     ),
+    # "Conan v1 API: Search for a Conan package": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#search-for-a-conan-package",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/search",
+        params=(
+            Param(name="q", location=Location.QUERY, required=True),
+            Param(name="ignorecase", location=Location.QUERY),
+        ),
+    ),
     # "Conan v1 API: Verify authentication credentials".
     RestOperation(
         operation_id="package#verify-authentication-credentials",
         method="GET",
         path="/packages/conan/v1/users/check_credentials",
+    ),
+    # "Conan v1 API: Verify authentication credentials": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#verify-authentication-credentials",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/users/check_credentials",
     ),
     # "Conan v1 API: Retrieve a recipe snapshot".
     RestOperation(
@@ -136,11 +178,24 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel",
     ),
+    # "Conan v1 API: Retrieve a recipe snapshot": the project endpoint, the one its entry lists second, as the index
+    # writes it (without `:package_name`).
+    RestOperation(
+        operation_id="package#retrieve-a-recipe-snapshot",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/:package_version/:package_username/:package_channel",
+    ),
     # "Conan v1 API: Retrieve a package snapshot".
     RestOperation(
         operation_id="package#retrieve-a-package-snapshot",
         method="GET",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference",
+    ),
+    # "Conan v1 API: Retrieve a package snapshot": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#retrieve-a-package-snapshot",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference",
     ),
     # "Conan v1 API: Retrieve a recipe manifest".
     RestOperation(
@@ -148,11 +203,23 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest",
     ),
+    # "Conan v1 API: Retrieve a recipe manifest": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#retrieve-a-recipe-manifest",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest",
+    ),
     # "Conan v1 API: Retrieve a package manifest".
     RestOperation(
         operation_id="package#retrieve-a-package-manifest",
         method="GET",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest",
+    ),
+    # "Conan v1 API: Retrieve a package manifest": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#retrieve-a-package-manifest",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest",
     ),
     # "Conan v1 API: List all recipe download URLs".
     RestOperation(
@@ -160,11 +227,23 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls",
     ),
+    # "Conan v1 API: List all recipe download URLs": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#list-all-recipe-download-urls",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls",
+    ),
     # "Conan v1 API: List all package download URLs".
     RestOperation(
         operation_id="package#list-all-package-download-urls",
         method="GET",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls",
+    ),
+    # "Conan v1 API: List all package download URLs": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#list-all-package-download-urls",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls",
     ),
     # "Conan v1 API: List all recipe upload URLs".
     RestOperation(
@@ -172,17 +251,35 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="POST",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls",
     ),
+    # "Conan v1 API: List all recipe upload URLs": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#list-all-recipe-upload-urls",
+        method="POST",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls",
+    ),
     # "Conan v1 API: List all package upload URLs".
     RestOperation(
         operation_id="package#list-all-package-upload-urls",
         method="POST",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls",
     ),
+    # "Conan v1 API: List all package upload URLs": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#list-all-package-upload-urls",
+        method="POST",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls",
+    ),
     # "Conan v1 API: Retrieve a recipe file".
     RestOperation(
         operation_id="package#retrieve-a-recipe-file",
         method="GET",
         path="/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
+    ),
+    # "Conan v1 API: Retrieve a recipe file": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#retrieve-a-recipe-file",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
     ),
     # "Conan v1 API: Upload a recipe file".
     RestOperation(
@@ -191,11 +288,24 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
         content_type=CONTENT_TYPE_OCTET_STREAM,
     ),
+    # "Conan v1 API: Upload a recipe file": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#upload-a-recipe-file",
+        method="PUT",
+        path="/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+    ),
     # "Conan v1 API: Retrieve a package file".
     RestOperation(
         operation_id="package#retrieve-a-package-file",
         method="GET",
         path="/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
+    ),
+    # "Conan v1 API: Retrieve a package file": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#retrieve-a-package-file",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
     ),
     # "Conan v1 API: Upload a package file".
     RestOperation(
@@ -204,17 +314,36 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         path="/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
         content_type=CONTENT_TYPE_OCTET_STREAM,
     ),
+    # "Conan v1 API: Upload a package file": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#upload-a-package-file",
+        method="PUT",
+        path="/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+    ),
     # "Conan v1 API: Delete a recipe and package".
     RestOperation(
         operation_id="package#delete-a-recipe-and-package",
         method="DELETE",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel",
     ),
+    # "Conan v1 API: Delete a recipe and package": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#delete-a-recipe-and-package",
+        method="DELETE",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel",
+    ),
     # "Conan v1 API: Retrieve package references metadata".
     RestOperation(
         operation_id="package#retrieve-package-references-metadata",
         method="GET",
         path="/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search",
+    ),
+    # "Conan v1 API: Retrieve package references metadata": the project endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#retrieve-package-references-metadata",
+        method="GET",
+        path="/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search",
     ),
     # "Conan v2 API: Create an authentication token".
     RestOperation(
@@ -398,6 +527,20 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="name_regex_keep", location=Location.QUERY),
             Param(name="older_than", location=Location.QUERY),
         ),
+    ),
+    # "Container registry API: Delete image tags by reference": on the registry's own host (issue #63, design.md D4).
+    RestOperation(
+        operation_id="package#delete-image-tags-by-reference",
+        method="DELETE",
+        path="/http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}",
+        token_scope=REGISTRY_DELETE_SCOPE,
+    ),
+    # "Container registry API: Listing all container repositories": on the registry's own host (issue #63, D4).
+    RestOperation(
+        operation_id="package#listing-all-container-repositories",
+        method="GET",
+        path="/http(s)://${CI_REGISTRY}/v2/_catalog",
+        token_scope=REGISTRY_CATALOG_SCOPE,
     ),
     # "Container registry protection tag rules API: List container registry protection tag rules".
     RestOperation(
@@ -1253,6 +1396,18 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="package", location=Location.BODY, kind=Kind.FILE, required=True),
         ),
     ),
+    # "NuGet API: Upload a package file": the `/v2` endpoint, the one its entry lists second.
+    RestOperation(
+        operation_id="package#upload-a-package-file-5",
+        method="PUT",
+        path="/projects/:id/packages/nuget/v2",
+        params=(
+            Param(name="package_name", location=Location.BODY, required=True),
+            Param(name="package_version", location=Location.BODY, required=True),
+            Param(name="package_filename", location=Location.BODY, required=True),
+            Param(name="package", location=Location.BODY, kind=Kind.FILE, required=True),
+        ),
+    ),
     # "NuGet API: Upload a symbol package file".
     RestOperation(
         operation_id="package#upload-a-symbol-package-file",
@@ -1623,71 +1778,8 @@ OPERATIONS: Tuple[RestOperation, ...] = (
 
 PENDING: FrozenSet[Tuple[str, str]] = frozenset(
     {
-        # "Conan v1 API": the project endpoint of each entry, the one it lists second (AC-1.2).
-        ("GET", "/projects/:id/packages/conan/v1/users/authenticate"),
-        ("GET", "/projects/:id/packages/conan/v1/ping"),
-        ("GET", "/projects/:id/packages/conan/v1/conans/search"),
-        ("GET", "/projects/:id/packages/conan/v1/users/check_credentials"),
-        ("GET", "/projects/:id/packages/conan/v1/conans/:package_version/:package_username/:package_channel"),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/digest",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/digest",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/download_urls",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/download_urls",
-        ),
-        (
-            "POST",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/upload_urls",
-        ),
-        (
-            "POST",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/packages/:conan_package_reference/upload_urls",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
-        ),
-        (
-            "PUT",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
-        ),
-        (
-            "PUT",
-            "/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name",
-        ),
-        (
-            "DELETE",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel",
-        ),
-        (
-            "GET",
-            "/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel/search",
-        ),
         # "Container registry API: Change the visibility of the container registry": the project update, which can
         # also configure a pull mirror (AC-1.3).
         ("PUT", "/projects/:id/"),
-        # "Container registry API": the registry's own host, not this API (AC-1.3).
-        ("DELETE", "/http(s)://${CI_REGISTRY}/v2/${CI_REGISTRY_IMAGE}/tags/reference/${CI_COMMIT_SHORT_SHA}"),
-        ("GET", "/http(s)://${CI_REGISTRY}/v2/_catalog"),
-        # "NuGet API: Upload a package file": the endpoint it lists second (AC-1.2).
-        ("PUT", "/projects/:id/packages/nuget/v2"),
     }
 )

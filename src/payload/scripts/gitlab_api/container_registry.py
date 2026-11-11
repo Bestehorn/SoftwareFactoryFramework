@@ -19,15 +19,18 @@ project. ``send`` then takes four steps, each only once the one before it has su
    of the registry token alone; its ``Response`` is returned.
 
 Steps 1 and 2 are sent through ``registry.send`` as any REST record is: with the configured credential header, to the
-configured origin. The configured token is held by the transport alone and never read here; the registry token goes
-from step 3 to step 4 and into no exception message of this module, which writes no log record. Nothing here reads the
-process environment. Standard library only; Python 3.9.
+configured origin. Each way a step can fail raises ``GitLabAPIError`` before step 4, so the registry receives nothing
+(design.md D4 "AC-5.3"): an error status or no response (``Transport._send``), an answer that is not a JSON object
+whose field the step reads is a non-empty string (``username``, ``container_registry_image_prefix``, ``token``), and a
+registry origin ``transport.origin`` refuses. The configured token is held by the transport alone and never read here;
+the registry token goes from step 3 to step 4 and into no exception message of this module, which writes no log record.
+Nothing here reads the process environment. Standard library only; Python 3.9.
 """
 
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from gitlab_api import registry
 from gitlab_api.errors import GitLabAPIError
@@ -54,18 +57,32 @@ REGISTRY_SCHEME = "https://"
 REFUSED_IN_HOST = re.compile(pattern=r"[@?#\\\s]")
 
 
+def _answer_text(*, answer: Any, field: str, operation_id: str) -> str:
+    """The non-empty string at ``field`` of ``answer``, the decoded answer of the record ``operation_id``. An answer
+    that is not a JSON object, or whose ``field`` is absent or not a non-empty string, raises ``GitLabAPIError`` naming
+    the record and the field (design.md D4 "AC-5.3")."""
+    text = answer.get(field) if isinstance(answer, Mapping) else None
+    if isinstance(text, str) and text:
+        return text
+    raise GitLabAPIError(
+        f"{operation_id} answered no non-empty string {field!r}, which a container-registry request needs: nothing is "
+        "sent to the registry"
+    )
+
+
 def login(*, transport: Transport) -> str:
     """The login the configured token is sent under to ``/jwt/auth`` (design.md D4 step 1).
 
-    A ``private`` token logs in as its user: the ``username`` of ``GET /user``, sent through ``registry.send``. A
-    ``job`` token logs in as ``gitlab-ci-token``, with no request. A ``bearer`` token raises ``GitLabAPIError`` with
-    nothing sent."""
+    A ``private`` token logs in as its user: the ``username`` of ``GET /user``, sent through ``registry.send``; an
+    answer without a non-empty string ``username`` raises ``GitLabAPIError``. A ``job`` token logs in as
+    ``gitlab-ci-token``, with no request. A ``bearer`` token raises ``GitLabAPIError`` with nothing sent."""
     # Imported here, not at the top: gitlab_api.transport imports gitlab_api.registry, which sends a container-registry
     # record through this module.
     from gitlab_api.transport import TokenType
 
     if transport.token_type is TokenType.PRIVATE:
-        return registry.send(transport=transport, operation_id=OP_CURRENT_USER).value[FIELD_USERNAME]
+        answer = registry.send(transport=transport, operation_id=OP_CURRENT_USER).value
+        return _answer_text(answer=answer, field=FIELD_USERNAME, operation_id=OP_CURRENT_USER)
     if transport.token_type is TokenType.JOB:
         return JOB_LOGIN
     raise GitLabAPIError(
@@ -79,10 +96,11 @@ def registry_origin(*, transport: Transport, project: str) -> str:
 
     ``GET /projects/<project>`` is sent through ``registry.send``; the origin is ``https://`` and the text of its
     answer's ``container_registry_image_prefix`` before the first ``/``, so ``registry.example.com/group/project`` gives
-    ``https://registry.example.com``. That text empty, or holding ``@``, ``?``, ``#``, ``\\`` or white space, raises
-    ``GitLabAPIError`` naming the prefix."""
+    ``https://registry.example.com``. An answer without a non-empty string ``container_registry_image_prefix`` raises
+    ``GitLabAPIError`` naming the field; a text before the first ``/`` that is empty, or holds ``@``, ``?``, ``#``,
+    ``\\`` or white space, raises ``GitLabAPIError`` naming the prefix."""
     answer = registry.send(transport=transport, operation_id=OP_RETRIEVE_PROJECT, values={PATH_ID: project}).value
-    prefix = answer[FIELD_IMAGE_PREFIX]
+    prefix = _answer_text(answer=answer, field=FIELD_IMAGE_PREFIX, operation_id=OP_RETRIEVE_PROJECT)
     host = prefix.split(sep=HOST_END, maxsplit=1)[0]
     if not host or REFUSED_IN_HOST.search(string=host):
         raise GitLabAPIError(
@@ -105,7 +123,8 @@ def send(
 
     ``path`` is the record's path after ``/http(s)://${CI_REGISTRY}`` and ``scope`` its ``token_scope``, each with the
     call's values written; ``query`` is the request's query pairs; ``project`` is the configured project. The four steps
-    of the module docstring are taken in order, and the registry's ``Response`` is returned."""
+    of the module docstring are taken in order, and the registry's ``Response`` is returned; a step that fails raises
+    ``GitLabAPIError`` with nothing sent to the registry (design.md D4 "AC-5.3")."""
     registry_login = login(transport=transport)
     origin = registry_origin(transport=transport, project=project)
     registry_token = transport.container_registry_token(login=registry_login, scope=scope)

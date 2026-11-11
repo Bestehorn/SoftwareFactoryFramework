@@ -8,9 +8,12 @@ the method, the path as ``operations-index.md`` writes it, and one ``Param`` per
   ``fixed`` values;
 - "List all LDAP group links" and "List all licenses" are ``Paging.OFFSET``, every other record ``Paging.NONE``.
 
-A section with several endpoints has one record: "Delete an LDAP group link (deprecated)" lists
-``/groups/:id/ldap_group_links/:cn`` and ``/groups/:id/ldap_group_links/:provider/:cn``, and its record takes the first.
-``PENDING`` holds the second, the one other endpoint of such a section.
+A section with several endpoints has one record per endpoint, each with its Reference's ID (issue #63, design.md D1,
+D8): the base record on its first endpoint, then one per other endpoint in the order the section's endpoint line lists
+them, each a copy of the base record but for its method, its path and any ``Param`` naming a path parameter of its own
+path. "Delete an LDAP group link (deprecated)" lists ``/groups/:id/ldap_group_links/:cn`` and
+``/groups/:id/ldap_group_links/:provider/:cn``: its base record takes the first, and ``call --endpoint`` names the
+second. ``PENDING`` is empty.
 
 Standard library only; Python 3.9.
 """
@@ -55,12 +58,18 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="filter", location=Location.QUERY, required=True),
         ),
     ),
-    # "LDAP group links: Delete an LDAP group link (deprecated)"; the first of its two endpoints; `DELETE
-    # /groups/:id/ldap_group_links/:provider/:cn` stays pending.
+    # "LDAP group links: Delete an LDAP group link (deprecated)"; its base record, on the first of its two endpoints.
     RestOperation(
         operation_id="fulfillment#delete-an-ldap-group-link-deprecated",
         method="DELETE",
         path="/groups/:id/ldap_group_links/:cn",
+    ),
+    # "LDAP group links: Delete an LDAP group link (deprecated)"; its second endpoint, a copy of the base record (issue
+    # #63, design.md D8).
+    RestOperation(
+        operation_id="fulfillment#delete-an-ldap-group-link-deprecated",
+        method="DELETE",
+        path="/groups/:id/ldap_group_links/:provider/:cn",
     ),
     # "License API: Retrieve license information".
     RestOperation(
@@ -134,8 +143,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("DELETE", "/groups/:id/ldap_group_links/:provider/:cn"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

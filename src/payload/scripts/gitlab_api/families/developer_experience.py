@@ -15,9 +15,14 @@ The keys ``GET /projects`` and ``DELETE /projects/:id/share/:group_id`` are carr
 this family, so ``tenant-scale#list-all-projects``, ``#list-all-projects-assigned-to-a-topic`` and
 ``#delete-a-shared-project-link-in-a-group`` are declared here, not in ``families/tenant_scale.py`` (issue #38,
 DL-003), and one key is the endpoint of more than one record. "Namespaced paths" and "File path, branches, and tags
-name" write literal example paths (project ``1``, ``diaspora/diaspora``). A section with several endpoints has one
-record: "File path, branches, and tags name" lists three, none a ``/projects/:id/...`` one, and its record takes the
-first; ``PENDING`` holds the other two.
+name" write literal example paths (project ``1``, ``diaspora/diaspora``).
+
+A section with several endpoints has one record per endpoint, each with its Reference's ID (issue #63, design.md D1,
+D8): the base record on its first ``/projects/:id/...`` endpoint, else on its first, then one per other endpoint in
+the order the section's endpoint line lists them, each a copy of the base record but for its method, its path and any
+``Param`` naming a path parameter of its own path. "File path, branches, and tags name" lists three literal endpoints,
+none a ``/projects/:id/...`` one: its base record takes the first, and ``call --endpoint 'GET <path>'`` names each of
+the other two, sent as written, ``%2F`` kept, with no path parameter and so no ``id`` default. ``PENDING`` is empty.
 
 Standard library only; Python 3.9.
 """
@@ -44,12 +49,24 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/projects/diaspora%2Fdiaspora",
     ),
-    # "REST API: File path, branches, and tags name"; the first of its three literal example endpoints; the other two
-    # stay pending.
+    # "REST API: File path, branches, and tags name"; its base record, on the first of its three literal example
+    # endpoints.
     RestOperation(
         operation_id="developer-experience#file-path-branches-and-tags-name",
         method="GET",
         path="/projects/1/repository/files/src%2FREADME.md",
+    ),
+    # "REST API: File path, branches, and tags name"; its second endpoint, a copy of the base record (issue #63, D8).
+    RestOperation(
+        operation_id="developer-experience#file-path-branches-and-tags-name",
+        method="GET",
+        path="/projects/1/branches/my%2Fbranch/commits",
+    ),
+    # "REST API: File path, branches, and tags name"; its third endpoint, a copy of the base record (issue #63, D8).
+    RestOperation(
+        operation_id="developer-experience#file-path-branches-and-tags-name",
+        method="GET",
+        path="/projects/1/repository/tags/my%2Ftag",
     ),
     # "REST API authentication: Sudo"; paged by its `page` row.
     RestOperation(
@@ -189,9 +206,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("GET", "/projects/1/branches/my%2Fbranch/commits"),
-        ("GET", "/projects/1/repository/tags/my%2Ftag"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

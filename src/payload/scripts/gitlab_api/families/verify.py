@@ -18,10 +18,13 @@ runner, trigger or job token) is given as ``-f`` or ``--query`` text like any ot
 ``PENDING`` holds the keys no record maps (issue #37, DL-003). The two ``*artifact_path`` downloads stay pending:
 ``registry.expand`` fills a ``:name`` segment only, not a ``*name`` glob. "Add a merge request to a merge train" stays
 pending: it merges, and no subcommand sends it, so ``call`` has no subcommand to name in refusing it as it refuses
-``mr merge``'s record (``commands/call.py`` ``GATED_OPERATIONS``). Of a section with several endpoints ("Metadata
-API", "Get the latest release", "List all of a group's runners"), every endpoint but the first stays pending: a
-record's ID names its section, so one record serves one of them. The section "Runners API" has no record: each of its
-endpoints has a section and a record of its own. No other family links any of these keys.
+``mr merge``'s record (``commands/call.py`` ``GATED_OPERATIONS``). A section with several endpoints ("Metadata API",
+"Get the latest release", "List all of a group's runners") has one record per endpoint, all of its ID, in the order
+its endpoint line lists them (issue #63, design.md D1, D8): the first, its base record, and after it each other, a
+copy of the base record but for its path and any ``Param`` naming a path parameter of its own path, so both
+``permalink/latest/...`` records take the base's required ``suffix_path``. ``call`` sends the base record without
+``--endpoint`` and another when ``--endpoint 'GET /version'`` names it. The section "Runners API" has no record: each
+of its endpoints has a section and a record of its own. No other family links any of these keys.
 
 Standard library only; Python 3.9.
 """
@@ -1220,11 +1223,17 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/projects/:id/merge_trains/merge_requests/:merge_request_iid",
     ),
-    # "Metadata API: Metadata API"; the first of its two endpoints, the other pending.
+    # "Metadata API: Metadata API"; the base record, the first of its two endpoints.
     RestOperation(
         operation_id="verify#metadata-api-1",
         method="GET",
         path="/metadata",
+    ),
+    # "Metadata API: Metadata API"; its second endpoint (issue #63, design.md D8).
+    RestOperation(
+        operation_id="verify#metadata-api-1",
+        method="GET",
+        path="/version",
     ),
     # "Pipeline schedules API: List all pipeline schedules".
     RestOperation(
@@ -1553,11 +1562,25 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/projects/:id/releases/:tag_name/downloads/:direct_asset_path",
     ),
-    # "Project release API: Get the latest release"; the first of its three endpoints, the others pending.
+    # "Project release API: Get the latest release"; the base record, the first of its three endpoints.
     RestOperation(
         operation_id="verify#get-the-latest-release",
         method="GET",
         path="/projects/:id/releases/permalink/latest",
+        params=(Param(name="suffix_path", location=Location.QUERY, required=True),),
+    ),
+    # "Project release API: Get the latest release"; its second endpoint (issue #63, design.md D8).
+    RestOperation(
+        operation_id="verify#get-the-latest-release",
+        method="GET",
+        path="/projects/:id/releases/permalink/latest/evidence",
+        params=(Param(name="suffix_path", location=Location.QUERY, required=True),),
+    ),
+    # "Project release API: Get the latest release"; its third endpoint (issue #63, design.md D8).
+    RestOperation(
+        operation_id="verify#get-the-latest-release",
+        method="GET",
+        path="/projects/:id/releases/permalink/latest/downloads/bin/asset.exe",
         params=(Param(name="suffix_path", location=Location.QUERY, required=True),),
     ),
     # "Project release API: Create a release".
@@ -2004,11 +2027,27 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="DELETE",
         path="/projects/:id/runners/:runner_id",
     ),
-    # "Runners API: List all of a group's runners"; the first of its two endpoints, the other pending.
+    # "Runners API: List all of a group's runners"; the base record, the first of its two endpoints.
     RestOperation(
         operation_id="verify#list-all-of-a-groups-runners",
         method="GET",
         path="/groups/:id/runners",
+        params=(
+            Param(name="type", location=Location.QUERY),
+            Param(name="status", location=Location.QUERY),
+            Param(name="paused", location=Location.QUERY),
+            Param(name="tag_list", location=Location.QUERY, kind=Kind.ARRAY),
+            Param(name="version_prefix", location=Location.QUERY),
+            Param(name="page", location=Location.QUERY),
+            Param(name="per_page", location=Location.QUERY),
+        ),
+        paging=Paging.OFFSET,
+    ),
+    # "Runners API: List all of a group's runners"; its second endpoint (issue #63, design.md D8).
+    RestOperation(
+        operation_id="verify#list-all-of-a-groups-runners",
+        method="GET",
+        path="/groups/:id/runners/all",
         params=(
             Param(name="type", location=Location.QUERY),
             Param(name="status", location=Location.QUERY),
@@ -2126,10 +2165,5 @@ PENDING: FrozenSet[Tuple[str, str]] = frozenset(
         ("GET", "/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path"),
         # "Add a merge request to a merge train": it merges, and no subcommand sends it.
         ("POST", "/projects/:id/merge_trains/merge_requests/:merge_request_iid"),
-        # The endpoints but the first of "List all of a group's runners", "Get the latest release" and "Metadata API".
-        ("GET", "/groups/:id/runners/all"),
-        ("GET", "/projects/:id/releases/permalink/latest/downloads/bin/asset.exe"),
-        ("GET", "/projects/:id/releases/permalink/latest/evidence"),
-        ("GET", "/version"),
     }
 )

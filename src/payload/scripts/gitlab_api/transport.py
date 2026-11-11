@@ -22,9 +22,10 @@ operation record:
   ``https://<hostname>/api/v4``, ``Base.HOST`` under ``https://<hostname>``; ``Base.CONTAINER_REGISTRY`` raises
   ``ValueError``, for only ``container_registry_request`` reaches the registry. ``container_registry_token`` asks
   ``https://<hostname>/jwt/auth`` for a registry token with ``Authorization: Basic`` of ``<login>:<token>`` (RFC 7617)
-  as its only credential header; ``container_registry_request`` sends ``Authorization: Bearer <registry token>`` alone
-  to the registry's origin, the ``destination`` ``_send`` holds the URL to, so the configured token reaches only the
-  configured origin (UB-2);
+  as its only credential header, and refuses a success answer without a non-empty string ``token`` with a
+  ``GitLabAPIError`` naming the URL and the field, never quoting the body (#63 AC-5.3);
+  ``container_registry_request`` sends ``Authorization: Bearer <registry token>`` alone to the registry's origin, the
+  ``destination`` ``_send`` holds the URL to, so the configured token reaches only the configured origin (UB-2);
 - the ``headers`` a caller gives are sent beside ``Accept``, the ``Content-Type`` and the one credential header; a name
   in ``TRANSPORT_HEADER_NAMES`` (ignoring case) and a value ``registry.check_header_value`` refuses (CR, LF or NUL)
   raise ``ValueError`` before anything is sent (issue #63 D5).
@@ -277,6 +278,25 @@ def origin(*, url: str) -> Origin:
         authority, port_text = authority[:separator], authority[separator + 1 :]
     scheme = request.type.lower()
     return Origin(scheme=scheme, host=authority.lower(), port=_port(url=url, scheme=scheme, text=port_text))
+
+
+def _registry_token(*, response: Response, url: str) -> str:
+    """The non-empty string ``token`` of the success answer ``response`` to the ``/jwt/auth`` request at ``url`` (#63
+    design.md D4 step 3). An answer that is not a JSON object holding one raises ``GitLabAPIError`` naming the URL and
+    the field; the body is neither quoted nor kept as ``details``, as it may hold the registry token (D4 "AC-5.3")."""
+    try:
+        answer = response.value
+    except GitLabAPIError:
+        # `Response.value` carries the body as `details`, and the body may hold the registry token: it goes no further.
+        answer = None
+    registry_token = answer.get(FIELD_REGISTRY_CREDENTIAL) if isinstance(answer, Mapping) else None
+    if isinstance(registry_token, str) and registry_token:
+        return registry_token
+    raise GitLabAPIError(
+        f"{METHOD_GET} {url} answered {response.status} without a non-empty string {FIELD_REGISTRY_CREDENTIAL!r}: no "
+        "registry token, so nothing is sent to the registry (the answer is not quoted, for it may hold a credential)",
+        status_code=response.status,
+    )
 
 
 def _destination_of(*, root: str) -> Origin:
@@ -676,15 +696,16 @@ class Transport:
     def container_registry_token(self, *, login: str, scope: str) -> str:
         """The registry token for ``scope``: the ``token`` of the answer to
         ``GET https://<hostname>/jwt/auth?service=container_registry&scope=<scope>``, sent on the configured origin with
-        ``Authorization: Basic`` of ``<login>:<token>`` (RFC 7617) as its only credential header (D4 step 3)."""
+        ``Authorization: Basic`` of ``<login>:<token>`` (RFC 7617) as its only credential header (D4 step 3). An error
+        status raises as ``_send`` raises any; a success answer without a non-empty string ``token`` raises
+        ``GitLabAPIError`` naming the URL and the field, never quoting the body (D4 "AC-5.3")."""
         url = rooted_url(
             root=self._roots[Base.HOST],
             path=JWT_AUTH_PATH,
             query=((PARAM_SERVICE, SERVICE_CONTAINER_REGISTRY), (PARAM_SCOPE, scope)),
         )
         response = self._send(method=METHOD_GET, url=url, credential=basic_credential(login=login, token=self._token))
-        registry_token: str = response.value[FIELD_REGISTRY_CREDENTIAL]
-        return registry_token
+        return _registry_token(response=response, url=url)
 
     def container_registry_request(
         self, *, origin: str, method: str, path: str, query: Sequence[Pair], token: str
