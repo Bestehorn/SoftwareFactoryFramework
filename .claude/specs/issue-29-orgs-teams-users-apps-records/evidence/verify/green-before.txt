@@ -1,0 +1,28 @@
+# baseline: green-before
+# command: python scripts/run_tests.py src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_users.py src/payload/test/test_github_api_apps.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_github_api_call.py test/test_github_wrapper_contract.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py test/test_github_api_call_properties.py src/payload/test/test_wrapper_delivery.py
+# exit: 0
+# sha256 orgs.py: 441fa37c711dd644cd7332d49f11b9a2a49216fb579d131d73aa1a9927383058  # pragma: allowlist secret
+# sha256 teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c  # pragma: allowlist secret
+# sha256 users.py: 1d2d04ff949c21ac7d02c6807a239d2b39cab9ae593e0dc129ec2ba918cf5623  # pragma: allowlist secret
+# sha256 apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197  # pragma: allowlist secret
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_orgs.py src/payload/test/test_github_api_teams.py src/payload/test/test_github_api_users.py src/payload/test/test_github_api_apps.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_github_api_call.py test/test_github_wrapper_contract.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py test/test_github_api_call_properties.py src/payload/test/test_wrapper_delivery.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [653 items]
+
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 33%]
+........................................................................ [ 44%]
+........................................................................ [ 55%]
+........................................................................ [ 66%]
+........................................................................ [ 77%]
+........................................................................ [ 88%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+======================= 653 passed in 98.02s (0:01:38) ========================

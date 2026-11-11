@@ -1,0 +1,39 @@
+# mutant: key-teams-list-added
+# purpose: teams/list item_key None -> teams (a bare-array LINK record given a key)
+# sha256 before teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c  # pragma: allowlist secret
+# sha256 mutant teams.py: 1ca23da2c31b8471cde0a9c84e4d94ed4de0eaaf7602ff906c93702f8f6af2b6  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_teams.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+# ======================== 1 failed, 26 passed in 35.74s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_teams.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [27 items]
+
+...........F...............                                              [100%]
+================================== FAILURES ===================================
+______________ test_a_list_record_prints_every_item[teams/list] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2706: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list: exit code 1, the golden is 0; stdout ''
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_wrapper:github_wrapper.py:302 GitHub API GET "https://api.github.com/orgs/vorg/teams?per_page=1" returned no item list under "teams"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+======================== 1 failed, 26 passed in 35.74s ========================

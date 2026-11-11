@@ -1,0 +1,45 @@
+# mutant: body-apps
+# purpose: drop body name permissions from apps/create-installation-access-token
+# sha256 before apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197  # pragma: allowlist secret
+# sha256 mutant apps.py: efff152bd30e41e578673ba336ae81598cc579c6976182eb388ecc9a4a8e76b1  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197 MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+# FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+# ======================== 2 failed, 27 passed in 34.53s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [29 items]
+
+.....................F.....F.                                            [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "apps/create-installation-access-token": body names: documented and not declared ["permissions"]; declared and not documented []
+E   assert not ['"apps/create-installation-access-token": body names: documented and not declared ["permissions"]; declared and not documented []']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 449 records:
+E     "apps/create-installation-access-token": exit 2, not 0; log ['The GitHub operation "apps/create-installation-access-token" documents no body parameter ["permissions"]; its path parameters are ["installation_id"], its query parameters are [], its body parameters are ["repositories", "repository_ids"]']; stderr ''
+E     "apps/create-installation-access-token": 0 requests sent, one expected
+E   assert not ['"apps/create-installation-access-token": exit 2, not 0; log [\'The GitHub operation "apps/create-installation-access...itories", "repository_ids"]\']; stderr \'\'', '"apps/create-installation-access-token": 0 requests sent, one expected']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:277 The GitHub operation "apps/create-installation-access-token" documents no body parameter ["permissions"]; its path parameters are ["installation_id"], its query parameters are [], its body parameters are ["repositories", "repository_ids"]
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 2 failed, 27 passed in 34.53s ========================

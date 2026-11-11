@@ -1,0 +1,45 @@
+# mutant: link-none-teams-list
+# purpose: flip teams/list paging LINK to NONE
+# sha256 before teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c  # pragma: allowlist secret
+# sha256 mutant teams.py: c56f2f56e1b95dff20c505246a8346ee9a7caf96d8361667f58808a9d173a873  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_teams.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_teams.py::test_every_list_record_has_a_case
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+# ======================== 2 failed, 25 passed in 47.53s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_teams.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [27 items]
+
+...F......F................                                              [100%]
+================================== FAILURES ===================================
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_teams.py:378: in test_every_list_record_has_a_case
+    assert not problems, "\n".join(problems)
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['teams/list']
+E   assert not ["Paging.LINK records without a case: []; cases without a Paging.LINK record: ['teams/list']"]
+______________ test_a_list_record_prints_every_item[teams/list] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_teams.py:388: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/teams/list: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_teams.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+======================== 2 failed, 25 passed in 47.53s ========================

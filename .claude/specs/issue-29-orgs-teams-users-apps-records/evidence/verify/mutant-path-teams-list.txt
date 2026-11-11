@@ -1,0 +1,48 @@
+# mutant: path-teams-list
+# purpose: teams/list path /orgs/{org}/teams -> /orgs/{org}/team
+# sha256 before teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c  # pragma: allowlist secret
+# sha256 mutant teams.py: b57e97a5a4e8e7642fef60af9b697745bcec8af851a10437a24745bdcf6fc5c1  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_teams.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored teams.py: 67ecfdb36404f91af05788ce79337fb84729930af7fb0c713c36479713c6b65c MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+# FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+# FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+# ======================== 3 failed, 24 passed in 45.47s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_teams.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [27 items]
+
+.........F.........F.....F.                                              [100%]
+================================== FAILURES ===================================
+______________ test_a_list_record_prints_every_item[teams/list] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/orgs/vorg/team?per_page=1
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_contract.py:800: in test_every_record_matches_its_reference_section
+    assert not problems, f"{len(problems)} differences between records and their sections:\n" + "\n".join(problems)
+E   AssertionError: 1 differences between records and their sections:
+E     "teams/list": path: the section documents "/orgs/{org}/teams", the record declares "/orgs/{org}/team"
+E   assert not ['"teams/list": path: the section documents "/orgs/{org}/teams", the record declares "/orgs/{org}/team"']
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\test\test_github_wrapper_contract.py:835: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, f"{len(problems)} problems calling {len(planned)} records:\n" + "\n".join(problems)
+E   AssertionError: 2 problems calling 449 records:
+E     "teams/list": the fake host has no route for its request; log []; stderr ''
+E     "teams/list": path: the section documents "/orgs/vorg/teams", the call sends "/orgs/vorg/team"
+E   assert not ['"teams/list": the fake host has no route for its request; log []; stderr \'\'', '"teams/list": path: the section documents "/orgs/vorg/teams", the call sends "/orgs/vorg/team"']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_teams.py::test_a_list_record_prints_every_item[teams/list]
+FAILED test/test_github_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_github_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 3 failed, 24 passed in 45.47s ========================

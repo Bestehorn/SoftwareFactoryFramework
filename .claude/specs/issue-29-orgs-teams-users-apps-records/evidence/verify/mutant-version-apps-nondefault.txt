@@ -1,0 +1,33 @@
+# mutant: version-apps-nondefault
+# purpose: apps/get-by-slug api_version -> 2026-03-10 (not the default)
+# sha256 before apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197  # pragma: allowlist secret
+# sha256 mutant apps.py: 5f4d34954b67a78f123b4eb2ee6989f9f4f3ab59e93303ab1b089454501d01e5  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197 MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_apps.py::test_every_record_sends_the_default_version_and_media_type
+# ======================== 1 failed, 28 passed in 38.55s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [29 items]
+
+..F..........................                                            [100%]
+================================== FAILURES ===================================
+_________ test_every_record_sends_the_default_version_and_media_type __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_apps.py:366: in test_every_record_sends_the_default_version_and_media_type
+    assert not problems, f"{len(problems)} problems:\n" + "\n".join(problems)
+E   AssertionError: 1 problems:
+E     "apps/get-by-slug": api_version '2026-03-10'
+E   assert not ['"apps/get-by-slug": api_version \'2026-03-10\'']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_apps.py::test_every_record_sends_the_default_version_and_media_type
+======================== 1 failed, 28 passed in 38.55s ========================
