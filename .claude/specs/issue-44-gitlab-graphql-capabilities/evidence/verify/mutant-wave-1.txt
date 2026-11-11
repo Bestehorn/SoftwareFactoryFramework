@@ -1,0 +1,1442 @@
+# mutation capture, wave 1, issue #44 worktree (branch issue-44-gitlab-graphql-capabilities)
+# each mutant: exact-once edits in the file's own CRLF bytes, the sha256 checked against the pre-run
+# baseline before each edit, the original bytes and mtime written back in a finally block
+# kill rule: exit != 0, at least one FAILED line, no collection error
+
+## baseline before: the unmutated tree
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+============================ 222 passed in 12.41s =============================
+# exit=0
+
+## whole-wave revert W1: wave 1 reverted: every implementation file at 4cb8b31 (the tasks commit), tests at HEAD
+# src/payload/scripts/gitlab_api/registry.py <- git show 4cb8b31:src/payload/scripts/gitlab_api/registry.py (CRLF); baseline sha256 73983165ce90c3cc...
+# src/payload/scripts/gitlab_api/transport.py <- git show 4cb8b31:src/payload/scripts/gitlab_api/transport.py (CRLF); baseline sha256 b3728692b0171450...
+# src/payload/scripts/gitlab_api/commands/call.py <- git show 4cb8b31:src/payload/scripts/gitlab_api/commands/call.py (CRLF); baseline sha256 3cd5701c882f4a4c...
+# src/payload/scripts/gitlab_api/graphql_only.py <- git show 4cb8b31:src/payload/scripts/gitlab_api/graphql_only.py (CRLF); baseline sha256 520de0a80d5c3c7a...
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_wrapper_contract.py test/test_gitlab_api_properties.py test/test_gitlab_api_call_properties.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_wrapper_contract.py test/test_gitlab_api_properties.py test/test_gitlab_api_call_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [266 items]
+
+........................FFFFF........................................... [ 27%]
+...........................F............................................ [ 54%]
+........................................................................ [ 81%]
+..................................................                       [100%]
+================================== FAILURES ===================================
+_ test_upload_variables_are_the_documents_upload_definitions[list-of-uploads] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'upload_variables'
+___ test_upload_variables_are_the_documents_upload_definitions[one-upload] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'upload_variables'
+_ test_upload_variables_are_the_documents_upload_definitions[list-of-another-type] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'upload_variables'
+_ test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'upload_variables'
+______________ test_split_uploads_puts_null_where_each_file_goes ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:439: in test_split_uploads_puts_null_where_each_file_goes
+    sent_variables, files = registry.split_uploads(values=SPLIT_VALUES)
+                            ^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'gitlab_api.registry' has no attribute 'split_uploads'
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1044: in test_graphql_sends_files_as_one_multipart_request
+    result = client.graphql(document=UPLOAD_MUTATION, variables=UPLOAD_VARIABLES, files=tuple(files))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: Transport.graphql() got an unexpected keyword argument 'files'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-uploads]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[one-upload]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-another-type]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+================== 6 failed, 260 passed in 76.72s (0:01:16) ===================
+# exit=1; KILLED (6 failed, 260 passed in 76.72s (0:01:16))
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-uploads]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[one-upload]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-another-type]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+# restored src/payload/scripts/gitlab_api/commands/call.py: sha256 identical=True
+# restored src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+
+## mutant 1a: upload_variables inverts the list flag (a list read as one Upload and back)
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -281,3 +281,3 @@
+         if TYPE_DECORATION.sub(repl="", string=type_text) == UPLOAD_TYPE:
+-            uploads[definition.group(GROUP_NAME)] = type_text.startswith(LIST_TYPE_START)
++            uploads[definition.group(GROUP_NAME)] = not type_text.startswith(LIST_TYPE_START)
+     return uploads
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+...................FF.F....................F............................ [ 32%]
+...............F...F.................................................... [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+_ test_upload_variables_are_the_documents_upload_definitions[list-of-uploads] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+E   AssertionError: each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)
+E   assert {'files': False} == {'files': True}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mFalse[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+___ test_upload_variables_are_the_documents_upload_definitions[one-upload] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+E   AssertionError: each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)
+E   assert {'file': True} == {'file': False}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m: [94mFalse[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+E   AssertionError: each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)
+E   assert {'files': False, 'file': True} == {'files': True, 'file': False}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mFalse[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m: [94mFalse[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': None}}), Part(name='map', filename=None, content={'0': ['variables.files']}), Part(name='0', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...1.png\r\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id fi...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1080: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[0] == expected[0], f"operations is the document and the variables, each file null: {parts[0]!r}"
+E   AssertionError: operations is the document and the variables, each file null: Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'g/p', 'iid': '5', 'files': None}})
+E   assert Part(name='op...iles': None}}) == Part(name='op...es': [None]}})
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute content:
+E       content: [0m{[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id filen...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1077: in test_a_design_upload_sends_each_file_as_a_part
+    assert [part.name for part in parts] == [part.name for part in expected], (
+E   AssertionError: the parts are operations, map, then one per file named after its map key, in that order (AC-3.1)
+E   assert ['operations', 'map', '0'] == ['operations'...ap', '0', '1']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-uploads]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[one-upload]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+======================= 6 failed, 216 passed in 13.03s ========================
+# exit=1; KILLED (6 failed, 216 passed in 13.03s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-uploads]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[one-upload]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1b: upload_variables also takes a list of Int as an Upload variable
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -280,3 +280,3 @@
+         type_text = reference.group(GROUP_TYPE)
+-        if TYPE_DECORATION.sub(repl="", string=type_text) == UPLOAD_TYPE:
++        if TYPE_DECORATION.sub(repl="", string=type_text) in (UPLOAD_TYPE, "Int"):
+             uploads[definition.group(GROUP_NAME)] = type_text.startswith(LIST_TYPE_START)
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+.....................FF................................................. [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+_ test_upload_variables_are_the_documents_upload_definitions[list-of-another-type] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+E   AssertionError: each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)
+E   assert {'n': True} == {}
+E     
+E     Left contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mn[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+E   AssertionError: each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)
+E   assert {'files': Tru...se, 'n': True} == {'files': True, 'file': False}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Left contains 1 more item:
+E     [0m{[33m'[39;49;00m[33mn[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-another-type]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+======================= 2 failed, 220 passed in 14.01s ========================
+# exit=1; KILLED (2 failed, 220 passed in 14.01s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-another-type]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1c: TYPE_REFERENCE takes no white space after the colon
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -56,3 +56,3 @@
+ # NonNullType`): white space, then any `[` and white space, a Name, and any `]`, `!` and white space (`[Upload!]!`).
+-TYPE_REFERENCE = re.compile(pattern=r"\s*(?P<type>[\[\s]*[_A-Za-z][_0-9A-Za-z]*[\]!\s]*)")
++TYPE_REFERENCE = re.compile(pattern=r"(?P<type>[\[\s]*[_A-Za-z][_0-9A-Za-z]*[\]!\s]*)")
+ GROUP_TYPE = "type"
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+...................F..F...................F............................. [ 32%]
+.............F...F...................................................... [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+_ test_upload_variables_are_the_documents_upload_definitions[list-of-uploads] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+E   AssertionError: each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)
+E   assert {'files': False} == {'files': True}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mFalse[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+_ test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:431: in test_upload_variables_are_the_documents_upload_definitions
+    assert registry.upload_variables(operation=operation) == expected, (
+E   AssertionError: each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)
+E   assert {'files': Fal...'file': False} == {'files': True, 'file': False}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mFalse[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [94mTrue[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': None}}), Part(name='map', filename=None, content={'0': ['variables.files']}), Part(name='0', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...1.png\r\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id fi...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1080: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[0] == expected[0], f"operations is the document and the variables, each file null: {parts[0]!r}"
+E   AssertionError: operations is the document and the variables, each file null: Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'g/p', 'iid': '5', 'files': None}})
+E   assert Part(name='op...iles': None}}) == Part(name='op...es': [None]}})
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute content:
+E       content: [0m{[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id filen...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1077: in test_a_design_upload_sends_each_file_as_a_part
+    assert [part.name for part in parts] == [part.name for part in expected], (
+E   AssertionError: the parts are operations, map, then one per file named after its map key, in that order (AC-3.1)
+E   assert ['operations', 'map', '0'] == ['operations'...ap', '0', '1']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-uploads]
+FAILED src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+======================= 5 failed, 217 passed in 14.75s ========================
+# exit=1; KILLED (5 failed, 217 passed in 14.75s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[list-of-uploads]
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_upload_variables_are_the_documents_upload_definitions[all-three-in-one-document]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1d: split_uploads numbers list items from 1 (wrong map path)
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -393,3 +393,3 @@
+             files.extend(
+-                (f"{operations_path}{OPERATIONS_PATH_SEPARATOR}{index}", item)
++                (f"{operations_path}{OPERATIONS_PATH_SEPARATOR}{index + 1}", item)
+                 for index, item in enumerate(value)
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+.......................F...................F............................ [ 32%]
+..............F...F..................................................... [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+______________ test_split_uploads_puts_null_where_each_file_goes ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:444: in test_split_uploads_puts_null_where_each_file_goes
+    assert files == SPLIT_FILES, (
+E   AssertionError: each file with the operations path it fills, variables.<name> or variables.<name>.<index>, in the order of the values and of each list (design.md D4, AC-3.1)
+E   assert (('variables....import.csv'))) == (('variables....import.csv')))
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m, WindowsPath([33m'[39;49;00m[33mfirst.png[39;49;00m[33m'[39;49;00m))[90m[39;49;00m != [0m([33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m, WindowsPath([33m'[39;49;00m[33mfirst.png[39;49;00m[33m'[39;49;00m))[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.1'], '1': ['variables.files.2']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...1.png\r\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id fi...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1081: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[1] == expected[1], f"map names variables.files.<i> for each item of files (AC-3.2): {parts[1]!r}"
+E   AssertionError: map names variables.files.<i> for each item of files (AC-3.2): Part(name='map', filename=None, content={'0': ['variables.files.1']})
+E   assert Part(name='ma...es.files.1']}) == Part(name='ma...es.files.0']})
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute content:
+E       content: [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m != [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1081: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[1] == expected[1], f"map names variables.files.<i> for each item of files (AC-3.2): {parts[1]!r}"
+E   AssertionError: map names variables.files.<i> for each item of files (AC-3.2): Part(name='map', filename=None, content={'0': ['variables.files.1'], '1': ['variables.files.2']})
+E   assert Part(name='ma...es.files.2']}) == Part(name='ma...es.files.1']})
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute content:
+E       content: [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m], [33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.2[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m != [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;...
+E     
+E     ...Full output truncated, use '-vv' to show
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+======================= 4 failed, 218 passed in 13.57s ========================
+# exit=1; KILLED (4 failed, 218 passed in 13.57s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1e: split_uploads returns the files in reverse order
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -400,3 +400,3 @@
+             sent[name] = value
+-    return sent, tuple(files)
++    return sent, tuple(reversed(files))
+ 
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+.......................F....................F........................... [ 32%]
+........................F............................................... [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+______________ test_split_uploads_puts_null_where_each_file_goes ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:444: in test_split_uploads_puts_null_where_each_file_goes
+    assert files == SPLIT_FILES, (
+E   AssertionError: each file with the operations path it fills, variables.<name> or variables.<name>.<index>, in the order of the values and of each list (design.md D4, AC-3.1)
+E   assert (('variables....'first.png'))) == (('variables....import.csv')))
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mvariables.file[39;49;00m[33m'[39;49;00m, WindowsPath([33m'[39;49;00m[33mimport.csv[39;49;00m[33m'[39;49;00m))[90m[39;49;00m != [0m([33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m, WindowsPath([33m'[39;49;00m[33mfirst.png[39;49;00m[33m'[39;49;00m))[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.1'], '1': ['variables.files.0']}), Part(name='0', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n'), Part(name='1', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...0.png\r\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id fi...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1081: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[1] == expected[1], f"map names variables.files.<i> for each item of files (AC-3.2): {parts[1]!r}"
+E   AssertionError: map names variables.files.<i> for each item of files (AC-3.2): Part(name='map', filename=None, content={'0': ['variables.files.1'], '1': ['variables.files.0']})
+E   assert Part(name='ma...es.files.0']}) == Part(name='ma...es.files.1']})
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute content:
+E       content: [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m], [33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m != [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;...
+E     
+E     ...Full output truncated, use '-vv' to show
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+======================= 3 failed, 219 passed in 13.66s ========================
+# exit=1; KILLED (3 failed, 219 passed in 13.66s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1f: split_uploads leaves a single Path in the variables
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -390,3 +390,3 @@
+             files.append((operations_path, value))
+-            sent[name] = None
++            sent[name] = value
+         elif _is_array(value) and any(isinstance(item, Path) for item in value):
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+.......................F................................................ [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+______________ test_split_uploads_puts_null_where_each_file_goes ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:440: in test_split_uploads_puts_null_where_each_file_goes
+    assert sent_variables == SPLIT_VARIABLES, (
+E   AssertionError: each Path value, and each Path item of a list, is replaced by None, the null of the operations part; every other value is unchanged (design.md D4, AC-3.1)
+E   assert {'projectPath...'import.csv')} == {'projectPath... 'file': None}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m: WindowsPath([33m'[39;49;00m[33mimport.csv[39;49;00m[33m'[39;49;00m)}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m: [94mNone[39;49;00m}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+======================= 1 failed, 221 passed in 14.55s ========================
+# exit=1; KILLED (1 failed, 221 passed in 14.55s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1g: split_uploads leaves the Path items in a list
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -397,3 +397,3 @@
+             )
+-            sent[name] = [None if isinstance(item, Path) else item for item in value]
++            sent[name] = list(value)
+         else:
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+.......................F...................F............................ [ 32%]
+.............F...F..F................................................... [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+______________ test_split_uploads_puts_null_where_each_file_goes ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_registry.py:440: in test_split_uploads_puts_null_where_each_file_goes
+    assert sent_variables == SPLIT_VARIABLES, (
+E   AssertionError: each Path value, and each Path item of a list, is replaced by None, the null of the operations part; every other value is unchanged (design.md D4, AC-3.1)
+E   assert {'projectPath... 'file': None} == {'projectPath... 'file': None}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [WindowsPath([33m'[39;49;00m[33mfirst.png[39;49;00m[33m'[39;49;00m), WindowsPath([33m'[39;49;00m[33msecond.png[39;49;00m[33m'[39;49;00m)]}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mfiles[39;49;00m[33m'[39;49;00m: [[94mNone[39;49;00m, [94mNone[39;49;00m]}[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:610: in test_every_record_is_called_through_main
+    code = run_call(root=project, argv=(operation_id, *planned.arguments))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:259: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:355: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:340: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:418: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:402: in send_call
+    print_json(value=registry.call(transport=transport, operation_id=operation_id, values=prepared.values))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\registry.py:444: in call
+    return transport.graphql(document=operation.document, variables=sent, files=files)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\transport.py:607: in graphql
+    form=((PART_OPERATIONS, json.dumps(obj=payload)), (PART_MAP, json.dumps(obj=file_map))),
+                            ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\__init__.py:235: in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:202: in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:263: in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:182: in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+E   TypeError: Object of type WindowsPath is not JSON serializable
+E   when serializing list item 0
+E   when serializing dict item 'files'
+E   when serializing dict item 'variables'
+__ test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:975: in test_a_graphql_failure_exits_1_with_its_details
+    code = run_call(root=project, argv=argv, token_type=failure.token_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:259: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:355: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:340: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:418: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:402: in send_call
+    print_json(value=registry.call(transport=transport, operation_id=operation_id, values=prepared.values))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\registry.py:444: in call
+    return transport.graphql(document=operation.document, variables=sent, files=files)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\transport.py:607: in graphql
+    form=((PART_OPERATIONS, json.dumps(obj=payload)), (PART_MAP, json.dumps(obj=file_map))),
+                            ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\__init__.py:235: in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:202: in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:263: in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:182: in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+E   TypeError: Object of type WindowsPath is not JSON serializable
+E   when serializing list item 0
+E   when serializing dict item 'files'
+E   when serializing dict item 'variables'
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1054: in test_a_design_upload_sends_each_file_as_a_part
+    code = run_call(root=project, argv=(OP_DESIGN_UPLOAD, *arguments))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:259: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:355: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:340: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:418: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:402: in send_call
+    print_json(value=registry.call(transport=transport, operation_id=operation_id, values=prepared.values))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\registry.py:444: in call
+    return transport.graphql(document=operation.document, variables=sent, files=files)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\transport.py:607: in graphql
+    form=((PART_OPERATIONS, json.dumps(obj=payload)), (PART_MAP, json.dumps(obj=file_map))),
+                            ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\__init__.py:235: in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:202: in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:263: in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:182: in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+E   TypeError: Object of type WindowsPath is not JSON serializable
+E   when serializing list item 0
+E   when serializing dict item 'files'
+E   when serializing dict item 'variables'
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1054: in test_a_design_upload_sends_each_file_as_a_part
+    code = run_call(root=project, argv=(OP_DESIGN_UPLOAD, *arguments))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:259: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:355: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_wrapper.py:340: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:418: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\commands\call.py:402: in send_call
+    print_json(value=registry.call(transport=transport, operation_id=operation_id, values=prepared.values))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\registry.py:444: in call
+    return transport.graphql(document=operation.document, variables=sent, files=files)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\scripts\gitlab_api\transport.py:607: in graphql
+    form=((PART_OPERATIONS, json.dumps(obj=payload)), (PART_MAP, json.dumps(obj=file_map))),
+                            ^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\__init__.py:235: in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:202: in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:263: in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\json\encoder.py:182: in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+E   TypeError: Object of type WindowsPath is not JSON serializable
+E   when serializing list item 0
+E   when serializing dict item 'files'
+E   when serializing dict item 'variables'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+======================= 5 failed, 217 passed in 14.35s ========================
+# exit=1; KILLED (5 failed, 217 passed in 14.35s)
+#   failed: src/payload/test/test_gitlab_api_registry.py::test_split_uploads_puts_null_where_each_file_goes
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## mutant 1h: Transport.graphql writes map before operations (part order)
+# src/payload/scripts/gitlab_api/transport.py: sha256 b3728692b0171450... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/transport.py
++++ b/src/payload/scripts/gitlab_api/transport.py
+@@ -606,3 +606,3 @@
+             data, content_type = request_body(
+-                form=((PART_OPERATIONS, json.dumps(obj=payload)), (PART_MAP, json.dumps(obj=file_map))),
++                form=((PART_MAP, json.dumps(obj=file_map)), (PART_OPERATIONS, json.dumps(obj=payload))),
+                 json_body=None,
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+............................................F........................... [ 32%]
+.................F..F................................................F.. [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...1.png\r\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33mmap[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m], [33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m]}), Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;0...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1077: in test_a_design_upload_sends_each_file_as_a_part
+    assert [part.name for part in parts] == [part.name for part in expected], (
+E   AssertionError: the parts are operations, map, then one per file named after its map key, in that order (AC-3.1)
+E   assert ['map', 'operations', '0'] == ['operations', 'map', '0']
+E     
+E     At index 0 diff: [0m[33m'[39;49;00m[33mmap[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1077: in test_a_design_upload_sends_each_file_as_a_part
+    assert [part.name for part in parts] == [part.name for part in expected], (
+E   AssertionError: the parts are operations, map, then one per file named after its map key, in that order (AC-3.1)
+E   assert ['map', 'oper...ns', '0', '1'] == ['operations'...ap', '0', '1']
+E     
+E     At index 0 diff: [0m[33m'[39;49;00m[33mmap[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1058: in test_graphql_sends_files_as_one_multipart_request
+    assert [part.disposition.get("name") for part in parts] == UPLOAD_PART_ORDER, (
+E   AssertionError: the parts are `operations`, `map`, then one per file named after its `map` key, in that order (#44 D4)
+E   assert ['map', 'oper...ns', '0', '1'] == ['operations'...ap', '0', '1']
+E     
+E     At index 0 diff: [0m[33m'[39;49;00m[33mmap[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+======================= 4 failed, 218 passed in 14.42s ========================
+# exit=1; KILLED (4 failed, 218 passed in 14.42s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+
+## mutant 1i: the map value is the operations path, not a list holding it (map JSON)
+# src/payload/scripts/gitlab_api/transport.py: sha256 b3728692b0171450... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/transport.py
++++ b/src/payload/scripts/gitlab_api/transport.py
+@@ -604,3 +604,3 @@
+         if files:
+-            file_map = {str(index): [operations_path] for index, (operations_path, _) in enumerate(files)}
++            file_map = {str(index): operations_path for index, (operations_path, _) in enumerate(files)}
+             data, content_type = request_body(
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+.............................................F.......................... [ 32%]
+................F..F..................................F................. [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': 'variables.files.0', '1': 'variables.files.1'}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...1.png\r\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id fi...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1081: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[1] == expected[1], f"map names variables.files.<i> for each item of files (AC-3.2): {parts[1]!r}"
+E   AssertionError: map names variables.files.<i> for each item of files (AC-3.2): Part(name='map', filename=None, content={'0': 'variables.files.0'})
+E   assert Part(name='ma...les.files.0'}) == Part(name='ma...es.files.0']})
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute content:
+E       content: [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1081: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[1] == expected[1], f"map names variables.files.<i> for each item of files (AC-3.2): {parts[1]!r}"
+E   AssertionError: map names variables.files.<i> for each item of files (AC-3.2): Part(name='map', filename=None, content={'0': 'variables.files.0', '1': 'variables.files.1'})
+E   assert Part(name='ma...les.files.1'}) == Part(name='ma...es.files.1']})
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing attributes:
+E     [0m[[33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     
+E     Drill down into differing attribute content:
+E       content: [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;00m...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1073: in test_graphql_sends_files_as_one_multipart_request
+    assert json.loads(file_map.content.decode("utf-8")) == UPLOAD_MAP, (
+E   AssertionError: `map` maps each file part's name to the operations path it fills (AC-3.1)
+E   assert {'0': 'variab...bles.files.1'} == {'0': ['varia...les.files.1']}
+E     
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33m1[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.1[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m}[90m[39;49;00m != [0m{[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m: [[33m'[39;49;00m[33mvariables.files.0[39;49;00m[33m'[39;49;00m]}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+======================= 4 failed, 218 passed in 13.12s ========================
+# exit=1; KILLED (4 failed, 218 passed in 13.12s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+
+## mutant 1j: a file part's CRLF becomes LF (bytes altered)
+# src/payload/scripts/gitlab_api/transport.py: sha256 b3728692b0171450... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/transport.py
++++ b/src/payload/scripts/gitlab_api/transport.py
+@@ -406,3 +406,3 @@
+     try:
+-        content = path.read_bytes()
++        content = path.read_bytes().replace(b"\r\n", b"\n")
+     except OSError as error:
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+........................................F.F............................. [ 32%]
+...............F...F................................F................... [ 64%]
+..........................F............................................. [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+_______________________ test_file_value_sends_multipart _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:425: in test_file_value_sends_multipart
+    assert file_part.content == FILE_BYTES, "the file's bytes are sent unchanged"
+E   AssertionError: the file's bytes are sent unchanged
+E   assert b'first line\...f binary tail' == b'first line\...f binary tail'
+E     
+E     At index 10 diff: [0m[33mb[39;49;00m[33m'[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33mb[39;49;00m[33m'[39;49;00m[33m\r[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\n\x1a\n\x00\xff record-17-files-0.png\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\n\x1a\n\x00\xff record-17-files-1.png\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...s-1.png\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id fi...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1082: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[2:] == expected[2:], "each file part holds the file's name and its bytes unchanged (AC-3.1)"
+E   AssertionError: each file part holds the file's name and its bytes unchanged (AC-3.1)
+E   assert (Part(name='0...t design\n'),) == (Part(name='0...design\r\n'),)
+E     
+E     At index 0 diff: [0mPart(name=[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m, filename=[33m'[39;49;00m[33mfirst-design.png[39;49;00m[33m'[39;49;00m, content=[33mb[39;49;00m[33m'[39;49;00m[33m\x89[39;49;00m[33mPNG[39;49;00m[33m\n[39;49;00m[33m\x1a[39;49;00m[33m\n[39;49;00m[33m\x00[39;49;00m[33m\xff[39;49;00m[33m first design[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0mPart(name=[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m, filename=[33m'[39;49;00m[33mfirst-design.png[39;49;00m[33m'[39;49;00m, content=...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1082: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[2:] == expected[2:], "each file part holds the file's name and its bytes unchanged (AC-3.1)"
+E   AssertionError: each file part holds the file's name and its bytes unchanged (AC-3.1)
+E   assert (Part(name='0...design\nend')) == (Part(name='0...sign\r\nend'))
+E     
+E     At index 0 diff: [0mPart(name=[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m, filename=[33m'[39;49;00m[33mfirst-design.png[39;49;00m[33m'[39;49;00m, content=[33mb[39;49;00m[33m'[39;49;00m[33m\x89[39;49;00m[33mPNG[39;49;00m[33m\n[39;49;00m[33m\x1a[39;49;00m[33m\n[39;49;00m[33m\x00[39;49;00m[33m\xff[39;49;00m[33m first design[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0mPart(name=[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m, filename=[33m'[39;49;00m[33mfirst-design.png[39;49;00m[33m'[39;49;00m, content=...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1083: in test_graphql_sends_files_as_one_multipart_request
+    assert file_part.content == content, f"file {index}'s bytes are sent unchanged"
+E   AssertionError: file 0's bytes are sent unchanged
+E   assert b'\x89PNG\n\x...ign\n\xff\xfe' == b'\x89PNG\r\n...n\r\n\xff\xfe'
+E     
+E     At index 4 diff: [0m[33mb[39;49;00m[33m'[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33mb[39;49;00m[33m'[39;49;00m[33m\r[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____________ test_an_attribute_carries_its_kind[file-multipart] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_call.py:893: in test_an_attribute_carries_its_kind
+    assert decoded_body(request=request) == case.body, (
+E   AssertionError: natively in a JSON body, as bracket pairs in a form body, and with a file as multipart: the file's bytes unchanged and every other body attribute a form field (AC-1.3)
+E   assert ((('title', '... upload\n'),)) == ((('title', '...pload\r\n'),))
+E     
+E     At index 1 diff: [0m(([33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m, [33mb[39;49;00m[33m'[39;49;00m[33m\x89[39;49;00m[33mPNG[39;49;00m[33m\n[39;49;00m[33m\x1a[39;49;00m[33m\n[39;49;00m[33m\x00[39;49;00m[33m\xff[39;49;00m[33m\xfe[39;49;00m[33m synthetic upload[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m),)[90m[39;49;00m != [0m(([33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m, [33mb[39;49;00m[33m'[39;49;00m[33m\x89[39;49;00m[33mPNG[39;49;00m[33m\r[39;49;00m[33m\n[39;49;00m[33m\x1a[39;49;00m[33m\n[39;49;00m[33m\x0...
+E     
+E     ...Full output truncated, use '-vv' to show
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_file_value_sends_multipart
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[file-multipart]
+======================= 6 failed, 216 passed in 11.41s ========================
+# exit=1; KILLED (6 failed, 216 passed in 11.41s)
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_file_value_sends_multipart
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+#   failed: src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[file-multipart]
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+
+## mutant 1k: a file part is re-encoded as UTF-8 text (non-UTF-8 bytes altered)
+# src/payload/scripts/gitlab_api/transport.py: sha256 b3728692b0171450... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/transport.py
++++ b/src/payload/scripts/gitlab_api/transport.py
+@@ -406,3 +406,3 @@
+     try:
+-        content = path.read_bytes()
++        content = path.read_bytes().decode("utf-8", errors="replace").encode("utf-8")
+     except OSError as error:
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+........................................FF.............................. [ 32%]
+..............F..F..................................F................... [ 64%]
+.........................F.............................................. [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+_______________________ test_file_value_sends_multipart _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:425: in test_file_value_sends_multipart
+    assert file_part.content == FILE_BYTES, "the file's bytes are sent unchanged"
+E   AssertionError: the file's bytes are sent unchanged
+E   assert b'first line\...d binary tail' == b'first line\...f binary tail'
+E     
+E     At index 26 diff: [0m[33mb[39;49;00m[33m'[39;49;00m[33m\xef[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33mb[39;49;00m[33m'[39;49;00m[33m\xff[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\xef\xbf\xbdPNG\r\n\x1a\n\x00\xef\xbf\xbd record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\xef\xbf\xbdPNG\r\n\x1a\n\x00\xef\xbf\xbd record-17-files-1.png\r\n')))]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('multipart/...1.png\r\n')))] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mmultipart/form-data[39;49;00m[33m'[39;49;00m, (Part(name=[33m'[39;49;00m[33moperations[39;49;00m[33m'[39;49;00m, filename=[94mNone[39;49;00m, content={[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id fi...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1082: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[2:] == expected[2:], "each file part holds the file's name and its bytes unchanged (AC-3.1)"
+E   AssertionError: each file part holds the file's name and its bytes unchanged (AC-3.1)
+E   assert (Part(name='0...design\r\n'),) == (Part(name='0...design\r\n'),)
+E     
+E     At index 0 diff: [0mPart(name=[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m, filename=[33m'[39;49;00m[33mfirst-design.png[39;49;00m[33m'[39;49;00m, content=[33mb[39;49;00m[33m'[39;49;00m[33m\xef[39;49;00m[33m\xbf[39;49;00m[33m\xbd[39;49;00m[33mPNG[39;49;00m[33m\r[39;49;00m[33m\n[39;49;00m[33m\x1a[39;49;00m[33m\n[39;49;00m[33m\x00[39;49;00m[33m\xef[39;49;00m[33m\xbf[39;49;00m[33m\xbd[39;49;00m[33m first design[39;49;00m[33m\r[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0mPart(name=[33m'[39;49;00m[33m0...
+E     
+E     ...Full output truncated, use '-vv' to show
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1082: in test_a_design_upload_sends_each_file_as_a_part
+    assert parts[2:] == expected[2:], "each file part holds the file's name and its bytes unchanged (AC-3.1)"
+E   AssertionError: each file part holds the file's name and its bytes unchanged (AC-3.1)
+E   assert (Part(name='0...sign\r\nend')) == (Part(name='0...sign\r\nend'))
+E     
+E     At index 0 diff: [0mPart(name=[33m'[39;49;00m[33m0[39;49;00m[33m'[39;49;00m, filename=[33m'[39;49;00m[33mfirst-design.png[39;49;00m[33m'[39;49;00m, content=[33mb[39;49;00m[33m'[39;49;00m[33m\xef[39;49;00m[33m\xbf[39;49;00m[33m\xbd[39;49;00m[33mPNG[39;49;00m[33m\r[39;49;00m[33m\n[39;49;00m[33m\x1a[39;49;00m[33m\n[39;49;00m[33m\x00[39;49;00m[33m\xef[39;49;00m[33m\xbf[39;49;00m[33m\xbd[39;49;00m[33m first design[39;49;00m[33m\r[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m)[90m[39;49;00m != [0mPart(name=[33m'[39;49;00m[33m0...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1083: in test_graphql_sends_files_as_one_multipart_request
+    assert file_part.content == content, f"file {index}'s bytes are sent unchanged"
+E   AssertionError: file 0's bytes are sent unchanged
+E   assert b'\xef\xbf\xb...d\xef\xbf\xbd' == b'\x89PNG\r\n...n\r\n\xff\xfe'
+E     
+E     At index 0 diff: [0m[33mb[39;49;00m[33m'[39;49;00m[33m\xef[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33mb[39;49;00m[33m'[39;49;00m[33m\x89[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_____________ test_an_attribute_carries_its_kind[file-multipart] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_call.py:893: in test_an_attribute_carries_its_kind
+    assert decoded_body(request=request) == case.body, (
+E   AssertionError: natively in a JSON body, as bracket pairs in a form body, and with a file as multipart: the file's bytes unchanged and every other body attribute a form field (AC-1.3)
+E   assert ((('title', '...pload\r\n'),)) == ((('title', '...pload\r\n'),))
+E     
+E     At index 1 diff: [0m(([33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m, [33mb[39;49;00m[33m'[39;49;00m[33m\xef[39;49;00m[33m\xbf[39;49;00m[33m\xbd[39;49;00m[33mPNG[39;49;00m[33m\r[39;49;00m[33m\n[39;49;00m[33m\x1a[39;49;00m[33m\n[39;49;00m[33m\x00[39;49;00m[33m\xef[39;49;00m[33m\xbf[39;49;00m[33m\xbd[39;49;00m[33m\xef[39;49;00m[33m\xbf[39;49;00m[33m\xbd[39;49;00m[33m synthetic upload[39;49;00m[33m\r[39;49;00m[33m\n[39;49;00m[33m'[39;49;00m),)[90m[39;49;00m != [0m(([33m'[39;49;00m[33mfile[39;49;00m[33m'[39;49;00m,...
+E     
+E     ...Full output truncated, use '-vv' to show
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_file_value_sends_multipart
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+FAILED src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[file-multipart]
+======================= 6 failed, 216 passed in 13.03s ========================
+# exit=1; KILLED (6 failed, 216 passed in 13.03s)
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_file_value_sends_multipart
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+#   failed: src/payload/test/test_gitlab_api_call.py::test_an_attribute_carries_its_kind[file-multipart]
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+
+## mutant 1l: the job-token refusal moves after the body (and the file read)
+# src/payload/scripts/gitlab_api/transport.py: sha256 b3728692b0171450... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/transport.py
++++ b/src/payload/scripts/gitlab_api/transport.py
+@@ -600,4 +600,2 @@
+         ``errors``, or a mutation payload's non-empty ``errors``, raise ``GitLabGraphQLResponseError`` (AC-4.3)."""
+-        if self.token_type is TokenType.JOB:
+-            raise GitLabAPIError("job tokens cannot authenticate GraphQL requests (graphql/conventions.md)")
+         payload = {FIELD_QUERY: document, FIELD_VARIABLES: dict(variables or {})}
+@@ -612,2 +610,4 @@
+             data, content_type = json.dumps(obj=payload).encode(encoding=TEXT_ENCODING), CONTENT_TYPE_JSON
++        if self.token_type is TokenType.JOB:
++            raise GitLabAPIError("job tokens cannot authenticate GraphQL requests (graphql/conventions.md)")
+         response = self._send(
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+........................................................................ [ 32%]
+.......................................................................F [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1088: in test_graphql_sends_files_as_one_multipart_request
+    with pytest.raises(errors.GitLabAPIError, match=JOB_TOKEN_REFUSAL):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'job tokens cannot authenticate GraphQL'
+E     Actual message: "cannot read the file D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1441\\popen-gw0\\test_graphql_sends_files_as_on0\\never-written.png sent as '0': [Errno 2] No such file or directory: 'D:\\\\Users\\\\bestem\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-bestem\\\\pytest-1441\\\\popen-gw0\\\\test_graphql_sends_files_as_on0\\\\never-written.png'"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+======================= 1 failed, 221 passed in 12.97s ========================
+# exit=1; KILLED (1 failed, 221 passed in 12.97s)
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+
+## mutant 1m: request_body bypassed: with files, the JSON body is sent and the files dropped
+# src/payload/scripts/gitlab_api/transport.py: sha256 b3728692b0171450... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/transport.py
++++ b/src/payload/scripts/gitlab_api/transport.py
+@@ -603,3 +603,3 @@
+         payload = {FIELD_QUERY: document, FIELD_VARIABLES: dict(variables or {})}
+-        if files:
++        if False:
+             file_map = {str(index): [operations_path] for index, (operations_path, _) in enumerate(files)}
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+..............................................F......................... [ 32%]
+..............F...F.F............................................F...... [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:580: in judge_call
+    assert bodies == list(planned.posts), (
+E   AssertionError: call graphql#designManagementUpload posts its document with the given variables (after null then 'c1' on a connection), or AC-3.1's parts for an Upload variable:
+E     posted   [('application/json', {'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}})]
+E     expected [('multipart/form-data', (Part(name='operations', filename=None, content={'query': 'mutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) { designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) { designs { id filename } skippedDesigns { id filename } errors } }', 'variables': {'projectPath': 'v-projectPath', 'iid': 'v-iid', 'files': [None, None]}}), Part(name='map', filename=None, content={'0': ['variables.files.0'], '1': ['variables.files.1']}), Part(name='0', filename='record-17-files-0.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-0.png\r\n'), Part(name='1', filename='record-17-files-1.png', content=b'\x89PNG\r\n\x1a\n\x00\xff record-17-files-1.png\r\n')))]
+E   assert [('applicatio...one, None]}})] == [('multipart/...1.png\r\n')))]
+E     
+E     At index 0 diff: [0m([33m'[39;49;00m[33mapplication/json[39;49;00m[33m'[39;49;00m, {[33m'[39;49;00m[33mquery[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mmutation($projectPath: ID!, $iid: ID!, $files: [Upload!]!) [39;49;00m[33m{[39;49;00m[33m designManagementUpload(input: [39;49;00m[33m{[39;49;00m[33mprojectPath: $projectPath, iid: $iid, files: $files}) [39;49;00m[33m{[39;49;00m[33m designs [39;49;00m[33m{[39;49;00m[33m id filename } skippedDesigns [39;49;00m[33m{[39;49;00m[33m id filename } errors } }[39;49;00m[33m'[39;49;00m, [3...
+E     
+E     ...Full output truncated, use '-vv' to show
+__ test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:979: in test_a_graphql_failure_exits_1_with_its_details
+    assert code == EXIT_API_ERROR, (
+E   AssertionError: call graphql#designManagementUpload exits 0, not 1; logged: []
+E   assert 0 == 1
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1066: in test_a_design_upload_sends_each_file_as_a_part
+    assert media_type(value=content_type) == CONTENT_TYPE_MULTIPART, f"the body is multipart, not {content_type!r}"
+E   AssertionError: the body is multipart, not 'application/json'
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     [0m[91m- multipart/form-data[39;49;00m[90m[39;49;00m
+E     [92m+ application/json[39;49;00m[90m[39;49;00m
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1066: in test_a_design_upload_sends_each_file_as_a_part
+    assert media_type(value=content_type) == CONTENT_TYPE_MULTIPART, f"the body is multipart, not {content_type!r}"
+E   AssertionError: the body is multipart, not 'application/json'
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     [0m[91m- multipart/form-data[39;49;00m[90m[39;49;00m
+E     [92m+ application/json[39;49;00m[90m[39;49;00m
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1054: in test_graphql_sends_files_as_one_multipart_request
+    boundary = multipart_boundary(content_type=sent.header(name=HEADER_CONTENT_TYPE))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:212: in multipart_boundary
+    assert message.get_content_type() == CONTENT_TYPE_MULTIPART, f"Content-Type {content_type!r} is not multipart"
+E   AssertionError: Content-Type 'application/json' is not multipart
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     [0m[91m- multipart/form-data[39;49;00m[90m[39;49;00m
+E     [92m+ application/json[39;49;00m[90m[39;49;00m
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+======================= 5 failed, 217 passed in 11.44s ========================
+# exit=1; KILLED (5 failed, 217 passed in 11.44s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_graphql_failure_exits_1_with_its_details[file-that-cannot-be-read]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+
+## mutant 1n: the multipart body goes out with Content-Type application/json
+# src/payload/scripts/gitlab_api/transport.py: sha256 b3728692b0171450... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/transport.py
++++ b/src/payload/scripts/gitlab_api/transport.py
+@@ -610,2 +610,3 @@
+             )
++            content_type = CONTENT_TYPE_JSON
+         else:
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+............................................F........................... [ 32%]
+...............F...F................................F................... [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+================================== FAILURES ===================================
+__________________ test_every_record_is_called_through_main ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:612: in test_every_record_is_called_through_main
+    judge_call(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:579: in judge_call
+    bodies = [posted(request=request) for request in fake.requests]
+              ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:449: in posted
+    return media, request.json()
+                  ^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\gitlab_wrapper_fixtures.py:95: in json
+    return json.loads(self.body.decode(TEXT_ENCODING))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   UnicodeDecodeError: 'utf-8' codec can't decode byte 0x89 in position 697: invalid start byte
+__________ test_a_design_upload_sends_each_file_as_a_part[one-file] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1066: in test_a_design_upload_sends_each_file_as_a_part
+    assert media_type(value=content_type) == CONTENT_TYPE_MULTIPART, f"the body is multipart, not {content_type!r}"
+E   AssertionError: the body is multipart, not 'application/json'
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     [0m[91m- multipart/form-data[39;49;00m[90m[39;49;00m
+E     [92m+ application/json[39;49;00m[90m[39;49;00m
+__________ test_a_design_upload_sends_each_file_as_a_part[two-files] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44\src\payload\test\test_gitlab_api_graphql_only.py:1066: in test_a_design_upload_sends_each_file_as_a_part
+    assert media_type(value=content_type) == CONTENT_TYPE_MULTIPART, f"the body is multipart, not {content_type!r}"
+E   AssertionError: the body is multipart, not 'application/json'
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     [0m[91m- multipart/form-data[39;49;00m[90m[39;49;00m
+E     [92m+ application/json[39;49;00m[90m[39;49;00m
+______________ test_graphql_sends_files_as_one_multipart_request ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_transport.py:1054: in test_graphql_sends_files_as_one_multipart_request
+    boundary = multipart_boundary(content_type=sent.header(name=HEADER_CONTENT_TYPE))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_transport.py:212: in multipart_boundary
+    assert message.get_content_type() == CONTENT_TYPE_MULTIPART, f"Content-Type {content_type!r} is not multipart"
+E   AssertionError: Content-Type 'application/json' is not multipart
+E   assert 'application/json' == 'multipart/form-data'
+E     
+E     [0m[91m- multipart/form-data[39;49;00m[90m[39;49;00m
+E     [92m+ application/json[39;49;00m[90m[39;49;00m
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+FAILED src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+======================= 4 failed, 218 passed in 11.69s ========================
+# exit=1; KILLED (4 failed, 218 passed in 11.69s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_every_record_is_called_through_main
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[one-file]
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_a_design_upload_sends_each_file_as_a_part[two-files]
+#   failed: src/payload/test/test_gitlab_api_transport.py::test_graphql_sends_files_as_one_multipart_request
+# restored src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+
+## mutant 1o: upload_variables' unmatched-type branch (registry.py line 279) records a bogus upload
+# src/payload/scripts/gitlab_api/registry.py: sha256 73983165ce90c3cc... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -278,2 +278,3 @@
+         if reference is None:
++            uploads["never"] = True
+             continue
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+============================ 222 passed in 11.46s =============================
+# exit=0; SURVIVED (222 passed in 11.46s)
+# restored src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+
+## baseline after: the unmutated tree
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_graphql_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [222 items]
+
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 97%]
+......                                                                   [100%]
+============================ 222 passed in 10.72s =============================
+# exit=0
+
+# results
+# baseline before exit=0
+# W1 KILLED (6 failed, 260 passed in 76.72s (0:01:16))
+# 1a KILLED (6 failed, 216 passed in 13.03s)
+# 1b KILLED (2 failed, 220 passed in 14.01s)
+# 1c KILLED (5 failed, 217 passed in 14.75s)
+# 1d KILLED (4 failed, 218 passed in 13.57s)
+# 1e KILLED (3 failed, 219 passed in 13.66s)
+# 1f KILLED (1 failed, 221 passed in 14.55s)
+# 1g KILLED (5 failed, 217 passed in 14.35s)
+# 1h KILLED (4 failed, 218 passed in 14.42s)
+# 1i KILLED (4 failed, 218 passed in 13.12s)
+# 1j KILLED (6 failed, 216 passed in 11.41s)
+# 1k KILLED (6 failed, 216 passed in 13.03s)
+# 1l KILLED (1 failed, 221 passed in 12.97s)
+# 1m KILLED (5 failed, 217 passed in 11.44s)
+# 1n KILLED (4 failed, 218 passed in 11.69s)
+# 1o SURVIVED (222 passed in 11.46s)
+# baseline after exit=0
+# final src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/commands/call.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+# final src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+# final docs/forLLMConsumption.md: sha256 identical=True

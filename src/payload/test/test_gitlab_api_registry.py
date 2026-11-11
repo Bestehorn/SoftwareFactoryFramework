@@ -14,6 +14,7 @@ record with nothing sent (AC-1.2); ``attribute_name`` drops one trailing ``[]`` 
 Issue #44 (``design.md`` D4) adds: ``upload_variables`` maps each variable a record's document defines with the type
 ``Upload``, or a list of it, to whether it is a list; ``split_uploads`` replaces each ``pathlib.Path`` value, and each
 one in a list, with ``None`` and returns the files with the operations path each fills, in order (AC-3.1).
+``upload_variables`` also leaves out a definition that has no type, and still reads the ones around it.
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
@@ -431,6 +432,33 @@ def test_upload_variables_are_the_documents_upload_definitions(document: str, ex
     assert registry.upload_variables(operation=operation) == expected, (
         "each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to "
         "whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)"
+    )
+
+
+# A document one of whose definitions has no type `TYPE_REFERENCE` reads: `$broken:` is followed by `,`, which starts
+# no Name. The upload variables before and after it are read all the same (design.md D4).
+UNTYPED_DEFINITION_NAME = "broken"
+UNTYPED_DEFINITION_DOCUMENT = (
+    "mutation M($files: [Upload!]!, $broken: , $file: Upload) "
+    "{ syntheticUpload(input: {files: $files, file: $file}) { errors } }"
+)
+
+
+def test_upload_variables_leave_out_a_definition_without_a_type() -> None:
+    """design.md D4, AC-3.1: a ``$name:`` definition followed by no type is a declared variable (``variables`` names
+    it) that ``upload_variables`` leaves out, while it still maps the ``Upload`` variables before and after it."""
+    registry = gitlab_module(name="registry")
+    operation = registry.GraphQLOperation(
+        operation_id=UPLOAD_OPERATION_ID,
+        capability=SYNTHETIC_CAPABILITY,
+        document=UNTYPED_DEFINITION_DOCUMENT,
+    )
+    assert UNTYPED_DEFINITION_NAME in registry.variables(operation=operation), (
+        f"${UNTYPED_DEFINITION_NAME} is a definition of the document, so upload_variables reads a type for it"
+    )
+    assert registry.upload_variables(operation=operation) == ALL_UPLOADS, (
+        f"a definition without a type, ${UNTYPED_DEFINITION_NAME}, is left out, and the Upload variables around it are "
+        "still mapped to whether each is a list (design.md D4, AC-3.1)"
     )
 
 

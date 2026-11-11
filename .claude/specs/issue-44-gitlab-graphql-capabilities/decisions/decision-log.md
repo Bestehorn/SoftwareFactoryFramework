@@ -71,3 +71,12 @@
 **Evidence:** both tasks-iteration-01.md Verdict lines.
 **Supersedes:** none
 **Artifacts touched:** tasks.md
+
+## DL-009 — 2026-11-11T10:32:27Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's M2j, M2k, M2r, M3f and COV as test gaps; add five tests (G: every paging record's connection equals D1's table; every `$input` mutation has D1's shape and the three inline ones take no `$input`; a `--file` replaces a `-f/-F` of the same name; the usage holds D8's refusal sentence. R: `upload_variables` leaves out a definition with no type); no product change, then a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md (REFUTED: M2j, M2k, M2r, M3f, COV).
+**Alternatives considered:** none
+**Evidence:** evidence/green/rework-1.txt (each mutant killed; 74 passed restored).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_graphql_only.py, src/payload/test/test_gitlab_api_registry.py

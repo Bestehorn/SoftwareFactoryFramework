@@ -25,6 +25,14 @@ queued with ``FakeGitLab.script_next``:
 the IDs of its records, how a variable, a file and a result are given and printed, ``exit 2`` and each ID of
 ``REFUSED_IDS``.
 
+Each by this file's own constants, never the product's: ``test_every_paging_record_names_its_designed_connection``
+(AC-2.2, design.md D1) holds each record's ``connection`` to ``DESIGNED_CONNECTIONS``, D1's query table;
+``test_every_mutation_document_has_the_designed_shape`` (AC-1.1, D1) holds every mutation but the three of
+``INLINE_INPUT_MUTATIONS`` to ``MUTATION_DOCUMENT_SHAPE``, and those three to an input object written into the
+document; ``test_a_file_replaces_a_field_of_the_same_name`` (AC-3.1, D4) gives ``files`` with ``-F``/``-f`` and with
+``--file`` and expects the multipart body; ``test_the_usage_says_which_mutations_are_refused`` (AC-5.1, D8) expects
+D8's ``REFUSAL_SENTENCE`` in the GraphQL entry.
+
 A JSON body is compared as parsed JSON. A ``multipart/form-data`` body is read with ``email.parser.BytesParser``, its
 ``Content-Type`` header prefixed, as ``test/test_gitlab_wrapper_contract.py`` ``sent_call`` reads one: each part's
 ``Content-Disposition`` ``name`` and ``filename``, a form field's content as JSON and a file's bytes unchanged. A
@@ -652,6 +660,169 @@ def test_every_record_id_is_looked_up_once() -> None:
     assert not problems, "records registry.lookup does not return once:\n" + "\n".join(problems)
 
 
+# --- AC-2.2: every record that pages names design D1's connection --------------------------------------------------
+
+FIELD_GROUP = "group"
+FIELD_NAMESPACE = "namespace"
+FIELD_WORK_ITEMS_BY_REFERENCE = "workItemsByReference"
+FIELD_BRANCH_RULES = "branchRules"
+FIELD_VULNERABILITIES = "vulnerabilities"
+OP_WORK_ITEMS_BY_REFERENCE = "graphql#workItemsByReference"
+OP_GROUP_WORK_ITEMS = "graphql#Group.workItems"
+OP_NAMESPACE_WORK_ITEMS = "graphql#Namespace.workItems"
+OP_PROJECT_BRANCH_RULES = "graphql#Project.branchRules"
+OP_GROUP_VULNERABILITIES = "graphql#Group.vulnerabilities"
+OP_QUERY_VULNERABILITIES = "graphql#Query.vulnerabilities"
+#: Design D1's query table, its ``connection`` column written out: the key path under ``data`` of every record that
+#: pages, by its ID. A record whose ID is not here pages nothing, ``NO_CONNECTION``.
+DESIGNED_CONNECTIONS: Mapping[str, Tuple[str, ...]] = {
+    OP_WORK_ITEMS_BY_REFERENCE: (FIELD_WORK_ITEMS_BY_REFERENCE,),
+    OP_PROJECT_WORK_ITEMS: (FIELD_PROJECT, FIELD_WORK_ITEMS),
+    OP_GROUP_WORK_ITEMS: (FIELD_GROUP, FIELD_WORK_ITEMS),
+    OP_NAMESPACE_WORK_ITEMS: (FIELD_NAMESPACE, FIELD_WORK_ITEMS),
+    OP_PROJECT_BRANCH_RULES: (FIELD_PROJECT, FIELD_BRANCH_RULES),
+    OP_GROUP_VULNERABILITIES: (FIELD_GROUP, FIELD_VULNERABILITIES),
+    OP_QUERY_VULNERABILITIES: (FIELD_VULNERABILITIES,),
+}
+NO_CONNECTION: Tuple[str, ...] = ()
+
+
+def designed_connection_problems(*, records: Sequence[Any]) -> List[str]:
+    """Each record whose ``connection`` is not design D1's — ``DESIGNED_CONNECTIONS``' for its ID, ``NO_CONNECTION``
+    for any other ID — and each ID of ``DESIGNED_CONNECTIONS`` that no record declares."""
+    problems: List[str] = []
+    for record in records:
+        operation_id = str(record.operation_id)
+        designed = DESIGNED_CONNECTIONS.get(operation_id, NO_CONNECTION)
+        if tuple(record.connection) != designed:
+            problems.append(f"{operation_id}: its connection is {tuple(record.connection)!r}, design D1's {designed!r}")
+    declared = {str(record.operation_id) for record in records}
+    problems.extend(
+        f"{operation_id}: design D1 pages it at {connection!r}, but no record declares it"
+        for operation_id, connection in DESIGNED_CONNECTIONS.items()
+        if operation_id not in declared
+    )
+    return problems
+
+
+def test_every_paging_record_names_its_designed_connection() -> None:
+    """AC-2.2 (design.md D1): every record of ``graphql_only.OPERATIONS`` whose ID is in ``DESIGNED_CONNECTIONS``, D1's
+    query table written out here, has that ``connection``, so ``call`` prints the nodes of every page; every other
+    record has none; every ID of the table is a record. It fails when ``OPERATIONS`` holds no record."""
+    graphql_only = gitlab_module(name=GRAPHQL_ONLY)
+    records = tuple(graphql_only.OPERATIONS)
+    assert records, "graphql_only.OPERATIONS holds no record, so no connection is proven (AC-2.2)"
+
+    problems = designed_connection_problems(records=records)
+
+    assert not problems, "records whose connection is not design D1's:\n" + "\n".join(problems)
+
+
+# --- AC-1.1: every mutation document has design D1's shape ---------------------------------------------------------
+
+#: How the document of a mutation record starts.
+MUTATION_KEYWORD = "mutation"
+OP_PIPELINE_CREATE = "graphql#pipelineCreate"
+#: Design D1's three mutations that write their input object into the document, each of its fields a variable of its
+#: own: two take an ``Upload`` (D4), and ``pipelineCreate``'s input holds ``async: true``. Every other mutation takes
+#: ``$input``.
+INLINE_INPUT_MUTATIONS: Tuple[str, ...] = (OP_DESIGN_UPLOAD, OP_PIPELINE_CREATE, OP_WORK_ITEMS_CSV_IMPORT)
+#: Design D1's ``$input`` mutation, ``mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }``, with any
+#: white space between its tokens: the one variable ``$input``, of a non-null named type; a root field called with
+#: ``(input: $input)``; a selection of at least one field, then ``errors`` last. The group ``selection`` is what comes
+#: before ``errors``.
+MUTATION_DOCUMENT_SHAPE = re.compile(
+    pattern=(
+        r"\Amutation\s*\(\s*\$input\s*:\s*[_A-Za-z][_0-9A-Za-z]*\s*!\s*\)\s*\{"
+        r"\s*[_A-Za-z][_0-9A-Za-z]*\s*\(\s*input\s*:\s*\$input\s*\)\s*\{"
+        r"\s*(?P<selection>[_A-Za-z].*?)\s+errors\s*\}\s*\}\s*\Z"
+    ),
+    flags=re.DOTALL,
+)
+GROUP_SELECTION = "selection"
+#: A definition of the variable ``$input``: ``$input``, then ``:`` after any white space.
+INPUT_DEFINITION = re.compile(pattern=r"\$input\s*:")
+#: An ``input`` argument whose value is an object written into the document: ``(input: {``.
+INLINE_INPUT_ARGUMENT = re.compile(pattern=r"\(\s*input\s*:\s*\{")
+OPENING_BRACE = "{"
+CLOSING_BRACE = "}"
+#: D1's ``$input`` shape, as a failure names it.
+MUTATION_SHAPE_TEXT = "mutation($input: <I>!) { <m>(input: $input) { <selection> errors } }"
+
+
+def selection_is_unbalanced(*, selection: str) -> bool:
+    """Whether ``selection`` closes a brace it did not open, or leaves one open: what a second root field after the
+    first one's selection leaves in the text ``MUTATION_DOCUMENT_SHAPE`` reads as the selection."""
+    depth = 0
+    for character in selection:
+        if character == OPENING_BRACE:
+            depth += 1
+        elif character == CLOSING_BRACE:
+            depth -= 1
+            if depth < 0:
+                return True
+    return depth != 0
+
+
+def mutation_shape_problems(*, operation_id: str, document: str) -> List[str]:
+    """Why the mutation ``document`` of the record ``operation_id`` does not have design D1's shape: for an ID of
+    ``INLINE_INPUT_MUTATIONS``, a ``$input`` definition or no ``input`` object written into it; for any other, no match
+    of ``MUTATION_DOCUMENT_SHAPE`` or a second root field. None when it has."""
+    if operation_id in INLINE_INPUT_MUTATIONS:
+        problems: List[str] = []
+        if INPUT_DEFINITION.search(string=document) is not None:
+            problems.append(
+                f"{operation_id}: design D1 writes its input object into the document, not $input: {document}"
+            )
+        if INLINE_INPUT_ARGUMENT.search(string=document) is None:
+            problems.append(
+                f"{operation_id}: no input object is written into the document as (input: {{...}}): {document}"
+            )
+        return problems
+    shape = MUTATION_DOCUMENT_SHAPE.match(string=document)
+    if shape is None:
+        return [f"{operation_id}: the document is not {MUTATION_SHAPE_TEXT}: {document}"]
+    if selection_is_unbalanced(selection=shape.group(GROUP_SELECTION)):
+        return [f"{operation_id}: the document selects more than one root field, or leaves a brace open: {document}"]
+    return []
+
+
+def test_every_mutation_document_has_the_designed_shape() -> None:
+    """AC-1.1 (design.md D1): the document of every record of ``graphql_only.OPERATIONS`` that starts with
+    ``mutation`` and whose ID is not in ``INLINE_INPUT_MUTATIONS`` is ``mutation($input: <I>!) { <m>(input: $input) {
+    <selection> errors } }`` — one ``$input`` of a non-null type, one root field called with ``(input: $input)``,
+    ``errors`` last — judged by ``MUTATION_DOCUMENT_SHAPE`` and ``selection_is_unbalanced``, not by the product's
+    builder; each ID of ``INLINE_INPUT_MUTATIONS`` is a mutation record that defines no ``$input`` and writes its input
+    object into the document. It fails when no record is a mutation, or none takes ``$input``."""
+    graphql_only = gitlab_module(name=GRAPHQL_ONLY)
+    mutations = [
+        (str(record.operation_id), str(record.document))
+        for record in graphql_only.OPERATIONS
+        if str(record.document).startswith(MUTATION_KEYWORD)
+    ]
+    assert mutations, (
+        f"graphql_only.OPERATIONS holds no record whose document starts with {MUTATION_KEYWORD!r}: "
+        f"{[record.operation_id for record in graphql_only.OPERATIONS]}"
+    )
+    assert [operation_id for operation_id, _ in mutations if operation_id not in INLINE_INPUT_MUTATIONS], (
+        f"every mutation record is one of INLINE_INPUT_MUTATIONS, so no $input document was judged: {mutations!r}"
+    )
+    declared = {operation_id for operation_id, _ in mutations}
+
+    problems = [
+        f"{operation_id}: design D1 writes its input object into its document, but no mutation record declares it"
+        for operation_id in INLINE_INPUT_MUTATIONS
+        if operation_id not in declared
+    ]
+    problems.extend(
+        problem
+        for operation_id, document in mutations
+        for problem in mutation_shape_problems(operation_id=operation_id, document=document)
+    )
+
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
+
+
 # --- AC-2.1: a variable holds the JSON value the caller gave -------------------------------------------------------
 
 UPDATE_DATA: Dict[str, Any] = {
@@ -1083,6 +1254,82 @@ def test_a_design_upload_sends_each_file_as_a_part(
     assert out == printed_json(value=DESIGN_DATA), f"the call prints data as print_json writes it (AC-3.1):\n{out}"
 
 
+# --- AC-3.1, design D4: a --file replaces a -f or -F value of the same name ----------------------------------------
+
+
+class ReplacedField(NamedTuple):
+    """``files`` given as ``text`` with ``option`` besides its ``--file``, before it or after it on the command line."""
+
+    slug: str
+    option: str
+    text: str
+    before_file: bool
+
+
+REPLACED_FIELDS: Tuple[ReplacedField, ...] = (
+    ReplacedField(
+        slug="json-field-before-the-file",
+        option=OPTION_FIELD,
+        text=json.dumps(obj=["given-with-field.png"]),
+        before_file=True,
+    ),
+    ReplacedField(
+        slug="raw-field-after-the-file", option=OPTION_RAW_FIELD, text="given-as-text.png", before_file=False
+    ),
+)
+
+
+def replaced_field_name(case: ReplacedField) -> str:
+    """The test id of a ``REPLACED_FIELDS`` row."""
+    return case.slug
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=REPLACED_FIELDS, ids=replaced_field_name)
+def test_a_file_replaces_a_field_of_the_same_name(
+    case: ReplacedField,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """AC-3.1, design.md D4: ``call graphql#designManagementUpload -f projectPath=g/p -f iid=5`` given ``files`` both
+    with ``-F``/``-f`` and with ``--file files=<a file>``, in either order: the ``--file`` replaces the other value, so
+    one ``POST`` sends AC-3.1's ``multipart/form-data`` body — ``operations`` with ``files`` ``[null]``, ``map``, and
+    the file as part ``0`` — and not a JSON body holding the ``-F``/``-f`` value; it prints ``data``."""
+    document = declared_document(operation_id=OP_DESIGN_UPLOAD)
+    file_name, content = FIRST_DESIGN
+    path = project / file_name
+    path.write_bytes(data=content)
+    field = assigned(option=case.option, name=VARIABLE_FILES, value=case.text)
+    upload = assigned(option=OPTION_FILE, name=VARIABLE_FILES, value=path)
+    ordered = (*field, *upload) if case.before_file else (*upload, *field)
+    queue_answers(fake=fake_gitlab, answers=(Answer(body={FIELD_DATA: DESIGN_DATA}),))
+
+    code = run_call(root=project, argv=(OP_DESIGN_UPLOAD, *DESIGN_ARGUMENTS, *ordered))
+
+    out = capsys.readouterr().out
+    assert code == EXIT_OK, (
+        f"call {OP_DESIGN_UPLOAD} exits {code}, not {EXIT_OK}; logged: {error_messages(caplog=caplog)!r}"
+    )
+    assert sent(fake=fake_gitlab) == [(METHOD_POST, GRAPHQL_URL)], (
+        f"the file and the operation travel in one POST to {GRAPHQL_URL} (AC-3.1): {sent(fake=fake_gitlab)}"
+    )
+    media, body = posted(request=fake_gitlab.requests[0])
+    expected_media, expected_parts = multipart_post(
+        document=document,
+        variables={VARIABLE_PROJECT_PATH: FULL_PATH, VARIABLE_IID: DESIGN_ISSUE_IID, VARIABLE_FILES: [None]},
+        files=(GivenFile(operations_path=operations_path(name=VARIABLE_FILES, index=0), path=path, content=content),),
+    )
+    assert media == expected_media, (
+        f"the --file replaces the {case.option} value of {VARIABLE_FILES}, so the body is {expected_media}, "
+        f"not {media} (design.md D4): {body!r}"
+    )
+    assert body == expected_parts, (
+        f"operations holds files [null], map names variables.files.0, and part 0 is the file (AC-3.1): {body!r}"
+    )
+    assert out == printed_json(value=DESIGN_DATA), f"the call prints data as print_json writes it (AC-3.1):\n{out}"
+
+
 # --- AC-4.1 to AC-4.3: a refused mutation sends nothing ------------------------------------------------------------
 
 #: The mark ``test_a_refused_mutation_sends_nothing`` replaces with the path of the CSV file it writes.
@@ -1281,4 +1528,27 @@ def test_the_usage_names_every_graphql_record() -> None:
         f"the GraphQL usage entry of {fixtures.WRAPPER_FILE.name}:\n"
         + "\n".join(problems)
         + f"\nThe entry reads: {entry}"
+    )
+
+
+#: What joins the IDs of ``REFUSED_IDS`` in design D8's refusal sentence.
+REFUSED_IDS_JOIN = " and "
+#: Design D8's refusal sentence of the GraphQL entry, verbatim: it names each ID of ``REFUSED_IDS`` and says that it is
+#: refused before any request, with exit 2 (AC-4.1). The capability lines name the same IDs, so only this sentence
+#: tells the reader they are refused.
+REFUSAL_SENTENCE = f"{REFUSED_IDS_JOIN.join(REFUSED_IDS)} are refused before any request: exit {EXIT_REFUSED}."
+
+
+def test_the_usage_says_which_mutations_are_refused() -> None:
+    """AC-5.1, AC-4.1 (design.md D8): the GraphQL entry of the entry script's ``__doc__``, read by
+    ``graphql_usage_entry``, holds ``REFUSAL_SENTENCE``, D8's sentence naming each ID of ``REFUSED_IDS`` as refused
+    before any request with exit 2; a sentence that says some other operation is refused does not satisfy it."""
+    doc = fixtures.load_wrapper(module_name=WRAPPER_MODULE).__doc__
+    assert doc, f"{fixtures.WRAPPER_FILE} has no module docstring"
+
+    entry = graphql_usage_entry(doc=doc)
+
+    assert REFUSAL_SENTENCE in entry, (
+        f"the GraphQL usage entry of {fixtures.WRAPPER_FILE.name} does not hold design D8's refusal sentence "
+        f"{REFUSAL_SENTENCE!r} (AC-5.1); the entry reads: {entry}"
     )
