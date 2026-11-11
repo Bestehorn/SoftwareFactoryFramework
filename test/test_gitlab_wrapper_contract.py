@@ -1935,3 +1935,54 @@ def test_a_request_header_is_read_and_sent_as_written() -> None:
     unsent = tuple(name for name in sent.headers if name.lower() != EXTERNAL_CONTROL_NONCE.lower())
     problems = call_problems(section=section, values=values, sent=replace(sent, headers=unsent))
     assert any(repr(EXTERNAL_CONTROL_NONCE) in problem for problem in problems), problems
+
+
+# --- Issue #63 AC-9.2: the map ----------------------------------------------------------------------------------------
+
+# test_the_map_names_the_request_forms (design.md D11): the map, the first line of its gitlab_api/ bullet, the indent
+# of the bullet's other lines, AC-9.1's spellings the bullet must hold, and `--path id=`, which it holds twice (D2).
+LLM_MAP = ROOT / "docs" / "forLLMConsumption.md"
+MAP_BULLET_START = "- `src/payload/scripts/gitlab_api/`"
+BULLET_CONTINUATION = " "
+BULLET_LINE_SEPARATOR = " "
+MAP_REQUEST_FORM_TEXTS = (
+    "--endpoint",
+    "--path format=",
+    "--header",
+    "override_params[container_expiration_policy_attributes]",
+)
+MAP_PATH_ID_GIVEN = "--path id="
+MAP_PATH_ID_TIMES = 2
+
+
+def map_bullet(*, path: Path, start: str) -> str:
+    """The list bullet of ``path`` whose first line starts with ``start``: that line and each line after it that is
+    indented, up to the next bullet, each stripped of its indentation and joined with one space, so a wrapped phrase
+    reads as one (`test/test_gitlab_graphql_contract.py` `_map_bullet`, restated); the calling test fails on this
+    assertion when no line, or more than one, starts the bullet."""
+    lines = path.read_text(encoding=TEXT_ENCODING).splitlines()
+    starts = [number for number, line in enumerate(lines) if line.startswith(start)]
+    assert len(starts) == 1, f"{path.name}: {len(starts)} lines start with {start!r}, expected one"
+    bullet = [lines[starts[0]]]
+    for line in lines[starts[0] + 1 :]:
+        if not line.startswith(BULLET_CONTINUATION):
+            break
+        bullet.append(line.strip())
+    return BULLET_LINE_SEPARATOR.join(bullet)
+
+
+def test_the_map_names_the_request_forms() -> None:
+    """Issue #63 AC-9.2 (design.md D11): the ``src/payload/scripts/gitlab_api/`` bullet of the project map,
+    ``docs/forLLMConsumption.md``, holds AC-9.1's spellings: ``--endpoint``, two ``--path id=``, ``--path format=``,
+    ``--header`` and ``override_params[container_expiration_policy_attributes]``, read as
+    ``test/test_gitlab_graphql_contract.py`` ``test_the_map_names_the_graphql_call`` reads the bullet."""
+    bullet = map_bullet(path=LLM_MAP, start=MAP_BULLET_START)
+
+    missing = [text for text in MAP_REQUEST_FORM_TEXTS if text not in bullet]
+    given = bullet.count(MAP_PATH_ID_GIVEN)
+
+    assert not missing and given >= MAP_PATH_ID_TIMES, (
+        f"the {MAP_BULLET_START!r} bullet of {LLM_MAP.relative_to(ROOT).as_posix()} does not hold {missing} and holds "
+        f"{MAP_PATH_ID_GIVEN!r} {given} times, {MAP_PATH_ID_TIMES} expected: it does not name the request forms of "
+        f"issue #63 (AC-9.2); the bullet is {bullet!r}"
+    )

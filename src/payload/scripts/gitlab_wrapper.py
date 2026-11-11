@@ -46,10 +46,29 @@ Usage:
         # that takes no raw body); --route-prefix PREFIX (a protocol route's <route-prefix>, for a record whose path
         # starts with /<route-prefix>/: one of the values its page lists, verbatim, e.g. /groups/:id/-/packages/npm,
         # each :name of it a path parameter given with --path). A GraphQL record takes its variables with -f and -F.
+        # The request forms of a REST record, one example each, the last a two-level member, by its full name:
+        #   call plan#add-an-emoji-reaction-to-a-resource --path merge_request_iid=5 -f name=thumbsup
+        #       --endpoint 'POST /projects/:id/merge_requests/:merge_request_iid/award_emoji'
+        #   call create#delete-a-group-ssh-certificate --path id=7 --path id=12345
+        #   call create#retrieve-file-archive-from-a-repository --path format=zip
+        #   call software-supply-chain-security#set-status-of-an-external-control --path external_control_id=3
+        #       -f status=pass --header X-Gitlab-Timestamp=1700000000 --header X-Gitlab-Nonce=n1
+        #       --header X-Gitlab-Hmac-Sha256=ab12
+        #   -f 'override_params[container_expiration_policy_attributes][cadence]=7d'
+        # --endpoint 'METHOD path' (the endpoint of a Reference several records declare: its method, one space and its
+        # path as the index writes them; without it, the Reference's first declared endpoint is sent); --path once per
+        # place for a name the path holds at more than one place (its values fill the places in command-line order; no
+        # default); --path format=VALUE (a [.format] suffix: one of the values its page lists; without it, no suffix
+        # is sent); --header NAME=VALUE (a request header the record declares). A member of a form body below its first
+        # bracket level is named in full. A container-registry record (package#delete-image-tags-by-reference) obtains
+        # its registry token from the configured instance before the registry is sent anything, and the registry
+        # request carries that token alone.
         # A list prints as one JSON array of every page's items, a JSON response as indented JSON, an empty body as
         # nothing, any other body as its bytes unchanged. An unknown operation, an undocumented parameter, a missing
         # path parameter, a value of the wrong shape, a route prefix that none of the record's values equals, none for
-        # a record whose path starts with /<route-prefix>/ or one for any other record, and
+        # a record whose path starts with /<route-prefix>/ or one for any other record, an --endpoint none of the ID's
+        # records is on, a --path format value its page does not list, a header the record does not declare, the S3
+        # import (gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: no subcommand sends it), and
         # ai-coding#merge-a-merge-request and plan#create-an-issue (use mr merge and issue create) are refused before
         # any request: exit 2.
     python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record
