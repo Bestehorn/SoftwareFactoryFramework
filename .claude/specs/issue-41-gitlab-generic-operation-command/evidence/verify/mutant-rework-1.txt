@@ -1,0 +1,167 @@
+# rework-1 delta mutants on src/payload/scripts/gitlab_api/commands/call.py, K only
+
+baseline sha256 = cd54a95f510c2e5e7e9530507d88e47ef363a05cda138478cf55cfdf1bee98a4  # pragma: allowlist secret
+
+## mutant W2-empty-body: print_response: `if not response.body: return` removed
+--- removed bytes (repr):
+b'    if not response.body:\r\n        return\r\n    if response.is_json:\r\n'
++++ written bytes (repr):
+b'    if response.is_json:\r\n'
+mutant sha256 = fde2590fd9be178753180df035b4216d430f715732a0878d4be1461362c51b98  # pragma: allowlist secret
+__pycache__ call.*.pyc removed before the run: none present
+$ D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [67 items]
+
+.............................F..F..................................      [100%]
+================================== FAILURES ===================================
+_ test_a_json_or_empty_body_prints_as_documented[empty-204-json-content-type] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1087: in test_a_json_or_empty_body_prints_as_documented
+    assert captured.out == case.printed, (
+E   AssertionError: a JSON Content-Type prints print_json of the body, an empty body nothing (AC-1.5):
+E     null
+E     
+E   assert 'null\n' == ''
+E     
+E     [0m[92m+ null[39;49;00m[90m[39;49;00m
+_ test_a_json_or_empty_body_prints_as_documented[empty-200-json-content-type] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1087: in test_a_json_or_empty_body_prints_as_documented
+    assert captured.out == case.printed, (
+E   AssertionError: a JSON Content-Type prints print_json of the body, an empty body nothing (AC-1.5):
+E     null
+E     
+E   assert 'null\n' == ''
+E     
+E     [0m[92m+ null[39;49;00m[90m[39;49;00m
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_json_or_empty_body_prints_as_documented[empty-204-json-content-type]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_json_or_empty_body_prints_as_documented[empty-200-json-content-type]
+======================== 2 failed, 65 passed in 6.15s =========================
+exit=1
+failed tests (2): src/payload/test/test_gitlab_api_call.py::test_a_json_or_empty_body_prints_as_documented[empty-200-json-content-type], src/payload/test/test_gitlab_api_call.py::test_a_json_or_empty_body_prints_as_documented[empty-204-json-content-type]
+restored sha256 = cd54a95f510c2e5e7e9530507d88e47ef363a05cda138478cf55cfdf1bee98a4 (baseline equal)  # pragma: allowlist secret
+verdict = KILLED
+
+## mutant split-no-equals: _split: the no-`=` raise (line 150) replaced by `pass`
+--- removed bytes (repr):
+b'    if not separator:\r\n        raise argparse.ArgumentTypeError(f\'{json.dumps(obj=name)} has no "=" between a name and its value\')\r\n'
++++ written bytes (repr):
+b'    if not separator:\r\n        pass\r\n'
+mutant sha256 = cc1a421a3e194379a1351b3c896eb197c8bd5622b222bd208882988290909762  # pragma: allowlist secret
+__pycache__ call.*.pyc removed before the run: none present
+$ D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [67 items]
+
+..............................................................FF.F.      [100%]
+================================== FAILURES ===================================
+_ test_a_malformed_argument_is_refused_without_its_value[raw-field-without-an-equals-sign] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1762: in test_a_malformed_argument_is_refused_without_its_value
+    assert code == EXIT_USAGE, f"a malformed NAME=VALUE exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a malformed NAME=VALUE exits 2, got 0; stderr:
+E     
+E   assert 0 == 2
+_ test_a_malformed_argument_is_refused_without_its_value[query-without-an-equals-sign] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1762: in test_a_malformed_argument_is_refused_without_its_value
+    assert code == EXIT_USAGE, f"a malformed NAME=VALUE exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a malformed NAME=VALUE exits 2, got 1; stderr:
+E     
+E   assert 1 == 2
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:303 GET https://gitlab.example.com/api/v4/projects/4242/issues?state=&per_page=100 answered a page that is not a JSON array
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:305 {}
+_ test_a_malformed_argument_is_refused_without_its_value[path-without-an-equals-sign] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1762: in test_a_malformed_argument_is_refused_without_its_value
+    assert code == EXIT_USAGE, f"a malformed NAME=VALUE exits {EXIT_USAGE}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: a malformed NAME=VALUE exits 2, got 1; stderr:
+E     
+E   assert 1 == 2
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_wrapper:gitlab_wrapper.py:303 the path parameter :issue_iid is '', which is not one path segment
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[raw-field-without-an-equals-sign]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[query-without-an-equals-sign]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[path-without-an-equals-sign]
+======================== 3 failed, 64 passed in 8.33s =========================
+exit=1
+failed tests (3): src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[path-without-an-equals-sign], src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[query-without-an-equals-sign], src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[raw-field-without-an-equals-sign]
+restored sha256 = cd54a95f510c2e5e7e9530507d88e47ef363a05cda138478cf55cfdf1bee98a4 (baseline equal)  # pragma: allowlist secret
+verdict = KILLED
+
+## mutant split-empty-name: _split: the empty-name raise (line 152) replaced by `pass`
+--- removed bytes (repr):
+b'    if not name:\r\n        raise argparse.ArgumentTypeError(f\'{json.dumps(obj=name)}: the name before the first "=" is empty\')\r\n'
++++ written bytes (repr):
+b'    if not name:\r\n        pass\r\n'
+mutant sha256 = 1902b88eb40c544786805bb24dfd0852e23cb9714f60515bfd19cf0c17c99766  # pragma: allowlist secret
+__pycache__ call.*.pyc removed before the run: none present
+$ D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [67 items]
+
+..............................................................F..FF      [100%]
+================================== FAILURES ===================================
+_ test_a_malformed_argument_is_refused_without_its_value[path-with-an-empty-name] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1766: in test_a_malformed_argument_is_refused_without_its_value
+    assert any(line.startswith(USAGE_PREFIX) for line in lines), f"standard error holds no usage:\n{captured.err}"
+E   AssertionError: standard error holds no usage:
+E     
+E   assert False
+E    +  where False = any(<generator object test_a_malformed_argument_is_refused_without_its_value.<locals>.<genexpr> at 0x0000026D969BCBA0>)
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 plan#update-an-issue: "" given with --path is not documented; its path parameters: id, issue_iid; its attributes: add_labels (body, scalar), assignee_ids (body, array), confidential (body, scalar), description (body, scalar), discussion_locked (body, scalar), due_date (body, scalar), epic_id (body, scalar), epic_iid (body, scalar), issue_type (body, scalar), labels (body, scalar), milestone_id (body, scalar), milestone (body, scalar), remove_labels (body, scalar), severity (body, scalar), start_date (body, scalar), state_event (body, scalar), title (body, scalar), updated_at (body, scalar), weight (body, scalar), assignee_id (body, scalar), created_at (body, scalar)
+_ test_a_malformed_argument_is_refused_without_its_value[raw-field-with-an-empty-name] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1766: in test_a_malformed_argument_is_refused_without_its_value
+    assert any(line.startswith(USAGE_PREFIX) for line in lines), f"standard error holds no usage:\n{captured.err}"
+E   AssertionError: standard error holds no usage:
+E     
+E   assert False
+E    +  where False = any(<generator object test_a_malformed_argument_is_refused_without_its_value.<locals>.<genexpr> at 0x000001BF6CB720A0>)
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 plan#update-an-issue: "" given with -f/-F is not documented; its path parameters: id, issue_iid; its attributes: add_labels (body, scalar), assignee_ids (body, array), confidential (body, scalar), description (body, scalar), discussion_locked (body, scalar), due_date (body, scalar), epic_id (body, scalar), epic_iid (body, scalar), issue_type (body, scalar), labels (body, scalar), milestone_id (body, scalar), milestone (body, scalar), remove_labels (body, scalar), severity (body, scalar), start_date (body, scalar), state_event (body, scalar), title (body, scalar), updated_at (body, scalar), weight (body, scalar), assignee_id (body, scalar), created_at (body, scalar)
+_ test_a_malformed_argument_is_refused_without_its_value[query-with-an-empty-name] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41\src\payload\test\test_gitlab_api_call.py:1766: in test_a_malformed_argument_is_refused_without_its_value
+    assert any(line.startswith(USAGE_PREFIX) for line in lines), f"standard error holds no usage:\n{captured.err}"
+E   AssertionError: standard error holds no usage:
+E     
+E   assert False
+E    +  where False = any(<generator object test_a_malformed_argument_is_refused_without_its_value.<locals>.<genexpr> at 0x000001BF6CB71620>)
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 plan#list-all-project-issues: "" given with --query is not documented; its path parameters: id; its attributes: assignee_id (query, scalar), assignee_username (query, array), author_id (query, scalar), author_username (query, scalar), confidential (query, scalar), created_after (query, scalar), created_before (query, scalar), due_date (query, scalar), epic_id (query, scalar), iids (query, array), issue_type (query, scalar), iteration_id (query, scalar), iteration_title (query, scalar), labels (query, scalar), milestone (query, scalar), my_reaction_emoji (query, scalar), not (query, hash), order_by (query, scalar), scope (query, scalar), search (query, scalar), sort (query, scalar), state (query, scalar), updated_after (query, scalar), updated_before (query, scalar), weight (query, scalar), with_labels_details (query, scalar), cursor (query, scalar), closed_by_id (query, scalar), milestone_id (query, scalar), in (query, scalar), not[labels] (query, array), not[milestone] (query, scalar), not[milestone_id] (query, scalar), not[iids] (query, array), not[author_id] (query, scalar), not[author_username] (query, scalar), not[assignee_id] (query, scalar), not[assignee_username] (query, array), not[weight] (query, scalar), not[iteration_id] (query, scalar), not[iteration_title] (query, scalar), health_status (query, scalar), page (query, scalar), per_page (query, scalar)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[path-with-an-empty-name]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[raw-field-with-an-empty-name]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[query-with-an-empty-name]
+======================== 3 failed, 64 passed in 6.56s =========================
+exit=1
+failed tests (3): src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[path-with-an-empty-name], src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[query-with-an-empty-name], src/payload/test/test_gitlab_api_call.py::test_a_malformed_argument_is_refused_without_its_value[raw-field-with-an-empty-name]
+restored sha256 = cd54a95f510c2e5e7e9530507d88e47ef363a05cda138478cf55cfdf1bee98a4 (baseline equal)  # pragma: allowlist secret
+verdict = KILLED
+
+summary: W2-empty-body KILLED; split-no-equals KILLED; split-empty-name KILLED

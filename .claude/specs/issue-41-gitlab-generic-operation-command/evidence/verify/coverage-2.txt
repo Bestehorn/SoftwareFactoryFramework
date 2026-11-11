@@ -1,0 +1,65 @@
+# line coverage under K alone (rework-1 delta)
+$ D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py --coverage src/payload/test/test_gitlab_api_call.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --cov=src --cov-report=term-missing --cov-fail-under=80 src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-41
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [67 items]
+
+...................................................................      [100%]
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.2-final-0 _______________
+
+Name                                                                        Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------------------------------
+src\payload\scripts\gitlab_api\__init__.py                                      0      0   100%
+src\payload\scripts\gitlab_api\commands\__init__.py                             0      0   100%
+src\payload\scripts\gitlab_api\commands\_common.py                             29      0   100%
+src\payload\scripts\gitlab_api\commands\branch.py                              18      3    83%   39-41
+src\payload\scripts\gitlab_api\commands\call.py                               179      0   100%
+src\payload\scripts\gitlab_api\commands\issue.py                              205     97    53%   101, 106-108, 113-114, 119-120, 125-126, 131-136, 141-144, 148, 152, 157-158, 166-172, 177-183, 191-193, 198-201, 209-213, 225-228, 233, 238-244, 249-250, 257-266, 275-281, 286-287, 292-293, 298-299, 305-312, 317-318, 324-329
+src\payload\scripts\gitlab_api\commands\label.py                               23      4    83%   42-43, 49-55
+src\payload\scripts\gitlab_api\commands\mr.py                                  43     11    74%   56, 64-71, 76-77, 82-83, 89-90, 95-96
+src\payload\scripts\gitlab_api\commands\pipeline.py                           128     65    49%   107-109, 114-116, 121-124, 130-132, 137-139, 144-148, 156, 161-163, 168, 176-178, 195-208, 216, 222-236, 247, 258-264
+src\payload\scripts\gitlab_api\errors.py                                       10      0   100%
+src\payload\scripts\gitlab_api\families\__init__.py                             0      0   100%
+src\payload\scripts\gitlab_api\families\agent_foundations.py                    3      0   100%
+src\payload\scripts\gitlab_api\families\ai_clients.py                           3      0   100%
+src\payload\scripts\gitlab_api\families\ai_coding.py                            6      0   100%
+src\payload\scripts\gitlab_api\families\analytics.py                            3      0   100%
+src\payload\scripts\gitlab_api\families\create.py                               6      0   100%
+src\payload\scripts\gitlab_api\families\data_access.py                          3      0   100%
+src\payload\scripts\gitlab_api\families\deploy.py                               3      0   100%
+src\payload\scripts\gitlab_api\families\developer_experience.py                 3      0   100%
+src\payload\scripts\gitlab_api\families\facilitated_functionality.py            3      0   100%
+src\payload\scripts\gitlab_api\families\fulfillment.py                          3      0   100%
+src\payload\scripts\gitlab_api\families\gitlab_dedicated.py                     3      0   100%
+src\payload\scripts\gitlab_api\families\gitlab_delivery.py                      3      0   100%
+src\payload\scripts\gitlab_api\families\growth.py                               3      0   100%
+src\payload\scripts\gitlab_api\families\no_stage_assigned.py                    3      0   100%
+src\payload\scripts\gitlab_api\families\openapi_only.py                         3      0   100%
+src\payload\scripts\gitlab_api\families\orbit.py                                3      0   100%
+src\payload\scripts\gitlab_api\families\package.py                              3      0   100%
+src\payload\scripts\gitlab_api\families\plan.py                                 6      0   100%
+src\payload\scripts\gitlab_api\families\runtime.py                              3      0   100%
+src\payload\scripts\gitlab_api\families\security_factory.py                     3      0   100%
+src\payload\scripts\gitlab_api\families\security_governance.py                  3      0   100%
+src\payload\scripts\gitlab_api\families\security_platform.py                    3      0   100%
+src\payload\scripts\gitlab_api\families\security_risk_management.py             3      0   100%
+src\payload\scripts\gitlab_api\families\software_supply_chain_security.py       6      0   100%
+src\payload\scripts\gitlab_api\families\tenant_scale.py                         3      0   100%
+src\payload\scripts\gitlab_api\families\verify.py                               6      0   100%
+src\payload\scripts\gitlab_api\graphql_only.py                                  5      0   100%
+src\payload\scripts\gitlab_api\registry.py                                    184      9    95%   192-193, 209, 288, 290, 353, 375, 391, 395
+src\payload\scripts\gitlab_api\transport.py                                   367     56    85%   163-165, 183, 190-193, 205-206, 211, 235, 271, 273, 276-277, 295-301, 308-310, 316-322, 332-333, 335, 352-354, 364, 403-404, 426, 456-457, 466, 480, 562, 574, 586, 597, 628, 646, 679-684
+src\payload\scripts\gitlab_wrapper.py                                         120     23    81%   95, 143, 148-150, 154, 163, 171, 186-187, 251-265, 313-314, 319, 342-343
+src\payload\test\gitlab_wrapper_fixtures.py                                   124      5    96%   121, 130, 134, 215, 224
+src\payload\test\test_gitlab_api_call.py                                      626      3    99%   65, 417, 1786
+---------------------------------------------------------------------------------------------------------
+TOTAL                                                                        2154    276    87%
+Required test coverage of 80% reached. Total coverage: 87.19%
+============================= 67 passed in 7.45s ==============================
+exit=0
