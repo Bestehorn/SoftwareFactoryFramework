@@ -1,0 +1,973 @@
+# tasks: TEST-1 TEST-2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [128 items]
+
+FFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FF.FFFFFFFFFFFFFFFFFFFF.F.F......... [ 56%]
+........................................................                 [100%]
+================================== FAILURES ===================================
+_____________________ test_only_the_kept_keys_are_pending _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:672: in test_only_the_kept_keys_are_pending
+    assert pending == PENDING_KEYS, "plan.PENDING is not the keys AC-1 keeps pending:\n" + set_difference(
+E   AssertionError: plan.PENDING is not the keys AC-1 keeps pending:
+E     not expected: ('DELETE', '/groups/:id/boards/:board_id')
+E     not expected: ('DELETE', '/groups/:id/boards/:board_id/lists/:list_id')
+E     not expected: ('DELETE', '/groups/:id/epics/:epic_id/notes/:note_id')
+E     not expected: ('DELETE', '/groups/:id/epics/:epic_iid')
+E     not expected: ('DELETE', '/groups/:id/epics/:epic_iid/epics/:child_epic_id')
+E     not expected: ('DELETE', '/groups/:id/epics/:epic_iid/issues/:epic_issue_id')
+E     not expected: ('DELETE', '/groups/:id/epics/:epic_iid/related_epics/:related_epic_link_id')
+E     not expected: ('DELETE', '/groups/:id/labels/:label_id')
+E     not expected: ('DELETE', '/groups/:id/milestones/:milestone_id')
+E     not expected: ('DELETE', '/groups/:id/uploads/:secret/:filename')
+E     not expected: ('DELETE', '/groups/:id/uploads/:upload_id')
+E     not expected: ('DELETE', '/groups/:id/wiki_pages/:wiki_page_meta_id/notes/:note_id')
+E     not expected: ('DELETE', '/groups/:id/wikis/:slug')
+E     not expected: ('DELETE', '/projects/:id/boards/:board_id')
+E     not expected: ('DELETE', '/projects/:id/boards/:board_id/lists/:list_id')
+E     not expected: ('DELETE', '/projects/:id/issues/:issue_iid')
+E     not expected: ('DELETE', '/projects/:id/issues/:issue_iid/award_emoji/:award_id')
+E     not expected: ('DELETE', '/projects/:id/issues/:issue_iid/links/:issue_link_id')
+E     not expected: ('DELETE', '/projects/:id/issues/:issue_iid/metric_images/:image_id')
+E     not expected: ('DELETE', '/projects/:id/issues/:issue_iid/notes/:note_id')
+E     not expected: ('DELETE', '/projects/:id/issues/:issue_iid/notes/:note_id/award_emoji/:award_id')
+E     not expected: ('DELETE', '/projects/:id/labels/:label_id')
+E     not expected: ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/notes/:note_id')
+E     not expected: ('DELETE', '/projects/:id/milestones/:milestone_id')
+E     not expected: ('DELETE', '/projects/:id/pages')
+E     not expected: ('DELETE', '/projects/:id/pages/domains/:domain')
+E     not expected: ('DELETE', '/projects/:id/snippets/:snippet_id/notes/:note_id')
+E     not expected: ('DELETE', '/projects/:id/uploads/:secret/:filename')
+E     not expected: ('DELETE', '/projects/:id/uploads/:upload_id')
+E     not expected: ('DELETE', '/projects/:id/wiki_pages/:wiki_page_meta_id/notes/:note_id')
+E     not expected: ('DELETE', '/projects/:id/wikis/:slug')
+E     not expected: ('DELETE', '/user/push_subscriptions')
+E     not expected: ('GET', '/glql/schema')
+E     not expected: ('GET', '/groups/:id/boards')
+E     not expected: ('GET', '/groups/:id/boards/:board_id')
+E     not expected: ('GET', '/groups/:id/boards/:board_id/lists')
+E     not expected: ('GET', '/groups/:id/boards/:board_id/lists/:list_id')
+E     not expected: ('GET', '/groups/:id/epic_boards')
+E     not expected: ('GET', '/groups/:id/epic_boards/:board_id')
+E     not expected: ('GET', '/groups/:id/epic_boards/:board_id/lists')
+E     not expected: ('GET', '/groups/:id/epic_boards/:board_id/lists/:list_id')
+E     not expected: ('GET', '/groups/:id/epics')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/notes')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/notes/:note_id')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/resource_label_events')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/resource_label_events/:resource_label_event_id')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/resource_state_events')
+E     not expected: ('GET', '/groups/:id/epics/:epic_id/resource_state_events/:resource_state_event_id')
+E     not expected: ('GET', '/groups/:id/epics/:epic_iid')
+E     not expected: ('GET', '/groups/:id/epics/:epic_iid/epics')
+E     not expected: ('GET', '/groups/:id/epics/:epic_iid/issues')
+E     not expected: ('GET', '/groups/:id/epics/:epic_iid/related_epics')
+E     not expected: ('GET', '/groups/:id/issues')
+E     not expected: ('GET', '/groups/:id/issues_statistics')
+E     not expected: ('GET', '/groups/:id/iterations')
+E     not expected: ('GET', '/groups/:id/labels')
+E     not expected: ('GET', '/groups/:id/labels/:label_id')
+E     not expected: ('GET', '/groups/:id/milestones')
+E     not expected: ('GET', '/groups/:id/milestones/:milestone_id')
+E     not expected: ('GET', '/groups/:id/milestones/:milestone_id/burndown_events')
+E     not expected: ('GET', '/groups/:id/milestones/:milestone_id/issues')
+E     not expected: ('GET', '/groups/:id/milestones/:milestone_id/merge_requests')
+E     not expected: ('GET', '/groups/:id/related_epic_links')
+E     not expected: ('GET', '/groups/:id/uploads')
+E     not expected: ('GET', '/groups/:id/uploads/:secret/:filename')
+E     not expected: ('GET', '/groups/:id/uploads/:upload_id')
+E     not expected: ('GET', '/groups/:id/wiki_pages/:wiki_page_meta_id/notes')
+E     not expected: ('GET', '/groups/:id/wiki_pages/:wiki_page_meta_id/notes/:note_id')
+E     not expected: ('GET', '/groups/:id/wikis')
+E     not expected: ('GET', '/groups/:id/wikis/:slug')
+E     not expected: ('GET', '/issues')
+E     not expected: ('GET', '/issues/:id')
+E     not expected: ('GET', '/issues_statistics')
+E     not expected: ('GET', '/notification_settings')
+E     not expected: ('GET', '/pages/domains')
+E     not expected: ('GET', '/projects/:id/boards')
+E     not expected: ('GET', '/projects/:id/boards/:board_id')
+E     not expected: ('GET', '/projects/:id/boards/:board_id/lists')
+E     not expected: ('GET', '/projects/:id/boards/:board_id/lists/:list_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/award_emoji')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/award_emoji/:award_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/closed_by')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/links')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/links/:issue_link_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/metric_images')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/notes')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/notes/:note_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/notes/:note_id/award_emoji')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/notes/:note_id/award_emoji/:award_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/participants')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/related_merge_requests')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_iteration_events')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_iteration_events/:resource_iteration_event_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_label_events')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_label_events/:resource_label_event_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_milestone_events')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_milestone_events/:resource_milestone_event_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_state_events')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_state_events/:resource_state_event_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_weight_events')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/resource_weight_events/:resource_weight_event_id')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/time_stats')
+E     not expected: ('GET', '/projects/:id/issues/:issue_iid/user_agent_detail')
+E     not expected: ('GET', '/projects/:id/issues_statistics')
+E     not expected: ('GET', '/projects/:id/iterations')
+E     not expected: ('GET', '/projects/:id/labels/:label_id')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/notes')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/notes/:note_id')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/resource_label_events')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/resource_label_events/:resource_label_event_id')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/resource_milestone_events')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/resource_milestone_events/:resource_milestone_event_id')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/resource_state_events')
+E     not expected: ('GET', '/projects/:id/merge_requests/:merge_request_iid/resource_state_events/:resource_state_event_id')
+E     not expected: ('GET', '/projects/:id/milestones')
+E     not expected: ('GET', '/projects/:id/milestones/:milestone_id')
+E     not expected: ('GET', '/projects/:id/milestones/:milestone_id/burndown_events')
+E     not expected: ('GET', '/projects/:id/milestones/:milestone_id/issues')
+E     not expected: ('GET', '/projects/:id/milestones/:milestone_id/merge_requests')
+E     not expected: ('GET', '/projects/:id/notification_settings')
+E     not expected: ('GET', '/projects/:id/pages')
+E     not expected: ('GET', '/projects/:id/pages/domains')
+E     not expected: ('GET', '/projects/:id/pages/domains/:domain')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/notes')
+E     not expected: ('GET', '/projects/:id/snippets/:snippet_id/notes/:note_id')
+E     not expected: ('GET', '/projects/:id/uploads')
+E     not expected: ('GET', '/projects/:id/uploads/:secret/:filename')
+E     not expected: ('GET', '/projects/:id/uploads/:upload_id')
+E     not expected: ('GET', '/projects/:id/wiki_pages/:wiki_page_meta_id/notes')
+E     not expected: ('GET', '/projects/:id/wiki_pages/:wiki_page_meta_id/notes/:note_id')
+E     not expected: ('GET', '/projects/:id/wikis')
+E     not expected: ('GET', '/projects/:id/wikis/:slug')
+E     not expected: ('GET', '/todos')
+E     not expected: ('PATCH', '/projects/:id/pages')
+E     not expected: ('POST', '/glql')
+E     not expected: ('POST', '/groups/:id/boards')
+E     not expected: ('POST', '/groups/:id/boards/:board_id/lists')
+E     not expected: ('POST', '/groups/:id/epics')
+E     not expected: ('POST', '/groups/:id/epics/:epic_id/notes')
+E     not expected: ('POST', '/groups/:id/epics/:epic_iid/epics')
+E     not expected: ('POST', '/groups/:id/epics/:epic_iid/epics/:child_epic_id')
+E     not expected: ('POST', '/groups/:id/epics/:epic_iid/issues/:issue_id')
+E     not expected: ('POST', '/groups/:id/epics/:epic_iid/related_epics')
+E     not expected: ('POST', '/groups/:id/epics/:epic_iid/todo')
+E     not expected: ('POST', '/groups/:id/labels')
+E     not expected: ('POST', '/groups/:id/labels/:label_id/subscribe')
+E     not expected: ('POST', '/groups/:id/labels/:label_id/unsubscribe')
+E     not expected: ('POST', '/groups/:id/milestones')
+E     not expected: ('POST', '/groups/:id/uploads')
+E     not expected: ('POST', '/groups/:id/wiki_pages/:wiki_page_meta_id/notes')
+E     not expected: ('POST', '/groups/:id/wikis')
+E     not expected: ('POST', '/groups/:id/wikis/attachments')
+E     not expected: ('POST', '/markdown')
+E     not expected: ('POST', '/projects/:id/boards')
+E     not expected: ('POST', '/projects/:id/boards/:board_id/lists')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/add_spent_time')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/award_emoji')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/links')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/metric_images')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/move')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/notes/:note_id/award_emoji')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/reset_spent_time')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/reset_time_estimate')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/subscribe')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/time_estimate')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/todo')
+E     not expected: ('POST', '/projects/:id/issues/:issue_iid/unsubscribe')
+E     not expected: ('POST', '/projects/:id/labels/:label_id/subscribe')
+E     not expected: ('POST', '/projects/:id/labels/:label_id/unsubscribe')
+E     not expected: ('POST', '/projects/:id/milestones')
+E     not expected: ('POST', '/projects/:id/milestones/:milestone_id/promote')
+E     not expected: ('POST', '/projects/:id/pages/domains')
+E     not expected: ('POST', '/projects/:id/snippets/:snippet_id/notes')
+E     not expected: ('POST', '/projects/:id/uploads')
+E     not expected: ('POST', '/projects/:id/wiki_pages/:wiki_page_meta_id/notes')
+E     not expected: ('POST', '/projects/:id/wikis')
+E     not expected: ('POST', '/projects/:id/wikis/attachments')
+E     not expected: ('POST', '/todos/:id/mark_as_done')
+E     not expected: ('POST', '/todos/mark_as_done')
+E     not expected: ('POST', '/user/push_subscriptions')
+E     not expected: ('PUT', '/groups/:id/boards/:board_id')
+E     not expected: ('PUT', '/groups/:id/boards/:board_id/lists/:list_id')
+E     not expected: ('PUT', '/groups/:id/epics/:epic_id/notes/:note_id')
+E     not expected: ('PUT', '/groups/:id/epics/:epic_iid')
+E     not expected: ('PUT', '/groups/:id/epics/:epic_iid/epics/:child_epic_id')
+E     not expected: ('PUT', '/groups/:id/epics/:epic_iid/issues/:epic_issue_id')
+E     not expected: ('PUT', '/groups/:id/labels/:label_id')
+E     not expected: ('PUT', '/groups/:id/milestones/:milestone_id')
+E     not expected: ('PUT', '/groups/:id/wiki_pages/:wiki_page_meta_id/notes/:note_id')
+E     not expected: ('PUT', '/groups/:id/wikis/:slug')
+E     not expected: ('PUT', '/notification_settings')
+E     not expected: ('PUT', '/projects/:id/boards/:board_id')
+E     not expected: ('PUT', '/projects/:id/boards/:board_id/lists/:list_id')
+E     not expected: ('PUT', '/projects/:id/issues/:issue_iid/metric_images/:image_id')
+E     not expected: ('PUT', '/projects/:id/issues/:issue_iid/notes/:note_id')
+E     not expected: ('PUT', '/projects/:id/issues/:issue_iid/reorder')
+E     not expected: ('PUT', '/projects/:id/labels/:label_id')
+E     not expected: ('PUT', '/projects/:id/labels/:label_id/promote')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/notes/:note_id')
+E     not expected: ('PUT', '/projects/:id/milestones/:milestone_id')
+E     not expected: ('PUT', '/projects/:id/notification_settings')
+E     not expected: ('PUT', '/projects/:id/pages/domains/:domain')
+E     not expected: ('PUT', '/projects/:id/pages/domains/:domain/verify')
+E     not expected: ('PUT', '/projects/:id/snippets/:snippet_id/notes/:note_id')
+E     not expected: ('PUT', '/projects/:id/wiki_pages/:wiki_page_meta_id/notes/:note_id')
+E     not expected: ('PUT', '/projects/:id/wikis/:slug')
+E   assert frozenset({('...ue_id'), ...}) == frozenset({('...emoji'), ...})
+E     
+E     Extra items in the left set:
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/milestones/:milestone_id/issues[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mPOST[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/glql[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/snippets/:snippet_id/notes/:note_id[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'...
+E     
+E     ...Full output truncated, use '-vv' to show
+_________________ test_the_typed_attributes_are_the_sections __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:697: in test_the_typed_attributes_are_the_sections
+    assert declared == TYPED_ATTRIBUTES, "the non-SCALAR Params are not the sections' (AC-3):\n" + mapping_difference(
+E   AssertionError: the non-SCALAR Params are not the sections' (AC-3):
+E     missing: ('plan#create-a-wiki-page', 'front_matter')
+E     missing: ('plan#create-a-wiki-page-1', 'front_matter')
+E     missing: ('plan#create-an-upload', 'file')
+E     missing: ('plan#create-new-pages-domain', 'certificate')
+E     missing: ('plan#create-new-pages-domain', 'key')
+E     missing: ('plan#list-all-group-epics', 'not')
+E     missing: ('plan#list-all-group-issues', 'assignee_username')
+E     missing: ('plan#list-all-group-issues', 'iids')
+E     missing: ('plan#list-all-group-issues', 'not')
+E     missing: ('plan#list-all-group-issues', 'not[assignee_username]')
+E     missing: ('plan#list-all-group-issues', 'not[iids]')
+E     missing: ('plan#list-all-group-issues', 'not[labels]')
+E     missing: ('plan#list-all-group-iterations', 'in')
+E     missing: ('plan#list-all-issues', 'assignee_username')
+E     missing: ('plan#list-all-issues', 'iids')
+E     missing: ('plan#list-all-issues', 'not')
+E     missing: ('plan#list-all-issues', 'not[assignee_username]')
+E     missing: ('plan#list-all-issues', 'not[iids]')
+E     missing: ('plan#list-all-issues', 'not[labels]')
+E     missing: ('plan#list-all-project-iterations', 'in')
+E     missing: ('plan#list-all-project-milestones', 'iids')
+E     missing: ('plan#list-group-milestones', 'iids')
+E     missing: ('plan#retrieve-issues-statistics-for-a-group', 'assignee_username')
+E     missing: ('plan#retrieve-issues-statistics-for-a-group', 'iids')
+E     missing: ('plan#retrieve-issues-statistics-for-a-group', 'not[assignee_username]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-group', 'not[iids]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-group', 'not[labels]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-project', 'assignee_username')
+E     missing: ('plan#retrieve-issues-statistics-for-a-project', 'iids')
+E     missing: ('plan#retrieve-issues-statistics-for-a-project', 'not[assignee_username]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-project', 'not[iids]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-project', 'not[labels]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-user', 'assignee_username')
+E     missing: ('plan#retrieve-issues-statistics-for-a-user', 'iids')
+E     missing: ('plan#retrieve-issues-statistics-for-a-user', 'not[assignee_username]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-user', 'not[iids]')
+E     missing: ('plan#retrieve-issues-statistics-for-a-user', 'not[labels]')
+E     missing: ('plan#update-a-wiki-page', 'front_matter')
+E     missing: ('plan#update-a-wiki-page-1', 'front_matter')
+E     missing: ('plan#update-pages-domain', 'certificate')
+E     missing: ('plan#update-pages-domain', 'key')
+E     missing: ('plan#upload-a-file-to-a-group', 'file')
+E     missing: ('plan#upload-a-metric-image-for-an-incident', 'file')
+E     missing: ('plan#upload-an-attachment-to-the-wiki-repository', 'file')
+E     missing: ('plan#upload-an-attachment-to-the-wiki-repository-1', 'file')
+E   assert {('plan#list-... 'array', ...} == {('plan#creat... 'array', ...}
+E     
+E     Omitting 10 identical items, use -vv to show
+E     Right contains 45 more items:
+E     [0m{([33m'[39;49;00m[33mplan#create-a-wiki-page[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mfront_matter[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mhash[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{([33m'[39;49;00m[33mplan#create-a-wiki-page-1[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mfront_matter[39;49;00m[33m'[39;49;00m): [33m'[39;49;00m[33mhash[39;49;00m[33m'[39;49;00m}[90m[39;49;00m
+E     [0m{([33m'[39;49;00m[33mplan#create-an-upload[39;49;00m[33m'...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________ test_the_required_attributes_are_the_sections ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:708: in test_the_required_attributes_are_the_sections
+    assert declared == REQUIRED_ATTRIBUTES, "the required Params are not the sections' (AC-3):\n" + set_difference(
+E   AssertionError: the required Params are not the sections' (AC-3):
+E     missing: ('plan#add-an-emoji-reaction-to-a-comment', 'name')
+E     missing: ('plan#add-an-emoji-reaction-to-a-resource', 'issue_iid/merge_request_iid/snippet_id')
+E     missing: ('plan#add-an-emoji-reaction-to-a-resource', 'name')
+E     missing: ('plan#add-spent-time-for-an-issue', 'duration')
+E     missing: ('plan#create-a-group-issue-board', 'name')
+E     missing: ('plan#create-a-milestone', 'title')
+E     missing: ('plan#create-a-new-group-label', 'color')
+E     missing: ('plan#create-a-new-group-label', 'name')
+E     missing: ('plan#create-a-related-epic-link', 'target_epic_iid')
+E     missing: ('plan#create-a-related-epic-link', 'target_group_id')
+E     missing: ('plan#create-a-snippet-note', 'body')
+E     missing: ('plan#create-a-wiki-page', 'content')
+E     missing: ('plan#create-a-wiki-page', 'title')
+E     missing: ('plan#create-a-wiki-page-1', 'content')
+E     missing: ('plan#create-a-wiki-page-1', 'title')
+E     missing: ('plan#create-a-wiki-page-note', 'body')
+E     missing: ('plan#create-a-wiki-page-note-1', 'body')
+E     missing: ('plan#create-an-epic', 'title')
+E     missing: ('plan#create-an-epic-note', 'body')
+E     missing: ('plan#create-an-issue-board', 'name')
+E     missing: ('plan#create-an-issue-link', 'target_issue_iid')
+E     missing: ('plan#create-an-issue-link', 'target_project_id')
+E     missing: ('plan#create-an-upload', 'file')
+E     missing: ('plan#create-and-assign-a-child-epic', 'title')
+E     missing: ('plan#create-new-milestone', 'title')
+E     missing: ('plan#create-new-pages-domain', 'domain')
+E     missing: ('plan#delete-an-emoji-reaction-from-a-resource', 'issue_iid/merge_request_iid/snippet_id')
+E     missing: ('plan#execute-a-glql-query', 'glql_yaml')
+E     missing: ('plan#list-all-emoji-reactions-for-a-resource', 'issue_iid/merge_request_iid/snippet_id')
+E     missing: ('plan#move-an-issue', 'to_project_id')
+E     missing: ('plan#register-a-device', 'device_token')
+E     missing: ('plan#render-markdown-content', 'text')
+E     missing: ('plan#retrieve-an-emoji-reaction-from-a-resource', 'issue_iid/merge_request_iid/snippet_id')
+E     missing: ('plan#set-a-time-estimate-for-an-issue', 'duration')
+E     missing: ('plan#unregister-a-device', 'device_token')
+E     missing: ('plan#update-a-board-list', 'position')
+E     missing: ('plan#update-a-group-issue-board-list', 'position')
+E     missing: ('plan#update-a-merge-request-note', 'body')
+E     missing: ('plan#update-a-project-label', 'color')
+E     missing: ('plan#update-a-project-label', 'new_name')
+E     missing: ('plan#update-a-snippet-note', 'body')
+E     missing: ('plan#update-a-wiki-page', 'content')
+E     missing: ('plan#update-a-wiki-page', 'title')
+E     missing: ('plan#update-a-wiki-page-1', 'content')
+E     missing: ('plan#update-a-wiki-page-1', 'title')
+E     missing: ('plan#update-a-wiki-page-note', 'body')
+E     missing: ('plan#update-a-wiki-page-note-1', 'body')
+E     missing: ('plan#update-an-epic-note', 'body')
+E     missing: ('plan#upload-a-file-to-a-group', 'file')
+E     missing: ('plan#upload-a-metric-image-for-an-incident', 'file')
+E     missing: ('plan#upload-an-attachment-to-the-wiki-repository', 'file')
+E     missing: ('plan#upload-an-attachment-to-the-wiki-repository-1', 'file')
+E   assert {('plan#creat...ote', 'body')} == frozenset({('...title'), ...})
+E     
+E     Extra items in the right set:
+E     [0m([33m'[39;49;00m[33mplan#render-markdown-content[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtext[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mplan#add-an-emoji-reaction-to-a-resource[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mname[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mplan#update-a-wiki-page-1[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mcontent[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mplan#update-a-wiki-page-note-1[39;49;00...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:735: in test_every_list_record_has_a_case
+    assert offset == expected, "the Paging.OFFSET records are not the sections' lists (AC-4):\n" + set_difference(
+E   AssertionError: the Paging.OFFSET records are not the sections' lists (AC-4):
+E     missing: 'plan#get-all-burndown-chart-events-for-a-single-milestone'
+E     missing: 'plan#get-all-issues-assigned-to-a-single-milestone'
+E     missing: 'plan#get-all-merge-requests-assigned-to-a-single-milestone'
+E     missing: 'plan#list-all-board-lists-in-an-issue-board'
+E     missing: 'plan#list-all-burndown-chart-events-for-a-milestone'
+E     missing: 'plan#list-all-child-epics-of-an-epic'
+E     missing: 'plan#list-all-emoji-reactions-for-a-comment'
+E     missing: 'plan#list-all-emoji-reactions-for-a-resource'
+E     missing: 'plan#list-all-epic-boards-in-a-group'
+E     missing: 'plan#list-all-epic-notes'
+E     missing: 'plan#list-all-group-epics'
+E     missing: 'plan#list-all-group-issue-boards-in-a-group'
+E     missing: 'plan#list-all-group-issues'
+E     missing: 'plan#list-all-group-iterations'
+E     missing: 'plan#list-all-issue-links'
+E     missing: 'plan#list-all-issue-notes'
+E     missing: 'plan#list-all-issues'
+E     missing: 'plan#list-all-issues-for-a-milestone'
+E     missing: 'plan#list-all-issues-for-an-epic'
+E     missing: 'plan#list-all-linked-epics-for-an-epic'
+E     missing: 'plan#list-all-merge-request-notes'
+E     missing: 'plan#list-all-merge-requests-for-a-milestone'
+E     missing: 'plan#list-all-merge-requests-related-to-an-issue'
+E     missing: 'plan#list-all-merge-requests-that-close-an-issue-on-merge'
+E     missing: 'plan#list-all-metric-images-for-an-incident'
+E     missing: 'plan#list-all-pages-domains'
+E     missing: 'plan#list-all-pages-domains-in-a-project'
+E     missing: 'plan#list-all-participants-in-an-issue'
+E     missing: 'plan#list-all-project-issue-boards'
+E     missing: 'plan#list-all-project-issue-weight-events'
+E     missing: 'plan#list-all-project-iterations'
+E     missing: 'plan#list-all-project-milestones'
+E     missing: 'plan#list-all-project-wiki-notes'
+E     missing: 'plan#list-all-related-epic-links-for-a-group'
+E     missing: 'plan#list-all-snippet-notes'
+E     missing: 'plan#list-all-to-do-items'
+E     missing: 'plan#list-all-uploads-for-a-group'
+E     missing: 'plan#list-all-wiki-pages'
+E     missing: 'plan#list-group-epic-board-lists'
+E     missing: 'plan#list-group-epic-label-events'
+E     missing: 'plan#list-group-epic-state-events'
+E     missing: 'plan#list-group-issue-board-lists'
+E     missing: 'plan#list-group-labels'
+E     missing: 'plan#list-group-milestones'
+E     missing: 'plan#list-group-wiki-notes'
+E     missing: 'plan#list-project-issue-iteration-events'
+E     missing: 'plan#list-project-issue-label-events'
+E     missing: 'plan#list-project-issue-milestone-events'
+E     missing: 'plan#list-project-issue-state-events'
+E     missing: 'plan#list-project-merge-request-label-events'
+E     missing: 'plan#list-project-merge-request-milestone-events'
+E     missing: 'plan#list-project-merge-request-state-events'
+E     missing: 'plan#list-uploads'
+E     missing: 'plan#list-wiki-pages'
+E   assert {'plan#list-a...oject-labels'} == {'plan#get-al...an-epic', ...}
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mplan#list-all-merge-requests-that-close-an-issue-on-merge[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mplan#list-project-merge-request-state-events[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mplan#list-all-merge-requests-related-to-an-issue[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mplan#list-all-metric-images-for-an-incident[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     [0m[33m'[39;49;00m[33mplan#list-project-merge-request-milestone-events...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_list_record_prints_every_item[list-all-group-issue-boards-in-a-group] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-group-issue-boards-in-a-group', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-group-issue-boards-in-a-group': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-all-group-issues] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-group-issues', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-group-issues': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[get-all-burndown-chart-events-for-a-single-milestone] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#get-all-burndown-chart-events-for-a-single-milestone', '--path', 'id=101', '--path', 'milestone_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#get-all-burndown-chart-events-for-a-single-milestone': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_item[list-all-group-iterations] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-group-iterations', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-group-iterations': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[get-all-issues-assigned-to-a-single-milestone] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#get-all-issues-assigned-to-a-single-milestone', '--path', 'id=101', '--path', 'milestone_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#get-all-issues-assigned-to-a-single-milestone': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-all-issue-links] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-issue-links', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-issue-links': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[get-all-merge-requests-assigned-to-a-single-milestone] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#get-all-merge-requests-assigned-to-a-single-milestone', '--path', 'id=101', '--path', 'milestone_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#get-all-merge-requests-assigned-to-a-single-milestone': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-all-issue-notes] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-issue-notes', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-issue-notes': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-board-lists-in-an-issue-board] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-board-lists-in-an-issue-board', '--path', 'id=101', '--path', 'board_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-board-lists-in-an-issue-board': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-burndown-chart-events-for-a-milestone] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-burndown-chart-events-for-a-milestone', '--path', 'id=101', '--path', 'milestone_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-burndown-chart-events-for-a-milestone': no family module and no graphql_only record declares it
+____________ test_a_list_record_prints_every_item[list-all-issues] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-issues'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-issues': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-child-epics-of-an-epic] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-child-epics-of-an-epic', '--path', 'id=101', '--path', 'epic_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-child-epics-of-an-epic': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-issues-for-a-milestone] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-issues-for-a-milestone', '--path', 'id=101', '--path', 'milestone_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-issues-for-a-milestone': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_item[list-all-issues-for-an-epic] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-issues-for-an-epic', '--path', 'id=101', '--path', 'epic_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-issues-for-an-epic': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-emoji-reactions-for-a-comment] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-emoji-reactions-for-a-comment', '--path', 'id=101', '--path', 'issue_iid=102', '--path', 'note_id=103'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-emoji-reactions-for-a-comment': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_item[list-all-linked-epics-for-an-epic] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-linked-epics-for-an-epic', '--path', 'id=101', '--path', 'epic_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-linked-epics-for-an-epic': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-emoji-reactions-for-a-resource] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-emoji-reactions-for-a-resource', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-emoji-reactions-for-a-resource': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-all-merge-request-notes] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-merge-request-notes', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-merge-request-notes': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-epic-boards-in-a-group] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-epic-boards-in-a-group', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-epic-boards-in-a-group': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-merge-requests-for-a-milestone] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-merge-requests-for-a-milestone', '--path', 'id=101', '--path', 'milestone_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-merge-requests-for-a-milestone': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_item[list-all-epic-notes] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-epic-notes', '--path', 'id=101', '--path', 'epic_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-epic-notes': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-merge-requests-related-to-an-issue] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-merge-requests-related-to-an-issue', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-merge-requests-related-to-an-issue': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-all-group-epics] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-group-epics', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-group-epics': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-merge-requests-that-close-an-issue-on-merge] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-merge-requests-that-close-an-issue-on-merge', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-merge-requests-that-close-an-issue-on-merge': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_item[list-all-participants-in-an-issue] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-participants-in-an-issue', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-participants-in-an-issue': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-metric-images-for-an-incident] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-metric-images-for-an-incident', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-metric-images-for-an-incident': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-all-project-issue-boards] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-issue-boards', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-project-issue-boards': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_item[list-all-pages-domains] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-pages-domains'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-pages-domains': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-project-issue-weight-events] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-issue-weight-events', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-project-issue-weight-events': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_item[list-all-pages-domains-in-a-project] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-pages-domains-in-a-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-pages-domains-in-a-project': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_item[list-group-epic-board-lists] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-group-epic-board-lists', '--path', 'id=101', '--path', 'board_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-group-epic-board-lists': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_item[list-all-project-iterations] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-iterations', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-project-iterations': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-group-epic-label-events] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-group-epic-label-events', '--path', 'id=101', '--path', 'epic_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-group-epic-label-events': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_item[list-all-project-milestones] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-milestones', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-project-milestones': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-group-epic-state-events] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-group-epic-state-events', '--path', 'id=101', '--path', 'epic_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-group-epic-state-events': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_item[list-all-project-wiki-notes] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-project-wiki-notes', '--path', 'id=101', '--path', 'wiki_page_meta_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-project-wiki-notes': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-group-issue-board-lists] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-group-issue-board-lists', '--path', 'id=101', '--path', 'board_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-group-issue-board-lists': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-related-epic-links-for-a-group] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-related-epic-links-for-a-group', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-related-epic-links-for-a-group': no family module and no graphql_only record declares it
+___________ test_a_list_record_prints_every_item[list-group-labels] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-group-labels', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-group-labels': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_item[list-all-snippet-notes] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-snippet-notes', '--path', 'id=101', '--path', 'snippet_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-snippet-notes': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-group-milestones] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-group-milestones', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-group-milestones': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-all-to-do-items] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-to-do-items'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-to-do-items': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-group-wiki-notes] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-group-wiki-notes', '--path', 'id=101', '--path', 'wiki_page_meta_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-group-wiki-notes': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-all-uploads-for-a-group] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-uploads-for-a-group', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-uploads-for-a-group': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_item[list-project-issue-iteration-events] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-project-issue-iteration-events', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-project-issue-iteration-events': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_item[list-all-wiki-pages] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-all-wiki-pages', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-all-wiki-pages': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-project-issue-label-events] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-project-issue-label-events', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-project-issue-label-events': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-project-merge-request-label-events] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-project-merge-request-label-events', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-project-merge-request-label-events': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_item[list-project-issue-milestone-events] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-project-issue-milestone-events', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-project-issue-milestone-events': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-project-merge-request-milestone-events] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-project-merge-request-milestone-events', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-project-merge-request-milestone-events': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-project-issue-state-events] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-project-issue-state-events', '--path', 'id=101', '--path', 'issue_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-project-issue-state-events': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-project-merge-request-state-events] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-project-merge-request-state-events', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-project-merge-request-state-events': no family module and no graphql_only record declares it
+_____________ test_a_list_record_prints_every_item[list-uploads] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-uploads', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-uploads': no family module and no graphql_only record declares it
+____________ test_a_list_record_prints_every_item[list-wiki-pages] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-39\src\payload\test\test_gitlab_api_plan.py:759: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['plan#list-wiki-pages', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'plan#list-wiki-pages': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_plan.py::test_only_the_kept_keys_are_pending
+FAILED src/payload/test/test_gitlab_api_plan.py::test_the_typed_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_plan.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_plan.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-group-issue-boards-in-a-group]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-group-issues]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[get-all-burndown-chart-events-for-a-single-milestone]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-group-iterations]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[get-all-issues-assigned-to-a-single-milestone]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-issue-links]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[get-all-merge-requests-assigned-to-a-single-milestone]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-issue-notes]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-board-lists-in-an-issue-board]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-burndown-chart-events-for-a-milestone]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-issues]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-child-epics-of-an-epic]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-issues-for-a-milestone]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-issues-for-an-epic]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-emoji-reactions-for-a-comment]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-linked-epics-for-an-epic]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-emoji-reactions-for-a-resource]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-merge-request-notes]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-epic-boards-in-a-group]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-merge-requests-for-a-milestone]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-epic-notes]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-merge-requests-related-to-an-issue]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-group-epics]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-merge-requests-that-close-an-issue-on-merge]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-participants-in-an-issue]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-metric-images-for-an-incident]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-project-issue-boards]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-pages-domains]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-project-issue-weight-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-pages-domains-in-a-project]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-group-epic-board-lists]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-project-iterations]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-group-epic-label-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-project-milestones]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-group-epic-state-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-project-wiki-notes]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-group-issue-board-lists]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-related-epic-links-for-a-group]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-group-labels]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-snippet-notes]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-group-milestones]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-to-do-items]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-group-wiki-notes]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-uploads-for-a-group]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-project-issue-iteration-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-all-wiki-pages]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-project-issue-label-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-project-merge-request-label-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-project-issue-milestone-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-project-merge-request-milestone-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-project-issue-state-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-project-merge-request-state-events]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-uploads]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_list_record_prints_every_item[list-wiki-pages]
+======================== 58 failed, 70 passed in 9.43s ========================

@@ -23,3 +23,7 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | github_api apps | app-authenticated apps records go with the configured token (no JWT or client secret) | issue-29 DL-002; change.md Residuals | another credential source would break UB-3; no caller needs it | open |
 | 2026-11-11 | github_api issues | issues/get-issue-artifact prints one page of versions | issue-32 change.md Residuals | paging a list inside an object needs a record field | open |
 | 2026-11-11 | github_api pulls | pulls/update-branch stays pending (writes the PR head branch) | issue-32 DL-002 | gating needs #27's None mapping; one entry once it lands | open |
+| 2026-11-11 | gitlab_api plan | plan#clone-an-issue and plan#create-a-merge-request-note (the merge quick action) stay pending | issue-39 DL-003 | GitLab gate has no no-subcommand form | open |
+| 2026-11-11 | gitlab_api plan | emoji MR/snippet keys and group notification_settings keys stay pending | issue-39 change.md Residuals | one record per Reference | open |
+| 2026-11-11 | gitlab_api plan | emoji combined path row declared as written; giving it sends a stray attribute | issue-39 change.md Residuals | N needs the row; no failure seen | open |
+| 2026-11-11 | gitlab_api plan | the clone quick action runs from saved issue notes and descriptions (part 1, update-an-issue-note) | issue-39 review iteration-01 C3 | quick actions run server-side; guarding is a mechanism | open |
