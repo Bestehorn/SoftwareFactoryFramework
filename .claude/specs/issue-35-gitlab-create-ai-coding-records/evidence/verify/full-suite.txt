@@ -1,0 +1,38 @@
+# Whole-suite verdict for issue #35, read through the wrapper (never a local suite: a CI run exists for the SHA)
+command: "D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe" scripts/github_wrapper.py get-run 42985585816
+id: 42985585816
+name: ci
+event: pull_request (PR #59)
+head_branch: issue-35-gitlab-create-ai-coding-records
+head_sha: 0e6f27de40a3354bc4856657feadb8aaf39a4a00  # pragma: allowlist secret
+base sha: 25c91d3f7851b18ef15a9d89d34ef4ae27169059  # pragma: allowlist secret
+status: completed
+conclusion: success
+run_attempt: 1
+worktree HEAD (git rev-parse HEAD): 0e6f27de40a3354bc4856657feadb8aaf39a4a00  # pragma: allowlist secret
+worktree merge-base with origin/main: 25c91d3f7851b18ef15a9d89d34ef4ae27169059  # pragma: allowlist secret
+SHA match: the run's head_sha equals the worktree HEAD; the base equals the merge-base, so the merge commit CI checked
+out (695f5b6, "Merge 0e6f27d into 25c91d3") has the tree of HEAD.
+
+command: "D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe" scripts/github_wrapper.py get-jobs 42985585816
+130405849096   completed    success      verify (security)
+130405849368   completed    success      verify (types)
+130405849416   completed    success      verify (tests)
+130405849489   completed    success      verify (lint)
+130406887252   completed    success      report
+
+command: "D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe" scripts/github_wrapper.py get-job-logs 130405849416
+(searched, not truncated; the lines that carry the verdict)
+2026-11-11T08:15:43.5273494Z run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+2026-11-11T08:16:45.2893727Z src/payload/scripts/gitlab_api/families/ai_coding.py                            6      0   100%
+2026-11-11T08:16:45.2895721Z src/payload/scripts/gitlab_api/families/create.py                               6      0   100%
+2026-11-11T08:16:45.2942140Z src/payload/test/test_gitlab_api_ai_coding.py                                 161      7    96%   64, 466-468, 473-479
+2026-11-11T08:16:45.2943092Z src/payload/test/test_gitlab_api_create.py                                    178     13    93%   60, 68-73, 500-502, 507-513
+2026-11-11T08:16:45.5609083Z ======================= 3057 passed in 61.32s (0:01:01) ========================
+2026-11-11T08:16:45.5609543Z --- PASS tests/pytest (62.1s, exit 0)
+2026-11-11T08:16:51.3565034Z 1053 passed in 5.61s
+2026-11-11T08:16:51.4068008Z --- PASS tests/hook-suite (5.8s, exit 0)
+2026-11-11T08:16:51.4071616Z CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+The log holds no "failed", "skipped", "xfail" or "deselected" count other than the summary line above.
+
+verdict: GREEN (CI run 42985585816, conclusion success, on the worktree HEAD)

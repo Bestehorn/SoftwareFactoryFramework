@@ -1,0 +1,57 @@
+# issue #44 round-2 whole-suite verdict: CI run 43004808641, read through the wrapper from the main checkout
+# commands (cwd D:\Code Workspace\CodingProjectSetupPrompt):
+#   venv\Scripts\python.exe scripts/github_wrapper.py get-run 43004808641
+#   venv\Scripts\python.exe scripts/github_wrapper.py get-jobs 43004808641
+#   venv\Scripts\python.exe scripts/github_wrapper.py get-job-logs 130469520833   (85847 bytes, searched in full, then deleted)
+# worktree: git rev-parse HEAD = 82aa3d98f09526666c8a5f6157c347406cef726a  # pragma: allowlist secret
+
+## get-run 43004808641 (the fields that judge it, verbatim)
+  "id": 43004808641,
+  "name": "ci",
+  "head_branch": "issue-44-gitlab-graphql-capabilities",
+  "head_sha": "82aa3d98f09526666c8a5f6157c347406cef726a",  # pragma: allowlist secret
+  "display_title": "Declare the GitLab GraphQL-only capability records on call",
+  "run_number": 94,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  "pull_requests": number 61, head sha 82aa3d98f09526666c8a5f6157c347406cef726a  # pragma: allowlist secret
+  "pull_requests": base ref main, base sha 7c5b8b9e6f044742d5baa39efcf64a8f5e4e42b5  # pragma: allowlist secret
+  "run_attempt": 1,
+  "head_commit": message "Merge remote-tracking branch 'origin/main' into issue-44-gitlab-graphql-capabilities"
+
+## get-jobs 43004808641 (complete output)
+130469520446   completed    success      verify (types)
+130469520746   completed    success      verify (security)
+130469520819   completed    success      verify (lint)
+130469520833   completed    success      verify (tests)
+130470682865   completed    success      report
+
+## get-job-logs 130469520833, verify (tests): the lines that judge it
+2026-11-11T10:34:57.1811110Z HEAD is now at 6480038 Merge 82aa3d98f09526666c8a5f6157c347406cef726a into 7c5b8b9e6f044742d5baa39efcf64a8f5e4e42b5  # pragma: allowlist secret
+2026-11-11T10:35:11.9083694Z --- RUN  tests/pytest: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python scripts/run_tests.py --workers auto --coverage --junit reports/junit.xml
+2026-11-11T10:35:11.9918429Z run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors -n auto --cov=src --cov-report=term-missing --cov-fail-under=80 --junitxml=reports/junit.xml
+2026-11-11T10:35:18.7519803Z testpaths: src/hooks/tests, src/payload/test, test
+2026-11-11T10:35:18.7520766Z 4 workers [3314 items]
+2026-11-11T10:35:56.1385579Z src/payload/scripts/gitlab_api/commands/call.py                               193      0   100%
+2026-11-11T10:35:56.1403514Z src/payload/scripts/gitlab_api/graphql_only.py                                 33      0   100%
+2026-11-11T10:35:56.1404020Z src/payload/scripts/gitlab_api/registry.py                                    215      3    99%   224, 456, 460
+2026-11-11T10:35:56.1404653Z src/payload/scripts/gitlab_api/transport.py                                   373     15    96%   210-211, 240, 281-282, 323, 340, 431, 461-462, 471, 567, 579, 706-709
+2026-11-11T10:35:56.1405269Z src/payload/scripts/gitlab_wrapper.py                                         120      7    94%   114, 167-169, 173, 338, 361-362
+2026-11-11T10:35:56.1448170Z src/payload/test/test_gitlab_api_graphql_only.py                              664     22    97%   79, 87-92, 409, 420-421, 458, 643-644, 646, 698, 763, 774, 778, 784, 786, 1491-1492
+2026-11-11T10:35:56.1449989Z src/payload/test/test_gitlab_api_registry.py                                  178      7    96%   45, 125-130
+2026-11-11T10:35:56.2532484Z Required test coverage of 80% reached. Total coverage: 91.81%
+2026-11-11T10:35:56.2532757Z ============================ 3314 passed in 43.91s =============================
+2026-11-11T10:35:56.3673792Z --- PASS tests/pytest (44.5s, exit 0)
+2026-11-11T10:36:01.1046710Z 1053 passed in 4.59s
+2026-11-11T10:36:01.1501286Z --- PASS tests/hook-suite (4.8s, exit 0)
+2026-11-11T10:36:01.1505087Z CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+2026-11-11T10:36:01.1505673Z   [PASS] tests/pytest  exit 0
+2026-11-11T10:36:01.1505903Z   [PASS] tests/hook-suite  exit 0
+
+## search of the complete log
+# no line matches FAILED, failed (other than the 0-failed summary), SKIPPED, skipped (other than "0 skipped"), XFAIL or xfail.
+# The PR merge commit 6480038 joins 82aa3d9 with 7c5b8b9, an ancestor of 82aa3d9 (git merge-base --is-ancestor: true),
+# so the tested tree is the worktree HEAD's tree.
+
+Verdict: CI run 43004808641 completed/success on head 82aa3d9, 5 of 5 jobs success, 3314 + 1053 passed, 0 failed.

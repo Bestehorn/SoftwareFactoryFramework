@@ -1,0 +1,988 @@
+# group spot: mutants applied by single-occurrence anchors, run through scripts/run_tests.py, then restored byte for byte (sha256 and mtime checked against the pre-run baseline).
+# baseline security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_factory.py sha256 ef8bc4cb6b5bc90e0568916e34e7151c35cfb44815a5b462a2716ffd808cf7cd CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_software_supply_chain_security.py sha256 3fb4c4d713b411f109fb1a89eb54dfa6165691af97bfddafa8e36546b0207e89 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_platform.py sha256 c1d1a60a1003e6179a011ba191da8220f9f5352338bc5c6d90c176d99eb8dfd4 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_risk_management.py sha256 779b9f959370956260c26d396de2af50862c2602ff94165a25e824cd87c0cff7 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_governance.py sha256 e12f2f77c50a6f06ac623699fd286cd966a2c5bc00c4afd537d980fba954a1c1 CRLF=0 bareCR=0  # pragma: allowlist secret
+# mutant X1: security_factory.py, AC-4: package_manager kind ARRAY->SCALAR on security-factory#list-project-dependencies
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+...F.................................................................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+______________________ test_every_kind_is_its_rows_type _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:311: in test_every_kind_is_its_rows_type
+    assert declared == TYPED_ATTRIBUTES, "the non-SCALAR Params are not the sections' (AC-4):\n" + (
+E   AssertionError: the non-SCALAR Params are not the sections' (AC-4):
+E     missing: ('security-factory#list-project-dependencies', 'package_manager')
+E   assert {} == {('security-f...er'): 'ARRAY'}
+E     
+E     Right contains 1 more item:
+E     {('security-factory#list-project-dependencies', 'package_manager'): 'ARRAY'}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_every_kind_is_its_rows_type
+======================= 1 failed, 254 passed in 58.96s ========================
+exit=1
+# restored security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e, equal to the baseline: True  # pragma: allowlist secret
+# mutant X2: software_supply_chain_security.py, AC-5: paging NONE->OFFSET on software-supply-chain-security#list-all-token-associations
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+.................F...................................................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:722: in test_every_list_record_has_a_case
+    assert offset == expected, "the Paging.OFFSET records are not the sections' lists (AC-5):\n" + set_difference(
+E   AssertionError: the Paging.OFFSET records are not the sections' lists (AC-5):
+E     not expected: 'software-supply-chain-security#list-all-token-associations'
+E   assert {'software-su...-a-user', ...} == {'software-su...-a-user', ...}
+E     
+E     Extra items in the left set:
+E     'software-supply-chain-security#list-all-token-associations'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_list_record_has_a_case
+================== 1 failed, 254 passed in 61.42s (0:01:01) ===================
+exit=1
+# restored software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b, equal to the baseline: True  # pragma: allowlist secret
+# mutant X3: security_platform.py, AC-5/AC-7: paging OFFSET->NONE on security-platform#list-all-attestations
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+...............................................F...F.................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:410: in test_every_list_record_has_a_case
+    assert declared == expected, "the records' Paging is not AC-5's:\n" + mapping_difference(
+E   AssertionError: the records' Paging is not AC-5's:
+E     'security-platform#list-all-attestations': declared 'NONE', expected 'OFFSET'
+E   assert {'security-pl...: 'NONE', ...} == {'security-pl...: 'NONE', ...}
+E     
+E     Omitting 18 identical items, use -vv to show
+E     Differing items:
+E     {'security-platform#list-all-attestations': 'NONE'} != {'security-platform#list-all-attestations': 'OFFSET'}
+E     Use -v to get more diff
+_________ test_a_list_record_prints_every_item[list-all-attestations] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_platform.py:430: in test_a_list_record_prints_every_item
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_platform.py:296: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_wrapper.py:336: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_wrapper.py:321: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_api\commands\call.py:381: in call_operation
+    send_call(transport=transport, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_api\commands\call.py:367: in send_call
+    print_response(response=registry.send(transport=transport, operation_id=operation_id, values=prepared.values))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_api\registry.py:357: in send
+    return transport.request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_api\transport.py:541: in request
+    return self._send(method=method, url=url, data=data, content_type=content_type, credential=self._credential)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_api\transport.py:652: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\scripts\gitlab_api\transport.py:675: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/101/attestations/102 (still scripted: [('GET', 'https://gitlab.example.com/api/v4/projects/101/attestations/102?per_page=100'), ('GET', 'https://gitlab.example.com/api/v4/projects/101/attestations/102?per_page=100&page=2')])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_a_list_record_prints_every_item[list-all-attestations]
+======================= 2 failed, 253 passed in 56.19s ========================
+exit=1
+# restored security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5, equal to the baseline: True  # pragma: allowlist secret
+# mutant X4: security_risk_management.py, AC-1/AC-6: method POST->PUT on security-risk-management#retry-failed-status-check-for-a-merge-request
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+.......................................................F................ [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+....................F.F.....F.......F..                                  [100%]
+================================== FAILURES ===================================
+________________________ test_every_key_has_its_record ________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:421: in test_every_key_has_its_record
+    assert declared == RECORD_KEYS, "the records are not the family's sections (AC-1):\n" + mapping_difference(
+E   AssertionError: the records are not the family's sections (AC-1):
+E     missing: ('POST', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry')
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry')
+E   assert {('GET', '/ad...-export', ...} == {('GET', '/ad...-export', ...}
+E     
+E     Omitting 40 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {('PUT', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry'): 'security-risk-management#retry-failed-status-check-for-a-merge-request'}
+E     Right contains 1 more item:
+E     {('POST', '/projects/:id/merge_requests/:merge_request_iid/sta...
+E     
+E     ...Full output truncated, use '-vv' to show
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:879: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: security-risk-management#retry-failed-status-check-for-a-merge-request: PUT /projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry is none of the section's endpoints [('POST', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry')]
+E   assert not ["security-risk-management#retry-failed-status-check-for-a-merge-request: PUT /projects/:id/merge_requests/:merge_requ...endpoints [('POST', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry')]"]
+__________________ test_every_index_row_is_mapped_or_pending __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:589: in test_every_index_row_is_mapped_or_pending
+    assert not gaps, gap_report(gaps=gaps)
+E   AssertionError: 1 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+E     families/security_risk_management.py:
+E         ('POST', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry'),  # rest/security-risk-management.md#retry-failed-status-check-for-a-merge-request
+E   assert not [IndexRow(method='POST', path='/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry', reference='rest/security-risk-management.md#retry-failed-status-check-for-a-merge-request')]
+__________________ test_every_declared_key_is_in_its_family ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:694: in test_every_declared_key_is_in_its_family
+    assert not problems, "declarations the operations index does not bear out:\n" + "\n".join(problems)
+E   AssertionError: declarations the operations index does not bear out:
+E     families/security_risk_management.py: the record 'security-risk-management#retry-failed-status-check-for-a-merge-request' declares ('PUT', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry'); the rows of its Reference carry [('POST', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry')]
+E   assert not ["families/security_risk_management.py: the record 'security-risk-management#retry-failed-status-check-for-a-merge-req...nce carry [('POST', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry')]"]
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\test\test_gitlab_wrapper_contract.py:932: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, "\n".join(problems)
+E   AssertionError: security-risk-management#retry-failed-status-check-for-a-merge-request: the method 'PUT' is not the section's (POST)
+E   assert not ["security-risk-management#retry-failed-status-check-for-a-merge-request: the method 'PUT' is not the section's (POST)"]
+---------------------------- Captured stdout call -----------------------------
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+[]
+[]
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+[]
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_key_has_its_record
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_index_row_is_mapped_or_pending
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_declared_key_is_in_its_family
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+================== 5 failed, 250 passed in 67.28s (0:01:07) ===================
+exit=1
+# restored security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51, equal to the baseline: True  # pragma: allowlist secret
+# mutant X5: security_governance.py, AC-4: secret_push_protection_enabled required true->false
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+........................................................................ [ 28%]
+..............F......................................................... [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+________________ test_the_required_attributes_are_the_sections ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:209: in test_the_required_attributes_are_the_sections
+    assert declared == expected, "the required Params are not the section's (AC-4):\n" + mapping_difference(
+E   AssertionError: the required Params are not the section's (AC-4):
+E     missing: 'security-governance#update-group-security-settings'
+E   assert {} == {'security-go...on_enabled'})}
+E     
+E     Right contains 1 more item:
+E     {'security-governance#update-group-security-settings': frozenset({'secret_push_protection_enabled'})}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_the_required_attributes_are_the_sections
+================== 1 failed, 254 passed in 60.37s (0:01:00) ===================
+exit=1
+# restored security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab, equal to the baseline: True  # pragma: allowlist secret
+# final security_factory.py bytes and mtime equal to the baseline: True
+# final software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final security_platform.py bytes and mtime equal to the baseline: True
+# final security_risk_management.py bytes and mtime equal to the baseline: True
+# final security_governance.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_factory.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_platform.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_risk_management.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_governance.py bytes and mtime equal to the baseline: True

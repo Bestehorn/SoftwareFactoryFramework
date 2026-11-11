@@ -10,6 +10,14 @@ imports the package itself, so while a module is not written the test fails on t
 ``send``, ``path_parameters`` and a query name spelled ``<name>[]`` are issue #28's registry additions (its design
 D2; AC-1.2, AC-2.3).
 
+``GraphQLOperation.operation_id``, ``declared_variables`` and ``graphql_lookup`` are issue #30's registry additions
+(its design D2, D3; AC-2.5). ``graphql_lookup``'s records are a synthetic ``graphql_only.OPERATIONS`` set for the test
+with ``monkeypatch.setattr``, so no real record takes part.
+
+``graphql_call``'s refusal of a variable the record does not declare (issue #30 design D3; AC-2.5) is judged on such a
+synthetic record with ``RecordingTransport``, a stand-in that records every call it is given and sends nothing, so the
+refusal is seen to come before the transport is called.
+
 A record's ``root`` and ``content_type`` and ``send``'s ``data`` are issue #46's (its design D2; AC-1.2): the record
 that carries them is built inside its test and added to the synthetic family for that test alone.
 
@@ -728,3 +736,165 @@ def test_path_parameters_are_the_placeholders_in_order(case: PlaceholderCase) ->
     operation = case.record.build(api=api)
 
     assert api.registry.path_parameters(operation=operation) == case.names
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AC-2.5 — declared_variables gives the variables a GraphQL document defines; graphql_lookup finds the one record of
+# an ID in graphql_only.OPERATIONS
+# ---------------------------------------------------------------------------------------------------------------------
+
+GRAPHQL_ONLY = "graphql_only"
+SYNTHETIC_CAPABILITY = "A synthetic capability"
+VARIABLE_AFTER = "after"
+FIELD_REPOSITORY = "repository"
+FIELD_DISCUSSIONS = "discussions"
+#: The design's example (AC-2.5): three variable definitions, one with white space before its ``:``, and two of the
+#: same names used again as arguments, where no ``:`` follows them.
+DISCUSSIONS_DOCUMENT = (
+    "query Q($owner: String!, $name : String, $after: String) { repository(owner: $owner, name: $name) "
+    "{ discussions(first: 100, after: $after) { nodes { id } pageInfo { hasNextPage endCursor } } } }"
+)
+
+
+@dataclass(frozen=True)
+class GraphQLSpec:
+    """A synthetic ``GraphQLOperation``. A record that pages nothing is built without ``connection``, so the field's
+    default, ``()``, is the one it holds (design D2)."""
+
+    operation_id: str
+    document: str
+    capability: str = SYNTHETIC_CAPABILITY
+    connection: Tuple[str, ...] = ()
+
+    def build(self, *, api: Api) -> Any:
+        """The record as ``registry.GraphQLOperation``, its ``operation_id`` named."""
+        if self.connection:
+            return api.registry.GraphQLOperation(
+                operation_id=self.operation_id,
+                capability=self.capability,
+                document=self.document,
+                connection=self.connection,
+            )
+        return api.registry.GraphQLOperation(
+            operation_id=self.operation_id, capability=self.capability, document=self.document
+        )
+
+
+@dataclass(frozen=True)
+class VariablesCase:
+    """A record of ``DISCUSSIONS_DOCUMENT`` with ``connection``, and the ``variables`` ``declared_variables`` gives for
+    it: with a connection, without ``after``, which the transport sets on every page (design D3)."""
+
+    name: str
+    connection: Tuple[str, ...]
+    variables: Tuple[str, ...]
+
+
+VARIABLES_CASES = (
+    VariablesCase(name="without-a-connection", connection=(), variables=(PARAM_OWNER, PARAM_NAME, VARIABLE_AFTER)),
+    VariablesCase(
+        name="with-a-connection",
+        connection=(FIELD_REPOSITORY, FIELD_DISCUSSIONS),
+        variables=(PARAM_OWNER, PARAM_NAME),
+    ),
+)
+
+
+@pytest.mark.parametrize("case", VARIABLES_CASES, ids=lambda case: case.name)
+def test_variables_are_the_documents_definitions(case: VariablesCase) -> None:
+    api = load_api()
+    operation = GraphQLSpec(
+        operation_id="graphql/Repository.discussions", document=DISCUSSIONS_DOCUMENT, connection=case.connection
+    ).build(api=api)
+
+    assert api.registry.declared_variables(operation=operation) == case.variables
+
+
+#: Two records sharing a capability under their own IDs, and two declaring one ID.
+READ_RECORD = GraphQLSpec(operation_id="graphql/Synthetic.read", document="query { viewer { login } }")
+WRITE_RECORD = GraphQLSpec(
+    operation_id="graphql/syntheticWrite",
+    document="mutation($input: SyntheticWriteInput!) { syntheticWrite(input: $input) { clientMutationId } }",
+)
+TWICE_ID = "graphql/syntheticTwice"
+TWICE_RECORDS = (
+    GraphQLSpec(operation_id=TWICE_ID, document="query { viewer { id } }"),
+    GraphQLSpec(operation_id=TWICE_ID, document="query { viewer { name } }"),
+)
+UNDECLARED_ID = "graphql/syntheticUndeclared"
+
+
+def install_graphql_records(*, api: Api, records: Tuple[GraphQLSpec, ...], monkeypatch: pytest.MonkeyPatch) -> None:
+    """Make ``records`` the whole of ``graphql_only.OPERATIONS`` for the test, so no real record takes part."""
+    graphql_only = fx.import_api_module(name=GRAPHQL_ONLY)
+    operations = tuple(record.build(api=api) for record in records)
+    monkeypatch.setattr(target=graphql_only, name="OPERATIONS", value=operations)
+
+
+def test_graphql_lookup_finds_one_record(monkeypatch: pytest.MonkeyPatch) -> None:
+    api = load_api()
+    install_graphql_records(api=api, records=(READ_RECORD, WRITE_RECORD, *TWICE_RECORDS), monkeypatch=monkeypatch)
+
+    for declared in (READ_RECORD, WRITE_RECORD):
+        found = api.registry.graphql_lookup(operation_id=declared.operation_id)
+        assert found == declared.build(api=api), f"{declared.operation_id} gave {found!r}"
+    for operation_id in (UNDECLARED_ID, TWICE_ID):
+        with pytest.raises(ValueError) as raised:
+            api.registry.graphql_lookup(operation_id=operation_id)
+        assert operation_id in str(raised.value), f"the refusal of {operation_id} does not name it: {raised.value}"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AC-2.5 — graphql_call refuses a variable the record does not declare, before the transport is called
+# ---------------------------------------------------------------------------------------------------------------------
+
+ENTRY_GRAPHQL = "graphql"
+ENTRY_GRAPHQL_NODES = "graphql_nodes"
+#: A variable no synthetic record's document defines.
+UNDECLARED_VARIABLE = "undeclared"
+#: The value given for each declared variable when the same record is called with its declared variables only.
+DECLARED_VALUE = "v"
+DISCUSSIONS_RECORD = GraphQLSpec(
+    operation_id="graphql/Repository.discussions",
+    document=DISCUSSIONS_DOCUMENT,
+    connection=(FIELD_REPOSITORY, FIELD_DISCUSSIONS),
+)
+#: A record that pages nothing, sent through ``Transport.graphql``, and one that pages a connection, sent through
+#: ``Transport.graphql_nodes``.
+GRAPHQL_CALL_RECORDS = (WRITE_RECORD, DISCUSSIONS_RECORD)
+
+
+class RecordingTransport:
+    """A stand-in for ``Transport`` that records every GraphQL call it is given, as its entry point, document and
+    variables, and sends nothing: ``graphql`` answers ``{}`` and ``graphql_nodes`` no node."""
+
+    def __init__(self) -> None:
+        self.calls: List[Tuple[str, str, Dict[str, Any]]] = []
+
+    def graphql(self, *, document: str, variables: Dict[str, Any]) -> Any:
+        self.calls.append((ENTRY_GRAPHQL, document, dict(variables)))
+        return {}
+
+    def graphql_nodes(self, *, document: str, variables: Dict[str, Any], connection: Tuple[str, ...]) -> Iterator[Any]:
+        self.calls.append((ENTRY_GRAPHQL_NODES, document, dict(variables)))
+        return iter(())
+
+
+@pytest.mark.parametrize("record", GRAPHQL_CALL_RECORDS, ids=lambda record: record.operation_id)
+def test_graphql_call_refuses_an_undeclared_variable(record: GraphQLSpec, monkeypatch: pytest.MonkeyPatch) -> None:
+    api = load_api()
+    install_graphql_records(api=api, records=(record,), monkeypatch=monkeypatch)
+    transport = RecordingTransport()
+
+    with pytest.raises(ValueError) as raised:
+        api.registry.graphql_call(
+            transport=transport, operation_id=record.operation_id, variables={UNDECLARED_VARIABLE: 1}
+        )
+    assert UNDECLARED_VARIABLE in str(raised.value), f"the refusal does not name {UNDECLARED_VARIABLE}: {raised.value}"
+    assert transport.calls == [], f"the transport was called before the refusal: {transport.calls}"
+
+    # The same record, given only its declared variables, reaches the transport: the refusal above was the name's.
+    declared = {name: DECLARED_VALUE for name in api.registry.declared_variables(operation=record.build(api=api))}
+    api.registry.graphql_call(transport=transport, operation_id=record.operation_id, variables=declared)
+    entry = ENTRY_GRAPHQL_NODES if record.connection else ENTRY_GRAPHQL
+    assert transport.calls == [(entry, record.document, declared)]

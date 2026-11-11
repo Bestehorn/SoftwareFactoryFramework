@@ -1,0 +1,125 @@
+# tasks: rework M2c M2l
+# mutant 2c: every mutation document without clientMutationId (graphql_only._mutation)
+diff --git a/src/payload/scripts/github_api/graphql_only.py b/src/payload/scripts/github_api/graphql_only.py
+index 6fd5a9d..73a185d 100644
+--- a/src/payload/scripts/github_api/graphql_only.py
++++ b/src/payload/scripts/github_api/graphql_only.py
+@@ -52,7 +52,7 @@ def _mutation(*, capability: str, name: str, input_type: str, selection: str) ->
+     return GraphQLOperation(
+         operation_id=f"{GRAPHQL_ID_PREFIX}{name}",
+         capability=capability,
+-        document=f"mutation($input: {input_type}!) {{ {name}(input: $input) {{ clientMutationId {selection} }} }}",
++        document=f"mutation($input: {input_type}!) {{ {name}(input: $input) {{ {selection} }} }}",
+     )
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_registry.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [81 items]
+
+.................................................................F...... [ 88%]
+.........                                                                [100%]
+================================== FAILURES ===================================
+_____________ test_every_mutation_document_has_the_designed_shape _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_graphql_only.py:483: in test_every_mutation_document_has_the_designed_shape
+    assert not problems, "mutation documents without design D1's shape:\n" + "\n".join(problems)
+E   AssertionError: mutation documents without design D1's shape:
+E     graphql/createDiscussion: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: CreateDiscussionInput!) { createDiscussion(input: $input) { discussion { id number } } }
+E     graphql/addDiscussionComment: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: AddDiscussionCommentInput!) { addDiscussionComment(input: $input) { comment { id } } }
+E     graphql/markDiscussionCommentAsAnswer: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: MarkDiscussionCommentAsAnswerInput!) { markDiscussionCommentAsAnswer(input: $input) { discussion { id } } }
+E     graphql/createProjectV2: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: CreateProjectV2Input!) { createProjectV2(input: $input) { projectV2 { id number } } }
+E     graphql/copyProjectV2: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: CopyProjectV2Input!) { copyProjectV2(input: $input) { projectV2 { id number } } }
+E     graphql/updateProjectV2: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: UpdateProjectV2Input!) { updateProjectV2(input: $input) { projectV2 { id } } }
+E     graphql/deleteProjectV2: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: DeleteProjectV2Input!) { deleteProjectV2(input: $input) { projectV2 { id } } }
+E     graphql/linkProjectV2ToRepository: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: LinkProjectV2ToRepositoryInput!) { linkProjectV2ToRepository(input: $input) { repository { id } } }
+E     graphql/enablePullRequestAutoMerge: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: EnablePullRequestAutoMergeInput!) { enablePullRequestAutoMerge(input: $input) { pullRequest { id } } }
+E     graphql/disablePullRequestAutoMerge: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: DisablePullRequestAutoMergeInput!) { disablePullRequestAutoMerge(input: $input) { pullRequest { id } } }
+E     graphql/markPullRequestReadyForReview: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: MarkPullRequestReadyForReviewInput!) { markPullRequestReadyForReview(input: $input) { pullRequest { id isDraft } } }
+E     graphql/convertPullRequestToDraft: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: ConvertPullRequestToDraftInput!) { convertPullRequestToDraft(input: $input) { pullRequest { id isDraft } } }
+E     graphql/resolveReviewThread: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: ResolveReviewThreadInput!) { resolveReviewThread(input: $input) { thread { id isResolved } } }
+E     graphql/unresolveReviewThread: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: UnresolveReviewThreadInput!) { unresolveReviewThread(input: $input) { thread { id isResolved } } }
+E     graphql/minimizeComment: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: MinimizeCommentInput!) { minimizeComment(input: $input) { minimizedComment { isMinimized minimizedReason } } }
+E     graphql/unminimizeComment: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: UnminimizeCommentInput!) { unminimizeComment(input: $input) { unminimizedComment { isMinimized } } }
+E     graphql/transferIssue: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: TransferIssueInput!) { transferIssue(input: $input) { issue { id number } } }
+E     graphql/pinIssue: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: PinIssueInput!) { pinIssue(input: $input) { issue { id } } }
+E     graphql/unpinIssue: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: UnpinIssueInput!) { unpinIssue(input: $input) { issue { id } } }
+E     graphql/revertPullRequest: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: RevertPullRequestInput!) { revertPullRequest(input: $input) { revertPullRequest { id number } } }
+E     graphql/dequeuePullRequest: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: DequeuePullRequestInput!) { dequeuePullRequest(input: $input) { mergeQueueEntry { id } } }
+E     graphql/createSponsorship: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: CreateSponsorshipInput!) { createSponsorship(input: $input) { sponsorship { id } } }
+E     graphql/createSponsorsTier: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: CreateSponsorsTierInput!) { createSponsorsTier(input: $input) { sponsorsTier { id } } }
+E     graphql/createCommitOnBranch: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { id } } }
+E     graphql/createBranchProtectionRule: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <selection> } }: mutation($input: CreateBranchProtectionRuleInput!) { createBranchProtectionRule(input: $input) { branchProtectionRule { id } } }
+E   assert not ['graphql/createDiscussion: the document is not mutation($input: <I>!) { <m>(input: $input) { clientMutationId <select...<selection> } }: mutation($input: UpdateProjectV2Input!) { updateProjectV2(input: $input) { projectV2 { id } } }', ...]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_every_mutation_document_has_the_designed_shape
+======================== 1 failed, 80 passed in 7.48s =========================
+exit=1
+# restored src/payload/scripts/github_api/graphql_only.py: sha256 b16ca928924246ce9873fcc22ee2fccc5b46284bf76d227bd919931c611cff70, pre-run b16ca928924246ce9873fcc22ee2fccc5b46284bf76d227bd919931c611cff70: OK
+# mutant 2l: registry.graphql_call sends an undeclared variable (its own refusal removed)
+diff --git a/src/payload/scripts/github_api/registry.py b/src/payload/scripts/github_api/registry.py
+index ee24596..146ca8a 100644
+--- a/src/payload/scripts/github_api/registry.py
++++ b/src/payload/scripts/github_api/registry.py
+@@ -270,12 +270,6 @@ def graphql_call(transport: Transport, operation_id: str, *, variables: Mapping[
+     sent, as ``_check_names`` refuses an undocumented name."""
+     operation = graphql_lookup(operation_id=operation_id)
+     declared = declared_variables(operation=operation)
+-    undeclared = sorted(name for name in variables if name not in declared)
+-    if undeclared:
+-        raise ValueError(
+-            f"The GitHub GraphQL record {json.dumps(obj=operation.operation_id)} declares no variable "
+-            f"{json.dumps(obj=undeclared)}; its variables are {json.dumps(obj=list(declared))}"
+-        )
+     if operation.connection:
+         return list(
+             transport.graphql_nodes(document=operation.document, variables=variables, connection=operation.connection)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_registry.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [81 items]
+
+...........................................FF........................... [ 88%]
+.........                                                                [100%]
+================================== FAILURES ===================================
+__ test_graphql_call_refuses_an_undeclared_variable[graphql/syntheticWrite] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:793: in test_graphql_call_refuses_an_undeclared_variable
+    with pytest.raises(ValueError) as raised:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_graphql_call_refuses_an_undeclared_variable[graphql/Repository.discussions] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_registry.py:793: in test_graphql_call_refuses_an_undeclared_variable
+    with pytest.raises(ValueError) as raised:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_registry.py::test_graphql_call_refuses_an_undeclared_variable[graphql/syntheticWrite]
+FAILED src/payload/test/test_github_api_registry.py::test_graphql_call_refuses_an_undeclared_variable[graphql/Repository.discussions]
+======================== 2 failed, 79 passed in 8.84s =========================
+exit=1
+# restored src/payload/scripts/github_api/registry.py: sha256 f0ca87c18b48b57a13488a430021f24b49bf4d7771d52ee568a9870ba33bd9ef, pre-run f0ca87c18b48b57a13488a430021f24b49bf4d7771d52ee568a9870ba33bd9ef: OK
+# final: the restored product
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_registry.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [81 items]
+
+........................................................................ [ 88%]
+.........                                                                [100%]
+============================= 81 passed in 7.15s ==============================
+exit=0

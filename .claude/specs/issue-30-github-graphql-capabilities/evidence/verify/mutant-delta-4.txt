@@ -1,0 +1,684 @@
+# mutant C3: round 3's C3: the refuse_both_bodies call dropped from _call_graphql
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -400,3 +400,2 @@
+     try:
+-        refuse_both_bodies(raw_body=raw_body, members=members)
+         refuse_gated(operation_id=operation_id)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+.....................................F....F...F......................... [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/transferIssue: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:411 call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it
+_ test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/enablePullRequestAutoMerge: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:411 call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/noSuchRecord: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['No GitHub GraphQL record declares "graphql/noSuchRecord"']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:411 No GitHub GraphQL record declares "graphql/noSuchRecord"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord]
+======================= 3 failed, 371 passed in 21.20s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C3a: near-variant: refuse_both_bodies moved after refuse_gated in _call_graphql
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -400,4 +400,4 @@
+     try:
++        refuse_gated(operation_id=operation_id)
+         refuse_both_bodies(raw_body=raw_body, members=members)
+-        refuse_gated(operation_id=operation_id)
+         operation = registry.graphql_lookup(operation_id=operation_id)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+...................................F...F................................ [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/transferIssue: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:412 call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it
+_ test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/enablePullRequestAutoMerge: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:412 call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge]
+======================= 2 failed, 372 passed in 19.21s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C3b: near-variant: refuse_both_bodies moved after registry.graphql_lookup in _call_graphql
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -400,5 +400,5 @@
+     try:
+-        refuse_both_bodies(raw_body=raw_body, members=members)
+         refuse_gated(operation_id=operation_id)
+         operation = registry.graphql_lookup(operation_id=operation_id)
++        refuse_both_bodies(raw_body=raw_body, members=members)
+         refuse_graphql_raw_body(operation=operation, raw_body=raw_body)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+.....................................F...F...F.......................... [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/transferIssue: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it
+_ test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/enablePullRequestAutoMerge: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/noSuchRecord: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['No GitHub GraphQL record declares "graphql/noSuchRecord"']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 No GitHub GraphQL record declares "graphql/noSuchRecord"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord]
+======================= 3 failed, 371 passed in 18.26s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C3c: near-variant: refuse_both_bodies moved after refuse_graphql_raw_body in _call_graphql
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -400,3 +400,2 @@
+     try:
+-        refuse_both_bodies(raw_body=raw_body, members=members)
+         refuse_gated(operation_id=operation_id)
+@@ -404,2 +403,3 @@
+         refuse_graphql_raw_body(operation=operation, raw_body=raw_body)
++        refuse_both_bodies(raw_body=raw_body, members=members)
+         check_graphql_call(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+...................................F...F....F........................... [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/transferIssue: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses the GitHub operation "graphql/transferIssue": no subcommand sends it
+_ test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/enablePullRequestAutoMerge: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses the GitHub operation "graphql/enablePullRequestAutoMerge": use the merge-pr subcommand
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/noSuchRecord: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['No GitHub GraphQL record declares "graphql/noSuchRecord"']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 No GitHub GraphQL record declares "graphql/noSuchRecord"
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord]
+======================= 3 failed, 371 passed in 18.74s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C3d: near-variant: _call_graphql's both-bodies refusal names only --input (GraphQL path only)
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -400,3 +400,4 @@
+     try:
+-        refuse_both_bodies(raw_body=raw_body, members=members)
++        if raw_body is not None and members:
++            raise ValueError(f"{CMD_CALL} refuses {OPTION_INPUT} beside a variable")
+         refuse_gated(operation_id=operation_id)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+.............................F........F...F...F......................... [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+_____________ test_a_raw_body_is_refused[input-beside-a-variable] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:907: in test_a_raw_body_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['call refuses --input beside a variable']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:413 call refuses --input beside a variable
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/transferIssue: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses --input beside a variable']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:413 call refuses --input beside a variable
+_ test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/enablePullRequestAutoMerge: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses --input beside a variable']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:413 call refuses --input beside a variable
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/noSuchRecord: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses --input beside a variable']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:413 call refuses --input beside a variable
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_is_refused[input-beside-a-variable]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord]
+======================= 4 failed, 370 passed in 21.23s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C3e: near-variant: _call_graphql's both-bodies refusal names only -f/--raw-field and -F/--field (GraphQL path only)
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -400,3 +400,7 @@
+     try:
+-        refuse_both_bodies(raw_body=raw_body, members=members)
++        if raw_body is not None and members:
++            raise ValueError(
++                f"{CMD_CALL} refuses {OPTION_RAW_FIELD_SHORT}/{OPTION_RAW_FIELD} or "
++                f"{OPTION_FIELD_SHORT}/{OPTION_FIELD} beside a raw body"
++            )
+         refuse_gated(operation_id=operation_id)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+.................................F.....F...F...F........................ [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+_____________ test_a_raw_body_is_refused[input-beside-a-variable] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:907: in test_a_raw_body_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['call refuses -f/--raw-field or -F/--field beside a raw body']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:416 call refuses -f/--raw-field or -F/--field beside a raw body
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/transferIssue: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses -f/--raw-field or -F/--field beside a raw body']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:416 call refuses -f/--raw-field or -F/--field beside a raw body
+_ test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/enablePullRequestAutoMerge: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses -f/--raw-field or -F/--field beside a raw body']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:416 call refuses -f/--raw-field or -F/--field beside a raw body
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/noSuchRecord: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses -f/--raw-field or -F/--field beside a raw body']
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_api.commands.call:call.py:416 call refuses -f/--raw-field or -F/--field beside a raw body
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_is_refused[input-beside-a-variable]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord]
+======================= 4 failed, 370 passed in 19.27s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C3f: near-variant: refuse_both_bodies's shared message drops -f/--raw-field (names --input with -F/--field only)
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -264,3 +264,3 @@
+     raise ValueError(
+-        f"{CMD_CALL} refuses {OPTION_INPUT} together with {OPTION_RAW_FIELD_SHORT}/{OPTION_RAW_FIELD} or "
++        f"{CMD_CALL} refuses {OPTION_INPUT} together with "
+         f"{OPTION_FIELD_SHORT}/{OPTION_FIELD}: a raw body is the whole request body, with no body member beside it"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+................................F..F.................................... [ 19%]
+.........................F.......F.......F..F........................... [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+___________ test_a_raw_body_with_body_members_is_refused[raw-field] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:1308: in test_a_raw_body_with_body_members_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:895: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/raw-field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:451 call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it
+_____________ test_a_raw_body_with_body_members_is_refused[field] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:1308: in test_a_raw_body_with_body_members_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:895: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:451 call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it
+_____________ test_a_raw_body_is_refused[input-beside-a-variable] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:907: in test_a_raw_body_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/transferIssue: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it
+_ test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/enablePullRequestAutoMerge: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it
+__ test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:945: in test_a_raw_body_beside_a_variable_is_refused_first
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:320: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/input-beside-a-variable/graphql/noSuchRecord: no log record matches every one of ['\\-\\-input\\ together\\ with\\ \\-f/\\-\\-raw\\-field\\ or\\ \\-F/\\-\\-field']: ['call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:412 call refuses --input together with -F/--field: a raw body is the whole request body, with no body member beside it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field]
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_is_refused[input-beside-a-variable]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/transferIssue]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/enablePullRequestAutoMerge]
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_beside_a_variable_is_refused_first[graphql/noSuchRecord]
+======================= 6 failed, 368 passed in 20.52s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C1: round 3's C1: the refuse_graphql_raw_body call dropped from _call_graphql
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -403,3 +403,2 @@
+         operation = registry.graphql_lookup(operation_id=operation_id)
+-        refuse_graphql_raw_body(operation=operation, raw_body=raw_body)
+         check_graphql_call(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+...................................F.................................... [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+___________ test_a_raw_body_is_refused[input-for-a-graphql-record] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:907: in test_a_raw_body_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:319: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2810: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2713: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.1/exit-2/input-for-a-graphql-record: exit code 0, the golden is 2; stdout '{\n  "pinIssue": {\n    "clientMutationId": null,\n    "issue": {\n      "id": "I_1"\n    }\n  }\n}\n'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_is_refused[input-for-a-graphql-record]
+======================= 1 failed, 373 passed in 19.40s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant C2: round 3's C2: refuse_graphql_raw_body moved after registry.graphql_call (the request)
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -403,3 +403,2 @@
+         operation = registry.graphql_lookup(operation_id=operation_id)
+-        refuse_graphql_raw_body(operation=operation, raw_body=raw_body)
+         check_graphql_call(
+@@ -416,2 +415,7 @@
+     )
++    try:
++        refuse_graphql_raw_body(operation=operation, raw_body=raw_body)
++    except ValueError as refusal:
++        logger.error("%s", refusal)
++        return EXIT_REFUSED
+     print_json(value=result)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+........................................................................ [ 19%]
+....................................F................................... [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+___________ test_a_raw_body_is_refused[input-for-a-graphql-record] ____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:907: in test_a_raw_body_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_graphql_only.py:319: in _judge_logged
+    fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2810: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2718: in assert_outcome
+    assert writes == list(case.writes), f"{case.name}: the requests other than GET differ from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.1/exit-2/input-for-a-graphql-record: the requests other than GET differ from the golden
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:419 call refuses --input for the GitHub GraphQL record "graphql/pinIssue": its variables are JSON, given with -f/--raw-field or -F/--field
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_graphql_only.py::test_a_raw_body_is_refused[input-for-a-graphql-record]
+======================= 1 failed, 373 passed in 19.77s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+
+# mutant K0: round 3's K0: the refuse_both_bodies call dropped from cmd_call's REST path
+# src/payload/scripts/github_api/commands/call.py: sha256 before 11ab49245edcc4d6..., line ends CRLF
+--- a/src/payload/scripts/github_api/commands/call.py
++++ b/src/payload/scripts/github_api/commands/call.py
+@@ -438,3 +438,2 @@
+     try:
+-        refuse_both_bodies(raw_body=raw_body, members=members)
+         refuse_gated(operation_id=operation_id)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_graphql_only.py src/payload/test/test_github_api_call.py src/payload/test/test_github_api_registry.py src/payload/test/test_github_wrapper_compat.py test/test_github_graphql_contract.py test/test_github_wrapper_coverage.py -p no:cacheprovider
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [374 items]
+
+................................F...F................................... [ 19%]
+........................................................................ [ 38%]
+........................................................................ [ 57%]
+........................................................................ [ 77%]
+........................................................................ [ 96%]
+..............                                                           [100%]
+================================== FAILURES ===================================
+___________ test_a_raw_body_with_body_members_is_refused[raw-field] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:1308: in test_a_raw_body_with_body_members_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:895: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/raw-field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:450 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+_____________ test_a_raw_body_with_body_members_is_refused[field] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:1308: in test_a_raw_body_with_body_members_is_refused
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\test_github_api_call.py:895: in _judge_logged
+    fx.assert_log(case=case, records=caplog.records, stderr=STDERR_READ_BY_THE_RUN)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-30\src\payload\test\github_wrapper_fixtures.py:2731: in assert_log
+    assert any(all(pattern.search(message) for pattern in patterns) for message in messages), (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: issue-46/AC-1.3/exit-2/field-beside-input: no log record matches every one of ['\\-\\-input', '\\-f/\\-\\-raw\\-field', '\\-F/\\-\\-field']: ['The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []']
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_api.commands.call:call.py:450 The GitHub operation "markdown/render-raw" documents no body parameter ["text"]; its path parameters are [], its query parameters are [], its body parameters are []
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[raw-field]
+FAILED src/payload/test/test_github_api_call.py::test_a_raw_body_with_body_members_is_refused[field]
+======================= 2 failed, 372 passed in 19.85s ========================
+--- exit 1; KILLED; restored sha256 and mtime identical=True
+

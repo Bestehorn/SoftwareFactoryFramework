@@ -1,0 +1,1254 @@
+# group empty: mutants applied by single-occurrence anchors, run through scripts/run_tests.py, then restored byte for byte (sha256 and mtime checked against the pre-run baseline).
+# baseline security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_factory.py sha256 ef8bc4cb6b5bc90e0568916e34e7151c35cfb44815a5b462a2716ffd808cf7cd CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_software_supply_chain_security.py sha256 3fb4c4d713b411f109fb1a89eb54dfa6165691af97bfddafa8e36546b0207e89 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_platform.py sha256 c1d1a60a1003e6179a011ba191da8220f9f5352338bc5c6d90c176d99eb8dfd4 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_risk_management.py sha256 779b9f959370956260c26d396de2af50862c2602ff94165a25e824cd87c0cff7 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_governance.py sha256 e12f2f77c50a6f06ac623699fd286cd966a2c5bc00c4afd537d980fba954a1c1 CRLF=0 bareCR=0  # pragma: allowlist secret
+# mutant E-factory: security_factory.py, OPERATIONS rebound to () before PENDING (the family declares no record)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [8 items]
+
+FFF.FFFF                                                                 [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:287: in test_every_body_is_json_and_unfixed
+    assert records, f"{FAMILY_MODULE}.OPERATIONS declares no record, so no body or fixed is checked (AC-3)"
+E   AssertionError: gitlab_api.families.security_factory.OPERATIONS declares no record, so no body or fixed is checked (AC-3)
+E   assert ()
+______________________ test_every_kind_is_its_rows_type _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:311: in test_every_kind_is_its_rows_type
+    assert declared == TYPED_ATTRIBUTES, "the non-SCALAR Params are not the sections' (AC-4):\n" + (
+E   AssertionError: the non-SCALAR Params are not the sections' (AC-4):
+E     missing: ('security-factory#list-project-dependencies', 'package_manager')
+E   assert {} == {('security-f...er'): 'ARRAY'}
+E     
+E     Right contains 1 more item:
+E     {('security-factory#list-project-dependencies', 'package_manager'): 'ARRAY'}
+E     Use -v to get more diff
+________________________ test_every_key_has_its_record ________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:264: in test_every_key_has_its_record
+    assert declared == KEY_IDS, "the records are not the family's index keys and References (AC-1):\n" + (
+E   AssertionError: the records are not the family's index keys and References (AC-1):
+E     missing: ('GET', '/projects/:id/dependencies')
+E     missing: ('GET', '/projects/:id/security_settings')
+E     missing: ('GET', '/templates/licenses')
+E     missing: ('GET', '/templates/licenses/:key')
+E     missing: ('PUT', '/projects/:id/security_settings')
+E   assert {} == {('GET', '/pr...emplate', ...}
+E     
+E     Right contains 5 more items:
+E     {('GET', '/projects/:id/dependencies'): 'security-factory#list-project-dependencies',
+E      ('GET', '/projects/:id/security_settings'): 'security-factory#list-all-project-security-settings',
+E      ('GET', '[39;...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________ test_the_required_attributes_are_the_sections ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:325: in test_the_required_attributes_are_the_sections
+    assert declared == REQUIRED_ATTRIBUTES, "the required Params are not the sections' `yes` rows (AC-4):\n" + (
+E   AssertionError: the required Params are not the sections' `yes` rows (AC-4):
+E     missing: 'security-factory#update-the-secret_push_protection_enabled-setting'
+E   assert {} == {'security-fa...on_enabled'})}
+E     
+E     Right contains 1 more item:
+E     {'security-factory#update-the-secret_push_protection_enabled-setting': frozenset({'secret_push_protection_enabled'})}
+E     Use -v to get more diff
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:339: in test_every_list_record_has_a_case
+    assert offset == expected, "the Paging.OFFSET records are not the sections' lists (AC-5):\n" + set_difference(
+E   AssertionError: the Paging.OFFSET records are not the sections' lists (AC-5):
+E     missing: 'security-factory#list-all-license-templates'
+E     missing: 'security-factory#list-project-dependencies'
+E   assert set() == {'security-fa...dependencies'}
+E     
+E     Extra items in the right set:
+E     'security-factory#list-all-license-templates'
+E     'security-factory#list-project-dependencies'
+E     Use -v to get more diff
+______ test_a_list_record_prints_every_item[list-all-license-templates] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_factory.py:363: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-factory#list-all-license-templates'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-factory#list-all-license-templates': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_item[list-project-dependencies] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_factory.py:363: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-factory#list-project-dependencies', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-factory#list-project-dependencies': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_every_body_is_json_and_unfixed
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_every_kind_is_its_rows_type
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_every_key_has_its_record
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_a_list_record_prints_every_item[list-all-license-templates]
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_a_list_record_prints_every_item[list-project-dependencies]
+========================= 7 failed, 1 passed in 4.42s =========================
+exit=1
+# restored security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e, equal to the baseline: True  # pragma: allowlist secret
+# mutant E-sscs: software_supply_chain_security.py, OPERATIONS rebound to () before PENDING (the family declares no record)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_software_supply_chain_security.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [37 items]
+
+FF.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                                    [100%]
+================================== FAILURES ===================================
+________________ test_the_required_attributes_are_the_sections ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:707: in test_the_required_attributes_are_the_sections
+    assert declared == REQUIRED_ATTRIBUTES, "the required Params are not the sections' `yes` rows (AC-4):\n" + (
+E   AssertionError: the required Params are not the sections' `yes` rows (AC-4):
+E     missing: 'software-supply-chain-security#add-a-gpg-key'
+E     missing: 'software-supply-chain-security#add-a-gpg-key-for-a-user'
+E     missing: 'software-supply-chain-security#add-a-saml-group-link'
+E     missing: 'software-supply-chain-security#add-an-email-address'
+E     missing: 'software-supply-chain-security#add-an-email-address-for-a-user'
+E     missing: 'software-supply-chain-security#add-an-ssh-key'
+E     missing: 'software-supply-chain-security#add-an-ssh-key-for-a-user'
+E     missing: 'software-supply-chain-security#create-a-group-access-token'
+E     missing: 'software-supply-chain-security#create-a-personal-access-token'
+E     missing: 'software-supply-chain-security#create-a-personal-access-token-for-a-group-service-account'
+E     missing: 'software-supply-chain-security#create-a-personal-access-token-for-a-project-service-account'
+E     missing: 'software-supply-chain-security#create-a-personal-access-token-for-a-user'
+E     missing: 'software-supply-chain-security#create-a-project-access-token'
+E     missing: 'software-supply-chain-security#create-a-runner-linked-to-a-user'
+E     missing: 'software-supply-chain-security#create-a-user'
+E     missing: 'software-supply-chain-security#create-an-application'
+E     missing: 'software-supply-chain-security#create-an-application-1'
+E     missing: 'software-supply-chain-security#create-an-impersonation-token'
+E     missing: 'software-supply-chain-security#create-an-instance-member-role'
+E     missing: 'software-supply-chain-security#retrieve-token-information'
+E     missing: 'software-supply-chain-security#retrieve-user-account-avatar'
+E     missing: 'software-supply-chain-security#revoke-a-token'
+E     missing: 'software-supply-chain-security#script-to-configure-a-google-cloud-project-for-runner-provisioning'
+E     missing: 'software-supply-chain-security#script-to-set-up-a-google-cloud-integration'
+E     missing: 'software-supply-chain-security#update-a-custom-attribute'
+E     missing: 'software-supply-chain-security#update-plan-limits'
+E     missing: 'software-supply-chain-security#update-your-user-preferences'
+E     missing: 'software-supply-chain-security#upload-an-avatar-for-yourself'
+E     missing: 'software-supply-chain-security#workload-identity-federation-creation-script'
+E   assert {} == {'software-su...email'}), ...}
+E     
+E     Right contains 29 more items:
+E     {'software-supply-chain-security#add-a-gpg-key': frozenset({'key'})}
+E     {'software-supply-chain-security#add-a-gpg-key-for-a-user': frozenset({'key'})}
+E     {'software-supply-chain-security#add-a-saml-group-link': frozenset({'access...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________________ test_every_key_has_its_record ________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:645: in test_every_key_has_its_record
+    assert declared == KEY_IDS, "the new records are not the pending keys and their References (AC-1):\n" + (
+E   AssertionError: the new records are not the pending keys and their References (AC-1):
+E     missing: ('DELETE', '/admin/token')
+E     missing: ('DELETE', '/applications/:id')
+E     missing: ('DELETE', '/groups/:id/access_tokens/:token_id')
+E     missing: ('DELETE', '/groups/:id/enterprise_users/:user_id')
+E     missing: ('DELETE', '/groups/:id/member_roles/:member_role_id')
+E     missing: ('DELETE', '/groups/:id/saml/:uid')
+E     missing: ('DELETE', '/groups/:id/saml_group_links/:saml_group_name')
+E     missing: ('DELETE', '/groups/:id/service_accounts/:user_id')
+E     missing: ('DELETE', '/groups/:id/service_accounts/:user_id/personal_access_tokens/:token_id')
+E     missing: ('DELETE', '/member_roles/:member_role_id')
+E     missing: ('DELETE', '/personal_access_tokens/:id')
+E     missing: ('DELETE', '/projects/:id/access_requests/:user_id')
+E     missing: ('DELETE', '/projects/:id/access_tokens/:token_id')
+E     missing: ('DELETE', '/projects/:id/custom_attributes/:key')
+E     missing: ('DELETE', '/projects/:id/service_accounts/:user_id')
+E     missing: ('DELETE', '/projects/:id/service_accounts/:user_id/personal_access_tokens/:token_id')
+E     missing: ('DELETE', '/user/applications/:id')
+E     missing: ('DELETE', '/user/emails/:email_id')
+E     missing: ('DELETE', '/user/gpg_keys/:key_id')
+E     missing: ('DELETE', '/user/keys/:key_id')
+E     missing: ('DELETE', '/users/:id')
+E     missing: ('DELETE', '/users/:id/emails/:email_id')
+E     missing: ('DELETE', '/users/:id/gpg_keys/:key_id')
+E     missing: ('DELETE', '/users/:id/identities/:provider')
+E     missing: ('DELETE', '/users/:id/keys/:key_id')
+E     missing: ('DELETE', '/users/:user_id/impersonation_tokens/:impersonation_token_id')
+E     missing: ('GET', '/application/appearance')
+E     missing: ('GET', '/application/plan_limits')
+E     missing: ('GET', '/application/settings')
+E     missing: ('GET', '/application/statistics')
+E     missing: ('GET', '/applications')
+E     missing: ('GET', '/audit_events')
+E     missing: ('GET', '/audit_events/:id')
+E     missing: ('GET', '/avatar')
+E     missing: ('GET', '/groups/:id/access_tokens')
+E     missing: ('GET', '/groups/:id/access_tokens/:token_id')
+E     missing: ('GET', '/groups/:id/audit_events')
+E     missing: ('GET', '/groups/:id/audit_events/:audit_event_id')
+E     missing: ('GET', '/groups/:id/enterprise_users')
+E     missing: ('GET', '/groups/:id/enterprise_users/:user_id')
+E     missing: ('GET', '/groups/:id/member_roles')
+E     missing: ('GET', '/groups/:id/saml/:uid')
+E     missing: ('GET', '/groups/:id/saml/identities')
+E     missing: ('GET', '/groups/:id/saml_group_links')
+E     missing: ('GET', '/groups/:id/saml_group_links/:saml_group_name')
+E     missing: ('GET', '/groups/:id/service_accounts')
+E     missing: ('GET', '/groups/:id/service_accounts/:user_id')
+E     missing: ('GET', '/groups/:id/service_accounts/:user_id/personal_access_tokens')
+E     missing: ('GET', '/member_roles')
+E     missing: ('GET', '/personal_access_tokens')
+E     missing: ('GET', '/personal_access_tokens/:id')
+E     missing: ('GET', '/personal_access_tokens/self/associations')
+E     missing: ('GET', '/projects/:id/access_requests')
+E     missing: ('GET', '/projects/:id/access_tokens')
+E     missing: ('GET', '/projects/:id/access_tokens/:token_id')
+E     missing: ('GET', '/projects/:id/audit_events')
+E     missing: ('GET', '/projects/:id/audit_events/:audit_event_id')
+E     missing: ('GET', '/projects/:id/custom_attributes')
+E     missing: ('GET', '/projects/:id/custom_attributes/:key')
+E     missing: ('GET', '/projects/:id/google_cloud/setup/integrations.sh')
+E     missing: ('GET', '/projects/:id/google_cloud/setup/runner_deployment_project.sh')
+E     missing: ('GET', '/projects/:id/google_cloud/setup/wlif.sh')
+E     missing: ('GET', '/projects/:id/service_accounts')
+E     missing: ('GET', '/projects/:id/service_accounts/:user_id')
+E     missing: ('GET', '/projects/:id/service_accounts/:user_id/personal_access_tokens')
+E     missing: ('GET', '/service_accounts')
+E     missing: ('GET', '/user/activities')
+E     missing: ('GET', '/user/applications')
+E     missing: ('GET', '/user/applications/:id')
+E     missing: ('GET', '/user/emails')
+E     missing: ('GET', '/user/emails/:email_id')
+E     missing: ('GET', '/user/gpg_keys')
+E     missing: ('GET', '/user/gpg_keys/:key_id')
+E     missing: ('GET', '/user/keys')
+E     missing: ('GET', '/user/keys/:key_id')
+E     missing: ('GET', '/user/preferences')
+E     missing: ('GET', '/user/status')
+E     missing: ('GET', '/user/support_pin')
+E     missing: ('GET', '/user_counts')
+E     missing: ('GET', '/users/:id')
+E     missing: ('GET', '/users/:id/associations_count')
+E     missing: ('GET', '/users/:id/emails')
+E     missing: ('GET', '/users/:id/followers')
+E     missing: ('GET', '/users/:id/following')
+E     missing: ('GET', '/users/:id/gpg_keys')
+E     missing: ('GET', '/users/:id/gpg_keys/:key_id')
+E     missing: ('GET', '/users/:id/keys/:key_id')
+E     missing: ('GET', '/users/:id/memberships')
+E     missing: ('GET', '/users/:id/support_pin')
+E     missing: ('GET', '/users/:id_or_username/keys')
+E     missing: ('GET', '/users/:id_or_username/status')
+E     missing: ('GET', '/users/:user_id/impersonation_tokens')
+E     missing: ('GET', '/users/:user_id/impersonation_tokens/:impersonation_token_id')
+E     missing: ('PATCH', '/groups/:id/enterprise_users/:user_id')
+E     missing: ('PATCH', '/groups/:id/enterprise_users/:user_id/disable_two_factor')
+E     missing: ('PATCH', '/groups/:id/saml/:uid')
+E     missing: ('PATCH', '/groups/:id/service_accounts/:user_id')
+E     missing: ('PATCH', '/projects/:id/service_accounts/:user_id')
+E     missing: ('PATCH', '/service_accounts/:id')
+E     missing: ('PATCH', '/users/:id/disable_two_factor')
+E     missing: ('POST', '/admin/token')
+E     missing: ('POST', '/applications')
+E     missing: ('POST', '/applications/:id/renew-secret')
+E     missing: ('POST', '/groups/:id/access_tokens')
+E     missing: ('POST', '/groups/:id/access_tokens/:token_id/rotate')
+E     missing: ('POST', '/groups/:id/member_roles')
+E     missing: ('POST', '/groups/:id/saml_group_links')
+E     missing: ('POST', '/groups/:id/service_accounts')
+E     missing: ('POST', '/groups/:id/service_accounts/:user_id/personal_access_tokens')
+E     missing: ('POST', '/groups/:id/service_accounts/:user_id/personal_access_tokens/:token_id/rotate')
+E     missing: ('POST', '/member_roles')
+E     missing: ('POST', '/personal_access_tokens/:id/rotate')
+E     missing: ('POST', '/projects/:id/access_requests')
+E     missing: ('POST', '/projects/:id/access_tokens')
+E     missing: ('POST', '/projects/:id/access_tokens/:token_id/rotate')
+E     missing: ('POST', '/projects/:id/service_accounts')
+E     missing: ('POST', '/projects/:id/service_accounts/:user_id/personal_access_tokens')
+E     missing: ('POST', '/projects/:id/service_accounts/:user_id/personal_access_tokens/:token_id/rotate')
+E     missing: ('POST', '/service_accounts')
+E     missing: ('POST', '/user/applications')
+E     missing: ('POST', '/user/emails')
+E     missing: ('POST', '/user/gpg_keys')
+E     missing: ('POST', '/user/keys')
+E     missing: ('POST', '/user/personal_access_tokens')
+E     missing: ('POST', '/user/runners')
+E     missing: ('POST', '/user/support_pin')
+E     missing: ('POST', '/users')
+E     missing: ('POST', '/users/:id/activate')
+E     missing: ('POST', '/users/:id/approve')
+E     missing: ('POST', '/users/:id/ban')
+E     missing: ('POST', '/users/:id/block')
+E     missing: ('POST', '/users/:id/deactivate')
+E     missing: ('POST', '/users/:id/emails')
+E     missing: ('POST', '/users/:id/follow')
+E     missing: ('POST', '/users/:id/gpg_keys')
+E     missing: ('POST', '/users/:id/keys')
+E     missing: ('POST', '/users/:id/reject')
+E     missing: ('POST', '/users/:id/support_pin/revoke')
+E     missing: ('POST', '/users/:id/unban')
+E     missing: ('POST', '/users/:id/unblock')
+E     missing: ('POST', '/users/:id/unfollow')
+E     missing: ('POST', '/users/:user_id/impersonation_tokens')
+E     missing: ('POST', '/users/:user_id/personal_access_tokens')
+E     missing: ('PUT', '/application/appearance')
+E     missing: ('PUT', '/application/plan_limits')
+E     missing: ('PUT', '/application/settings')
+E     missing: ('PUT', '/projects/:id/access_requests/:user_id/approve')
+E     missing: ('PUT', '/projects/:id/custom_attributes/:key')
+E     missing: ('PUT', '/user/applications/:id')
+E     missing: ('PUT', '/user/avatar')
+E     missing: ('PUT', '/user/preferences')
+E     missing: ('PUT', '/user/status')
+E     missing: ('PUT', '/users/:id')
+E   assert {} == {('DELETE', '...se-user', ...}
+E     
+E     Right contains 153 more items:
+E     {('DELETE', '/admin/token'): 'software-supply-chain-security#revoke-a-token'}
+E     {('DELETE', '/applications/:id'): 'software-supply-chain-security#delete-an-application'}
+E     {('DELETE', '[39;49;00...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:722: in test_every_list_record_has_a_case
+    assert offset == expected, "the Paging.OFFSET records are not the sections' lists (AC-5):\n" + set_difference(
+E   AssertionError: the Paging.OFFSET records are not the sections' lists (AC-5):
+E     missing: 'software-supply-chain-security#get-all-group-member-roles'
+E     missing: 'software-supply-chain-security#get-all-instance-member-roles'
+E     missing: 'software-supply-chain-security#list-a-users-activity'
+E     missing: 'software-supply-chain-security#list-all-access-requests-for-a-group-or-project'
+E     missing: 'software-supply-chain-security#list-all-accounts-followed-by-a-user'
+E     missing: 'software-supply-chain-security#list-all-accounts-that-follow-a-user'
+E     missing: 'software-supply-chain-security#list-all-applications'
+E     missing: 'software-supply-chain-security#list-all-applications-1'
+E     missing: 'software-supply-chain-security#list-all-custom-attributes'
+E     missing: 'software-supply-chain-security#list-all-email-addresses'
+E     missing: 'software-supply-chain-security#list-all-email-addresses-for-a-user'
+E     missing: 'software-supply-chain-security#list-all-enterprise-users'
+E     missing: 'software-supply-chain-security#list-all-gpg-keys'
+E     missing: 'software-supply-chain-security#list-all-gpg-keys-for-a-user'
+E     missing: 'software-supply-chain-security#list-all-group-access-tokens'
+E     missing: 'software-supply-chain-security#list-all-group-audit-events'
+E     missing: 'software-supply-chain-security#list-all-group-service-accounts'
+E     missing: 'software-supply-chain-security#list-all-impersonation-tokens-for-a-user'
+E     missing: 'software-supply-chain-security#list-all-instance-audit-events'
+E     missing: 'software-supply-chain-security#list-all-instance-service-accounts'
+E     missing: 'software-supply-chain-security#list-all-personal-access-tokens'
+E     missing: 'software-supply-chain-security#list-all-personal-access-tokens-for-a-group-service-account'
+E     missing: 'software-supply-chain-security#list-all-personal-access-tokens-for-a-project-service-account'
+E     missing: 'software-supply-chain-security#list-all-project-access-tokens'
+E     missing: 'software-supply-chain-security#list-all-project-audit-events'
+E     missing: 'software-supply-chain-security#list-all-project-service-accounts'
+E     missing: 'software-supply-chain-security#list-all-saml-group-links'
+E     missing: 'software-supply-chain-security#list-all-saml-identities-for-a-group'
+E     missing: 'software-supply-chain-security#list-all-ssh-keys'
+E     missing: 'software-supply-chain-security#list-all-ssh-keys-for-a-user'
+E     missing: 'software-supply-chain-security#list-projects-and-groups-that-a-user-is-a-member-of'
+E   assert set() == {'software-su...-a-user', ...}
+E     
+E     Extra items in the right set:
+E     'software-supply-chain-security#list-all-group-audit-events'
+E     'software-supply-chain-security#list-all-group-service-accounts'
+E     'software-supply-chain-security#list-a-users-activity'
+E     'software-supply-chain-security#list-all-personal-access-tokens'
+E     'software-supply-chain-security#l...
+E     
+E     ...Full output truncated, use '-vv' to show
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:670: in test_every_body_is_json_and_unfixed
+    assert records, f"{FAMILY_MODULE}.OPERATIONS declares no record, so no body or fixed is checked (AC-3)"
+E   AssertionError: gitlab_api.families.software_supply_chain_security.OPERATIONS declares no record, so no body or fixed is checked (AC-3)
+E   assert ()
+______________________ test_every_kind_is_its_rows_type _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:694: in test_every_kind_is_its_rows_type
+    assert declared == TYPED_ATTRIBUTES, "the non-SCALAR Params are not the sections' (AC-4):\n" + (
+E   AssertionError: the non-SCALAR Params are not the sections' (AC-4):
+E     missing: ('software-supply-chain-security#create-a-group-access-token', 'scopes')
+E     missing: ('software-supply-chain-security#create-a-personal-access-token', 'granular_scopes')
+E     missing: ('software-supply-chain-security#create-a-personal-access-token', 'scopes')
+E     missing: ('software-supply-chain-security#create-a-personal-access-token-for-a-group-service-account', 'scopes')
+E     missing: ('software-supply-chain-security#create-a-personal-access-token-for-a-project-service-account', 'scopes')
+E     missing: ('software-supply-chain-security#create-a-personal-access-token-for-a-user', 'granular_scopes')
+E     missing: ('software-supply-chain-security#create-a-personal-access-token-for-a-user', 'scopes')
+E     missing: ('software-supply-chain-security#create-a-project-access-token', 'scopes')
+E     missing: ('software-supply-chain-security#create-a-user', 'avatar')
+E     missing: ('software-supply-chain-security#create-an-application', 'granular_scopes')
+E     missing: ('software-supply-chain-security#create-an-impersonation-token', 'granular_scopes')
+E     missing: ('software-supply-chain-security#create-an-impersonation-token', 'scopes')
+E     missing: ('software-supply-chain-security#modify-a-user', 'avatar')
+E     missing: ('software-supply-chain-security#update-application-appearance', 'favicon')
+E     missing: ('software-supply-chain-security#update-application-appearance', 'header_logo')
+E     missing: ('software-supply-chain-security#update-application-appearance', 'logo')
+E     missing: ('software-supply-chain-security#update-application-appearance', 'pwa_icon')
+E     missing: ('software-supply-chain-security#upload-an-avatar-for-yourself', 'avatar')
+E   assert {} == {('software-s... 'ARRAY', ...}
+E     
+E     Right contains 18 more items:
+E     {('software-supply-chain-security#create-a-group-access-token', 'scopes'): 'ARRAY'}
+E     {('software-supply-chain-security#create-a-personal-access-token', 'granular_scopes'): 'ARRAY_OF_HASHES'}
+E     {('software-supply-chain-security#...
+E     
+E     ...Full output truncated, use '-vv' to show
+______ test_a_list_record_prints_every_item[get-all-group-member-roles] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#get-all-group-member-roles', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#get-all-group-member-roles': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-a-users-activity] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-a-users-activity'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-a-users-activity': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[get-all-instance-member-roles] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#get-all-instance-member-roles'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#get-all-instance-member-roles': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-access-requests-for-a-group-or-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-access-requests-for-a-group-or-project', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-access-requests-for-a-group-or-project': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_item[list-all-applications-1] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-applications-1'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-applications-1': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-accounts-followed-by-a-user] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-accounts-followed-by-a-user', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-accounts-followed-by-a-user': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_item[list-all-custom-attributes] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-custom-attributes', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-custom-attributes': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-accounts-that-follow-a-user] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-accounts-that-follow-a-user', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-accounts-that-follow-a-user': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_item[list-all-email-addresses] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-email-addresses'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-email-addresses': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_item[list-all-applications] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-applications'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-applications': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_item[list-all-email-addresses-for-a-user] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-email-addresses-for-a-user', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-email-addresses-for-a-user': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_item[list-all-enterprise-users] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-enterprise-users', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-enterprise-users': no family module and no graphql_only record declares it
+______ test_a_list_record_prints_every_item[list-all-group-audit-events] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-group-audit-events', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-group-audit-events': no family module and no graphql_only record declares it
+___________ test_a_list_record_prints_every_item[list-all-gpg-keys] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-gpg-keys'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-gpg-keys': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-group-service-accounts] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-group-service-accounts', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-group-service-accounts': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-all-gpg-keys-for-a-user] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-gpg-keys-for-a-user', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-gpg-keys-for-a-user': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-impersonation-tokens-for-a-user] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-impersonation-tokens-for-a-user', '--path', 'user_id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-impersonation-tokens-for-a-user': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-all-group-access-tokens] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-group-access-tokens', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-group-access-tokens': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-instance-audit-events] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-instance-audit-events'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-instance-audit-events': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-personal-access-tokens] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-personal-access-tokens'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-personal-access-tokens': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_item[list-all-instance-service-accounts] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-instance-service-accounts'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-instance-service-accounts': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-personal-access-tokens-for-a-group-service-account] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-personal-access-tokens-for-a-group-service-account', '--path', 'id=101', '--path', 'user_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-personal-access-tokens-for-a-group-service-account': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-personal-access-tokens-for-a-project-service-account] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-personal-access-tokens-for-a-project-service-account', '--path', 'id=101', '--path', 'user_id=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-personal-access-tokens-for-a-project-service-account': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-project-access-tokens] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-project-access-tokens', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-project-access-tokens': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-all-project-audit-events] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-project-audit-events', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-project-audit-events': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_item[list-all-project-service-accounts] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-project-service-accounts', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-project-service-accounts': no family module and no graphql_only record declares it
+_______ test_a_list_record_prints_every_item[list-all-saml-group-links] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-saml-group-links', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-saml-group-links': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-saml-identities-for-a-group] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-saml-identities-for-a-group', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-saml-identities-for-a-group': no family module and no graphql_only record declares it
+___________ test_a_list_record_prints_every_item[list-all-ssh-keys] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-ssh-keys'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-ssh-keys': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-all-ssh-keys-for-a-user] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-all-ssh-keys-for-a-user', '--path', 'id_or_username=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-all-ssh-keys-for-a-user': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-projects-and-groups-that-a-user-is-a-member-of] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_software_supply_chain_security.py:746: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['software-supply-chain-security#list-projects-and-groups-that-a-user-is-a-member-of', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'software-supply-chain-security#list-projects-and-groups-that-a-user-is-a-member-of': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_key_has_its_record
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_body_is_json_and_unfixed
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_kind_is_its_rows_type
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[get-all-group-member-roles]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-a-users-activity]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[get-all-instance-member-roles]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-access-requests-for-a-group-or-project]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-applications-1]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-accounts-followed-by-a-user]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-custom-attributes]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-accounts-that-follow-a-user]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-email-addresses]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-applications]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-email-addresses-for-a-user]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-enterprise-users]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-group-audit-events]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-gpg-keys]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-group-service-accounts]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-gpg-keys-for-a-user]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-impersonation-tokens-for-a-user]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-group-access-tokens]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-instance-audit-events]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-personal-access-tokens]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-instance-service-accounts]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-personal-access-tokens-for-a-group-service-account]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-personal-access-tokens-for-a-project-service-account]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-project-access-tokens]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-project-audit-events]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-project-service-accounts]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-saml-group-links]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-saml-identities-for-a-group]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-ssh-keys]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-all-ssh-keys-for-a-user]
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_a_list_record_prints_every_item[list-projects-and-groups-that-a-user-is-a-member-of]
+======================== 36 failed, 1 passed in 5.74s =========================
+exit=1
+# restored software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b, equal to the baseline: True  # pragma: allowlist secret
+# mutant E-platform: security_platform.py, OPERATIONS rebound to () before PENDING (the family declares no record)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_platform.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [10 items]
+
+FF.FFFFFFF                                                               [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:355: in test_every_body_is_json_and_unfixed
+    assert records, f"{FAMILY_MODULE}.OPERATIONS declares no record, so no body or fixed is checked (AC-3)"
+E   AssertionError: gitlab_api.families.security_platform.OPERATIONS declares no record, so no body or fixed is checked (AC-3)
+E   assert ()
+________________________ test_every_key_has_its_record ________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:332: in test_every_key_has_its_record
+    assert declared == RECORD_KEYS, "the records are not the family's index rows (AC-1):\n" + mapping_difference(
+E   AssertionError: the records are not the family's index rows (AC-1):
+E     missing: ('DELETE', '/projects/:id/job_token_scope/allowlist/:target_project_id')
+E     missing: ('DELETE', '/projects/:id/job_token_scope/groups_allowlist/:target_group_id')
+E     missing: ('DELETE', '/projects/:project_id/secure_files/:id')
+E     missing: ('GET', '/projects/:id/attestations/:attestation_iid/download')
+E     missing: ('GET', '/projects/:id/attestations/:subject_digest')
+E     missing: ('GET', '/projects/:id/dependency_firewall/enablement')
+E     missing: ('GET', '/projects/:id/job_token_scope')
+E     missing: ('GET', '/projects/:id/job_token_scope/allowlist')
+E     missing: ('GET', '/projects/:id/job_token_scope/groups_allowlist')
+E     missing: ('GET', '/projects/:project_id/secure_files')
+E     missing: ('GET', '/projects/:project_id/secure_files/:id')
+E     missing: ('GET', '/projects/:project_id/secure_files/:id/download')
+E     missing: ('PATCH', '/projects/:id/job_token_scope')
+E     missing: ('POST', '/groups/:id/secrets_manager/access_token')
+E     missing: ('POST', '/projects/:id/dependency_firewall/evaluate')
+E     missing: ('POST', '/projects/:id/job_token_scope/allowlist')
+E     missing: ('POST', '/projects/:id/job_token_scope/groups_allowlist')
+E     missing: ('POST', '/projects/:id/secrets_manager/access_token')
+E     missing: ('POST', '/projects/:project_id/secure_files')
+E   assert {} == {('GET', '/pr...project', ...}
+E     
+E     Right contains 19 more items:
+E     {('DELETE', '/projects/:id/job_token_scope/allowlist/:target_project_id'): 'security-platform#delete-a-project-from-a-cicd-job-token-allowlist'}
+E     {('DELETE', '/projects/:id/job_token_scope/groups_allowlist/:target_group_id'): 'security-platform#delete-a-group-from-a-cicd-job-token-allowlist...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:410: in test_every_list_record_has_a_case
+    assert declared == expected, "the records' Paging is not AC-5's:\n" + mapping_difference(
+E   AssertionError: the records' Paging is not AC-5's:
+E     missing: 'security-platform#add-a-group-to-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#add-a-project-to-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#create-a-secrets-manager-access-token-for-a-group'
+E     missing: 'security-platform#create-a-secrets-manager-access-token-for-a-project'
+E     missing: 'security-platform#create-a-secure-file'
+E     missing: 'security-platform#delete-a-group-from-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#delete-a-project-from-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#delete-a-secure-file'
+E     missing: 'security-platform#download-a-secure-file'
+E     missing: 'security-platform#download-an-attestation'
+E     missing: 'security-platform#evaluate-a-package-against-dependency-firewall-policies-for-a-project'
+E     missing: 'security-platform#list-all-attestations'
+E     missing: 'security-platform#list-all-groups-in-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#list-all-projects-in-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#list-all-secure-files-for-a-project'
+E     missing: 'security-platform#retrieve-details-of-a-secure-file'
+E     missing: 'security-platform#retrieve-status-of-dependency-firewall-for-a-project'
+E     missing: 'security-platform#retrieve-the-cicd-job-token-access-settings-for-a-project'
+E     missing: 'security-platform#update-the-cicd-job-token-access-settings-for-a-project'
+E   assert {} == {'security-pl...: 'NONE', ...}
+E     
+E     Right contains 19 more items:
+E     {'security-platform#add-a-group-to-a-cicd-job-token-allowlist': 'NONE'}
+E     {'security-platform#add-a-project-to-a-cicd-job-token-allowlist': 'NONE'}
+E     {'security-platform#create-a-secrets-manager-access-token-for-a-group': 'NONE'}
+E     ...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_every_kind_is_its_rows_type _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:379: in test_every_kind_is_its_rows_type
+    assert declared == TYPED_PARAMS, "the non-SCALAR Params are not the sections' (AC-4):\n" + mapping_difference(
+E   AssertionError: the non-SCALAR Params are not the sections' (AC-4):
+E     missing: ('security-platform#create-a-secure-file', 'file')
+E   assert {} == {('security-p...ile'): 'FILE'}
+E     
+E     Right contains 1 more item:
+E     {('security-platform#create-a-secure-file', 'file'): 'FILE'}
+E     Use -v to get more diff
+________________ test_the_required_attributes_are_the_sections ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_platform.py:394: in test_the_required_attributes_are_the_sections
+    assert declared == expected, "the required Params are not the sections' (AC-4):\n" + mapping_difference(
+E   AssertionError: the required Params are not the sections' (AC-4):
+E     missing: 'security-platform#add-a-group-to-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#add-a-project-to-a-cicd-job-token-allowlist'
+E     missing: 'security-platform#create-a-secure-file'
+E     missing: 'security-platform#evaluate-a-package-against-dependency-firewall-policies-for-a-project'
+E     missing: 'security-platform#update-the-cicd-job-token-access-settings-for-a-project'
+E   assert {} == {'security-pl...rsion'}), ...}
+E     
+E     Right contains 5 more items:
+E     {'security-platform#add-a-group-to-a-cicd-job-token-allowlist': frozenset({'target_group_id'}),
+E      'security-platform#add-a-project-to-a-cicd-job-token-allowlist': frozenset({'target_project_id'}),
+E      'security-platform#create-a-secure-file': frozenset({[33...
+E     
+E     ...Full output truncated, use '-vv' to show
+_________ test_a_list_record_prints_every_item[list-all-attestations] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_platform.py:432: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-platform#list-all-attestations', '--path', 'id=101', '--path', 'subject_digest=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-platform#list-all-attestations': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-groups-in-a-cicd-job-token-allowlist] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_platform.py:432: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-platform#list-all-groups-in-a-cicd-job-token-allowlist', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-platform#list-all-groups-in-a-cicd-job-token-allowlist': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-projects-in-a-cicd-job-token-allowlist] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_platform.py:432: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-platform#list-all-projects-in-a-cicd-job-token-allowlist', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-platform#list-all-projects-in-a-cicd-job-token-allowlist': no family module and no graphql_only record declares it
+__ test_a_list_record_prints_every_item[list-all-secure-files-for-a-project] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_platform.py:432: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-platform#list-all-secure-files-for-a-project', '--path', 'project_id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-platform#list-all-secure-files-for-a-project': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_every_body_is_json_and_unfixed
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_every_key_has_its_record
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_every_kind_is_its_rows_type
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_a_list_record_prints_every_item[list-all-attestations]
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_a_list_record_prints_every_item[list-all-groups-in-a-cicd-job-token-allowlist]
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_a_list_record_prints_every_item[list-all-projects-in-a-cicd-job-token-allowlist]
+FAILED src/payload/test/test_gitlab_api_security_platform.py::test_a_list_record_prints_every_item[list-all-secure-files-for-a-project]
+========================= 9 failed, 1 passed in 4.29s =========================
+exit=1
+# restored security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5, equal to the baseline: True  # pragma: allowlist secret
+# mutant E-risk: security_risk_management.py, OPERATIONS rebound to () before PENDING (the family declares no record)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_risk_management.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [15 items]
+
+FF.FFFFFFFFFFFF                                                          [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:445: in test_every_body_is_json_and_unfixed
+    assert records, f"{FAMILY_MODULE}.OPERATIONS declares no record, so no body or fixed is checked (AC-3)"
+E   AssertionError: gitlab_api.families.security_risk_management.OPERATIONS declares no record, so no body or fixed is checked (AC-3)
+E   assert ()
+________________________ test_every_key_has_its_record ________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:421: in test_every_key_has_its_record
+    assert declared == RECORD_KEYS, "the records are not the family's sections (AC-1):\n" + mapping_difference(
+E   AssertionError: the records are not the family's sections (AC-1):
+E     missing: ('DELETE', '/groups/:id/security/policy_store/:policy_id')
+E     missing: ('DELETE', '/organizations/:id/security/policy_store/:policy_id')
+E     missing: ('DELETE', '/projects/:id/external_status_checks/:check_id')
+E     missing: ('GET', '/admin/security/compliance_policy_settings')
+E     missing: ('GET', '/dependency_list_exports/:id')
+E     missing: ('GET', '/dependency_list_exports/:id/download')
+E     missing: ('GET', '/groups/:id/security/policy_store')
+E     missing: ('GET', '/groups/:id/security/policy_store/:policy_id')
+E     missing: ('GET', '/organizations/:id/security/policy_store')
+E     missing: ('GET', '/organizations/:id/security/policy_store/:policy_id')
+E     missing: ('GET', '/projects/:id/external_status_checks')
+E     missing: ('GET', '/projects/:id/merge_requests/:merge_request_iid/status_checks')
+E     missing: ('GET', '/projects/:id/vulnerabilities')
+E     missing: ('GET', '/projects/:id/vulnerability_findings')
+E     missing: ('GET', '/security/policy_store/actions')
+E     missing: ('GET', '/security/policy_store/rules')
+E     missing: ('GET', '/security/policy_store/triggers')
+E     missing: ('GET', '/security/vulnerability_archive_exports/:id')
+E     missing: ('GET', '/security/vulnerability_archive_exports/:id/download')
+E     missing: ('GET', '/security/vulnerability_exports/:id')
+E     missing: ('GET', '/security/vulnerability_exports/:id/download')
+E     missing: ('GET', '/vulnerabilities/:id')
+E     missing: ('PATCH', '/groups/:id/security/policy_store/:policy_id')
+E     missing: ('PATCH', '/organizations/:id/security/policy_store/:policy_id')
+E     missing: ('POST', '/groups/:id/security/policy_store')
+E     missing: ('POST', '/organizations/:id/security/policy_store')
+E     missing: ('POST', '/projects/:id/dependency_list_exports')
+E     missing: ('POST', '/projects/:id/external_status_checks')
+E     missing: ('POST', '/projects/:id/merge_requests/:merge_request_iid/status_check_responses')
+E     missing: ('POST', '/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry')
+E     missing: ('POST', '/projects/:id/vulnerabilities')
+E     missing: ('POST', '/security/groups/:id/vulnerability_exports')
+E     missing: ('POST', '/security/projects/:id/vulnerability_archive_exports')
+E     missing: ('POST', '/security/projects/:id/vulnerability_exports')
+E     missing: ('POST', '/security/vulnerability_exports')
+E     missing: ('POST', '/vulnerabilities/:id/confirm')
+E     missing: ('POST', '/vulnerabilities/:id/dismiss')
+E     missing: ('POST', '/vulnerabilities/:id/resolve')
+E     missing: ('POST', '/vulnerabilities/:id/revert')
+E     missing: ('PUT', '/admin/security/compliance_policy_settings')
+E     missing: ('PUT', '/projects/:id/external_status_checks/:check_id')
+E   assert {} == {('GET', '/ad...-export', ...}
+E     
+E     Right contains 41 more items:
+E     {('DELETE', '/groups/:id/security/policy_store/:policy_id'): 'security-risk-management#delete-a-group-policy'}
+E     {('DELETE', '/organizations/:id/security/policy_store/:policy_id'): 'security-risk-management#delete-an-organization-policy'}
+E     {('...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:500: in test_every_list_record_has_a_case
+    assert declared == expected, "the records' Paging is not AC-5's:\n" + mapping_difference(
+E   AssertionError: the records' Paging is not AC-5's:
+E     missing: 'security-risk-management#confirm-a-vulnerability'
+E     missing: 'security-risk-management#create-a-dependency-list-export'
+E     missing: 'security-risk-management#create-a-group-level-vulnerability-export'
+E     missing: 'security-risk-management#create-a-group-policy'
+E     missing: 'security-risk-management#create-a-project-level-vulnerability-export'
+E     missing: 'security-risk-management#create-a-vulnerability'
+E     missing: 'security-risk-management#create-an-export-for-archived-vulnerabilities'
+E     missing: 'security-risk-management#create-an-instance-level-vulnerability-export'
+E     missing: 'security-risk-management#create-an-organization-policy'
+E     missing: 'security-risk-management#create-external-status-check-service'
+E     missing: 'security-risk-management#delete-a-group-policy'
+E     missing: 'security-risk-management#delete-an-organization-policy'
+E     missing: 'security-risk-management#delete-external-status-check-service'
+E     missing: 'security-risk-management#dismiss-a-vulnerability'
+E     missing: 'security-risk-management#download-a-vulnerability-archive-export'
+E     missing: 'security-risk-management#download-a-vulnerability-export'
+E     missing: 'security-risk-management#download-dependency-list-export'
+E     missing: 'security-risk-management#list-all-actions'
+E     missing: 'security-risk-management#list-all-group-policies'
+E     missing: 'security-risk-management#list-all-organization-policies'
+E     missing: 'security-risk-management#list-all-project-vulnerability-findings'
+E     missing: 'security-risk-management#list-all-rule-kinds'
+E     missing: 'security-risk-management#list-all-status-checks-for-a-merge-request'
+E     missing: 'security-risk-management#list-all-triggers'
+E     missing: 'security-risk-management#list-project-vulnerabilities'
+E     missing: 'security-risk-management#resolve-a-vulnerability'
+E     missing: 'security-risk-management#retrieve-a-group-policy'
+E     missing: 'security-risk-management#retrieve-a-single-dependency-list-export'
+E     missing: 'security-risk-management#retrieve-a-vulnerability'
+E     missing: 'security-risk-management#retrieve-a-vulnerability-archive-export'
+E     missing: 'security-risk-management#retrieve-a-vulnerability-export'
+E     missing: 'security-risk-management#retrieve-an-organization-policy'
+E     missing: 'security-risk-management#retrieve-project-external-status-check-services'
+E     missing: 'security-risk-management#retrieve-security-policy-settings'
+E     missing: 'security-risk-management#retry-failed-status-check-for-a-merge-request'
+E     missing: 'security-risk-management#revert-a-vulnerability-to-the-detected-state'
+E     missing: 'security-risk-management#set-status-of-an-external-status-check'
+E     missing: 'security-risk-management#update-a-group-policy'
+E     missing: 'security-risk-management#update-an-organization-policy'
+E     missing: 'security-risk-management#update-external-status-check-service'
+E     missing: 'security-risk-management#update-security-policy-settings'
+E   assert {} == {'security-ri...: 'NONE', ...}
+E     
+E     Right contains 41 more items:
+E     {'security-risk-management#confirm-a-vulnerability': 'NONE'}
+E     {'security-risk-management#create-a-dependency-list-export': 'NONE'}
+E     {'security-risk-management#create-a-group-level-vulnerability-export': 'NONE'}
+E     {'[39;49;00...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________________ test_every_kind_is_its_rows_type _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:469: in test_every_kind_is_its_rows_type
+    assert declared == TYPED_PARAMS, "the non-SCALAR Params are not the sections' (AC-4):\n" + mapping_difference(
+E   AssertionError: the non-SCALAR Params are not the sections' (AC-4):
+E     missing: ('security-risk-management#create-a-group-level-vulnerability-export', 'report_data')
+E     missing: ('security-risk-management#create-a-group-policy', 'actions')
+E     missing: ('security-risk-management#create-a-group-policy', 'policy_scope')
+E     missing: ('security-risk-management#create-a-group-policy', 'rules')
+E     missing: ('security-risk-management#create-a-project-level-vulnerability-export', 'report_data')
+E     missing: ('security-risk-management#create-an-organization-policy', 'actions')
+E     missing: ('security-risk-management#create-an-organization-policy', 'policy_scope')
+E     missing: ('security-risk-management#create-an-organization-policy', 'rules')
+E     missing: ('security-risk-management#create-external-status-check-service', 'protected_branch_ids')
+E     missing: ('security-risk-management#list-all-organization-policies', 'namespace_ids')
+E     missing: ('security-risk-management#list-all-project-vulnerability-findings', 'report_type')
+E     missing: ('security-risk-management#list-all-project-vulnerability-findings', 'severity')
+E     missing: ('security-risk-management#update-a-group-policy', 'actions')
+E     missing: ('security-risk-management#update-a-group-policy', 'policy_scope')
+E     missing: ('security-risk-management#update-a-group-policy', 'rules')
+E     missing: ('security-risk-management#update-an-organization-policy', 'actions')
+E     missing: ('security-risk-management#update-an-organization-policy', 'policy_scope')
+E     missing: ('security-risk-management#update-an-organization-policy', 'rules')
+E     missing: ('security-risk-management#update-external-status-check-service', 'protected_branch_ids')
+E   assert {} == {('security-r... 'ARRAY', ...}
+E     
+E     Right contains 19 more items:
+E     {('security-risk-management#create-a-group-level-vulnerability-export', 'report_data'): 'HASH'}
+E     {('security-risk-management#create-a-group-policy', 'actions'): 'ARRAY'}
+E     {('security-risk-management#create-a-group-policy[39;4...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________ test_the_required_attributes_are_the_sections ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_risk_management.py:484: in test_the_required_attributes_are_the_sections
+    assert declared == expected, "the required Params are not the sections' (AC-4):\n" + mapping_difference(
+E   AssertionError: the required Params are not the sections' (AC-4):
+E     missing: 'security-risk-management#create-a-dependency-list-export'
+E     missing: 'security-risk-management#create-a-group-policy'
+E     missing: 'security-risk-management#create-a-vulnerability'
+E     missing: 'security-risk-management#create-an-export-for-archived-vulnerabilities'
+E     missing: 'security-risk-management#create-an-organization-policy'
+E     missing: 'security-risk-management#create-external-status-check-service'
+E     missing: 'security-risk-management#set-status-of-an-external-status-check'
+E     missing: 'security-risk-management#update-security-policy-settings'
+E   assert {} == {'security-ri... 'sha'}), ...}
+E     
+E     Right contains 8 more items:
+E     {'security-risk-management#create-a-dependency-list-export': frozenset({'export_type'}),
+E      'security-risk-management#create-a-group-policy': frozenset({'name',
+E                                                                   'rules',
+E                              ...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_list_record_prints_every_item[retrieve-project-external-status-check-services] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#retrieve-project-external-status-check-services', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#retrieve-project-external-status-check-services': no family module and no graphql_only record declares it
+___________ test_a_list_record_prints_every_item[list-all-triggers] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-all-triggers'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-all-triggers': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-status-checks-for-a-merge-request] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-all-status-checks-for-a-merge-request', '--path', 'id=101', '--path', 'merge_request_iid=102'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-all-status-checks-for-a-merge-request': no family module and no graphql_only record declares it
+___________ test_a_list_record_prints_every_item[list-all-actions] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-all-actions'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-all-actions': no family module and no graphql_only record declares it
+____ test_a_list_record_prints_every_item[list-all-organization-policies] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-all-organization-policies', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-all-organization-policies': no family module and no graphql_only record declares it
+__________ test_a_list_record_prints_every_item[list-all-rule-kinds] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-all-rule-kinds'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-all-rule-kinds': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_item[list-project-vulnerabilities] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-project-vulnerabilities', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-project-vulnerabilities': no family module and no graphql_only record declares it
+________ test_a_list_record_prints_every_item[list-all-group-policies] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-all-group-policies', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-all-group-policies': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_item[list-all-project-vulnerability-findings] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42\src\payload\test\test_gitlab_api_security_risk_management.py:522: in test_a_list_record_prints_every_item
+    assert code == EXIT_OK, f"call {argv} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['security-risk-management#list-all-project-vulnerability-findings', '--path', 'id=101'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:379 unknown operation id 'security-risk-management#list-all-project-vulnerability-findings': no family module and no graphql_only record declares it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_body_is_json_and_unfixed
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_key_has_its_record
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_every_kind_is_its_rows_type
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[retrieve-project-external-status-check-services]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-all-triggers]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-all-status-checks-for-a-merge-request]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-all-actions]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-all-organization-policies]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-all-rule-kinds]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-project-vulnerabilities]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-all-group-policies]
+FAILED src/payload/test/test_gitlab_api_security_risk_management.py::test_a_list_record_prints_every_item[list-all-project-vulnerability-findings]
+======================== 14 failed, 1 passed in 4.60s =========================
+exit=1
+# restored security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51, equal to the baseline: True  # pragma: allowlist secret
+# mutant E-governance: security_governance.py, OPERATIONS rebound to () before PENDING (the family declares no record)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_governance.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [6 items]
+
+FFF.FF                                                                   [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:170: in test_every_body_is_json_and_unfixed
+    assert records, f"{FAMILY_MODULE}.OPERATIONS declares no record, so no body or fixed is checked (AC-3)"
+E   AssertionError: gitlab_api.families.security_governance.OPERATIONS declares no record, so no body or fixed is checked (AC-3)
+E   assert ()
+______________________ test_every_kind_is_its_rows_type _______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:194: in test_every_kind_is_its_rows_type
+    assert declared == TYPED_PARAMS, "the non-SCALAR Params are not the section's (AC-4):\n" + mapping_difference(
+E   AssertionError: the non-SCALAR Params are not the section's (AC-4):
+E     missing: ('security-governance#update-group-security-settings', 'projects_to_exclude')
+E   assert {} == {('security-g...de'): 'ARRAY'}
+E     
+E     Right contains 1 more item:
+E     {('security-governance#update-group-security-settings', 'projects_to_exclude'): 'ARRAY'}
+E     Use -v to get more diff
+________________________ test_every_key_has_its_record ________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:147: in test_every_key_has_its_record
+    assert declared == RECORD_KEYS, "the records are not the family's index row (AC-1):\n" + mapping_difference(
+E   AssertionError: the records are not the family's index row (AC-1):
+E     missing: ('PUT', '/groups/:id/security_settings')
+E   assert {} == {('PUT', '/gr...ity-settings'}
+E     
+E     Right contains 1 more item:
+E     {('PUT', '/groups/:id/security_settings'): 'security-governance#update-group-security-settings'}
+E     Use -v to get more diff
+________________ test_the_required_attributes_are_the_sections ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:209: in test_the_required_attributes_are_the_sections
+    assert declared == expected, "the required Params are not the section's (AC-4):\n" + mapping_difference(
+E   AssertionError: the required Params are not the section's (AC-4):
+E     missing: 'security-governance#update-group-security-settings'
+E   assert {} == {'security-go...on_enabled'})}
+E     
+E     Right contains 1 more item:
+E     {'security-governance#update-group-security-settings': frozenset({'secret_push_protection_enabled'})}
+E     Use -v to get more diff
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:223: in test_every_list_record_has_a_case
+    assert declared == expected, "the records' Paging is not AC-5's:\n" + mapping_difference(
+E   AssertionError: the records' Paging is not AC-5's:
+E     missing: 'security-governance#update-group-security-settings'
+E   assert {} == {'security-go...ings': 'NONE'}
+E     
+E     Right contains 1 more item:
+E     {'security-governance#update-group-security-settings': 'NONE'}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_every_body_is_json_and_unfixed
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_every_kind_is_its_rows_type
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_every_key_has_its_record
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_the_required_attributes_are_the_sections
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_every_list_record_has_a_case
+========================= 5 failed, 1 passed in 4.18s =========================
+exit=1
+# restored security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab, equal to the baseline: True  # pragma: allowlist secret
+# final security_factory.py bytes and mtime equal to the baseline: True
+# final software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final security_platform.py bytes and mtime equal to the baseline: True
+# final security_risk_management.py bytes and mtime equal to the baseline: True
+# final security_governance.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_factory.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_platform.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_risk_management.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_governance.py bytes and mtime equal to the baseline: True

@@ -1,0 +1,337 @@
+# mutation capture, wave 3, issue #44 worktree (branch issue-44-gitlab-graphql-capabilities)
+# each mutant: exact-once edits in the file's own CRLF bytes, the sha256 checked against the pre-run
+# baseline before each edit, the original bytes and mtime written back in a finally block
+# kill rule: exit != 0, at least one FAILED line, no collection error
+
+## baseline before: the unmutated tree
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+...........................................                              [100%]
+============================= 43 passed in 5.42s ==============================
+# exit=0
+
+## whole-wave revert W3: wave 3 reverted: gitlab_wrapper.py and the map at 1917c2a (wave 2), tests at HEAD
+# src/payload/scripts/gitlab_wrapper.py <- git show 1917c2a:src/payload/scripts/gitlab_wrapper.py (CRLF); baseline sha256 3a00ed70b35773e6...
+# docs/forLLMConsumption.md <- git show 1917c2a:docs/forLLMConsumption.md (CRLF); baseline sha256 4952c4d15ca4e32b...
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_properties.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_properties.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [235 items]
+
+.............F.......................................................... [ 30%]
+...............F........................................................ [ 61%]
+........................................................................ [ 91%]
+...................                                                      [100%]
+================================== FAILURES ===================================
+_____________________ test_the_map_names_the_graphql_call _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1470: in test_the_map_names_the_graphql_call
+    assert not missing, (
+E   AssertionError: the '- `src/payload/scripts/gitlab_api/`' bullet of docs/forLLMConsumption.md does not hold ['call graphql#', '--file NAME=PATH', 'Upload']: it names no GraphQL call; the bullet is "- `src/payload/scripts/gitlab_api/` \x97 the package of the product GitLab wrapper, copied with its entry script `gitlab_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of `docs/api-reference/gitlab/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites: `src/payload/test/test_gitlab_api_*.py`, `src/payload/test/test_gitlab_wrapper_compat.py`; in `test/`, `test_gitlab_wrapper_coverage.py` (every API-reference operation covered by a record or pending). The product wrapper calls any declared record by its operation ID: `python scripts/gitlab_wrapper.py call plan#retrieve-a-project-issue --path issue_iid=5` (`--path`, `--query`, `-f/--raw-field`, `-F/--field`, `--file`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2). `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. Not installed here: the repository is on GitHub (`config/toolchain.json`)."
+E   assert not ['call graphql#', '--file NAME=PATH', 'Upload']
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1271: in test_the_usage_names_every_graphql_record
+    entry = graphql_usage_entry(doc=doc)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\payload\test\test_gitlab_api_graphql_only.py:1210: in graphql_usage_entry
+    assert len(starts) == 1, (
+E   AssertionError: the docstring of gitlab_wrapper.py holds 0 usage lines starting 'python scripts/gitlab_wrapper.py call graphql#', expected one (AC-5.1, design.md D8)
+E   assert 0 == 1
+E    +  where 0 = len([])
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_graphql_contract.py::test_the_map_names_the_graphql_call
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+======================= 2 failed, 233 passed in 16.05s ========================
+# exit=1; KILLED (2 failed, 233 passed in 16.05s)
+#   failed: test/test_gitlab_graphql_contract.py::test_the_map_names_the_graphql_call
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+# restored docs/forLLMConsumption.md: sha256 identical=True
+
+## mutant 3a: an ID dropped from the usage: graphql#Query.vulnerability
+# src/payload/scripts/gitlab_wrapper.py: sha256 3a00ed70b35773e6... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_wrapper.py
++++ b/src/payload/scripts/gitlab_wrapper.py
+@@ -61,3 +61,3 @@
+         #   Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities
+-        #     graphql#Query.vulnerabilities graphql#Query.vulnerability
++        #     graphql#Query.vulnerabilities
+         #   Design uploads: graphql#designManagementUpload
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+.........................F.................                              [100%]
+================================== FAILURES ===================================
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1280: in test_the_usage_names_every_graphql_record
+    assert not problems, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py:
+E     "Group-wide and instance-wide vulnerability lists": graphql#Query.vulnerability is not named before the next capability
+E     The entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
+E   assert not ['"Group-wide and instance-wide vulnerability lists": graphql#Query.vulnerability is not named before the next capability']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+======================== 1 failed, 42 passed in 6.27s =========================
+# exit=1; KILLED (1 failed, 42 passed in 6.27s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3b: whole-ID matching: graphql#workItem dropped, graphql#workItemsByReference kept
+# src/payload/scripts/gitlab_wrapper.py: sha256 3a00ed70b35773e6... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_wrapper.py
++++ b/src/payload/scripts/gitlab_wrapper.py
+@@ -54,3 +54,3 @@
+         # nodes, any other result as its data. The "Only in GraphQL" capabilities and their records:
+-        #   Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems
++        #   Work items: graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems
+         #     graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+.........................F.................                              [100%]
+================================== FAILURES ===================================
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1280: in test_the_usage_names_every_graphql_record
+    assert not problems, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py:
+E     "Work items": graphql#workItem is not named before the next capability
+E     The entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
+E   assert not ['"Work items": graphql#workItem is not named before the next capability']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+======================== 1 failed, 42 passed in 6.11s =========================
+# exit=1; KILLED (1 failed, 42 passed in 6.11s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3c: an ID moved to another capability's line
+# src/payload/scripts/gitlab_wrapper.py: sha256 3a00ed70b35773e6... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_wrapper.py
++++ b/src/payload/scripts/gitlab_wrapper.py
+@@ -63,5 +63,5 @@
+         #   Design uploads: graphql#designManagementUpload
+-        #   Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest
++        #   Asynchronous pipeline creation: graphql#pipelineCreate
+         #   Work item CSV import: graphql#workItemsCsvImport
+-        #   Query cost introspection: graphql#queryComplexity
++        #   Query cost introspection: graphql#queryComplexity graphql#Project.ciPipelineCreationRequest
+         # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+.........................F.................                              [100%]
+================================== FAILURES ===================================
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1280: in test_the_usage_names_every_graphql_record
+    assert not problems, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py:
+E     "Asynchronous pipeline creation": graphql#Project.ciPipelineCreationRequest is not named before the next capability
+E     The entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#Project.ciPipelineCreationRequest graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
+E   assert not ['"Asynchronous pipeline creation": graphql#Project.ciPipelineCreationRequest is not named before the next capability']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+======================== 1 failed, 42 passed in 5.78s =========================
+# exit=1; KILLED (1 failed, 42 passed in 5.78s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3d: a phrase dropped: JSON array
+# src/payload/scripts/gitlab_wrapper.py: sha256 3a00ed70b35773e6... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_wrapper.py
++++ b/src/payload/scripts/gitlab_wrapper.py
+@@ -52,3 +52,3 @@
+         # field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request.
+-        # A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's
++        # A global ID is an id another GraphQL record printed. A connection prints as one JSON list of every page's
+         # nodes, any other result as its data. The "Only in GraphQL" capabilities and their records:
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+.........................F.................                              [100%]
+================================== FAILURES ===================================
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1280: in test_the_usage_names_every_graphql_record
+    assert not problems, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py:
+E     'JSON array' is not in the entry
+E     The entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON list of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
+E   assert not ["'JSON array' is not in the entry"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+======================== 1 failed, 42 passed in 6.05s =========================
+# exit=1; KILLED (1 failed, 42 passed in 6.05s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3e: a phrase dropped: --file NAME=PATH
+# src/payload/scripts/gitlab_wrapper.py: sha256 3a00ed70b35773e6... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_wrapper.py
++++ b/src/payload/scripts/gitlab_wrapper.py
+@@ -51,3 +51,3 @@
+         # input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each
+-        # field; --file NAME=PATH gives an Upload variable's file, once per item of a list, in one multipart request.
++        # field; --file gives an Upload variable's file, once per item of a list, in one multipart request.
+         # A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+........................F..................                              [100%]
+================================== FAILURES ===================================
+__________________ test_the_usage_names_every_graphql_record __________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_graphql_only.py:1280: in test_the_usage_names_every_graphql_record
+    assert not problems, (
+E   AssertionError: the GraphQL usage entry of gitlab_wrapper.py:
+E     '--file NAME=PATH' is not in the entry
+E     The entry reads: python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one, input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each field; --file gives an Upload variable's file, once per item of a list, in one multipart request. A global ID is an id another GraphQL record printed. A connection prints as one JSON array of every page's nodes, any other result as its data. The "Only in GraphQL" capabilities and their records: Work items: graphql#workItem graphql#workItemsByReference graphql#Project.workItems graphql#Group.workItems graphql#Namespace.workItems graphql#workItemCreate graphql#workItemUpdate graphql#workItemDelete graphql#workItemExport Epics with new features (assignees, health status, links to other item types): graphql#WorkItem.widgets Branch rules: graphql#Project.branchRules graphql#branchRuleCreate graphql#branchRuleUpdate graphql#branchRuleDelete Group-wide and instance-wide vulnerability lists: graphql#Group.vulnerabilities graphql#Query.vulnerabilities graphql#Query.vulnerability Design uploads: graphql#designManagementUpload Asynchronous pipeline creation: graphql#pipelineCreate graphql#Project.ciPipelineCreationRequest Work item CSV import: graphql#workItemsCsvImport Query cost introspection: graphql#queryComplexity graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
+E   assert not ["'--file NAME=PATH' is not in the entry"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+======================== 1 failed, 42 passed in 5.73s =========================
+# exit=1; KILLED (1 failed, 42 passed in 5.73s)
+#   failed: src/payload/test/test_gitlab_api_graphql_only.py::test_the_usage_names_every_graphql_record
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3f: the refusal sentence no longer names the refused mutations (exit 2 kept)
+# src/payload/scripts/gitlab_wrapper.py: sha256 3a00ed70b35773e6... before (the baseline), line ends CRLF
+--- a/src/payload/scripts/gitlab_wrapper.py
++++ b/src/payload/scripts/gitlab_wrapper.py
+@@ -66,3 +66,3 @@
+         #   Query cost introspection: graphql#queryComplexity
+-        # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
++        # An unknown GraphQL operation is refused before any request: exit 2.
+ 
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+...........................................                              [100%]
+============================= 43 passed in 5.50s ==============================
+# exit=0; SURVIVED (43 passed in 5.50s)
+# restored src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+
+## mutant 3g: the map strings removed: --file NAME=PATH and Upload
+# docs/forLLMConsumption.md: sha256 4952c4d15ca4e32b... before (the baseline), line ends CRLF
+--- a/docs/forLLMConsumption.md
++++ b/docs/forLLMConsumption.md
+@@ -51,3 +51,3 @@
+   `python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project` (`-f`/`-F` give the
+-  document's variables, `--file NAME=PATH` an `Upload` variable's file). `test/test_gitlab_graphql_contract.py` checks
++  document's variables, `--file` a file). `test/test_gitlab_graphql_contract.py` checks
+   each document against `graphql/`. Not installed here: the repository is on GitHub (`config/toolchain.json`).
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+..........................................F                              [100%]
+================================== FAILURES ===================================
+_____________________ test_the_map_names_the_graphql_call _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_graphql_contract.py:1470: in test_the_map_names_the_graphql_call
+    assert not missing, (
+E   AssertionError: the '- `src/payload/scripts/gitlab_api/`' bullet of docs/forLLMConsumption.md does not hold ['--file NAME=PATH', 'Upload']: it names no GraphQL call; the bullet is "- `src/payload/scripts/gitlab_api/` \x97 the package of the product GitLab wrapper, copied with its entry script `gitlab_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of `docs/api-reference/gitlab/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites: `src/payload/test/test_gitlab_api_*.py`, `src/payload/test/test_gitlab_wrapper_compat.py`; in `test/`, `test_gitlab_wrapper_coverage.py` (every API-reference operation covered by a record or pending). The product wrapper calls any declared record by its operation ID: `python scripts/gitlab_wrapper.py call plan#retrieve-a-project-issue --path issue_iid=5` (`--path`, `--query`, `-f/--raw-field`, `-F/--field`, `--file`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2). `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. A GraphQL-only capability is a record of `graphql_only.py`, called the same way: `python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project` (`-f`/`-F` give the document's variables, `--file` a file). `test/test_gitlab_graphql_contract.py` checks each document against `graphql/`. Not installed here: the repository is on GitHub (`config/toolchain.json`)."
+E   assert not ['--file NAME=PATH', 'Upload']
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_graphql_contract.py::test_the_map_names_the_graphql_call
+======================== 1 failed, 42 passed in 5.98s =========================
+# exit=1; KILLED (1 failed, 42 passed in 5.98s)
+#   failed: test/test_gitlab_graphql_contract.py::test_the_map_names_the_graphql_call
+# restored docs/forLLMConsumption.md: sha256 identical=True
+
+## baseline after: the unmutated tree
+# command (in the worktree): python scripts/run_tests.py src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_graphql_only.py test/test_gitlab_graphql_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-44
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [43 items]
+
+...........................................                              [100%]
+============================= 43 passed in 5.89s ==============================
+# exit=0
+
+# results
+# baseline before exit=0
+# W3 KILLED (2 failed, 233 passed in 16.05s)
+# 3a KILLED (1 failed, 42 passed in 6.27s)
+# 3b KILLED (1 failed, 42 passed in 6.11s)
+# 3c KILLED (1 failed, 42 passed in 5.78s)
+# 3d KILLED (1 failed, 42 passed in 6.05s)
+# 3e KILLED (1 failed, 42 passed in 5.73s)
+# 3f SURVIVED (43 passed in 5.50s)
+# 3g KILLED (1 failed, 42 passed in 5.98s)
+# baseline after exit=0
+# final src/payload/scripts/gitlab_api/registry.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/transport.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/commands/call.py: sha256 identical=True
+# final src/payload/scripts/gitlab_api/graphql_only.py: sha256 identical=True
+# final src/payload/scripts/gitlab_wrapper.py: sha256 identical=True
+# final docs/forLLMConsumption.md: sha256 identical=True

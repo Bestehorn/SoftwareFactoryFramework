@@ -11,6 +11,11 @@ record with nothing sent (AC-1.2); ``attribute_name`` drops one trailing ``[]`` 
 ``$name`` that a ``:`` follows in a record's document, in order, a connection record's cursor ``after`` left out
 (AC-2.2). Their ``GraphQLOperation`` records carry D2's ``capability``.
 
+Issue #44 (``design.md`` D4) adds: ``upload_variables`` maps each variable a record's document defines with the type
+``Upload``, or a list of it, to whether it is a list; ``split_uploads`` replaces each ``pathlib.Path`` value, and each
+one in a list, with ``None`` and returns the files with the operations path each fills, in order (AC-3.1).
+``upload_variables`` also leaves out a definition that has no type, and still reads the ones around it.
+
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; each
 test imports the production module inside its body, so a module not written yet fails the test on an assertion. The
 fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``, loaded by path) are installed for every test.
@@ -81,6 +86,35 @@ ISSUES_DOCUMENT = (
     "}\n"
 )
 ISSUES_CONNECTION = ("project", "issues")
+
+# The upload records of issue #44 (design.md D4, § Correctness Properties AC-3.1): `$files` is a list of `Upload`, with
+# white space before its `:`; `$file` is one `Upload`; `$n` is a list of another type, so no upload variable.
+UPLOAD_OPERATION_ID = "graphql#syntheticUpload"
+FILES_DOCUMENT = "mutation M($files : [Upload!]!) { syntheticUpload(input: {files: $files}) { errors } }"
+FILE_DOCUMENT = "mutation M($file: Upload) { syntheticUpload(input: {file: $file}) { errors } }"
+INT_LIST_DOCUMENT = "query Q($n: [Int!]) { syntheticList(n: $n) { id } }"
+ALL_UPLOADS_DOCUMENT = (
+    "mutation M($files : [Upload!]!, $file: Upload,\n"
+    "    $n: [Int!]) {\n"
+    "  syntheticUpload(input: {files: $files, file: $file, n: $n}) { errors }\n"
+    "}\n"
+)
+FILES_UPLOADS: Dict[str, bool] = {"files": True}
+FILE_UPLOADS: Dict[str, bool] = {"file": False}
+NO_UPLOADS: Dict[str, bool] = {}
+ALL_UPLOADS: Dict[str, bool] = {"files": True, "file": False}
+# `split_uploads`' values as `commands/call.py` `call_values` gives them (design.md D4): a list of files, one file, and
+# text. The files are never read here, so they need not exist.
+FIRST_FILE = Path("first.png")
+SECOND_FILE = Path("second.png")
+THIRD_FILE = Path("import.csv")
+SPLIT_VALUES: Dict[str, Any] = {"projectPath": "g/p", "files": [FIRST_FILE, SECOND_FILE], "file": THIRD_FILE}
+SPLIT_VARIABLES: Dict[str, Any] = {"projectPath": "g/p", "files": [None, None], "file": None}
+SPLIT_FILES: Tuple[Tuple[str, Path], ...] = (
+    ("variables.files.0", FIRST_FILE),
+    ("variables.files.1", SECOND_FILE),
+    ("variables.file", THIRD_FILE),
+)
 
 
 def load_fixtures() -> ModuleType:
@@ -375,4 +409,67 @@ def test_variables_are_the_documents_definitions(
     assert registry.variables(operation=operation) == expected, (
         "each $name followed, after any white space, by `:` is a definition, in order; a connection record leaves "
         "out its cursor `after` (design.md D2, AC-2.2)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("document", "expected"),
+    [
+        (FILES_DOCUMENT, FILES_UPLOADS),
+        (FILE_DOCUMENT, FILE_UPLOADS),
+        (INT_LIST_DOCUMENT, NO_UPLOADS),
+        (ALL_UPLOADS_DOCUMENT, ALL_UPLOADS),
+    ],
+    ids=["list-of-uploads", "one-upload", "list-of-another-type", "all-three-in-one-document"],
+)
+def test_upload_variables_are_the_documents_upload_definitions(document: str, expected: Dict[str, bool]) -> None:
+    registry = gitlab_module(name="registry")
+    operation = registry.GraphQLOperation(
+        operation_id=UPLOAD_OPERATION_ID,
+        capability=SYNTHETIC_CAPABILITY,
+        document=document,
+    )
+    assert registry.upload_variables(operation=operation) == expected, (
+        "each defined variable whose type, with `[`, `]`, `!` and white space removed, is `Upload` is mapped to "
+        "whether its type begins with `[`; a variable of another type is left out (design.md D4, AC-3.1)"
+    )
+
+
+# A document one of whose definitions has no type `TYPE_REFERENCE` reads: `$broken:` is followed by `,`, which starts
+# no Name. The upload variables before and after it are read all the same (design.md D4).
+UNTYPED_DEFINITION_NAME = "broken"
+UNTYPED_DEFINITION_DOCUMENT = (
+    "mutation M($files: [Upload!]!, $broken: , $file: Upload) "
+    "{ syntheticUpload(input: {files: $files, file: $file}) { errors } }"
+)
+
+
+def test_upload_variables_leave_out_a_definition_without_a_type() -> None:
+    """design.md D4, AC-3.1: a ``$name:`` definition followed by no type is a declared variable (``variables`` names
+    it) that ``upload_variables`` leaves out, while it still maps the ``Upload`` variables before and after it."""
+    registry = gitlab_module(name="registry")
+    operation = registry.GraphQLOperation(
+        operation_id=UPLOAD_OPERATION_ID,
+        capability=SYNTHETIC_CAPABILITY,
+        document=UNTYPED_DEFINITION_DOCUMENT,
+    )
+    assert UNTYPED_DEFINITION_NAME in registry.variables(operation=operation), (
+        f"${UNTYPED_DEFINITION_NAME} is a definition of the document, so upload_variables reads a type for it"
+    )
+    assert registry.upload_variables(operation=operation) == ALL_UPLOADS, (
+        f"a definition without a type, ${UNTYPED_DEFINITION_NAME}, is left out, and the Upload variables around it are "
+        "still mapped to whether each is a list (design.md D4, AC-3.1)"
+    )
+
+
+def test_split_uploads_puts_null_where_each_file_goes() -> None:
+    registry = gitlab_module(name="registry")
+    sent_variables, files = registry.split_uploads(values=SPLIT_VALUES)
+    assert sent_variables == SPLIT_VARIABLES, (
+        "each Path value, and each Path item of a list, is replaced by None, the null of the operations part; every "
+        "other value is unchanged (design.md D4, AC-3.1)"
+    )
+    assert files == SPLIT_FILES, (
+        "each file with the operations path it fills, variables.<name> or variables.<name>.<index>, in the order of "
+        "the values and of each list (design.md D4, AC-3.1)"
     )

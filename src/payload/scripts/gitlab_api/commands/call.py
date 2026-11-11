@@ -21,7 +21,10 @@ The grammar (D2)::
   of ``None`` is not sent (``registry.encode``); a GraphQL variable sends it.
 - ``--file NAME=PATH``: a ``FILE`` attribute, ``pathlib.Path(PATH)`` as its value. The transport reads the file when it
   builds the request, and the body is then ``multipart/form-data``, every other body attribute a form field in it.
-- A GraphQL record takes its variables with ``-f`` and ``-F``; any other option is refused.
+- A GraphQL record takes its variables with ``-f`` and ``-F``, and with ``--file`` a variable its document declares of
+  type ``Upload`` or a list of them (``registry.upload_variables``; issue #44, design.md D4): each ``--file`` of a
+  list's name is one item, in command-line order, a single one included, and one ``Upload`` keeps the last file given;
+  the call is then one multipart request. Any other option, and a ``--file`` of any other name, is refused.
 
 Each ``NAME=VALUE`` splits at its first ``=``; a REST attribute's name is read with ``registry.attribute_name``, so
 ``iids[]`` names the attribute ``iids``. No ``=``, an empty name, and ``-F`` text that is not JSON are argparse's usage
@@ -32,12 +35,13 @@ its last value; ``-f`` and ``-F`` share one destination, so their values keep th
 ``-F`` value replaces the ``--query`` values of the same name, and ``--file`` replaces both.
 
 ``call_operation`` refuses with exit 2 (``EXIT_REFUSED``), before any request (D4): an ID in ``GATED_OPERATIONS``,
-naming the compatibility subcommand that sends it; an ID no record declares, or one declared twice
-(``registry.lookup``); a name the record does not document or a path parameter left without a value, in one message
-naming each such name with its option, each missing path parameter, then the record's documented parameters
-(``check_parameters``); a value of a shape its ``Kind`` does not take (``registry.encode``); and a paged record given
-body values (``registry.pages``). Each refusal is a ``ValueError``, logged; every name the caller supplied is rendered
-with ``json.dumps``.
+naming the compatibility subcommand that sends it, or, for an ID mapped to ``None`` (``graphql#workItemCreate``,
+``graphql#workItemsCsvImport``), saying that no subcommand sends it (issue #44, design.md D6); an ID no record
+declares, or one declared twice (``registry.lookup``); a name the record does not document or a path parameter left
+without a value, in one message naming each such name with its option, each missing path parameter, then the record's
+documented parameters (``check_parameters``); a value of a shape its ``Kind`` does not take (``registry.encode``); and a
+paged record given body values (``registry.pages``). Each refusal is a ``ValueError``, logged; every name the caller
+supplied is rendered with ``json.dumps``.
 
 What prints (D3):
 
@@ -63,7 +67,7 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any, Dict, FrozenSet, Iterator, List, Mapping, NamedTuple, Optional, Sequence, Tuple
 
-from gitlab_api import registry
+from gitlab_api import graphql_only, registry
 from gitlab_api.commands import issue, mr
 from gitlab_api.commands._common import EXIT_REFUSED, PATH_PROJECT, add_command, print_bytes, print_json
 from gitlab_api.registry import GraphQLOperation, Kind, Location, Operation, Paging, RestOperation
@@ -111,12 +115,22 @@ MESSAGE_SEPARATOR = "; "
 LIST_SEPARATOR = ", "
 NOTHING_DOCUMENTED = "none"
 
-# The records a gated compatibility subcommand sends, each with that subcommand. The `merge-steward` and
-# `issue-filing-gate` hooks judge the subcommands by their words, so `call` refuses these IDs rather than reach them
-# unjudged (design.md D1, "Security Considerations").
-GATED_OPERATIONS: Mapping[str, str] = MappingProxyType(
-    {mr.OP_MERGE_MR: f"{mr.GROUP} merge", issue.OP_CREATE_ISSUE: f"{issue.GROUP} create"}
+# The records `call` refuses: a record that commits to or merges into a branch, or that creates an issue or another
+# work item (issue #41, design.md D8). A record a gated compatibility subcommand sends maps to that subcommand: the
+# `merge-steward` and `issue-filing-gate` hooks judge the subcommands by their words, so `call` refuses these IDs rather
+# than reach them unjudged (design.md D1, "Security Considerations"). A record no subcommand sends maps to `None`, and
+# `call` refuses it with no alternative: `issue create` never sends `graphql#workItemCreate`, which creates a work item
+# of any type, and no subcommand imports a CSV (issue #44, design.md D6).
+GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
+    {
+        mr.OP_MERGE_MR: f"{mr.GROUP} merge",
+        issue.OP_CREATE_ISSUE: f"{issue.GROUP} create",
+        graphql_only.OP_WORK_ITEM_CREATE: None,
+        graphql_only.OP_WORK_ITEMS_CSV_IMPORT: None,
+    }
 )
+# The end of the refusal of an ID `GATED_OPERATIONS` maps to `None`.
+NO_SUBCOMMAND_SENDS_IT = ": no subcommand sends it"
 
 logger = logging.getLogger(__name__)
 
@@ -225,11 +239,28 @@ def attribute_values(*, operation: RestOperation, args: argparse.Namespace) -> D
     return values
 
 
+def file_values(*, operation: GraphQLOperation, args: argparse.Namespace) -> Dict[str, Any]:
+    """The ``--file`` values of a GraphQL record's call (issue #44, design.md D4): every ``Path`` of a name
+    ``registry.upload_variables`` maps to ``True``, as a list in command-line order, a single one included; for any
+    other name the last ``Path`` given, a name outside ``upload_variables`` included, which ``check_parameters`` then
+    refuses."""
+    lists = registry.upload_variables(operation=operation)
+    values: Dict[str, Any] = {}
+    for each in _given(args=args, dest=ARG_FILES):
+        if lists.get(each.name, False):
+            values.setdefault(each.name, []).append(each.value)
+        else:
+            values[each.name] = each.value
+    return values
+
+
 def call_values(*, operation: Operation, project: str, args: argparse.Namespace) -> Dict[str, Any]:
-    """The values ``registry`` is given: a GraphQL record's variables from ``-f`` and ``-F``; for a REST record, the
-    attributes and then the path values, which win over an attribute of the same name."""
+    """The values ``registry`` is given: a GraphQL record's variables from ``-f`` and ``-F``, a name given twice keeping
+    its last value, then its ``--file`` values (``file_values``), which replace a variable of the same name; for a REST
+    record, the attributes and then the path values, which win over an attribute of the same name."""
     if isinstance(operation, GraphQLOperation):
-        return {each.name: each.value for each in _given(args=args, dest=ARG_FIELDS)}
+        fields = {each.name: each.value for each in _given(args=args, dest=ARG_FIELDS)}
+        return {**fields, **file_values(operation=operation, args=args)}
     attributes = attribute_values(operation=operation, args=args)
     return {**attributes, **path_values(operation=operation, project=project, args=args)}
 
@@ -240,9 +271,13 @@ def call_values(*, operation: Operation, project: str, args: argparse.Namespace)
 def documented_names(*, operation: Operation) -> Dict[str, FrozenSet[str]]:
     """The names each destination may give ``operation`` (D4): the path parameters for ``--path``, the
     ``Location.QUERY`` ``Param`` names for ``--query``, every ``Param`` name for ``-f``, ``-F`` and ``--file``; for a
-    GraphQL record, the variables its document defines for ``-f`` and ``-F``, and nothing for any other option."""
+    GraphQL record, the variables its document defines for ``-f`` and ``-F``, those of ``registry.upload_variables``
+    for ``--file`` (issue #44, design.md D4), and nothing for any other option."""
     if isinstance(operation, GraphQLOperation):
-        return {ARG_FIELDS: frozenset(registry.variables(operation=operation))}
+        return {
+            ARG_FIELDS: frozenset(registry.variables(operation=operation)),
+            ARG_FILES: frozenset(registry.upload_variables(operation=operation)),
+        }
     attributes = frozenset(param.name for param in operation.params)
     return {
         ARG_PATH: frozenset(registry.placeholders(path=operation.path)),
@@ -317,13 +352,15 @@ def check_parameters(*, operation: Operation, project: str, args: argparse.Names
 
 
 def refuse_gated(*, operation_id: str) -> None:
-    """Refuse with ``ValueError`` an ID in ``GATED_OPERATIONS``, naming the subcommand that sends it."""
-    subcommand = GATED_OPERATIONS.get(operation_id)
-    if subcommand is not None:
-        raise ValueError(
-            f"{COMMAND} refuses the GitLab operation {json.dumps(obj=operation_id)}: use the {subcommand} subcommand, "
-            "which sends it"
-        )
+    """Refuse with ``ValueError`` every ID in ``GATED_OPERATIONS``: naming the subcommand that sends it, or, for an ID
+    mapped to ``None``, saying that no subcommand sends it (issue #44, design.md D6)."""
+    if operation_id not in GATED_OPERATIONS:
+        return
+    subcommand = GATED_OPERATIONS[operation_id]
+    refused = f"{COMMAND} refuses the GitLab operation {json.dumps(obj=operation_id)}"
+    if subcommand is None:
+        raise ValueError(f"{refused}{NO_SUBCOMMAND_SENDS_IT}")
+    raise ValueError(f"{refused}: use the {subcommand} subcommand, which sends it")
 
 
 def prepare_call(*, transport: Transport, project: str, operation_id: str, args: argparse.Namespace) -> PreparedCall:

@@ -1,0 +1,171 @@
+# group body1: mutants applied by single-occurrence anchors, run through scripts/run_tests.py, then restored byte for byte (sha256 and mtime checked against the pre-run baseline).
+# baseline security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_platform.py sha256 0aa0922e26cdce7a0b789e9d0ead063a253745ff6e35362a4ddb5984d56faad5 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_risk_management.py sha256 11ccc02f4d21961b7fed437d6dbf6d218f4dd0948c22a8adc4bf053fd538fc51 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_factory.py sha256 ef8bc4cb6b5bc90e0568916e34e7151c35cfb44815a5b462a2716ffd808cf7cd CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_software_supply_chain_security.py sha256 3fb4c4d713b411f109fb1a89eb54dfa6165691af97bfddafa8e36546b0207e89 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_platform.py sha256 c1d1a60a1003e6179a011ba191da8220f9f5352338bc5c6d90c176d99eb8dfd4 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_risk_management.py sha256 779b9f959370956260c26d396de2af50862c2602ff94165a25e824cd87c0cff7 CRLF=0 bareCR=0  # pragma: allowlist secret
+# baseline test_gitlab_api_security_governance.py sha256 e12f2f77c50a6f06ac623699fd286cd966a2c5bc00c4afd537d980fba954a1c1 CRLF=0 bareCR=0  # pragma: allowlist secret
+# mutant B1: security_factory.py, body=BodyFormat.FORM on security-factory#update-the-secret_push_protection_enabled-setting
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+..F..................................................................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:293: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-factory#update-the-secret_push_protection_enabled-setting: body <BodyFormat.FORM: 'form'>, fixed ()
+E   assert ["security-fa...'>, fixed ()"] == []
+E     
+E     Left contains one more item: "security-factory#update-the-secret_push_protection_enabled-setting: body <BodyFormat.FORM: 'form'>, fixed ()"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 68.55s (0:01:08) ===================
+exit=1
+# restored security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e, equal to the baseline: True  # pragma: allowlist secret
+# mutant B3: security_factory.py, fixed=(("project", "x"),) on security-factory#retrieve-a-single-license-template
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+..F..................................................................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_factory.py:293: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-factory#retrieve-a-single-license-template: body <BodyFormat.JSON: 'json'>, fixed (('project', 'x'),)
+E   assert ["security-fa...ect', 'x'),)"] == []
+E     
+E     Left contains one more item: "security-factory#retrieve-a-single-license-template: body <BodyFormat.JSON: 'json'>, fixed (('project', 'x'),)"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_factory.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 76.71s (0:01:16) ===================
+exit=1
+# restored security_factory.py sha256 5d624cb9604f781db4448863eb1c4b237d54e5e94b074810065a260808367d8e, equal to the baseline: True  # pragma: allowlist secret
+# mutant S1: software_supply_chain_security.py, body=BodyFormat.FORM on software-supply-chain-security#create-a-user (new record, FILE avatar)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+..............F......................................................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:676: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     software-supply-chain-security#create-a-user: body <BodyFormat.FORM: 'form'>, fixed ()
+E   assert ["software-su...'>, fixed ()"] == []
+E     
+E     Left contains one more item: "software-supply-chain-security#create-a-user: body <BodyFormat.FORM: 'form'>, fixed ()"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 76.87s (0:01:16) ===================
+exit=1
+# restored software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b, equal to the baseline: True  # pragma: allowlist secret
+# mutant V1: software_supply_chain_security.py, near-variant: body=BodyFormat.FORM on part-1 software-supply-chain-security#as-a-regular-user (GET /users, paged)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+..............F......................................................... [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_software_supply_chain_security.py:676: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     software-supply-chain-security#as-a-regular-user: body <BodyFormat.FORM: 'form'>, fixed ()
+E   assert ["software-su...'>, fixed ()"] == []
+E     
+E     Left contains one more item: "software-supply-chain-security#as-a-regular-user: body <BodyFormat.FORM: 'form'>, fixed ()"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_software_supply_chain_security.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 65.57s (0:01:05) ===================
+exit=1
+# restored software_supply_chain_security.py sha256 bd4ce31b06d99123a8d5d33753810cc6f1d443d1353c14dd8139df721e2d397b, equal to the baseline: True  # pragma: allowlist secret
+# mutant G1: security_governance.py, body=BodyFormat.FORM on security-governance#update-group-security-settings
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-42
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [255 items]
+
+........................................................................ [ 28%]
+............F........................................................... [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_every_body_is_json_and_unfixed _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_security_governance.py:176: in test_every_body_is_json_and_unfixed
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+E   AssertionError: records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):
+E     security-governance#update-group-security-settings: body <BodyFormat.FORM: 'form'>, fixed ()
+E   assert ["security-go...'>, fixed ()"] == []
+E     
+E     Left contains one more item: "security-governance#update-group-security-settings: body <BodyFormat.FORM: 'form'>, fixed ()"
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_security_governance.py::test_every_body_is_json_and_unfixed
+================== 1 failed, 254 passed in 66.58s (0:01:06) ===================
+exit=1
+# restored security_governance.py sha256 3c148b1540a319a2b585334528548da49e52d1275f0e1775be24067a4471a2ab, equal to the baseline: True  # pragma: allowlist secret
+# final security_factory.py bytes and mtime equal to the baseline: True
+# final software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final security_platform.py bytes and mtime equal to the baseline: True
+# final security_risk_management.py bytes and mtime equal to the baseline: True
+# final security_governance.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_factory.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_software_supply_chain_security.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_platform.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_risk_management.py bytes and mtime equal to the baseline: True
+# final test_gitlab_api_security_governance.py bytes and mtime equal to the baseline: True
