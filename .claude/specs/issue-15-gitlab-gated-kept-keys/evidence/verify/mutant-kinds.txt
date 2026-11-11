@@ -1,0 +1,146 @@
+diff --git a/src/payload/scripts/gitlab_api/families/agent_foundations.py b/src/payload/scripts/gitlab_api/families/agent_foundations.py
+index 0a82fcd..d46b660 100644
+--- a/src/payload/scripts/gitlab_api/families/agent_foundations.py
++++ b/src/payload/scripts/gitlab_api/families/agent_foundations.py
+@@ -44,8 +44,8 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="POST",
+         path="/ai/duo_workflows/workflows",
+         params=(
+-            Param(name="additional_context", location=Location.BODY, kind=Kind.ARRAY_OF_HASHES),
+-            Param(name="agent_privileges", location=Location.BODY, kind=Kind.ARRAY),
++            Param(name="additional_context", location=Location.BODY),
++            Param(name="agent_privileges", location=Location.BODY),
+             Param(name="ai_catalog_item_consumer_id", location=Location.BODY),
+             Param(name="ai_catalog_item_version_id", location=Location.BODY),
+             Param(name="allow_agent_to_request_user", location=Location.BODY),
+diff --git a/src/payload/scripts/gitlab_api/families/create.py b/src/payload/scripts/gitlab_api/families/create.py
+index 0ea17ce..6c14c85 100644
+--- a/src/payload/scripts/gitlab_api/families/create.py
++++ b/src/payload/scripts/gitlab_api/families/create.py
+@@ -151,7 +151,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         params=(
+             Param(name="branch", location=Location.BODY, required=True),
+             Param(name="commit_message", location=Location.BODY, required=True),
+-            Param(name="actions", location=Location.BODY, kind=Kind.ARRAY),
++            Param(name="actions", location=Location.BODY),
+             Param(name="allow_empty", location=Location.BODY),
+             Param(name="author_email", location=Location.BODY),
+             Param(name="author_name", location=Location.BODY),
+@@ -1622,7 +1622,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="PUT",
+         path="/suggestions/batch_apply",
+         params=(
+-            Param(name="ids", location=Location.BODY, kind=Kind.ARRAY, required=True),
++            Param(name="ids", location=Location.BODY, required=True),
+             Param(name="commit_message", location=Location.BODY),
+         ),
+     ),
+diff --git a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+index 9b53c35..9079305 100644
+--- a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
++++ b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+@@ -615,7 +615,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="namespace", location=Location.BODY),
+             Param(name="namespace_id", location=Location.BODY),
+             Param(name="namespace_path", location=Location.BODY),
+-            Param(name="override_params", location=Location.BODY, kind=Kind.HASH),
++            Param(name="override_params", location=Location.BODY),
+             Param(name="overwrite", location=Location.BODY),
+             Param(name="file.path", location=Location.BODY),
+             Param(name="file.name", location=Location.BODY),
+@@ -771,7 +771,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="POST",
+         path="/projects/import-relation",
+         params=(
+-            Param(name="file", location=Location.BODY, kind=Kind.FILE, required=True),
++            Param(name="file", location=Location.BODY, required=True),
+             Param(name="path", location=Location.BODY, required=True),
+             Param(name="relation", location=Location.BODY, required=True),
+             Param(name="file.path", location=Location.BODY),
+diff --git a/src/payload/scripts/gitlab_api/families/package.py b/src/payload/scripts/gitlab_api/families/package.py
+index bc170ee..019133f 100644
+--- a/src/payload/scripts/gitlab_api/families/package.py
++++ b/src/payload/scripts/gitlab_api/families/package.py
+@@ -509,7 +509,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="remove_source_branch_after_merge", location=Location.BODY),
+             Param(name="packages_enabled", location=Location.BODY),
+             Param(name="container_registry_enabled", location=Location.BODY),
+-            Param(name="container_expiration_policy_attributes", location=Location.BODY, kind=Kind.HASH),
++            Param(name="container_expiration_policy_attributes", location=Location.BODY),
+             Param(name="lfs_enabled", location=Location.BODY),
+             Param(name="visibility", location=Location.BODY),
+             Param(name="public_builds", location=Location.BODY),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_package.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [177 items]
+
+.......F.....F....................................................F..... [ 40%]
+.........F.............................................................. [ 81%]
+.................................                                        [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_agent_foundations.py:305: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the Params that are not Kind.SCALAR are not the sections' (AC-4):\n" + (
+E   AssertionError: the Params that are not Kind.SCALAR are not the sections' (AC-4):
+E     missing: ('agent-foundations#trigger-a-flow', 'additional_context')
+E     missing: ('agent-foundations#trigger-a-flow', 'agent_privileges')
+E   assert {('agent-foun...es'): 'ARRAY'} == {('agent-foun...es'): 'ARRAY'}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 2 more items:
+E     {('agent-foundations#trigger-a-flow', 'additional_context'): 'ARRAY_OF_HASHES',
+E      ('agent-foundations#trigger-a-flow', 'agent_privileges'): 'ARRAY'}
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:828: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the non-SCALAR and member Params are not the sections' (AC-2, AC-3):\n" + (
+E   AssertionError: the non-SCALAR and member Params are not the sections' (AC-2, AC-3):
+E     missing: 'create#apply-multiple-suggestions'
+E     missing: 'create#create-a-commit'
+E   assert {'create#crea...'ARRAY'}, ...} == {'create#appl... 'HASH'}, ...}
+E     
+E     Omitting 16 identical items, use -vv to show
+E     Right contains 2 more items:
+E     {'create#apply-multiple-suggestions': {'ids': 'ARRAY'},
+E      'create#create-a-commit': {'actions': 'ARRAY'}}
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:744: in test_every_param_is_typed_as_its_row
+    assert typed == NON_SCALAR_PARAMS, "the Params that are not Kind.SCALAR are not the sections' (AC-4):\n" + (
+E   AssertionError: the Params that are not Kind.SCALAR are not the sections' (AC-4):
+E     missing: ('gitlab-dedicated#import-a-project-from-a-local-archive', 'override_params')
+E     missing: ('gitlab-dedicated#import-project-resources', 'file')
+E   assert {('gitlab-ded... 'ARRAY', ...} == {('gitlab-ded... 'ARRAY', ...}
+E     
+E     Omitting 32 identical items, use -vv to show
+E     Right contains 2 more items:
+E     {('gitlab-dedicated#import-a-project-from-a-local-archive', 'override_params'): 'HASH',
+E      ('gitlab-dedicated#import-project-resources', 'file'): 'FILE'}
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1776: in test_every_param_is_typed_as_its_row
+    assert typed == KINDS, "the Params that are not Kind.SCALAR are not the rows' (AC-1.4):\n" + mapping_difference(
+E   AssertionError: the Params that are not Kind.SCALAR are not the rows' (AC-1.4):
+E     'package#change-the-visibility-of-the-container-registry': declared {'tag_list': 'ARRAY', 'topics': 'ARRAY', 'avatar': 'FILE', 'ci_id_token_sub_claim_components': 'ARRAY'}, expected {'container_expiration_policy_attributes': 'HASH', 'tag_list': 'ARRAY', 'topics': 'ARRAY', 'avatar': 'FILE', 'ci_id_token_sub_claim_components': 'ARRAY'}
+E   assert {'package#cha...'ARRAY'}, ...} == {'package#cha...'ARRAY'}, ...}
+E     
+E     Omitting 13 identical items, use -vv to show
+E     Differing items:
+E     {'package#change-the-visibility-of-the-container-registry': {'tag_list': 'ARRAY', 'topics': 'ARRAY', 'avatar': 'FILE', 'ci_id_token_sub_claim_components': 'ARRAY'}} != {'package#change-the-visibility-of-the-container-registry': {'container_expiration_policy_attributes': 'HASH', 'tag_list': 'ARRAY', 'topics': 'ARRAY', 'avatar': 'FILE', ...}}
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_create.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_package.py::test_every_param_is_typed_as_its_row
+================== 4 failed, 173 passed in 130.81s (0:02:10) ==================
+exit=1

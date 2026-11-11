@@ -22,14 +22,16 @@ Every section of the page has one endpoint, the one its record declares.
 The data management, Geo and system hooks pages are offered on GitLab Self-Managed only; their records are proven by the
 two halves of ``test/test_gitlab_wrapper_contract.py`` against the fake host (issue #41, design.md D5).
 
-``PENDING`` holds the keys of the three imports that have no record (issue #38, DL-005). "Import project resources" and
-the imports from a local and from a remote archive write into an existing project: the first imports issues, milestones,
-merge requests or pipelines into it, and the other two take ``overwrite``, which replaces it; no subcommand sends any of
-them, and they stay pending for issue #15's gate. No other family links any of these keys.
-
-"Import a project from an AWS S3 bucket" (``OP_IMPORT_FROM_S3``) has its record since issue #63 (design.md D6). It takes
-``overwrite`` too, so it writes into an existing project: ``commands/call.py``'s ``GATED_OPERATIONS`` maps it to
-``None``, and ``call`` refuses it, ": no subcommand sends it", before any request is sent.
+Four imports write into an existing project: "Import project resources" imports issues, milestones, merge requests or
+pipelines into it, and the imports from a local archive, from a remote archive and from an AWS S3 bucket take
+``overwrite``, which replaces it. "Import a project from an AWS S3 bucket" (``OP_IMPORT_FROM_S3``) has its record since
+issue #63 (design.md D6), the other three (``OP_IMPORT_PROJECT_RESOURCES``,
+``OP_IMPORT_A_PROJECT_FROM_A_LOCAL_ARCHIVE``, ``OP_IMPORT_A_PROJECT_FROM_A_REMOTE_ARCHIVE``) since issue #15: no
+subcommand sends any of them, so ``commands/call.py``'s ``GATED_OPERATIONS`` maps each to ``None``, and ``call``
+refuses it, ": no subcommand sends it", before any request is sent (issue #15 AC-3). The two archive imports have an
+``override_params`` row, so each of their ``override_params[...]`` rows is its member and no ``Param``; a ``file.path``
+row of "Import project resources" or of the local archive import is a ``Param`` of its own, as a ``.`` marks no
+member. ``PENDING`` is empty: every index row of the family has its record.
 
 Standard library only; Python 3.9.
 """
@@ -44,6 +46,10 @@ FAMILY = "gitlab-dedicated"
 
 # "Import a project from an AWS S3 bucket": `commands/call.py`'s `GATED_OPERATIONS` maps it to `None` (design.md D6).
 OP_IMPORT_FROM_S3 = "gitlab-dedicated#import-a-project-from-an-aws-s3-bucket"
+# The other imports that write into an existing project: `GATED_OPERATIONS` maps each to `None` (issue #15 AC-3).
+OP_IMPORT_A_PROJECT_FROM_A_LOCAL_ARCHIVE = "gitlab-dedicated#import-a-project-from-a-local-archive"
+OP_IMPORT_A_PROJECT_FROM_A_REMOTE_ARCHIVE = "gitlab-dedicated#import-a-project-from-a-remote-archive"
+OP_IMPORT_PROJECT_RESOURCES = "gitlab-dedicated#import-project-resources"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # "Data management API: Retrieve model information".
@@ -596,6 +602,50 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="GET",
         path="/projects/:id/export/download",
     ),
+    # "Project import and export API: Import a project from a local archive"; each `override_params[...]` row is a
+    # member of `override_params`, and each `file.` row a Param of its own.
+    RestOperation(
+        operation_id=OP_IMPORT_A_PROJECT_FROM_A_LOCAL_ARCHIVE,
+        method="POST",
+        path="/projects/import",
+        params=(
+            Param(name="file", location=Location.BODY, kind=Kind.FILE, required=True),
+            Param(name="path", location=Location.BODY, required=True),
+            Param(name="name", location=Location.BODY),
+            Param(name="namespace", location=Location.BODY),
+            Param(name="namespace_id", location=Location.BODY),
+            Param(name="namespace_path", location=Location.BODY),
+            Param(name="override_params", location=Location.BODY, kind=Kind.HASH),
+            Param(name="overwrite", location=Location.BODY),
+            Param(name="file.path", location=Location.BODY),
+            Param(name="file.name", location=Location.BODY),
+            Param(name="file.type", location=Location.BODY),
+            Param(name="file.size", location=Location.BODY),
+            Param(name="file.md5", location=Location.BODY),
+            Param(name="file.sha1", location=Location.BODY),
+            Param(name="file.sha256", location=Location.BODY),
+            Param(name="file.etag", location=Location.BODY),
+            Param(name="file.remote_id", location=Location.BODY),
+            Param(name="file.remote_url", location=Location.BODY),
+        ),
+    ),
+    # "Project import and export API: Import a project from a remote archive"; each `override_params[...]` row is a
+    # member of `override_params`.
+    RestOperation(
+        operation_id=OP_IMPORT_A_PROJECT_FROM_A_REMOTE_ARCHIVE,
+        method="POST",
+        path="/projects/remote-import",
+        params=(
+            Param(name="path", location=Location.BODY, required=True),
+            Param(name="url", location=Location.BODY, required=True),
+            Param(name="name", location=Location.BODY),
+            Param(name="namespace", location=Location.BODY),
+            Param(name="namespace_id", location=Location.BODY),
+            Param(name="namespace_path", location=Location.BODY),
+            Param(name="overwrite", location=Location.BODY),
+            Param(name="override_params", location=Location.BODY, kind=Kind.HASH),
+        ),
+    ),
     # "Project import and export API: Import a project from an AWS S3 bucket"; no row has a parent row, so each
     # `override_params[...]` row is a body Param under its full name, and the body is a form (design.md D6).
     RestOperation(
@@ -714,6 +764,27 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="gitlab-dedicated#retrieve-the-status-of-a-project-import",
         method="GET",
         path="/projects/:id/import",
+    ),
+    # "Project import and export API: Import project resources"; each `file.` row is a Param of its own.
+    RestOperation(
+        operation_id=OP_IMPORT_PROJECT_RESOURCES,
+        method="POST",
+        path="/projects/import-relation",
+        params=(
+            Param(name="file", location=Location.BODY, kind=Kind.FILE, required=True),
+            Param(name="path", location=Location.BODY, required=True),
+            Param(name="relation", location=Location.BODY, required=True),
+            Param(name="file.path", location=Location.BODY),
+            Param(name="file.name", location=Location.BODY),
+            Param(name="file.type", location=Location.BODY),
+            Param(name="file.size", location=Location.BODY),
+            Param(name="file.md5", location=Location.BODY),
+            Param(name="file.sha1", location=Location.BODY),
+            Param(name="file.sha256", location=Location.BODY),
+            Param(name="file.etag", location=Location.BODY),
+            Param(name="file.remote_id", location=Location.BODY),
+            Param(name="file.remote_url", location=Location.BODY),
+        ),
     ),
     # "Project import and export API: Retrieve the status of a project resource import".
     RestOperation(
@@ -985,10 +1056,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        ("POST", "/projects/import"),
-        ("POST", "/projects/import-relation"),
-        ("POST", "/projects/remote-import"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

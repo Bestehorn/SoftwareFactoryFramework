@@ -1,13 +1,18 @@
 """Tests for ``gitlab_api/families/package.py``: the records of the package stage group, and the route-prefix,
 hyphenated-name, glob and upload forms they declare (issue #43, design.md D5 to D7; AC-1.1 to AC-1.7, AC-2.1 to AC-2.3,
-AC-2.5, AC-3.1 to AC-3.3, AC-4.1, AC-4.2 and AC-4.4), and the container-registry calls of issue #63 (its design.md D4,
-D8 and D9; #63 AC-1.1, AC-1.3, AC-5.2, AC-5.3, AC-8.3 and UB-2).
+AC-2.5, AC-3.1 to AC-3.3, AC-4.1, AC-4.2 and AC-4.4), the container-registry calls of issue #63 (its design.md D4,
+D8 and D9; #63 AC-1.1, AC-1.3, AC-5.2, AC-5.3, AC-8.3 and UB-2), and the record of the key #43 kept, refused (issue
+#15 AC-1 to AC-3).
 
 What is pinned:
 
-- ``PENDING`` holds exactly the kept key, ``PUT /projects/:id/``; the records' operation IDs are every other Reference
-  of the index rows that link ``rest/package.md``, each key declared once, and the only records on the registry's own
-  host are its two keys' (AC-1.1, AC-1.3, AC-1.7, restated by #63 design.md D9 for #63 AC-1.1 and D8);
+- ``PENDING`` is empty; the records' operation IDs are every Reference of the index rows that link
+  ``rest/package.md``, each key declared once, the only records on the registry's own host are its two keys', and the
+  one record of ``/projects/:id/`` is "Change the visibility of the container registry"'s ``PUT`` (AC-1.1, AC-1.7,
+  restated by #63 design.md D9 for #63 AC-1.1 and D8, and by issue #15 AC-1 and AC-2);
+- "Change the visibility of the container registry", which writes into an existing project, is the record
+  ``registry.lookup`` returns for its ID, and ``call`` refuses it: exit 2, no request, an ERROR record naming the ID
+  and saying that no subcommand sends it (issue #15 AC-3);
 - an entry listing two endpoints maps the one it lists first, then the other, which is on no ``PENDING`` (AC-1.2,
   restated by #63 design.md D9 for #63 D1 and D8);
 - every ``Param`` is typed as its row: the ``Kind`` of its Type, ``required`` where Required reads ``yes``; the raw-body
@@ -154,22 +159,25 @@ PAGING_ROWS: Tuple[str, ...] = ("page", "per_page")
 
 # The `registry.Kind`, `registry.Paging` and `registry.Location` member names the tables hold.
 KIND_ARRAY = "ARRAY"
+KIND_HASH = "HASH"
 KIND_FILE = "FILE"
 PAGING_OFFSET = "OFFSET"
 LOCATION_QUERY = "QUERY"
 
-# AC-1.3, restated by #63 design.md D9: the container registry's own host, whose keys only the two records of
-# `REGISTRY_RECORDS` have (#63 AC-1.1, D8), and the project update, which no record may have.
+# AC-1.3, restated by #63 design.md D9 and issue #15 AC-1: the container registry's own host, whose keys only the two
+# records of `REGISTRY_RECORDS` have (#63 AC-1.1, D8), and the project update, whose path only the record of
+# `PROJECT_UPDATE_RECORDS` has.
 REGISTRY_HOST_PREFIX = "/http(s)://"
 PROJECT_UPDATE_PATH = "/projects/:id/"
 
 # --- The tables, transcribed from the reference -----------------------------------------------------------------
 
-# The key `package.PENDING` keeps (design.md D6 "The kept keys"; AC-1.3), restated by #63 design.md D9: "Change the
-# visibility of the container registry". #63 maps the other keys #43 kept (#63 AC-1.1, D8): the second endpoint of every
-# Conan v1 entry and of NuGet "Upload a package file", each now a record after its entry's base record
-# (`FIRST_ENDPOINTS`), and the two keys whose path starts with `/http(s)://${CI_REGISTRY}` (`REGISTRY_RECORDS`).
-KEPT: FrozenSet[Tuple[str, str]] = frozenset({("PUT", "/projects/:id/")})
+# The record of the key #43 kept (its design.md D6 "The kept keys"; AC-1.3), "Change the visibility of the container
+# registry" (Container registry API), by ID: the method and path of its index row (issue #15 AC-1). Its section's rows
+# include a pull mirror's (`mirror`, `import_url`; #43 DL-006), so it writes into an existing project and `call` refuses
+# it (issue #15 AC-3).
+OP_CHANGE_REGISTRY_VISIBILITY = "package#change-the-visibility-of-the-container-registry"
+PROJECT_UPDATE_RECORDS: Dict[str, Tuple[str, str]] = {OP_CHANGE_REGISTRY_VISIBILITY: ("PUT", "/projects/:id/")}
 
 # The two records on the registry's own host (#63 AC-1.1, design.md D8), by ID: the method and path of their index rows.
 OP_DELETE_IMAGE_TAGS = "package#delete-image-tags-by-reference"
@@ -183,10 +191,10 @@ REGISTRY_RECORDS: Dict[str, Tuple[str, str]] = {
 }
 
 # The Reference of every row of operations-index.md that links rest/package.md, written `package#<anchor>`, once each,
-# in the page order of rest/package.md, but the Reference of the kept key of AC-1.3, "Change the visibility of the
-# container registry" (Container registry API); restated by #63 design.md D9, "Delete image tags by reference" and
-# "Listing all container repositories" included (#63 AC-1.1, D8). A Conan v1 Reference, and NuGet "Upload a package
-# file", carries two rows (AC-1.2), and #63 declares a record for each (`RECORD_IDS`).
+# in the page order of rest/package.md; restated by #63 design.md D9, "Delete image tags by reference" and "Listing all
+# container repositories" included (#63 AC-1.1, D8), and by issue #15 AC-1, "Change the visibility of the container
+# registry" included. A Conan v1 Reference, and NuGet "Upload a package file", carries two rows (AC-1.2), and #63
+# declares a record for each (`RECORD_IDS`).
 OPERATION_IDS: Tuple[str, ...] = (
     # Composer API
     "package#retrieve-repository-url-templates",
@@ -232,6 +240,7 @@ OPERATION_IDS: Tuple[str, ...] = (
     "package#retrieve-package-references-metadata-1",
     "package#retrieve-package-references-metadata-by-recipe-revision",
     # Container registry API
+    OP_CHANGE_REGISTRY_VISIBILITY,
     "package#within-a-project",
     "package#within-a-group",
     "package#retrieve-details-of-a-single-repository",
@@ -602,11 +611,18 @@ RECORD_IDS: Tuple[str, ...] = (*OPERATION_IDS, *FIRST_ENDPOINTS)
 # Every `Param` whose Kind is not SCALAR, by record: the `query` and `body` rows typed `array of string` or `string
 # array` (ARRAY) — `components` and `architectures` of the Debian distribution list, create, update and delete entries
 # — and the `form` rows typed `file` (FILE) of the `--file` uploads (design.md D5). A raw-body record's `file` row is
-# its body, no Param (design.md D6); the page's one `object` and its other `array of string` and `file` rows are those
-# of "Change the visibility of the container registry", a kept key. Every other row is `string`, `integer`,
-# `integer (int32)` or `boolean`, a SCALAR.
+# its body, no Param (design.md D6). The page's one `object` row (HASH) and its other `array of string` and `file`
+# rows are those of "Change the visibility of the container registry" (issue #15 AC-1). Every other row is `string`,
+# `integer`, `integer (int32)` or `boolean`, a SCALAR.
 DEBIAN_DISTRIBUTION_ARRAYS: Dict[str, str] = {"components": KIND_ARRAY, "architectures": KIND_ARRAY}
 KINDS: Dict[str, Dict[str, str]] = {
+    OP_CHANGE_REGISTRY_VISIBILITY: {
+        "container_expiration_policy_attributes": KIND_HASH,
+        "tag_list": KIND_ARRAY,
+        "topics": KIND_ARRAY,
+        "avatar": KIND_FILE,
+        "ci_id_token_sub_claim_components": KIND_ARRAY,
+    },
     "package#list-all-debian-distributions-in-a-group": DEBIAN_DISTRIBUTION_ARRAYS,
     "package#create-a-debian-group-distribution": DEBIAN_DISTRIBUTION_ARRAYS,
     "package#update-a-debian-group-distribution": DEBIAN_DISTRIBUTION_ARRAYS,
@@ -1479,6 +1495,20 @@ UNUSABLE_JWT_ANSWERS = (
     ),
 )
 
+# --- The refused writer (issue #15 AC-3) ----------------------------------------------------------------------------
+
+# A call of "Change the visibility of the container registry" with a value for its one path parameter and its section's
+# `container_registry_access_level`; the section has no required row but `id`.
+CHANGE_REGISTRY_VISIBILITY_ARGV: Tuple[str, ...] = (
+    OP_CHANGE_REGISTRY_VISIBILITY,
+    OPTION_PATH,
+    f"id={PROJECT_ID}",
+    OPTION_RAW_FIELD,
+    "container_registry_access_level=private",
+)
+# The end of the refusal of an ID `GATED_OPERATIONS` maps to `None` (issue #44 design.md D6).
+NO_SUBCOMMAND_SENDS_IT = ": no subcommand sends it"
+
 
 # --- Fixtures and helpers ---------------------------------------------------------------------------------------
 
@@ -1665,21 +1695,18 @@ def off_host_requests(*, fake: Any) -> List[Tuple[str, str]]:
     ]
 
 
-# --- AC-1.1, AC-1.3, AC-1.7: nothing is pending but the kept keys ---------------------------------------------------
+# --- AC-1.1, AC-1.7, issue #15 AC-1, AC-2: nothing is pending ---------------------------------------------------------
 
 
-def test_nothing_is_pending_but_the_kept_keys() -> None:
-    """AC-1.1, AC-1.3, AC-1.7, restated by #63 design.md D9 (#63 AC-1.1, AC-1.3): ``PENDING`` is exactly the kept
-    key; ``OPERATIONS`` declares the records of every Reference of the family's index rows but the kept key's, one per
-    Reference and two for a two-endpoint entry, each key once (each such entry's records start with its base record:
-    ``test_a_two_endpoint_entry_maps_its_first_endpoint``); the records on the registry host are its two keys', and no
-    record's path is ``/projects/:id/``."""
+def test_nothing_is_pending() -> None:
+    """AC-1.1, AC-1.7, restated by #63 design.md D9 (#63 AC-1.1, AC-1.3) and by issue #15 AC-1, AC-2: ``PENDING`` is
+    empty; ``OPERATIONS`` declares the records of every Reference of the family's index rows, one per Reference and two
+    for a two-endpoint entry, each key once (each such entry's records start with its base record:
+    ``test_a_two_endpoint_entry_maps_its_first_endpoint``); the records on the registry host are its two keys', and the
+    one record whose path is ``/projects/:id/`` is "Change the visibility of the container registry"'s ``PUT``."""
     family = gitlab_module(name=FAMILY_MODULE)
-    pending = frozenset(family.PENDING)
-    assert pending == KEPT, (
-        f"PENDING holds {len(pending)} key(s), the kept keys are {len(KEPT)} (AC-1.3; #63 AC-1.1, design.md D9):\n"
-        + set_difference(declared=pending, expected=KEPT)
-    )
+    pending = sorted(family.PENDING)
+    assert pending == [], f"PENDING holds {len(pending)} key(s); each has its record (issue #15 AC-2): {pending}"
     declared = [record.operation_id for record in family.OPERATIONS]
     assert sorted(declared) == sorted(RECORD_IDS), (
         f"OPERATIONS declares {len(declared)} record(s), the index has {len(RECORD_IDS)} to map: one per Reference, "
@@ -1698,8 +1725,15 @@ def test_nothing_is_pending_but_the_kept_keys() -> None:
         "the records on the registry host are its two keys' (#63 AC-1.1, design.md D8):\n"
         + mapping_difference(declared=on_registry_host, expected=REGISTRY_RECORDS)
     )
-    project_updates = [record.operation_id for record in family.OPERATIONS if record.path == PROJECT_UPDATE_PATH]
-    assert project_updates == [], f"the project update stays pending, with no record (AC-1.3): {project_updates}"
+    project_updates = {
+        record.operation_id: (record.method, record.path)
+        for record in family.OPERATIONS
+        if record.path == PROJECT_UPDATE_PATH
+    }
+    assert project_updates == PROJECT_UPDATE_RECORDS, (
+        "the one record of the project update's path is its index row's (issue #15 AC-1):\n"
+        + mapping_difference(declared=project_updates, expected=PROJECT_UPDATE_RECORDS)
+    )
 
 
 # --- AC-1.2: a two-endpoint entry maps its first endpoint -------------------------------------------------------------
@@ -2090,3 +2124,48 @@ def test_a_refused_jwt_auth_answer_is_never_reported(
     withheld = {**SECRETS, "the /jwt/auth answer's body": JWT_ANSWER_MARKER}
     reported = secrets_in(texts=reported_texts(caplog=caplog, err=captured.err), secrets=withheld)
     assert reported == [], f"no log record and no standard error holds these (D4 AC-5.3, UB-2): {reported}"
+
+
+# --- Issue #15 AC-1, AC-3: the writing record is refused ------------------------------------------------------------
+
+
+def test_a_writing_record_is_refused(
+    project: Path,
+    fake_gitlab: Any,
+    caplog: pytest.LogCaptureFixture,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Issue #15 AC-1, AC-3: ``registry.lookup`` returns the record of "Change the visibility of the container
+    registry", ``PUT /projects/:id/``; ``call`` given it, with a value for its path parameter, exits 2, sends no request
+    and prints nothing, and one ERROR record names the ID and ends ": no subcommand sends it" (issue #44 design.md
+    D6)."""
+    family = gitlab_module(name=FAMILY_MODULE)
+    registry = gitlab_module(name=REGISTRY)
+    declared = {
+        record.operation_id: (record.method, record.path)
+        for record in family.OPERATIONS
+        if record.operation_id == OP_CHANGE_REGISTRY_VISIBILITY
+    }
+    assert declared == PROJECT_UPDATE_RECORDS, (
+        f"package.OPERATIONS declares {OP_CHANGE_REGISTRY_VISIBILITY} at its index row's key (issue #15 AC-1): "
+        f"{declared}"
+    )
+    record = registry.lookup(operation_id=OP_CHANGE_REGISTRY_VISIBILITY)
+    looked_up = {record.operation_id: (record.method, record.path)}
+    assert looked_up == PROJECT_UPDATE_RECORDS, f"registry.lookup returns the family's record (AC-3): {looked_up}"
+    fake_gitlab.script_next(body=ANSWER)
+    code = run_call(root=project, argv=CHANGE_REGISTRY_VISIBILITY_ARGV)
+    captured = capsys.readouterr()
+    assert code == EXIT_REFUSED, (
+        f"call {list(CHANGE_REGISTRY_VISIBILITY_ARGV)} exits {EXIT_REFUSED}, got {code} (issue #15 AC-3); "
+        f"stderr:\n{captured.err}"
+    )
+    assert sent(fake=fake_gitlab) == [], "the refused call sends no request (issue #15 AC-3)"
+    assert captured.out == "", f"a refusal prints nothing on standard output:\n{captured.out}"
+    messages = error_messages(caplog=caplog)
+    assert any(
+        OP_CHANGE_REGISTRY_VISIBILITY in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages
+    ), (
+        f"one ERROR record names {OP_CHANGE_REGISTRY_VISIBILITY!r} and ends {NO_SUBCOMMAND_SENDS_IT!r}: the gate "
+        f"refuses a record that writes into an existing project (issue #15 AC-3); logged: {messages!r}"
+    )

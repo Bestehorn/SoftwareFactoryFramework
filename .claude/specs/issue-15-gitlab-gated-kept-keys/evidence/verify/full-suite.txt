@@ -1,0 +1,19 @@
+# Whole-suite verdict: the PR's CI run, read through scripts/github_wrapper.py (list-runs, get-run, wait-run, get-jobs)
+run_id: 43109048909
+workflow: ci (.github/workflows/ci.yml), run_number 116, event pull_request, PR #67
+head_branch: issue-15-gitlab-gated-kept-keys
+head_sha: b4d11ac5769deebd3fb6e06625d285b49ab10ef4  # pragma: allowlist secret
+base_sha: d0d9eb9f4885f2ba53536a225c1c784eb5dba207  # pragma: allowlist secret
+tree HEAD and origin/issue-15-gitlab-gated-kept-keys (git rev-parse): b4d11ac5769deebd3fb6e06625d285b49ab10ef4  # pragma: allowlist secret
+
+wait-run 43109048909 --timeout-seconds 540:
+{"run_id": 43109048909, "status": "completed", "conclusion": "success", "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43109048909"}
+exit=0
+
+get-jobs 43109048909:
+130819893561   completed    success      verify (types)
+130819893933   completed    success      verify (tests)
+130819894043   completed    success      verify (security)
+130819894074   completed    success      verify (lint)
+130821175737   completed    success      report
+exit=0

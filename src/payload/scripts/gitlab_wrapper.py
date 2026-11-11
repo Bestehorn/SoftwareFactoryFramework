@@ -67,10 +67,10 @@ Usage:
         # nothing, any other body as its bytes unchanged. An unknown operation, an undocumented parameter, a missing
         # path parameter, a value of the wrong shape, a route prefix that none of the record's values equals, none for
         # a record whose path starts with /<route-prefix>/ or one for any other record, an --endpoint none of the ID's
-        # records is on, a --path format value its page does not list, a header the record does not declare, the S3
-        # import (gitlab-dedicated#import-a-project-from-an-aws-s3-bucket: no subcommand sends it), and
-        # ai-coding#merge-a-merge-request and plan#create-an-issue (use mr merge and issue create) are refused before
-        # any request: exit 2.
+        # records is on, a --path format value its page does not list, a header the record does not declare, and a
+        # record that writes a branch or a merge request's source branch, merges, writes into an existing project, or
+        # creates an issue or another work item (no subcommand sends one but ai-coding#merge-a-merge-request and
+        # plan#create-an-issue: use mr merge and issue create) are refused before any request: exit 2.
     python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project   # a GraphQL record
         # -f NAME=TEXT and -F NAME=JSON give the document's variables; a mutation takes its input object as one,
         # input, but graphql#designManagementUpload, graphql#pipelineCreate and graphql#workItemsCsvImport take each

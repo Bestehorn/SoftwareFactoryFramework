@@ -7,15 +7,15 @@ or body attribute with the table's Type column as its ``Kind``. Part 1 declares 
 (design.md D6): ``mr create``, ``mr get``, ``mr checks``, ``mr approve`` and ``mr merge``; ``commands/call.py`` refuses
 the ``mr merge`` record and names that subcommand (``GATED_OPERATIONS``).
 
-Issue #35 adds, after part 1's and in page order, one record for every other section of the page but one. A query
-member row (``not[labels]``) is a query ``Param`` of its own; a body member row (``position[base_sha]``) is a key of
-its parent's value, never a ``Param``. A record is ``Paging.OFFSET`` when it is a ``GET`` headed "List", has a ``page``
-row, or is one of the four "Retrieve" lists GitLab pages (participants, reviewers, dependencies, blocked merge
-requests); none is ``Paging.KEYSET``.
+Issue #35 adds, after part 1's and in page order, one record for every other section of the page but "Rebase a merge
+request", whose record issue #15 adds in its place in page order. A query member row (``not[labels]``) is a query
+``Param`` of its own; a body member row (``position[base_sha]``) is a key of its parent's value, never a ``Param``. A
+record is ``Paging.OFFSET`` when it is a ``GET`` headed "List", has a ``page`` row, or is one of the four "Retrieve"
+lists GitLab pages (participants, reviewers, dependencies, blocked merge requests); none is ``Paging.KEYSET``.
 
-``PENDING`` holds the one key left, that of "Rebase a merge request" (issue #35, DL-002): it rewrites the merge
-request's source branch, no subcommand sends it, and ``call`` refuses a declared id only by naming the subcommand that
-does, so the id stays undeclared and ``call`` refuses it as unknown. No other family links that key.
+``PENDING`` is empty. "Rebase a merge request" (``OP_REBASE_A_MERGE_REQUEST``) has its record since issue #15: it
+rewrites the merge request's source branch and no subcommand sends it, so ``commands/call.py``'s ``GATED_OPERATIONS``
+maps it to ``None`` and ``call`` refuses it, ": no subcommand sends it", before any request is sent (issue #15 AC-3).
 
 Standard library only; Python 3.9.
 """
@@ -27,6 +27,9 @@ from typing import FrozenSet, Tuple
 from gitlab_api.registry import Kind, Location, Paging, Param, RestOperation
 
 FAMILY = "ai-coding"
+
+# "Rebase a merge request": `commands/call.py`'s `GATED_OPERATIONS` maps it to `None` (issue #15 AC-3).
+OP_REBASE_A_MERGE_REQUEST = "ai-coding#rebase-a-merge-request"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # "Merge requests API: Create a merge request".
@@ -700,6 +703,13 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         method="POST",
         path="/projects/:id/merge_requests/:merge_request_iid/cancel_auto_merge",
     ),
+    # "Merge requests API: Rebase a merge request"; it rewrites the source branch, so `call` refuses it (issue #15).
+    RestOperation(
+        operation_id=OP_REBASE_A_MERGE_REQUEST,
+        method="PUT",
+        path="/projects/:id/merge_requests/:merge_request_iid/rebase",
+        params=(Param(name="skip_ci", location=Location.BODY),),
+    ),
     # "Merge requests API: List issues that close on merge".
     RestOperation(
         operation_id="ai-coding#list-issues-that-close-on-merge",
@@ -795,9 +805,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        # "Merge requests API: Rebase a merge request": it rewrites the source branch and no subcommand gates it.
-        ("PUT", "/projects/:id/merge_requests/:merge_request_iid/rebase"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()

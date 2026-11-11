@@ -1,12 +1,11 @@
 """Tests for ``gitlab_api/families/ai_coding.py``: the records of the ai-coding endpoint family, the Code Suggestions,
 draft notes, merge request approvals, context commits and merge requests APIs (issue #35, ``change.md`` AC-1, AC-2,
-AC-3, AC-4, AC-6).
+AC-3, AC-4, AC-6; issue #15, ``change.md`` AC-1, AC-2, AC-3).
 
 What is pinned:
 
-- ``PENDING`` is exactly the key of ``ai-coding#rebase-a-merge-request``, and ``OPERATIONS`` declares, once each and at
-  its index row's method and path, every Reference of the family's rows of
-  ``docs/api-reference/gitlab/operations-index.md`` but that one (AC-1);
+- ``PENDING`` is empty, and ``OPERATIONS`` declares, once each and at its index row's method and path, every Reference
+  of the family's rows of ``docs/api-reference/gitlab/operations-index.md`` (AC-1; issue #15 AC-1, AC-2);
 - every ``Param`` that is not ``Kind.SCALAR``, or that is a query member row (``not[author_id]``), is typed as its row
   of ``rest/ai-coding.md`` — ``ARRAY`` for a Type holding ``array`` or ``Array``, ``HASH`` for ``hash``, every member
   row its own ``QUERY`` ``Param`` and no body member row (``position[base_sha]``) a ``Param``; ``required`` exactly
@@ -15,11 +14,16 @@ What is pinned:
   "Retrieve" lists of DL-005; every other record is ``Paging.NONE`` and none ``Paging.KEYSET`` (AC-4);
 - each ``Paging.OFFSET`` record this change adds, called through the product's ``main(argv=["call", ...])`` with
   ``--path`` for every placeholder of its path against a fake host serving one item on each of two pages chained by
-  ``x-next-page``, exits 0, requests both pages at their exact URLs and prints both items as one JSON array (AC-6).
+  ``x-next-page``, exits 0, requests both pages at their exact URLs and prints both items as one JSON array (AC-6);
+- ``ai-coding#rebase-a-merge-request``, which rewrites the merge request's source branch, is a record of
+  ``OPERATIONS`` that ``registry.lookup`` returns, and its call through ``main(argv=["call", ...])`` with ``--path`` for
+  every placeholder of its path exits 2 before any request although one would be answered, printing nothing and
+  logging an ERROR record that names the ID and says that no subcommand sends it (issue #15 AC-3).
 
-Every expected Reference, key, Kind, required name and paged ID is a literal table transcribed from
-``operations-index.md`` and ``rest/ai-coding.md``, never read from the records. The names and ``In`` of every ``Param``,
-and one call of every record, are proven by ``test/test_gitlab_wrapper_contract.py`` (AC-2, AC-5).
+Every expected Reference, key, Kind, required name, paged ID and writing ID with its argv is a literal table transcribed
+from ``operations-index.md`` and ``rest/ai-coding.md``, never read from the records or from ``commands/call.py``. The
+names and ``In`` of every ``Param``, and one call of every record but the refused ones, are proven by
+``test/test_gitlab_wrapper_contract.py`` (AC-2, AC-5).
 
 ``src/payload/scripts`` (``scripts/`` once installed) goes on ``sys.path`` so ``gitlab_api`` imports absolutely; the
 family module is imported inside each test. The fake GitLab host and the socket guard (``gitlab_wrapper_fixtures.py``,
@@ -33,6 +37,7 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import logging
 import re
 import sys
 from pathlib import Path
@@ -83,6 +88,7 @@ TOKEN = "glpat-gitlab-api-ai-coding-test"  # pragma: allowlist secret
 PROJECT_ID = 4242
 
 EXIT_OK = 0
+EXIT_REFUSED = 2  # a refused `call`, before any request (#41 design.md D4)
 HEADER_NEXT_PAGE = "x-next-page"
 # The `print_json` form (commands/_common.py): JSON indented by 2, then a line end.
 JSON_INDENT = 2
@@ -287,19 +293,22 @@ INDEX_ROWS: Dict[str, Tuple[str, str]] = {
     "ai-coding#validate-that-code-suggestions-is-enabled": ("POST", "/code_suggestions/enabled"),
 }
 
-# AC-1: the one ID kept pending (it rewrites the source branch and no subcommand gates it; change.md Residuals), and
-# its key (rest/ai-coding.md "Rebase a merge request").
-KEPT_PENDING_IDS: FrozenSet[str] = frozenset({"ai-coding#rebase-a-merge-request"})
-KEPT_PENDING_KEYS: FrozenSet[Tuple[str, str]] = frozenset(
-    {("PUT", "/projects/:id/merge_requests/:merge_request_iid/rebase")}
-)
+# Issue #15 AC-3: each writing ID `call` refuses, with the `--path` value of every placeholder of its index row's path
+# and a value for each required row of its section. "Rebase a merge request" (`PUT
+# /projects/:id/merge_requests/:merge_request_iid/rebase`) rewrites the merge request's source branch; its one body
+# row, `skip_ci`, is not required (rest/ai-coding.md "Rebase a merge request").
+WRITING_CALLS: Dict[str, Tuple[str, ...]] = {
+    "ai-coding#rebase-a-merge-request": (OPTION_PATH, "id=101", OPTION_PATH, "merge_request_iid=102"),
+}
+# What the refusal of an ID no subcommand sends says (issue #44 design.md D6).
+NO_SUBCOMMAND_SENDS_IT = "no subcommand sends it"
 
 # rest/ai-coding.md: every query and body row whose Kind is not SCALAR, and every query member row, by record — ARRAY
 # for a Type holding `array` or `Array` (`Array`, `array`, `string array`, `integer array`, `array of string`), HASH for
 # `hash` (AC-3). A name is the table's, `[]` dropped (`iids[]` is `iids`) and an annotation dropped. A query member row
 # (`not[author_id]`) is its own attribute, typed as its own row; a body member row (`position[base_sha]`) is no
 # attribute (AC-2). The page has no `array of hashes`, `Hash` or `object` row; `add_labels` and `remove_labels` of
-# "Update a merge request" are `string`, so SCALAR.
+# "Update a merge request" are `string`, so SCALAR, and `skip_ci` of "Rebase a merge request" is `boolean`, so SCALAR.
 NON_SCALAR_OR_MEMBER_PARAMS: Dict[str, Dict[str, str]] = {
     "ai-coding#create-a-draft-note": {"position": KIND_HASH},
     "ai-coding#create-a-merge-request": {
@@ -390,7 +399,8 @@ NON_SCALAR_OR_MEMBER_PARAMS: Dict[str, Dict[str, str]] = {
 # rest/ai-coding.md: the query and body rows whose Required reads `yes`, by record; a record with none is not listed. A
 # path row is no Param, and neither is a body member row (the required `position[...]` rows of "Create a draft note"
 # and "Update a draft note"); a `conditional` Required (`sha` of "Merge a merge request", the `blocking_merge_request_*`
-# rows of "Create a merge request dependency") is not `yes` (AC-3).
+# rows of "Create a merge request dependency") is not `yes` (AC-3). "Rebase a merge request" has no required query or
+# body row (issue #15 AC-1).
 REQUIRED_PARAMS: Dict[str, FrozenSet[str]] = {
     "ai-coding#add-spent-time-for-a-merge-request": frozenset({"duration"}),
     "ai-coding#create-a-draft-note": frozenset({"note"}),
@@ -543,21 +553,51 @@ def new_list_params() -> List[Any]:
     ]
 
 
-# --- AC-1: only the kept key is pending -------------------------------------------------------------------------------
+def writing_params() -> List[Any]:
+    """One case per writing ID of ``WRITING_CALLS``, with its arguments, named by its anchor."""
+    return [
+        pytest.param(operation_id, arguments, id=operation_id.partition(ID_SEPARATOR)[2])
+        for operation_id, arguments in sorted(WRITING_CALLS.items())
+    ]
 
 
-def test_only_the_kept_keys_are_pending() -> None:
-    """AC-1, UB-2: ``PENDING`` is exactly the kept ID's key, and ``OPERATIONS`` declares, once each and at its index
-    row's method and path, every index Reference of the family but the kept ID."""
+def error_messages(*, caplog: pytest.LogCaptureFixture) -> List[str]:
+    """The text of every log record at ERROR or above, in order: what the entry script writes to standard error."""
+    return [record.getMessage() for record in caplog.records if record.levelno >= logging.ERROR]
+
+
+def answer_anything(*, fake: Any) -> None:
+    """Answer the next request, whatever it is, with ``{}``: a refusal that sends one is then judged by its oracle,
+    not by the fake host's unscripted-request error."""
+    fake.script_next(body={})
+
+
+def lookup_problems(*, registry: ModuleType, record: Any) -> List[str]:
+    """Why ``registry.lookup`` does not return ``record`` itself for its ID: its refusal, or another record."""
+    try:
+        found = registry.lookup(operation_id=record.operation_id)
+    except ValueError as refusal:
+        return [f"{record.operation_id}: lookup refuses it: {refusal}"]
+    if found is not record:
+        return [f"{record.operation_id}: lookup returns {found!r}, not the ai_coding record"]
+    return []
+
+
+# --- AC-1; issue #15 AC-1, AC-2: nothing is pending -------------------------------------------------------------------
+
+
+def test_nothing_is_pending() -> None:
+    """AC-1, UB-2; issue #15 AC-1, AC-2: ``PENDING`` is empty, and ``OPERATIONS`` declares, once each and at its index
+    row's method and path, every index Reference of the family."""
     family = gitlab_module(name=FAMILY_MODULE)
     pending = frozenset(family.PENDING)
-    assert pending == KEPT_PENDING_KEYS, "PENDING is not the key AC-1 keeps pending:\n" + set_difference(
-        declared=pending, expected=KEPT_PENDING_KEYS
+    assert pending == frozenset(), "PENDING is not empty (issue #15 AC-2):\n" + set_difference(
+        declared=pending, expected=frozenset()
     )
     declared = [record.operation_id for record in family.OPERATIONS]
     repeated = sorted({operation_id for operation_id in declared if declared.count(operation_id) > 1})
     assert repeated == [], f"OPERATIONS declares these IDs more than once: {repeated}"
-    expected = frozenset(INDEX_ROWS) - KEPT_PENDING_IDS
+    expected = frozenset(INDEX_ROWS)
     assert frozenset(declared) == expected, "OPERATIONS does not declare the family's References (AC-1):\n" + (
         set_difference(declared=frozenset(declared), expected=expected)
     )
@@ -643,4 +683,45 @@ def test_a_list_record_prints_every_page(
     assert fake_gitlab.remaining() == [], "every scripted page was served"
     assert captured.out == printed_json(value=list(PAGE_ITEMS)), (
         f"one JSON array of both items, in page order, as print_json writes it (AC-6):\n{captured.out}"
+    )
+
+
+# --- Issue #15 AC-3: a writing record is refused ----------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(argnames=("operation_id", "arguments"), argvalues=writing_params())
+def test_a_writing_record_is_refused(
+    operation_id: str,
+    arguments: Tuple[str, ...],
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #15 AC-1, AC-3: each ID of ``WRITING_CALLS`` is a record of ``OPERATIONS`` that ``registry.lookup``
+    returns; ``call <id> --path NAME=VALUE ...`` exits 2 with no request although one would be answered, prints nothing
+    and logs an ERROR record naming the ID and saying that no subcommand sends it."""
+    family = gitlab_module(name=FAMILY_MODULE)
+    registry = gitlab_module(name=REGISTRY)
+    records = {record.operation_id: record for record in family.OPERATIONS}
+    assert operation_id in records, (
+        f"{operation_id} has no record in families/ai_coding.py OPERATIONS, so its refusal proves nothing (issue #15 "
+        "AC-1)"
+    )
+    problems = lookup_problems(registry=registry, record=records[operation_id])
+    assert problems == [], f"registry.lookup does not return the record (issue #15 AC-3): {problems}"
+    answer_anything(fake=fake_gitlab)
+    argv = [operation_id, *arguments]
+
+    code = run_call(root=project, argv=argv)
+
+    captured = capsys.readouterr()
+    messages = error_messages(caplog=caplog)
+    assert code == EXIT_REFUSED, f"call {argv} exits {EXIT_REFUSED}, got {code}; logged: {messages!r}"
+    assert sent(fake=fake_gitlab) == [], f"a refused call sends no request (issue #15 AC-3): {sent(fake=fake_gitlab)}"
+    assert captured.out == "", f"a refusal prints nothing on standard output:\n{captured.out}"
+    naming = [message for message in messages if operation_id in message and NO_SUBCOMMAND_SENDS_IT in message]
+    assert naming, (
+        f"an ERROR record names {operation_id} and says {NO_SUBCOMMAND_SENDS_IT!r} (issue #15 AC-3); logged: "
+        f"{messages!r}"
     )

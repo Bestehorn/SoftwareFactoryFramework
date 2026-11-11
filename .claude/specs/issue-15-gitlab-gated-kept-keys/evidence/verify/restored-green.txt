@@ -1,0 +1,20 @@
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_wrapper_delivery.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_gitlab_api_properties.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [582 items]
+
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+........................................................................ [ 37%]
+........................................................................ [ 49%]
+........................................................................ [ 61%]
+........................................................................ [ 74%]
+........................................................................ [ 86%]
+........................................................................ [ 98%]
+......                                                                   [100%]
+======================= 582 passed in 141.83s (0:02:21) =======================
+exit=0

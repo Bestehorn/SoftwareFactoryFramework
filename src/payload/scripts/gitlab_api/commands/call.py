@@ -95,9 +95,10 @@ of the same name, and ``--file`` replaces both. The raw body ``--input`` read go
 ``call_operation`` refuses with exit 2 (``EXIT_REFUSED``), before any request (D4), in this order: a raw body given
 together with one or more ``-f`` or ``-F`` values (``refuse_both_bodies``), in a message naming ``--input``,
 ``-f/--raw-field`` and ``-F/--field`` and saying that a raw-body record's attributes are given with ``--query``; an ID
-in ``GATED_OPERATIONS``, naming the compatibility subcommand that sends it, or, for an ID mapped to ``None``
-(``graphql#workItemCreate``, ``graphql#workItemsCsvImport``, the S3 import), saying that no subcommand sends it (issue
-#44, design.md D6; issue #63, design.md D6); an ID no record declares, or one declared twice, and an ``--endpoint``
+in ``GATED_OPERATIONS``, naming the compatibility subcommand that sends it, or, for an ID mapped to ``None`` (a record
+that writes a branch or a merge request's source branch, merges, writes into an existing project, or creates an issue
+or another work item, and that no subcommand sends), saying that no subcommand sends it (issue #44, design.md D6; issue
+#63, design.md D6; issue #15 AC-3); an ID no record declares, or one declared twice, and an ``--endpoint``
 none of the ID's records is on, in a message naming the ID, the text given and each declared endpoint, or given for a
 GraphQL record (``registry.lookup``; issue #63, design.md D1); a raw body for any record but a REST record with a
 ``content_type`` (``refuse_raw_body``), in a message naming the ID and ``--input`` and saying that its body is given
@@ -143,7 +144,7 @@ from typing import TYPE_CHECKING, Any, Dict, FrozenSet, Iterator, List, Mapping,
 from gitlab_api import graphql_only, registry
 from gitlab_api.commands import issue, mr
 from gitlab_api.commands._common import EXIT_REFUSED, PATH_PROJECT, add_command, print_bytes, print_json
-from gitlab_api.families import gitlab_dedicated
+from gitlab_api.families import agent_foundations, ai_coding, create, gitlab_dedicated, package, plan, verify
 from gitlab_api.registry import Endpoint, GraphQLOperation, Kind, Location, Operation, Paging, RestOperation
 
 if TYPE_CHECKING:
@@ -206,13 +207,12 @@ MESSAGE_SEPARATOR = "; "
 LIST_SEPARATOR = ", "
 NOTHING_DOCUMENTED = "none"
 
-# The records `call` refuses: a record that commits to or merges into a branch, that creates an issue or another
-# work item (issue #41, design.md D8), or that writes into an existing project (issue #63, design.md D6). A record a
-# gated compatibility subcommand sends maps to that subcommand: the `merge-steward` and `issue-filing-gate` hooks judge
-# the subcommands by their words, so `call` refuses these IDs rather than reach them unjudged (design.md D1, "Security
-# Considerations"). A record no subcommand sends maps to `None`, and `call` refuses it with no alternative: `issue
-# create` never sends `graphql#workItemCreate`, which creates a work item of any type, no subcommand imports a CSV
-# (issue #44, design.md D6), and none sends the S3 import, which takes `overwrite` (issue #63, design.md D6).
+# The records `call` refuses: a record that writes a branch or a merge request's source branch, merges, writes into an
+# existing project, or creates an issue or another work item (issue #41, design.md D8; issue #63, design.md D6; issue
+# #15 AC-3). A record a gated compatibility subcommand sends maps to that subcommand: the `merge-steward` and
+# `issue-filing-gate` hooks judge the subcommands by their words, so `call` refuses these IDs rather than reach them
+# unjudged (design.md D1, "Security Considerations"). A record of that class no subcommand sends maps to `None`, and
+# `call` refuses it with no alternative (issue #44, design.md D6).
 GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
     {
         mr.OP_MERGE_MR: f"{mr.GROUP} merge",
@@ -220,6 +220,28 @@ GATED_OPERATIONS: Mapping[str, Optional[str]] = MappingProxyType(
         graphql_only.OP_WORK_ITEM_CREATE: None,
         graphql_only.OP_WORK_ITEMS_CSV_IMPORT: None,
         gitlab_dedicated.OP_IMPORT_FROM_S3: None,
+        agent_foundations.OP_TRIGGER_A_FLOW: None,
+        agent_foundations.OP_RESTART_A_FLOW: None,
+        ai_coding.OP_REBASE_A_MERGE_REQUEST: None,
+        create.OP_CREATE_REPOSITORY_BRANCH: None,
+        create.OP_CREATE_A_COMMIT: None,
+        create.OP_CHERRY_PICK_A_COMMIT: None,
+        create.OP_REVERT_A_COMMIT: None,
+        create.OP_ADD_CHANGELOG_DATA_TO_FILE: None,
+        create.OP_CREATE_A_FILE_IN_A_REPOSITORY: None,
+        create.OP_UPDATE_A_FILE_IN_A_REPOSITORY: None,
+        create.OP_DELETE_A_FILE_IN_A_REPOSITORY: None,
+        create.OP_UPDATE_A_SUBMODULE_REFERENCE: None,
+        create.OP_APPLY_A_SUGGESTION: None,
+        create.OP_APPLY_MULTIPLE_SUGGESTIONS: None,
+        create.OP_START_THE_PULL_MIRRORING_PROCESS_FOR_A_PROJECT: None,
+        gitlab_dedicated.OP_IMPORT_A_PROJECT_FROM_A_LOCAL_ARCHIVE: None,
+        gitlab_dedicated.OP_IMPORT_A_PROJECT_FROM_A_REMOTE_ARCHIVE: None,
+        gitlab_dedicated.OP_IMPORT_PROJECT_RESOURCES: None,
+        package.OP_CHANGE_THE_VISIBILITY_OF_THE_CONTAINER_REGISTRY: None,
+        plan.OP_CLONE_AN_ISSUE: None,
+        plan.OP_CREATE_A_MERGE_REQUEST_NOTE: None,
+        verify.OP_ADD_A_MERGE_REQUEST_TO_A_MERGE_TRAIN: None,
     }
 )
 # The end of the refusal of an ID `GATED_OPERATIONS` maps to `None`.

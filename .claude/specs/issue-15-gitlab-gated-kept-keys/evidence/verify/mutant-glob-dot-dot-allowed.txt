@@ -1,0 +1,36 @@
+diff --git a/src/payload/scripts/gitlab_api/registry.py b/src/payload/scripts/gitlab_api/registry.py
+index cd5d4a8..d314a93 100644
+--- a/src/payload/scripts/gitlab_api/registry.py
++++ b/src/payload/scripts/gitlab_api/registry.py
+@@ -471,7 +471,7 @@ def _glob(*, name: str, values: Mapping[str, Any], written: str) -> str:
+     text = str(value)
+     parts = text.split(sep=GLOB_SEPARATOR)
+     for part in parts:
+-        if part in REFUSED_SEGMENTS:
++        if part in REFUSED_SEGMENTS - {".."}:
+             raise GitLabAPIError(
+                 f"the path parameter {written} is {text!r}, whose part {part!r} is not one path segment"
+             )
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_verify.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [64 items]
+
+...............F................................................         [100%]
+================================== FAILURES ===================================
+___ test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references/../usage.md'] exits 1, got 0; stderr:
+E     
+E   assert 0 == 1
+E    +  where 1 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references/../usage.md'), code=1, sent=(), logged='*path').code
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused]
+======================== 1 failed, 63 passed in 6.42s =========================
+exit=1

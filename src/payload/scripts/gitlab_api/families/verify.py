@@ -15,16 +15,18 @@ four records are part 1's, the ones the ``pipeline`` commands compose (design.md
 ``pipeline log`` and ``pipeline wait``; every other record follows in page order. A secret (a variable value, a
 runner, trigger or job token) is given as ``-f`` or ``--query`` text like any other string.
 
-``PENDING`` holds the keys no record maps (issue #37, DL-003). The two ``*artifact_path`` downloads stay pending:
-``registry.expand`` fills a ``:name`` segment only, not a ``*name`` glob. "Add a merge request to a merge train" stays
-pending: it merges, and no subcommand sends it, so ``call`` has no subcommand to name in refusing it as it refuses
-``mr merge``'s record (``commands/call.py`` ``GATED_OPERATIONS``). A section with several endpoints ("Metadata API",
-"Get the latest release", "List all of a group's runners") has one record per endpoint, all of its ID, in the order
-its endpoint line lists them (issue #63, design.md D1, D8): the first, its base record, and after it each other, a
-copy of the base record but for its path and any ``Param`` naming a path parameter of its own path, so both
-``permalink/latest/...`` records take the base's required ``suffix_path``. ``call`` sends the base record without
-``--endpoint`` and another when ``--endpoint 'GET /version'`` names it. The section "Runners API" has no record: each
-of its endpoints has a section and a record of its own. No other family links any of these keys.
+The two ``*artifact_path`` downloads have their records since issue #15, and ``call`` sends each: ``registry.expand``
+writes the glob with each ``/`` of its value kept and each part between them one encoded segment (issue #40, design.md
+D1; issue #15 AC-4). "Add a merge request to a merge train" (``OP_ADD_A_MERGE_REQUEST_TO_A_MERGE_TRAIN``) has its
+record since issue #15 too: it merges, and no subcommand sends it, so ``commands/call.py``'s ``GATED_OPERATIONS`` maps
+it to ``None``, and ``call`` refuses it, ": no subcommand sends it", before any request is sent (issue #15 AC-3).
+``PENDING`` is empty. A section with several endpoints ("Metadata API", "Get the latest release", "List all of a
+group's runners") has one record per endpoint, all of its ID, in the order its endpoint line lists them (issue #63,
+design.md D1, D8): the first, its base record, and after it each other, a copy of the base record but for its path and
+any ``Param`` naming a path parameter of its own path, so both ``permalink/latest/...`` records take the base's required
+``suffix_path``. ``call`` sends the base record without ``--endpoint`` and another when ``--endpoint 'GET /version'``
+names it. The section "Runners API" has no record: each of its endpoints has a section and a record of its own. No
+other family links any of these keys.
 
 Standard library only; Python 3.9.
 """
@@ -36,6 +38,10 @@ from typing import FrozenSet, Tuple
 from gitlab_api.registry import Kind, Location, Paging, Param, RestOperation
 
 FAMILY = "verify"
+
+# "Add a merge request to a merge train": it merges, and `commands/call.py`'s `GATED_OPERATIONS` maps it to `None`
+# (issue #15 AC-3).
+OP_ADD_A_MERGE_REQUEST_TO_A_MERGE_TRAIN = "verify#add-a-merge-request-to-a-merge-train"
 
 OPERATIONS: Tuple[RestOperation, ...] = (
     # "Pipelines API: List project pipelines".
@@ -991,6 +997,13 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="search_recent_successful_pipelines", location=Location.QUERY),
         ),
     ),
+    # "Job Artifacts API: Download a single artifact file by job ID"; `*artifact_path` is a glob, its value's `/` kept.
+    RestOperation(
+        operation_id="verify#download-a-single-artifact-file-by-job-id",
+        method="GET",
+        path="/projects/:id/jobs/:job_id/artifacts/*artifact_path",
+        params=(Param(name="job_token", location=Location.QUERY),),
+    ),
     # "Job Artifacts API: List all files in the artifacts archive".
     RestOperation(
         operation_id="verify#list-all-files-in-the-artifacts-archive",
@@ -1004,6 +1017,18 @@ OPERATIONS: Tuple[RestOperation, ...] = (
             Param(name="per_page", location=Location.QUERY),
         ),
         paging=Paging.OFFSET,
+    ),
+    # "Job Artifacts API: Download a single artifact file by reference name"; `*artifact_path` is a glob, its value's
+    # `/` kept.
+    RestOperation(
+        operation_id="verify#download-a-single-artifact-file-by-reference-name",
+        method="GET",
+        path="/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path",
+        params=(
+            Param(name="job", location=Location.QUERY, required=True),
+            Param(name="job_token", location=Location.QUERY),
+            Param(name="search_recent_successful_pipelines", location=Location.QUERY),
+        ),
     ),
     # "Job Artifacts API: Keep job artifacts".
     RestOperation(
@@ -1222,6 +1247,18 @@ OPERATIONS: Tuple[RestOperation, ...] = (
         operation_id="verify#retrieve-merge-train-status",
         method="GET",
         path="/projects/:id/merge_trains/merge_requests/:merge_request_iid",
+    ),
+    # "Merge trains API: Add a merge request to a merge train".
+    RestOperation(
+        operation_id=OP_ADD_A_MERGE_REQUEST_TO_A_MERGE_TRAIN,
+        method="POST",
+        path="/projects/:id/merge_trains/merge_requests/:merge_request_iid",
+        params=(
+            Param(name="auto_merge", location=Location.BODY),
+            Param(name="sha", location=Location.BODY),
+            Param(name="squash", location=Location.BODY),
+            Param(name="when_pipeline_succeeds", location=Location.BODY),
+        ),
     ),
     # "Metadata API: Metadata API"; the base record, the first of its two endpoints.
     RestOperation(
@@ -2158,12 +2195,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
     ),
 )
 
-PENDING: FrozenSet[Tuple[str, str]] = frozenset(
-    {
-        # "Download a single artifact file by job ID" and "... by reference name": a `*artifact_path` glob segment.
-        ("GET", "/projects/:id/jobs/:job_id/artifacts/*artifact_path"),
-        ("GET", "/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path"),
-        # "Add a merge request to a merge train": it merges, and no subcommand sends it.
-        ("POST", "/projects/:id/merge_trains/merge_requests/:merge_request_iid"),
-    }
-)
+PENDING: FrozenSet[Tuple[str, str]] = frozenset()
