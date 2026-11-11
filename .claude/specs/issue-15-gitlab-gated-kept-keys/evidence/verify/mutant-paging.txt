@@ -1,0 +1,303 @@
+diff --git a/src/payload/scripts/gitlab_api/families/agent_foundations.py b/src/payload/scripts/gitlab_api/families/agent_foundations.py
+index 0a82fcd..6516781 100644
+--- a/src/payload/scripts/gitlab_api/families/agent_foundations.py
++++ b/src/payload/scripts/gitlab_api/families/agent_foundations.py
+@@ -22,7 +22,7 @@ from __future__ import annotations
+ 
+ from typing import FrozenSet, Tuple
+ 
+-from gitlab_api.registry import Kind, Location, Param, RestOperation
++from gitlab_api.registry import Kind, Location, Paging, Param, RestOperation
+ 
+ FAMILY = "agent-foundations"
+ 
+@@ -70,6 +70,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         operation_id=OP_RESTART_A_FLOW,
+         method="POST",
+         path="/ai/duo_workflows/workflows/:workflow_id/restart",
++        paging=Paging.OFFSET,
+     ),
+     # "Flows API: Get workflow trace as JSONL"; the trace is the body as the host sends it (AC-8).
+     RestOperation(
+diff --git a/src/payload/scripts/gitlab_api/families/ai_coding.py b/src/payload/scripts/gitlab_api/families/ai_coding.py
+index 2b42c54..9c18e74 100644
+--- a/src/payload/scripts/gitlab_api/families/ai_coding.py
++++ b/src/payload/scripts/gitlab_api/families/ai_coding.py
+@@ -709,6 +709,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="PUT",
+         path="/projects/:id/merge_requests/:merge_request_iid/rebase",
+         params=(Param(name="skip_ci", location=Location.BODY),),
++        paging=Paging.OFFSET,
+     ),
+     # "Merge requests API: List issues that close on merge".
+     RestOperation(
+diff --git a/src/payload/scripts/gitlab_api/families/create.py b/src/payload/scripts/gitlab_api/families/create.py
+index 0ea17ce..d5d7f6c 100644
+--- a/src/payload/scripts/gitlab_api/families/create.py
++++ b/src/payload/scripts/gitlab_api/families/create.py
+@@ -1615,6 +1615,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="PUT",
+         path="/suggestions/:id/apply",
+         params=(Param(name="commit_message", location=Location.BODY),),
++        paging=Paging.OFFSET,
+     ),
+     # "Suggest Changes API: Apply multiple suggestions"; `ids` is an `integer array`.
+     RestOperation(
+diff --git a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+index 9b53c35..9c163ea 100644
+--- a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
++++ b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+@@ -645,6 +645,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="overwrite", location=Location.BODY),
+             Param(name="override_params", location=Location.BODY, kind=Kind.HASH),
+         ),
++        paging=Paging.OFFSET,
+     ),
+     # "Project import and export API: Import a project from an AWS S3 bucket"; no row has a parent row, so each
+     # `override_params[...]` row is a body Param under its full name, and the body is a form (design.md D6).
+diff --git a/src/payload/scripts/gitlab_api/families/orbit.py b/src/payload/scripts/gitlab_api/families/orbit.py
+index fe93c03..524fa4f 100644
+--- a/src/payload/scripts/gitlab_api/families/orbit.py
++++ b/src/payload/scripts/gitlab_api/families/orbit.py
+@@ -22,7 +22,7 @@ from __future__ import annotations
+ 
+ from typing import FrozenSet, Tuple
+ 
+-from gitlab_api.registry import Kind, Location, Param, RestOperation
++from gitlab_api.registry import Kind, Location, Paging, Param, RestOperation
+ 
+ FAMILY = "orbit"
+ 
+@@ -99,6 +99,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         operation_id="orbit#retrieve-a-deployed-skill-file",
+         method="GET",
+         path="/orbit/skills/:name/*path",
++        paging=Paging.OFFSET,
+     ),
+ )
+ 
+diff --git a/src/payload/scripts/gitlab_api/families/package.py b/src/payload/scripts/gitlab_api/families/package.py
+index bc170ee..ca6eec3 100644
+--- a/src/payload/scripts/gitlab_api/families/package.py
++++ b/src/payload/scripts/gitlab_api/families/package.py
+@@ -584,6 +584,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="security_policy_pipeline_must_succeed", location=Location.BODY),
+             Param(name="reviewer_assignment_strategy", location=Location.BODY),
+         ),
++        paging=Paging.OFFSET,
+     ),
+     # "Container registry API: Within a project".
+     RestOperation(
+diff --git a/src/payload/scripts/gitlab_api/families/plan.py b/src/payload/scripts/gitlab_api/families/plan.py
+index 0a2b018..cef5548 100644
+--- a/src/payload/scripts/gitlab_api/families/plan.py
++++ b/src/payload/scripts/gitlab_api/families/plan.py
+@@ -1098,6 +1098,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="to_project_id", location=Location.BODY, required=True),
+             Param(name="with_notes", location=Location.BODY),
+         ),
++        paging=Paging.OFFSET,
+     ),
+     # "Issues API: Subscribe to an issue".
+     RestOperation(
+diff --git a/src/payload/scripts/gitlab_api/families/verify.py b/src/payload/scripts/gitlab_api/families/verify.py
+index 24366d8..ff91bd4 100644
+--- a/src/payload/scripts/gitlab_api/families/verify.py
++++ b/src/payload/scripts/gitlab_api/families/verify.py
+@@ -1003,6 +1003,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="GET",
+         path="/projects/:id/jobs/:job_id/artifacts/*artifact_path",
+         params=(Param(name="job_token", location=Location.QUERY),),
++        paging=Paging.OFFSET,
+     ),
+     # "Job Artifacts API: List all files in the artifacts archive".
+     RestOperation(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [326 items]
+
+........F....F.......................................F.................. [ 22%]
+.........................FF.F.F.........F............................... [ 44%]
+.................................................F...................... [ 66%]
+......................................F................................. [ 88%]
+..................F...................                                   [100%]
+================================== FAILURES ===================================
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_agent_foundations.py:332: in test_only_the_list_records_are_paged
+    assert paged == expected, "a record's Paging is not its section's (AC-5):\n" + mapping_difference(
+E   AssertionError: a record's Paging is not its section's (AC-5):
+E     'agent-foundations#restart-a-flow': declared 'OFFSET', expected 'NONE'
+E   assert {'agent-found...: 'NONE', ...} == {'agent-found...: 'NONE', ...}
+E     
+E     Omitting 4 identical items, use -vv to show
+E     Differing items:
+E     {'agent-foundations#restart-a-flow': 'OFFSET'} != {'agent-foundations#restart-a-flow': 'NONE'}
+E     Use -v to get more diff
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_ai_coding.py:649: in test_only_the_list_records_are_paged
+    assert paged == expected, "the records not Paging.NONE are not the lists AC-4 pages:\n" + mapping_difference(
+E   AssertionError: the records not Paging.NONE are not the lists AC-4 pages:
+E     not expected: 'ai-coding#rebase-a-merge-request'
+E   assert {'ai-coding#l...'OFFSET', ...} == {'ai-coding#r...'OFFSET', ...}
+E     
+E     Omitting 18 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'ai-coding#rebase-a-merge-request': 'OFFSET'}
+E     Use -v to get more diff
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:851: in test_only_the_list_records_are_paged
+    assert offset == expected, "the Paging.OFFSET records are not the sections' lists (AC-4):\n" + set_difference(
+E   AssertionError: the Paging.OFFSET records are not the sections' lists (AC-4):
+E     not expected: 'create#apply-a-suggestion'
+E   assert frozenset({'c...plates', ...}) == frozenset({'c...-items', ...})
+E     
+E     Extra items in the left set:
+E     'create#apply-a-suggestion'
+E     Use -v to get more diff
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:773: in test_only_the_list_records_are_paged
+    assert paging == expected, "the records' Paging is not the sections' (AC-5):\n" + mapping_difference(
+E   AssertionError: the records' Paging is not the sections' (AC-5):
+E     'gitlab-dedicated#import-a-project-from-a-remote-archive': declared 'OFFSET', expected 'NONE'
+E   assert {'gitlab-dedi...: 'NONE', ...} == {'gitlab-dedi...: 'NONE', ...}
+E     
+E     Omitting 82 identical items, use -vv to show
+E     Differing items:
+E     {'gitlab-dedicated#import-a-project-from-a-remote-archive': 'OFFSET'} != {'gitlab-dedicated#import-a-project-from-a-remote-archive': 'NONE'}
+E     Use -v to get more diff
+____________________ test_only_the_list_records_are_paged _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_orbit.py:324: in test_only_the_list_records_are_paged
+    assert paged == expected, "a record's Paging is not its section's (AC-5):\n" + mapping_difference(
+E   AssertionError: a record's Paging is not its section's (AC-5):
+E     'orbit#retrieve-a-deployed-skill-file': declared 'OFFSET', expected 'NONE'
+E   assert {'orbit#list-...: 'NONE', ...} == {'orbit#check...: 'NONE', ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'orbit#retrieve-a-deployed-skill-file': 'OFFSET'} != {'orbit#retrieve-a-deployed-skill-file': 'NONE'}
+E     Use -v to get more diff
+______ test_a_glob_record_is_sent_with_its_slashes[glob-holding-a-slash] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references/usage.md'] exits 0, got 1; stderr:
+E     
+E   assert 1 == 0
+E    +  where 0 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references/usage.md'), code=0, sent=(('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage.md'),), logged=None).code
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage.md?per_page=100 answered a page that is not a JSON array
+ERROR    gitlab_wrapper:gitlab_wrapper.py:349 {"id": 1}
+_______ test_a_glob_record_is_sent_with_its_slashes[glob-part-encoded] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references/usage notes.md'] exits 0, got 1; stderr:
+E     
+E   assert 1 == 0
+E    +  where 0 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references/usage notes.md'), code=0, sent=(('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage%20notes.md'),), logged=None).code
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_wrapper:gitlab_wrapper.py:347 GET https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage%20notes.md?per_page=100 answered a page that is not a JSON array
+ERROR    gitlab_wrapper:gitlab_wrapper.py:349 {"id": 1}
+____________________ test_only_the_list_records_are_paged _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1838: in test_only_the_list_records_are_paged
+    assert paged == PAGED_RECORDS, "the records not Paging.NONE are not the list records (AC-1.6):\n" + (
+E   AssertionError: the records not Paging.NONE are not the list records (AC-1.6):
+E     not expected: 'package#change-the-visibility-of-the-container-registry'
+E   assert {'package#cha...'OFFSET', ...} == {'package#wit...'OFFSET', ...}
+E     
+E     Omitting 13 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'package#change-the-visibility-of-the-container-registry': 'OFFSET'}
+E     Use -v to get more diff
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:857: in test_every_list_record_has_a_case
+    assert offset == expected, "the Paging.OFFSET records are not the sections' lists (AC-4):\n" + set_difference(
+E   AssertionError: the Paging.OFFSET records are not the sections' lists (AC-4):
+E     not expected: 'plan#clone-an-issue'
+E   assert {'plan#clone-...lestone', ...} == {'plan#get-al...an-epic', ...}
+E     
+E     Extra items in the left set:
+E     'plan#clone-an-issue'
+E     Use -v to get more diff
+____________________ test_only_the_list_records_are_paged _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:1010: in test_only_the_list_records_are_paged
+    assert paged == expected, "the paged records are not the sections' lists (AC-4):\n" + mapping_difference(
+E   AssertionError: the paged records are not the sections' lists (AC-4):
+E     not expected: 'verify#download-a-single-artifact-file-by-job-id'
+E   assert {'verify#list...page'})), ...} == {'verify#list...enset()), ...}
+E     
+E     Omitting 50 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'verify#download-a-single-artifact-file-by-job-id': ('OFFSET', frozenset())}
+E     Use -v to get more diff
+_ test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-job-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_verify.py:1060: in test_a_glob_record_is_sent_with_its_slashes
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_verify.py:896: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\commands\call.py:690: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\commands\call.py:662: in send_call
+    print_json(value=list(prepared.items))
+                     ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\transport.py:733: in pages
+    response = self._send(method=METHOD_GET, url=url, credential=self._credential)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/4242/jobs/8/artifacts/reports/unit%20tests/junit.xml?per_page=100 (still scripted: [('GET', 'https://gitlab.example.com/api/v4/projects/4242/jobs/8/artifacts/reports/unit%20tests/junit.xml')])
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_create.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-holding-a-slash]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-encoded]
+FAILED src/payload/test/test_gitlab_api_package.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_plan.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_gitlab_api_verify.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-job-id]
+================= 11 failed, 315 passed in 143.81s (0:02:23) ==================
+exit=1

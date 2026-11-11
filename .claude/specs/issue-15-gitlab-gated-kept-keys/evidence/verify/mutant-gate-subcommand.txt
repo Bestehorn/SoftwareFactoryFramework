@@ -1,0 +1,223 @@
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_gitlab_api_call.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [402 items]
+
+....F.F..........................................F.................F.F.F [ 17%]
+..F.F.F.F..F.F.F.F..F...................F.F.F........................... [ 35%]
+...............................F........................................ [ 53%]
+.............................F.F........................................ [ 71%]
+.........F.............................................................. [ 89%]
+..........................................                               [100%]
+================================== FAILURES ===================================
+_____ test_a_writing_record_is_refused[agent-foundations#restart-a-flow] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_agent_foundations.py:283: in test_a_writing_record_is_refused
+    assert any(operation_id in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+E   AssertionError: one log record names 'agent-foundations#restart-a-flow' and ends ': no subcommand sends it': the gate refuses the writer, which no subcommand sends (#15 AC-3); logged: ['call refuses the GitLab operation "agent-foundations#restart-a-flow": use the mr merge subcommand, which sends it']
+E   assert False
+E    +  where False = any(<generator object test_a_writing_record_is_refused.<locals>.<genexpr> at 0x000001F3B6CFEC00>)
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "agent-foundations#restart-a-flow": use the mr merge subcommand, which sends it
+_____ test_a_writing_record_is_refused[agent-foundations#trigger-a-flow] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_agent_foundations.py:283: in test_a_writing_record_is_refused
+    assert any(operation_id in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+E   AssertionError: one log record names 'agent-foundations#trigger-a-flow' and ends ': no subcommand sends it': the gate refuses the writer, which no subcommand sends (#15 AC-3); logged: ['call refuses the GitLab operation "agent-foundations#trigger-a-flow": use the mr merge subcommand, which sends it']
+E   assert False
+E    +  where False = any(<generator object test_a_writing_record_is_refused.<locals>.<genexpr> at 0x000001F3B6C082E0>)
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "agent-foundations#trigger-a-flow": use the mr merge subcommand, which sends it
+__________ test_a_writing_record_is_refused[rebase-a-merge-request] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_ai_coding.py:724: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names ai-coding#rebase-a-merge-request and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "ai-coding#rebase-a-merge-request": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "ai-coding#rebase-a-merge-request": use the mr merge subcommand, which sends it
+________ test_a_writing_record_is_refused[add-changelog-data-to-file] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#add-changelog-data-to-file and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#add-changelog-data-to-file": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#add-changelog-data-to-file": use the mr merge subcommand, which sends it
+____________ test_a_writing_record_is_refused[apply-a-suggestion] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#apply-a-suggestion and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#apply-a-suggestion": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#apply-a-suggestion": use the mr merge subcommand, which sends it
+________ test_a_writing_record_is_refused[apply-multiple-suggestions] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#apply-multiple-suggestions and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#apply-multiple-suggestions": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#apply-multiple-suggestions": use the mr merge subcommand, which sends it
+___________ test_a_writing_record_is_refused[cherry-pick-a-commit] ____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#cherry-pick-a-commit and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#cherry-pick-a-commit": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#cherry-pick-a-commit": use the mr merge subcommand, which sends it
+______________ test_a_writing_record_is_refused[create-a-commit] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#create-a-commit and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#create-a-commit": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#create-a-commit": use the mr merge subcommand, which sends it
+_______ test_a_writing_record_is_refused[create-a-file-in-a-repository] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#create-a-file-in-a-repository and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#create-a-file-in-a-repository": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#create-a-file-in-a-repository": use the mr merge subcommand, which sends it
+_________ test_a_writing_record_is_refused[create-repository-branch] __________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#create-repository-branch and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#create-repository-branch": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#create-repository-branch": use the mr merge subcommand, which sends it
+_______ test_a_writing_record_is_refused[delete-a-file-in-a-repository] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#delete-a-file-in-a-repository and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#delete-a-file-in-a-repository": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#delete-a-file-in-a-repository": use the mr merge subcommand, which sends it
+______________ test_a_writing_record_is_refused[revert-a-commit] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#revert-a-commit and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#revert-a-commit": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#revert-a-commit": use the mr merge subcommand, which sends it
+_ test_a_writing_record_is_refused[start-the-pull-mirroring-process-for-a-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#start-the-pull-mirroring-process-for-a-project and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#start-the-pull-mirroring-process-for-a-project": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#start-the-pull-mirroring-process-for-a-project": use the mr merge subcommand, which sends it
+_______ test_a_writing_record_is_refused[update-a-file-in-a-repository] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#update-a-file-in-a-repository and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#update-a-file-in-a-repository": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#update-a-file-in-a-repository": use the mr merge subcommand, which sends it
+_______ test_a_writing_record_is_refused[update-a-submodule-reference] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_create.py:1001: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: an ERROR record names create#update-a-submodule-reference and says 'no subcommand sends it' (issue #15 AC-3); logged: ['call refuses the GitLab operation "create#update-a-submodule-reference": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "create#update-a-submodule-reference": use the mr merge subcommand, which sends it
+_________ test_a_writing_record_is_refused[import-project-resources] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_gitlab_dedicated.py:925: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: one ERROR record names 'gitlab-dedicated#import-project-resources' and says 'no subcommand sends it': GATED_OPERATIONS maps it to None, as it writes into an existing project (#15 AC-3); logged: ['call refuses the GitLab operation "gitlab-dedicated#import-project-resources": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "gitlab-dedicated#import-project-resources": use the mr merge subcommand, which sends it
+___ test_a_writing_record_is_refused[import-a-project-from-a-local-archive] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_gitlab_dedicated.py:925: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: one ERROR record names 'gitlab-dedicated#import-a-project-from-a-local-archive' and says 'no subcommand sends it': GATED_OPERATIONS maps it to None, as it writes into an existing project (#15 AC-3); logged: ['call refuses the GitLab operation "gitlab-dedicated#import-a-project-from-a-local-archive": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "gitlab-dedicated#import-a-project-from-a-local-archive": use the mr merge subcommand, which sends it
+__ test_a_writing_record_is_refused[import-a-project-from-a-remote-archive] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_gitlab_dedicated.py:925: in test_a_writing_record_is_refused
+    assert naming, (
+E   AssertionError: one ERROR record names 'gitlab-dedicated#import-a-project-from-a-remote-archive' and says 'no subcommand sends it': GATED_OPERATIONS maps it to None, as it writes into an existing project (#15 AC-3); logged: ['call refuses the GitLab operation "gitlab-dedicated#import-a-project-from-a-remote-archive": use the mr merge subcommand, which sends it']
+E   assert []
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "gitlab-dedicated#import-a-project-from-a-remote-archive": use the mr merge subcommand, which sends it
+______________________ test_a_writing_record_is_refused _______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_package.py:2166: in test_a_writing_record_is_refused
+    assert any(
+E   AssertionError: one ERROR record names 'package#change-the-visibility-of-the-container-registry' and ends ': no subcommand sends it': the gate refuses a record that writes into an existing project (issue #15 AC-3); logged: ['call refuses the GitLab operation "package#change-the-visibility-of-the-container-registry": use the mr merge subcommand, which sends it']
+E   assert False
+E    +  where False = any(<generator object test_a_writing_record_is_refused.<locals>.<genexpr> at 0x000001F3B6449620>)
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "package#change-the-visibility-of-the-container-registry": use the mr merge subcommand, which sends it
+______________ test_a_writing_record_is_refused[clone-an-issue] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_plan.py:964: in test_a_writing_record_is_refused
+    assert any(case.operation_id in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+E   AssertionError: one ERROR record names 'plan#clone-an-issue' and ends ': no subcommand sends it': the gate refuses a record that writes, which no subcommand sends (issue #15 AC-3); logged: ['call refuses the GitLab operation "plan#clone-an-issue": use the mr merge subcommand, which sends it']
+E   assert False
+E    +  where False = any(<generator object test_a_writing_record_is_refused.<locals>.<genexpr> at 0x000001F3B86E1380>)
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "plan#clone-an-issue": use the mr merge subcommand, which sends it
+________ test_a_writing_record_is_refused[create-a-merge-request-note] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_plan.py:964: in test_a_writing_record_is_refused
+    assert any(case.operation_id in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+E   AssertionError: one ERROR record names 'plan#create-a-merge-request-note' and ends ': no subcommand sends it': the gate refuses a record that writes, which no subcommand sends (issue #15 AC-3); logged: ['call refuses the GitLab operation "plan#create-a-merge-request-note": use the mr merge subcommand, which sends it']
+E   assert False
+E    +  where False = any(<generator object test_a_writing_record_is_refused.<locals>.<genexpr> at 0x000001F3B75EC820>)
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "plan#create-a-merge-request-note": use the mr merge subcommand, which sends it
+___ test_a_writing_record_is_refused[add-a-merge-request-to-a-merge-train] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_verify.py:1108: in test_a_writing_record_is_refused
+    assert any(operation_id in message and message.endswith(NO_SUBCOMMAND_SENDS_IT) for message in messages), (
+E   AssertionError: one ERROR record names 'verify#add-a-merge-request-to-a-merge-train' and ends ': no subcommand sends it': GATED_OPERATIONS maps the writer to None (#15 AC-3, issue #44 design.md D6); logged: ['call refuses the GitLab operation "verify#add-a-merge-request-to-a-merge-train": use the mr merge subcommand, which sends it']
+E   assert False
+E    +  where False = any(<generator object test_a_writing_record_is_refused.<locals>.<genexpr> at 0x000002557A989A80>)
+------------------------------ Captured log call ------------------------------
+ERROR    gitlab_api.commands.call:call.py:688 call refuses the GitLab operation "verify#add-a-merge-request-to-a-merge-train": use the mr merge subcommand, which sends it
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_a_writing_record_is_refused[agent-foundations#restart-a-flow]
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_a_writing_record_is_refused[agent-foundations#trigger-a-flow]
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_a_writing_record_is_refused[rebase-a-merge-request]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[add-changelog-data-to-file]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[apply-a-suggestion]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[apply-multiple-suggestions]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[cherry-pick-a-commit]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[create-a-commit]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[create-a-file-in-a-repository]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[create-repository-branch]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[delete-a-file-in-a-repository]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[revert-a-commit]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[start-the-pull-mirroring-process-for-a-project]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[update-a-file-in-a-repository]
+FAILED src/payload/test/test_gitlab_api_create.py::test_a_writing_record_is_refused[update-a-submodule-reference]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_a_writing_record_is_refused[import-project-resources]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_a_writing_record_is_refused[import-a-project-from-a-local-archive]
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_a_writing_record_is_refused[import-a-project-from-a-remote-archive]
+FAILED src/payload/test/test_gitlab_api_package.py::test_a_writing_record_is_refused
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_writing_record_is_refused[clone-an-issue]
+FAILED src/payload/test/test_gitlab_api_plan.py::test_a_writing_record_is_refused[create-a-merge-request-note]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_writing_record_is_refused[add-a-merge-request-to-a-merge-train]
+======================= 22 failed, 380 passed in 21.97s =======================
+exit=1

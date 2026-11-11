@@ -1,0 +1,104 @@
+diff --git a/src/payload/scripts/gitlab_api/families/create.py b/src/payload/scripts/gitlab_api/families/create.py
+index 0ea17ce..154df38 100644
+--- a/src/payload/scripts/gitlab_api/families/create.py
++++ b/src/payload/scripts/gitlab_api/families/create.py
+@@ -196,7 +196,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         path="/projects/:id/repository/commits/:sha/cherry_pick",
+         params=(
+             Param(name="branch", location=Location.BODY, required=True),
+-            Param(name="dry_run", location=Location.BODY),
+             Param(name="message", location=Location.BODY),
+         ),
+     ),
+@@ -206,7 +205,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="POST",
+         path="/projects/:id/repository/commits/:sha/revert",
+         params=(
+-            Param(name="branch", location=Location.BODY, required=True),
++            Param(name="branch", location=Location.BODY),
+             Param(name="dry_run", location=Location.BODY),
+         ),
+     ),
+@@ -1182,7 +1181,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         operation_id=OP_START_THE_PULL_MIRRORING_PROCESS_FOR_A_PROJECT,
+         method="POST",
+         path="/projects/:id/mirror/pull",
+-        params=(Param(name="force", location=Location.BODY),),
+     ),
+     # "Repositories API: List all repository trees in a project".
+     RestOperation(
+@@ -1351,7 +1349,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="config_file_ref", location=Location.BODY),
+             Param(name="date", location=Location.BODY),
+             Param(name="file", location=Location.BODY),
+-            Param(name="from", location=Location.BODY),
++            Param(name="from_", location=Location.BODY),
+             Param(name="message", location=Location.BODY),
+             Param(name="to", location=Location.BODY),
+             Param(name="trailer", location=Location.BODY),
+@@ -1419,7 +1417,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="content", location=Location.BODY, required=True),
+             Param(name="author_email", location=Location.BODY),
+             Param(name="author_name", location=Location.BODY),
+-            Param(name="encoding", location=Location.BODY),
+             Param(name="execute_filemode", location=Location.BODY),
+             Param(name="start_branch", location=Location.BODY),
+             Param(name="file", location=Location.BODY, required=True),
+@@ -1438,7 +1435,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="author_name", location=Location.BODY),
+             Param(name="encoding", location=Location.BODY),
+             Param(name="execute_filemode", location=Location.BODY),
+-            Param(name="last_commit_id", location=Location.BODY),
++            Param(name="last_commit_id", location=Location.QUERY),
+             Param(name="start_branch", location=Location.BODY),
+             Param(name="file", location=Location.BODY, required=True),
+         ),
+@@ -1465,7 +1462,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         params=(
+             Param(name="branch", location=Location.BODY, required=True),
+             Param(name="commit_sha", location=Location.BODY, required=True),
+-            Param(name="commit_message", location=Location.BODY),
+         ),
+     ),
+     # "Snippet repository storage moves API: List all snippet repository storage moves".
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_create.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [81 items]
+
+.F...................................................................... [ 88%]
+.F.......                                                                [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:833: in test_every_param_is_typed_as_its_row
+    assert required == expected_required, "required=True is not exactly the Required `yes` rows (AC-3):\n" + (
+E   AssertionError: required=True is not exactly the Required `yes` rows (AC-3):
+E     missing: 'create#revert-a-commit'
+E   assert {'create#crea...'note'}), ...} == {'create#add-...'body'}), ...}
+E     
+E     Omitting 50 identical items, use -vv to show
+E     Right contains 1 more item:
+E     {'create#revert-a-commit': frozenset({'branch'})}
+E     Use -v to get more diff
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1563: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: create#cherry-pick-a-commit: the body row 'dry_run' is not declared by the record
+E     create#start-the-pull-mirroring-process-for-a-project: the body row 'force' is not declared by the record
+E     create#add-changelog-data-to-file: the Param 'from_' matches no row of the section's table
+E     create#add-changelog-data-to-file: the body row 'from' is not declared by the record
+E     create#create-a-file-in-a-repository: the body row 'encoding' is not declared by the record
+E     create#update-a-file-in-a-repository: the Param 'last_commit_id' is declared query, its row is In body
+E     create#update-a-submodule-reference: the body row 'commit_message' is not declared by the record
+E   assert not ["create#cherry-pick-a-commit: the body row 'dry_run' is not declared by the record", "create#start-the-pull-mirroring...record", "create#update-a-file-in-a-repository: the Param 'last_commit_id' is declared query, its row is In body", ...]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_create.py::test_every_param_is_typed_as_its_row
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+================== 2 failed, 79 passed in 142.50s (0:02:22) ===================
+exit=1

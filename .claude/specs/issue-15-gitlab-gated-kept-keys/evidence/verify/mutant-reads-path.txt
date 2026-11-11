@@ -1,0 +1,178 @@
+diff --git a/src/payload/scripts/gitlab_api/families/orbit.py b/src/payload/scripts/gitlab_api/families/orbit.py
+index fe93c03..724be2a 100644
+--- a/src/payload/scripts/gitlab_api/families/orbit.py
++++ b/src/payload/scripts/gitlab_api/families/orbit.py
+@@ -98,7 +98,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     RestOperation(
+         operation_id="orbit#retrieve-a-deployed-skill-file",
+         method="GET",
+-        path="/orbit/skills/:name/*path",
++        path="/orbit/skills/:name/:path",
+     ),
+ )
+ 
+diff --git a/src/payload/scripts/gitlab_api/families/verify.py b/src/payload/scripts/gitlab_api/families/verify.py
+index 24366d8..be99e2b 100644
+--- a/src/payload/scripts/gitlab_api/families/verify.py
++++ b/src/payload/scripts/gitlab_api/families/verify.py
+@@ -1001,7 +1001,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     RestOperation(
+         operation_id="verify#download-a-single-artifact-file-by-job-id",
+         method="GET",
+-        path="/projects/:id/jobs/:job_id/artifacts/*artifact_path",
++        path="/projects/:id/jobs/:job_id/artifacts/:artifact_path",
+         params=(Param(name="job_token", location=Location.QUERY),),
+     ),
+     # "Job Artifacts API: List all files in the artifacts archive".
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_verify.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [96 items]
+
+F.....F.F.F.F.F..............................................F.......... [ 75%]
+....F......F.....F......                                                 [100%]
+================================== FAILURES ===================================
+_____________________ test_every_reference_has_its_record _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_orbit.py:268: in test_every_reference_has_its_record
+    assert declared == RECORD_ENDPOINTS, f"{FAMILY}.OPERATIONS is not the family's References (AC-1):\n" + (
+E   AssertionError: orbit.OPERATIONS is not the family's References (AC-1):
+E     'orbit#retrieve-a-deployed-skill-file': declared ('GET', '/orbit/skills/:name/:path'), expected ('GET', '/orbit/skills/:name/*path')
+E   assert {'orbit#list-.../:name'), ...} == {'orbit#check.../:name'), ...}
+E     
+E     Omitting 7 identical items, use -vv to show
+E     Differing items:
+E     {'orbit#retrieve-a-deployed-skill-file': ('GET', '/orbit/skills/:name/:path')} != {'orbit#retrieve-a-deployed-skill-file': ('GET', '/orbit/skills/:name/*path')}
+E     Use -v to get more diff
+______ test_a_glob_record_is_sent_with_its_slashes[glob-holding-a-slash] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_orbit.py:348: in test_a_glob_record_is_sent_with_its_slashes
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests the call sends (#15 AC-4)"
+E   AssertionError: the requests the call sends (#15 AC-4)
+E   assert [('GET', 'htt...%2Fusage.md')] == [('GET', 'htt...es/usage.md')]
+E     
+E     At index 0 diff: ('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references%2Fusage.md') != ('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage.md')
+E     Use -v to get more diff
+_______ test_a_glob_record_is_sent_with_its_slashes[glob-part-encoded] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_orbit.py:348: in test_a_glob_record_is_sent_with_its_slashes
+    assert sent(fake=fake_gitlab) == list(case.sent), "the requests the call sends (#15 AC-4)"
+E   AssertionError: the requests the call sends (#15 AC-4)
+E   assert [('GET', 'htt...%20notes.md')] == [('GET', 'htt...%20notes.md')]
+E     
+E     At index 0 diff: ('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references%2Fusage%20notes.md') != ('GET', 'https://gitlab.example.com/api/v4/orbit/skills/code-review/references/usage%20notes.md')
+E     Use -v to get more diff
+____ test_a_glob_record_is_sent_with_its_slashes[glob-part-empty-refused] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references//usage.md'] exits 1, got 0; stderr:
+E     
+E   assert 0 == 1
+E    +  where 1 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references//usage.md'), code=1, sent=(), logged='*path').code
+___ test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_orbit.py:347: in test_a_glob_record_is_sent_with_its_slashes
+    assert code == case.code, f"call {list(argv)} exits {case.code}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['orbit#retrieve-a-deployed-skill-file', '--path', 'name=code-review', '--path', 'path=references/../usage.md'] exits 1, got 0; stderr:
+E     
+E   assert 0 == 1
+E    +  where 1 = GlobCase(arguments=('--path', 'name=code-review', '--path', 'path=references/../usage.md'), code=1, sent=(), logged='*path').code
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:951: in test_nothing_is_pending
+    assert singles == expected_singles, "these IDs are not each one record on its section's endpoint (#15 AC-1):\n" + (
+E   AssertionError: these IDs are not each one record on its section's endpoint (#15 AC-1):
+E     'verify#download-a-single-artifact-file-by-job-id': declared (('GET', '/projects/:id/jobs/:job_id/artifacts/:artifact_path'),), expected (('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path'),)
+E   assert {'verify#down...quest_iid'),)} == {'verify#add-...fact_path'),)}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'verify#download-a-single-artifact-file-by-job-id': (('GET', '/projects/:id/jobs/:job_id/artifacts/:artifact_path'),)} != {'verify#download-a-single-artifact-file-by-job-id': (('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path'),)}
+E     Use -v to get more diff
+_ test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-job-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_verify.py:1060: in test_a_glob_record_is_sent_with_its_slashes
+    code = run_call(root=project, argv=argv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\test_gitlab_api_verify.py:896: in run_call
+    return fixtures.run_main(wrapper=fixtures.load_wrapper(module_name=WRAPPER_MODULE), argv=[CALL, *argv])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\gitlab_wrapper_fixtures.py:259: in run_main
+    return wrapper.main(argv=list(argv))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_wrapper.py:380: in main
+    return _run(argv=arguments)
+           ^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_wrapper.py:365: in _run
+    result = handler(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\commands\call.py:690: in call_operation
+    send_call(transport=transport, project=project, prepared=prepared)
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\commands\call.py:667: in send_call
+    response = registry.send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\registry.py:878: in send
+    return transport.request(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\transport.py:661: in request
+    return self._send(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\transport.py:869: in _send
+    response = self._attempt(request=request, method=method, url=url)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\scripts\gitlab_api\transport.py:892: in _attempt
+    with self._opener.open(fullurl=request, timeout=REQUEST_TIMEOUT_SECONDS) as opened:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:487: in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\urllib\request.py:504: in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+C:\Program Files\Python314\Lib\urllib\request.py:464: in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\gitlab_wrapper_fixtures.py:172: in serve
+    return fake.serve(request=req)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants\src\payload\test\gitlab_wrapper_fixtures.py:215: in serve
+    raise AssertionError(
+E   AssertionError: unscripted request: GET https://gitlab.example.com/api/v4/projects/4242/jobs/8/artifacts/reports%2Funit%20tests%2Fjunit.xml (still scripted: [('GET', 'https://gitlab.example.com/api/v4/projects/4242/jobs/8/artifacts/reports/unit%20tests/junit.xml')])
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1563: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: orbit#retrieve-a-deployed-skill-file: GET /orbit/skills/:name/:path is none of the section's endpoints [('GET', '/orbit/skills/:name/*path')]
+E     verify#download-a-single-artifact-file-by-job-id: GET /projects/:id/jobs/:job_id/artifacts/:artifact_path is none of the section's endpoints [('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path')]
+E   assert not ["orbit#retrieve-a-deployed-skill-file: GET /orbit/skills/:name/:path is none of the section's endpoints [('GET', '/or...ts/:artifact_path is none of the section's endpoints [('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path')]"]
+__________________ test_every_index_row_is_mapped_or_pending __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:589: in test_every_index_row_is_mapped_or_pending
+    assert not gaps, gap_report(gaps=gaps)
+E   AssertionError: 2 row(s) of operations-index.md are neither mapped nor pending; add each key to the PENDING of its family module:
+E     families/orbit.py:
+E         ('GET', '/orbit/skills/:name/*path'),  # rest/orbit.md#retrieve-a-deployed-skill-file
+E     families/verify.py:
+E         ('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path'),  # rest/verify.md#download-a-single-artifact-file-by-job-id
+E   assert not [IndexRow(method='GET', path='/orbit/skills/:name/*path', reference='rest/orbit.md#retrieve-a-deployed-skill-file'), I...ects/:id/jobs/:job_id/artifacts/*artifact_path', reference='rest/verify.md#download-a-single-artifact-file-by-job-id')]
+__________________ test_every_declared_key_is_in_its_family ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_coverage.py:694: in test_every_declared_key_is_in_its_family
+    assert not problems, "declarations the operations index does not bear out:\n" + "\n".join(problems)
+E   AssertionError: declarations the operations index does not bear out:
+E     families/orbit.py: the record 'orbit#retrieve-a-deployed-skill-file' declares ('GET', '/orbit/skills/:name/:path'); the rows of its Reference carry [('GET', '/orbit/skills/:name/*path')]
+E     families/verify.py: the record 'verify#download-a-single-artifact-file-by-job-id' declares ('GET', '/projects/:id/jobs/:job_id/artifacts/:artifact_path'); the rows of its Reference carry [('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path')]
+E   assert not ["families/orbit.py: the record 'orbit#retrieve-a-deployed-skill-file' declares ('GET', '/orbit/skills/:name/:path'); ...ts/:artifact_path'); the rows of its Reference carry [('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path')]"]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_every_reference_has_its_record
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-holding-a-slash]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-encoded]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-empty-refused]
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_a_glob_record_is_sent_with_its_slashes[glob-part-dot-dot-refused]
+FAILED src/payload/test/test_gitlab_api_verify.py::test_nothing_is_pending - ...
+FAILED src/payload/test/test_gitlab_api_verify.py::test_a_glob_record_is_sent_with_its_slashes[download-a-single-artifact-file-by-job-id]
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_index_row_is_mapped_or_pending
+FAILED test/test_gitlab_wrapper_coverage.py::test_every_declared_key_is_in_its_family
+================== 10 failed, 86 passed in 122.72s (0:02:02) ==================
+exit=1

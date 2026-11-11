@@ -1,0 +1,119 @@
+diff --git a/src/payload/scripts/gitlab_api/families/ai_coding.py b/src/payload/scripts/gitlab_api/families/ai_coding.py
+index 2b42c54..4f8ab80 100644
+--- a/src/payload/scripts/gitlab_api/families/ai_coding.py
++++ b/src/payload/scripts/gitlab_api/families/ai_coding.py
+@@ -708,7 +708,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         operation_id=OP_REBASE_A_MERGE_REQUEST,
+         method="PUT",
+         path="/projects/:id/merge_requests/:merge_request_iid/rebase",
+-        params=(Param(name="skip_ci", location=Location.BODY),),
++        params=(Param(name="skip_ci", location=Location.QUERY),),
+     ),
+     # "Merge requests API: List issues that close on merge".
+     RestOperation(
+diff --git a/src/payload/scripts/gitlab_api/families/create.py b/src/payload/scripts/gitlab_api/families/create.py
+index 0ea17ce..560f69c 100644
+--- a/src/payload/scripts/gitlab_api/families/create.py
++++ b/src/payload/scripts/gitlab_api/families/create.py
+@@ -1449,7 +1449,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         method="DELETE",
+         path="/projects/:id/repository/files/:file_path",
+         params=(
+-            Param(name="branch", location=Location.QUERY, required=True),
++            Param(name="branch", location=Location.BODY, required=True),
+             Param(name="commit_message", location=Location.QUERY, required=True),
+             Param(name="author_email", location=Location.QUERY),
+             Param(name="author_name", location=Location.QUERY),
+diff --git a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+index 9b53c35..2fb491d 100644
+--- a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
++++ b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+@@ -614,7 +614,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="name", location=Location.BODY),
+             Param(name="namespace", location=Location.BODY),
+             Param(name="namespace_id", location=Location.BODY),
+-            Param(name="namespace_path", location=Location.BODY),
+             Param(name="override_params", location=Location.BODY, kind=Kind.HASH),
+             Param(name="overwrite", location=Location.BODY),
+             Param(name="file.path", location=Location.BODY),
+diff --git a/src/payload/scripts/gitlab_api/families/package.py b/src/payload/scripts/gitlab_api/families/package.py
+index bc170ee..8553424 100644
+--- a/src/payload/scripts/gitlab_api/families/package.py
++++ b/src/payload/scripts/gitlab_api/families/package.py
+@@ -537,7 +537,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+             Param(name="cicd_catalog_enabled", location=Location.BODY),
+             Param(name="only_allow_merge_if_all_status_checks_passed", location=Location.BODY),
+             Param(name="approvals_before_merge", location=Location.BODY),
+-            Param(name="mirror", location=Location.BODY),
+             Param(name="mirror_trigger_builds", location=Location.BODY),
+             Param(name="external_authorization_classification_label", location=Location.BODY),
+             Param(name="requirements_access_level", location=Location.BODY),
+diff --git a/src/payload/scripts/gitlab_api/families/plan.py b/src/payload/scripts/gitlab_api/families/plan.py
+index 0a2b018..33c015e 100644
+--- a/src/payload/scripts/gitlab_api/families/plan.py
++++ b/src/payload/scripts/gitlab_api/families/plan.py
+@@ -1096,7 +1096,7 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         path="/projects/:id/issues/:issue_iid/clone",
+         params=(
+             Param(name="to_project_id", location=Location.BODY, required=True),
+-            Param(name="with_notes", location=Location.BODY),
++            Param(name="with_note", location=Location.BODY),
+         ),
+     ),
+     # "Issues API: Subscribe to an issue".
+diff --git a/src/payload/scripts/gitlab_api/families/verify.py b/src/payload/scripts/gitlab_api/families/verify.py
+index 24366d8..48da575 100644
+--- a/src/payload/scripts/gitlab_api/families/verify.py
++++ b/src/payload/scripts/gitlab_api/families/verify.py
+@@ -1256,7 +1256,6 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+         params=(
+             Param(name="auto_merge", location=Location.BODY),
+             Param(name="sha", location=Location.BODY),
+-            Param(name="squash", location=Location.BODY),
+             Param(name="when_pipeline_succeeds", location=Location.BODY),
+         ),
+     ),
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py test/test_gitlab_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [311 items]
+
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+........................................................................ [ 69%]
+.........................F.............................................. [ 92%]
+...............F.......                                                  [100%]
+================================== FAILURES ===================================
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:959: in test_nothing_is_pending
+    assert params == RECORD_PARAMS, "these records' Params are not their tables' query and body rows (#15 AC-1):\n" + (
+E   AssertionError: these records' Params are not their tables' query and body rows (#15 AC-1):
+E     'verify#add-a-merge-request-to-a-merge-train': declared (('auto_merge', 'BODY'), ('sha', 'BODY'), ('when_pipeline_succeeds', 'BODY')), expected (('auto_merge', 'BODY'), ('sha', 'BODY'), ('squash', 'BODY'), ('when_pipeline_succeeds', 'BODY'))
+E   assert {'verify#down...ds', 'BODY'))} == {'verify#add-...s', 'QUERY'))}
+E     
+E     Omitting 2 identical items, use -vv to show
+E     Differing items:
+E     {'verify#add-a-merge-request-to-a-merge-train': (('auto_merge', 'BODY'), ('sha', 'BODY'), ('when_pipeline_succeeds', 'BODY'))} != {'verify#add-a-merge-request-to-a-merge-train': (('auto_merge', 'BODY'), ('sha', 'BODY'), ('squash', 'BODY'), ('when_pipeline_succeeds', 'BODY'))}
+E     Use -v to get more diff
+_______________ test_every_record_matches_its_reference_section _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:1563: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: ai-coding#rebase-a-merge-request: the Param 'skip_ci' is declared query, its row is In body
+E     create#delete-a-file-in-a-repository: the Param 'branch' is declared body, its row is In query
+E     gitlab-dedicated#import-a-project-from-a-local-archive: the body row 'namespace_path' is not declared by the record
+E     package#change-the-visibility-of-the-container-registry: the body row 'mirror' is not declared by the record
+E     plan#clone-an-issue: the Param 'with_note' matches no row of the section's table
+E     plan#clone-an-issue: the body row 'with_notes' is not declared by the record
+E     verify#add-a-merge-request-to-a-merge-train: the body row 'squash' is not declared by the record
+E   assert not ["ai-coding#rebase-a-merge-request: the Param 'skip_ci' is declared query, its row is In body", "create#delete-a-file-...es no row of the section's table", "plan#clone-an-issue: the body row 'with_notes' is not declared by the record", ...]
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_verify.py::test_nothing_is_pending - ...
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+================== 2 failed, 309 passed in 135.86s (0:02:15) ==================
+exit=1

@@ -1,0 +1,184 @@
+diff --git a/src/payload/scripts/gitlab_api/families/agent_foundations.py b/src/payload/scripts/gitlab_api/families/agent_foundations.py
+index 0a82fcd..23f6ea0 100644
+--- a/src/payload/scripts/gitlab_api/families/agent_foundations.py
++++ b/src/payload/scripts/gitlab_api/families/agent_foundations.py
+@@ -86,4 +86,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("POST", "/ai/duo_workflows/workflows")})
+diff --git a/src/payload/scripts/gitlab_api/families/ai_coding.py b/src/payload/scripts/gitlab_api/families/ai_coding.py
+index 2b42c54..696101e 100644
+--- a/src/payload/scripts/gitlab_api/families/ai_coding.py
++++ b/src/payload/scripts/gitlab_api/families/ai_coding.py
+@@ -805,4 +805,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("PUT", "/projects/:id/merge_requests/:merge_request_iid/rebase")})
+diff --git a/src/payload/scripts/gitlab_api/families/create.py b/src/payload/scripts/gitlab_api/families/create.py
+index 0ea17ce..cbfd8df 100644
+--- a/src/payload/scripts/gitlab_api/families/create.py
++++ b/src/payload/scripts/gitlab_api/families/create.py
+@@ -1678,4 +1678,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("PUT", "/suggestions/batch_apply")})
+diff --git a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+index 9b53c35..11aa13e 100644
+--- a/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
++++ b/src/payload/scripts/gitlab_api/families/gitlab_dedicated.py
+@@ -1056,4 +1056,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("POST", "/projects/import")})
+diff --git a/src/payload/scripts/gitlab_api/families/orbit.py b/src/payload/scripts/gitlab_api/families/orbit.py
+index fe93c03..34587da 100644
+--- a/src/payload/scripts/gitlab_api/families/orbit.py
++++ b/src/payload/scripts/gitlab_api/families/orbit.py
+@@ -102,4 +102,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("GET", "/orbit/skills/:name/*path")})
+diff --git a/src/payload/scripts/gitlab_api/families/package.py b/src/payload/scripts/gitlab_api/families/package.py
+index bc170ee..75dfd1c 100644
+--- a/src/payload/scripts/gitlab_api/families/package.py
++++ b/src/payload/scripts/gitlab_api/families/package.py
+@@ -1912,4 +1912,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("PUT", "/projects/:id/")})
+diff --git a/src/payload/scripts/gitlab_api/families/plan.py b/src/payload/scripts/gitlab_api/families/plan.py
+index 0a2b018..c495d3f 100644
+--- a/src/payload/scripts/gitlab_api/families/plan.py
++++ b/src/payload/scripts/gitlab_api/families/plan.py
+@@ -2311,4 +2311,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("POST", "/projects/:id/issues/:issue_iid/clone")})
+diff --git a/src/payload/scripts/gitlab_api/families/verify.py b/src/payload/scripts/gitlab_api/families/verify.py
+index 24366d8..165cd0b 100644
+--- a/src/payload/scripts/gitlab_api/families/verify.py
++++ b/src/payload/scripts/gitlab_api/families/verify.py
+@@ -2195,4 +2195,4 @@ OPERATIONS: Tuple[RestOperation, ...] = (
+     ),
+ )
+ 
+-PENDING: FrozenSet[Tuple[str, str]] = frozenset()
++PENDING: FrozenSet[Tuple[str, str]] = frozenset({("GET", "/projects/:id/jobs/:job_id/artifacts/*artifact_path")})
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 --color=no src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-15\tmp\verify-mutants
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [320 items]
+
+.F.........F......................................F..................... [ 22%]
+......................F..F...........F.................................. [ 45%]
+............................................F........................... [ 67%]
+.........................................F.............................. [ 90%]
+................................                                         [100%]
+================================== FAILURES ===================================
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_agent_foundations.py:246: in test_nothing_is_pending
+    assert pending == [], f"{FAMILY}.PENDING holds {len(pending)} key(s); each has its record (#15 AC-2): {pending}"
+E   AssertionError: agent_foundations.PENDING holds 1 key(s); each has its record (#15 AC-2): [('POST', '/ai/duo_workflows/workflows')]
+E   assert [('POST', '/a...s/workflows')] == []
+E     
+E     Left contains one more item: ('POST', '/ai/duo_workflows/workflows')
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_ai_coding.py:594: in test_nothing_is_pending
+    assert pending == frozenset(), "PENDING is not empty (issue #15 AC-2):\n" + set_difference(
+E   AssertionError: PENDING is not empty (issue #15 AC-2):
+E     not expected: ('PUT', '/projects/:id/merge_requests/:merge_request_iid/rebase')
+E   assert frozenset({('...iid/rebase')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     ('PUT', '/projects/:id/merge_requests/:merge_request_iid/rebase')
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_create.py:797: in test_nothing_is_pending
+    assert pending == frozenset(), "create.PENDING is not empty (issue #15 AC-2):\n" + set_difference(
+E   AssertionError: create.PENDING is not empty (issue #15 AC-2):
+E     not expected: ('PUT', '/suggestions/batch_apply')
+E   assert frozenset({('...atch_apply')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     ('PUT', '/suggestions/batch_apply')
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_gitlab_dedicated.py:728: in test_nothing_is_pending
+    assert pending == frozenset(), "gitlab_dedicated.PENDING is not empty (#15 AC-2):\n" + set_difference(
+E   AssertionError: gitlab_dedicated.PENDING is not empty (#15 AC-2):
+E     not expected: ('POST', '/projects/import')
+E   assert frozenset({('...cts/import')}) == frozenset()
+E     
+E     Extra items in the left set:
+E     ('POST', '/projects/import')
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_orbit.py:278: in test_nothing_is_pending
+    assert pending == [], f"{FAMILY}.PENDING holds {len(pending)} key(s); each has its record (#15 AC-2): {pending}"
+E   AssertionError: orbit.PENDING holds 1 key(s); each has its record (#15 AC-2): [('GET', '/orbit/skills/:name/*path')]
+E   assert [('GET', '/or...:name/*path')] == []
+E     
+E     Left contains one more item: ('GET', '/orbit/skills/:name/*path')
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_package.py:1709: in test_nothing_is_pending
+    assert pending == [], f"PENDING holds {len(pending)} key(s); each has its record (issue #15 AC-2): {pending}"
+E   AssertionError: PENDING holds 1 key(s); each has its record (issue #15 AC-2): [('PUT', '/projects/:id/')]
+E   assert [('PUT', '/projects/:id/')] == []
+E     
+E     Left contains one more item: ('PUT', '/projects/:id/')
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_plan.py:788: in test_nothing_is_pending
+    assert pending == [], f"plan.PENDING is not empty (issue #15 AC-2): {pending}"
+E   AssertionError: plan.PENDING is not empty (issue #15 AC-2): [('POST', '/projects/:id/issues/:issue_iid/clone')]
+E   assert [('POST', '/p...e_iid/clone')] == []
+E     
+E     Left contains one more item: ('POST', '/projects/:id/issues/:issue_iid/clone')
+E     Use -v to get more diff
+___________________________ test_nothing_is_pending ___________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_verify.py:940: in test_nothing_is_pending
+    assert pending == [], f"verify.PENDING holds {len(pending)} key(s); each has its record (#15 AC-2): {pending}"
+E   AssertionError: verify.PENDING holds 1 key(s); each has its record (#15 AC-2): [('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path')]
+E   assert [('GET', '/pr...tifact_path')] == []
+E     
+E     Left contains one more item: ('GET', '/projects/:id/jobs/:job_id/artifacts/*artifact_path')
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_agent_foundations.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_ai_coding.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_create.py::test_nothing_is_pending - ...
+FAILED src/payload/test/test_gitlab_api_gitlab_dedicated.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_orbit.py::test_nothing_is_pending - A...
+FAILED src/payload/test/test_gitlab_api_package.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_plan.py::test_nothing_is_pending - As...
+FAILED src/payload/test/test_gitlab_api_verify.py::test_nothing_is_pending - ...
+======================= 8 failed, 312 passed in 15.31s ========================
+exit=1
