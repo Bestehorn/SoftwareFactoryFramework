@@ -29,6 +29,14 @@ Usage:
     python scripts/github_wrapper.py wait-landed <pr_number> --timeout-seconds 540  # 0 landed, 10 returned, 11 re-issue
     python scripts/github_wrapper.py check-handoff <issue_number>                   # 0 ready, 4 not (reasons printed)
     python scripts/github_wrapper.py check-landed <pr_number> [<pr_number> ...]     # 0 all landed, 4 not
+    python scripts/github_wrapper.py call issues/get --path issue_number=5   # any record, by its operation ID
+        # --path NAME=VALUE (owner and repo default to the origin in .git/config); --query NAME=VALUE (a name
+        # repeated sends each value; an array parameter is NAME[]; a comma-list filter is one value, labels=bug,ui);
+        # -f/--raw-field NAME=TEXT (a string body member); -F/--field NAME=JSON (a number, boolean, array, object,
+        # null or quoted string). A list prints as one JSON array of every page's items, a JSON body as indented JSON,
+        # an empty body as nothing, any other body as its bytes unchanged. An unknown operation,
+        # an undocumented parameter, a missing path parameter, and pulls/merge and issues/create (use merge-pr
+        # and create-issue) are refused before any request: exit 2.
 
 Credentials: credentials/github-pat.txt (one-line PAT, gitignored).
 The owner/repo are auto-detected from .git/config — do NOT hardcode them.
@@ -38,14 +46,14 @@ operations (see .kiro/steering/use-git-wrapper-scripts.md). Direct use
 of `gh`, `glab`, raw curl, or requests against api.github.com is
 forbidden.
 
-Layout: this script is the entry point beside its standard-library package `github_api/` (the two are copied
-together): `github_api/transport.py` sends every request, `github_api/registry.py` and `github_api/families/` hold
-the operation records, and `github_api/commands/` holds the subcommands. A subcommand is added as a module of
-`github_api/commands/` that defines `register(subparsers)`: it adds its parsers and sets each one's `handler` default
-to a function called as `handler(transport=..., owner=..., repo=..., args=...)`, which returns None (exit 0) or an
-exit code. Every module there whose name does not start with `_` is discovered, so no list names them. The delivery
-verbs stay in this script and delegate to scripts/merge_steward.py. A `GitHubAPIError` exits 1; a usage error, a
-credential refusal or a repository refusal exits 2.
+Layout: this script is the entry point beside its standard-library package `github_api/` (the two are copied together):
+`github_api/transport.py` sends every request, `github_api/registry.py` and `github_api/families/` hold the operation
+records, and `github_api/commands/` holds the subcommands, `commands/call.py` (the operation call) among them. A
+subcommand is added as a module of `github_api/commands/` that defines `register(subparsers)`: it adds its parsers and
+sets each one's `handler` default to a function called as `handler(transport=..., owner=..., repo=..., args=...)`, which
+returns None (exit 0) or an exit code. Every module there whose name does not start with `_` is discovered, so no list
+names them. The delivery verbs stay in this script and delegate to scripts/merge_steward.py. A `GitHubAPIError` exits 1;
+a usage error, a credential refusal, a repository refusal or a refused `call` exits 2.
 """
 
 from __future__ import annotations

@@ -32,7 +32,11 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   `docs/api-reference/github/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites:
   `src/payload/test/test_github_api_*.py`, `src/payload/test/test_github_wrapper_compat.py`; in `test/`,
   `test_github_wrapper_coverage.py` (every API-reference operation covered by a record or pending) and
-  `test_github_wrapper_fork_parity.py`. Not yet installed here: sessions run the fork (`config/toolchain.json`).
+  `test_github_wrapper_fork_parity.py`. The product wrapper calls any declared record by its operation ID:
+  `python scripts/github_wrapper.py call issues/get --path issue_number=5` (`--path`, `--query`, `-f/--raw-field`,
+  `-F/--field`; a refusal exits 2). `test/test_github_wrapper_contract.py` checks each record against its
+  `rest/<category>.md` section. Not yet installed here: sessions run the fork, which has no `call`
+  (`config/toolchain.json`).
 - `src/payload/scripts/gitlab_api/` — the package of the product GitLab wrapper, copied with its entry script
   `gitlab_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of
   `docs/api-reference/gitlab/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites:

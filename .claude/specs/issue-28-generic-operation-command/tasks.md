@@ -99,13 +99,13 @@ and M3 is undone by its exact inverse edit, never by `git checkout` or `git stas
 
 Run: `python scripts/run_tests.py src/payload/test/test_github_wrapper_compat.py src/payload/test/test_wrapper_delivery.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_coverage.py test/test_instruction_corpus_budget.py test/test_toolchain_manifest.py test/test_layout.py`
 
-- [ ] 4.1 TEST: C — `test_the_usage_names_the_operation_call`: the entry script's `__doc__` holds `call issues/get`,
+- [x] 4.1 TEST: C — `test_the_usage_names_the_operation_call`: the entry script's `__doc__` holds `call issues/get`,
   `--path`, `--query`, `-f/--raw-field`, `-F/--field`, `JSON array`, `indented JSON`, `bytes unchanged` and `exit 2`;
   no existing C test edited. — Files: src/payload/test/test_github_wrapper_compat.py — Validates: AC-4.1
-- [ ] 4.2 IMPL: the entry script's module docstring only, per D7 — the usage lines after `check-landed`,
+- [x] 4.2 IMPL: the entry script's module docstring only, per D7 — the usage lines after `check-landed`,
   `commands/call.py` in the "Layout" paragraph, and its last sentence naming a refused `call` among the exit-2 cases.
   — Files: src/payload/scripts/github_wrapper.py — Validates: AC-4.1
-- [ ] 4.3 IMPL: the map's `src/payload/scripts/github_api/` bullet per D7 — the `call` sentences before its closing
+- [x] 4.3 IMPL: the map's `src/payload/scripts/github_api/` bullet per D7 — the `call` sentences before its closing
   sentence, which stays last and becomes D7's; the map under its cap. — Files: docs/forLLMConsumption.md — Validates:
   AC-4.2
 
