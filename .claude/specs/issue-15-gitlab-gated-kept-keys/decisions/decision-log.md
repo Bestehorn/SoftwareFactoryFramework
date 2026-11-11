@@ -17,3 +17,12 @@
 **Evidence:** review/iteration-02.md; change.md AC-1..AC-4.
 **Supersedes:** none
 **Artifacts touched:** change.md
+
+## DL-003 — 2026-11-11T20:05:10Z — issue-work-orchestrator — phase:IMPLEMENT
+
+**Decision:** Keep both sides of the rebase conflict in `src/payload/test/test_gitlab_api_package.py`: #63's verification-rework cases and test (registry-host shapes, usernames, the never-reported `/jwt/auth` answer) and #15's restatement (no `KEPT`, `test_nothing_is_pending`, the refused visibility record).
+**Driver:** rebase of ba40694 onto origin/issue-63-gitlab-request-forms 583fbbd; code-merge-reviewer's resolution (its DL-009).
+**Alternatives considered:** none (both sides inserted new code at the same spots; nothing dropped).
+**Evidence:** the resolved file diffs to exactly ba40694's patch against 583fbbd; 984 passed over every GitLab suite.
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_gitlab_api_package.py
