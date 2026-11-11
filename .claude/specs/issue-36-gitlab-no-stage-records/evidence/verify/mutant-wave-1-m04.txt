@@ -1,0 +1,37 @@
+# mutant m04: required False -> True: datadog_ci_visibility in no-stage-assigned#set-up-datadog
+line ending kept: CRLF
+edit: 'Param(name="datadog_ci_visibility", location=Location.BODY),' -> 'Param(name="datadog_ci_visibility", location=Location.BODY, required=True),' (anchor 'operation_id="no-stage-assigned#set-up-datadog",')
+target: src/payload/scripts/gitlab_api/families/no_stage_assigned.py
+sha256 original: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+sha256 mutated (on disk): 657231380b76346364569699234bfa1fbf9342af88fdfcc6610ffb54efab8a6c  # pragma: allowlist secret
+sha256 restored: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+restore: byte-identical to the original (sha256 equal), mtime restored
+tests: src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+verdict: KILLED
+run_tests exit code: 1
+--- complete run_tests output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [30 items]
+
+.F............................                                           [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_no_stage_assigned.py:725: in test_every_param_is_typed_as_its_row
+    assert required_params(records=records) == expected_required, (
+E   AssertionError: required=True exactly where the row's Required reads `yes` (AC-2)
+E   assert {'no-stage-as...t_url'}), ...} == {'no-stage-as...t_url'}), ...}
+E     
+E     Omitting 90 identical items, use -vv to show
+E     Differing items:
+E     [0m{[33m'[39;49;00m[33mno-stage-assigned#set-up-datadog[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mapi_key[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mdatadog_ci_visibility[39;49;00m[33m'[39;49;00m})}[90m[39;49;00m != [0m{[33m'[39;49;00m[33mno-stage-assigned#set-up-datadog[39;49;00m[33m'[39;49;00m: [96mfrozenset[39;49;00m({[33m'[39;49;00m[33mapi_key[39;49;00m[33m'[39;49;00m})}[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_no_stage_assigned.py::test_every_param_is_typed_as_its_row
+======================== 1 failed, 29 passed in 31.49s ========================

@@ -1,0 +1,352 @@
+# mutant m11: a fixed pair added: fixed=(('scope', 'all'),) on no-stage-assigned#get-asana-settings-1
+line ending kept: CRLF
+edit: 'path="/projects/:id/integrations/asana",\n' -> 'path="/projects/:id/integrations/asana",\n        fixed=(("scope", "all"),),\n' (anchor 'operation_id="no-stage-assigned#get-asana-settings-1",')
+target: src/payload/scripts/gitlab_api/families/no_stage_assigned.py
+sha256 original: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+sha256 mutated (on disk): d604bf73c27121e2401e9213bfdec0094a3bf111e5788fed8634de9711001459  # pragma: allowlist secret
+sha256 restored: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+restore: byte-identical to the original (sha256 equal), mtime restored
+tests: src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+verdict: KILLED
+run_tests exit code: 1
+--- complete run_tests output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [30 items]
+
+.F.....................F....F.                                           [100%]
+================================== FAILURES ===================================
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_no_stage_assigned.py:731: in test_every_param_is_typed_as_its_row
+    assert misbodied == [], f"every record has body BodyFormat.JSON and no fixed pairs (AC-2): {misbodied}"
+E   AssertionError: every record has body BodyFormat.JSON and no fixed pairs (AC-2): ['no-stage-assigned#get-asana-settings-1']
+E   assert ['no-stage-as...a-settings-1'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mno-stage-assigned#get-asana-settings-1[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:879: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: no-stage-assigned#get-asana-settings-1: the fixed name 'scope' is not a query row
+E   assert not ["no-stage-assigned#get-asana-settings-1: the fixed name 'scope' is not a query row"]
+_____________ test_every_record_is_sent_as_its_section_documents ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36\test\test_gitlab_wrapper_contract.py:932: in test_every_record_is_sent_as_its_section_documents
+    assert not problems, "\n".join(problems)
+E   AssertionError: no-stage-assigned#get-asana-settings-1: the query name 'scope' (read as 'scope') is not documented in the query
+E   assert not ["no-stage-assigned#get-asana-settings-1: the query name 'scope' (read as 'scope') is not documented in the query"]
+---------------------------- Captured stdout call -----------------------------
+{}
+{}
+{}
+[]
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+{}
+[]
+{}
+{}
+{}
+[]
+{}
+{}
+[]
+[]
+{}
+[]
+{}
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_no_stage_assigned.py::test_every_param_is_typed_as_its_row
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_is_sent_as_its_section_documents
+======================== 3 failed, 27 passed in 35.71s ========================

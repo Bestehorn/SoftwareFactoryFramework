@@ -1,0 +1,32 @@
+# mutant m08: body name dropped: restrict_to_branch removed from no-stage-assigned#set-up-asana
+line ending kept: CRLF
+edit: '            Param(name="restrict_to_branch", location=Location.BODY),\n' -> '' (anchor 'operation_id="no-stage-assigned#set-up-asana",')
+target: src/payload/scripts/gitlab_api/families/no_stage_assigned.py
+sha256 original: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+sha256 mutated (on disk): f68bc0d36e7c22822871f288e6355be5733cac86c872dcdb12e1f76ec7cf98c2  # pragma: allowlist secret
+sha256 restored: 2a8f73e94958c3701f741317906ec07475f62983ccca81410060eaea46758adb  # pragma: allowlist secret
+restore: byte-identical to the original (sha256 equal), mtime restored
+tests: src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+verdict: KILLED
+run_tests exit code: 1
+--- complete run_tests output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_no_stage_assigned.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-36
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [30 items]
+
+...........................F..                                           [100%]
+================================== FAILURES ===================================
+_______________ test_every_record_matches_its_reference_section _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_gitlab_wrapper_contract.py:879: in test_every_record_matches_its_reference_section
+    assert not problems, "\n".join(problems)
+E   AssertionError: no-stage-assigned#set-up-asana: the body row 'restrict_to_branch' is not declared by the record
+E   assert not ["no-stage-assigned#set-up-asana: the body row 'restrict_to_branch' is not declared by the record"]
+=========================== short test summary info ===========================
+FAILED test/test_gitlab_wrapper_contract.py::test_every_record_matches_its_reference_section
+======================== 1 failed, 29 passed in 29.35s ========================
