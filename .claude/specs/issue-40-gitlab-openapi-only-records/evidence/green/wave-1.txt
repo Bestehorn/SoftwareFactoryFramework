@@ -1,0 +1,18 @@
+# tasks: 1.5 1.6
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [405 items]
+
+........................................................................ [ 17%]
+........................................................................ [ 35%]
+........................................................................ [ 53%]
+........................................................................ [ 71%]
+........................................................................ [ 88%]
+.............................................                            [100%]
+======================= 405 passed in 109.83s (0:01:49) =======================
+exit=0

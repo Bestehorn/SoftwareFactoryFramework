@@ -11,7 +11,10 @@ The REST records live in the endpoint family modules of
 scanning the package, so no file lists them.
 
 - ``lookup`` returns the record declared with an id (``plan#update-an-issue``), over every family and ``graphql_only``.
-- ``expand`` writes the path values into a record's path, each as ONE percent-encoded segment (AC-2.2).
+- ``expand`` writes the path values into a record's path: a ``:name`` as ONE percent-encoded segment (AC-2.2), a
+  ``*name`` glob with each ``/`` kept and each part between them such a segment; an optional ``(...)`` group is written
+  only when its parameters have values, and a parenthesis the path escapes with a backslash is sent without it (issue
+  #40, design.md D1).
 - ``encode`` turns the other values into the query pairs, form pairs, JSON body and files of a request, arrays and
   hashes in GitLab's bracket form (AC-2.3; ``conventions.md`` "Arrays, hashes and arrays of hashes").
 - ``attribute_name`` names the ``Param`` of a reference table name (``iids[]`` is ``iids``); ``variables`` names the
@@ -19,10 +22,11 @@ scanning the package, so no file lists them.
   whose type is ``Upload`` or a list of ``Upload``, each mapped to whether it is a list (issue #44, design.md D4).
 - ``split_uploads`` takes the files out of a GraphQL call's variables, leaving ``None`` where each one goes, and pairs
   each file with the operations path it fills, for ``Transport.graphql``'s multipart request (issue #44, design.md D4).
-- ``send`` sends one call of a REST record through a ``gitlab_api.transport.Transport`` and returns its ``Response``;
-  ``call`` sends one call of any record and returns its value; ``pages`` returns the items of every page of a REST list
-  record. Each looks the record up and encodes its values before anything is sent, so a value the record does not
-  declare is refused with nothing sent (AC-1.1).
+- ``send`` sends one call of a REST record through a ``gitlab_api.transport.Transport`` and returns its ``Response``:
+  a record with a ``content_type`` through ``Transport.request_raw``, the bytes it is given as the body, any other
+  through ``Transport.request`` (issue #40, design.md D5); ``call`` sends one call of any record and returns its
+  value; ``pages`` returns the items of every page of a REST list record. Each looks the record up and encodes its
+  values before anything is sent, so a value the record does not declare is refused with nothing sent (AC-1.1).
 
 Standard library only; Python 3.9.
 """
@@ -46,9 +50,19 @@ if TYPE_CHECKING:
     # For the annotations only: gitlab_api.transport imports this module, so a run-time import would be a cycle.
     from gitlab_api.transport import Response, Transport
 
-# A path parameter: `:` and an identifier, at a segment start (`/projects/:id`) or inside one (`binary-:architecture`).
-PLACEHOLDER = re.compile(r":(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
+# A path parameter: `:name`, sent as ONE segment, at a segment start (`/projects/:id`) or inside one
+# (`binary-:architecture`); or `*name`, a glob whose value keeps its `/` (`/packages/npm/*package_name`).
+PLACEHOLDER = re.compile(pattern=r"(?P<sigil>[:*])(?P<name>[A-Za-z_][A-Za-z0-9_]*)")
+GROUP_SIGIL = "sigil"
 GROUP_NAME = "name"
+GLOB_SIGIL = "*"
+GLOB_SEPARATOR = "/"
+# An optional group: an unescaped `(`, text with no parenthesis, an unescaped `)` — `(*path/)`.
+OPTIONAL_GROUP = re.compile(pattern=r"(?<!\\)\((?P<inner>[^()]*)(?<!\\)\)")
+GROUP_INNER = "inner"
+# A parenthesis the path writes escaped, `\(` or `\)` (`Packages\(\)`), sent without its backslash.
+ESCAPED_PARENTHESIS = re.compile(pattern=r"\\(?P<parenthesis>[()])")
+GROUP_PARENTHESIS = "parenthesis"
 # A GraphQL variable definition: `$`, a Name, then `:` after any white space (`VariableDefinition : Variable : Type`).
 # A use of the variable (`fullPath: $fullPath)`) has no `:` after it.
 VARIABLE_DEFINITION = re.compile(r"\$(?P<name>[_A-Za-z][_0-9A-Za-z]*)\s*:")
@@ -127,6 +141,7 @@ class RestOperation:
     body: BodyFormat = BodyFormat.JSON
     paging: Paging = Paging.NONE
     fixed: Tuple[Pair, ...] = ()  # query values the endpoint requires on every call
+    content_type: Optional[str] = None  # the media type of a body that is the bytes `call --input` gives
 
 
 @dataclass(frozen=True)
@@ -213,8 +228,15 @@ def lookup(*, operation_id: str) -> Operation:
 
 
 def placeholders(*, path: str) -> Tuple[str, ...]:
-    """The ``:name`` path parameters of a path template, in order, without the colon."""
+    """The path parameters of a path template, in order, without the sigil: every ``:name`` and every ``*name`` glob,
+    inside an optional ``(...)`` group or not (issue #40, design.md D1)."""
     return tuple(match.group(GROUP_NAME) for match in PLACEHOLDER.finditer(string=path))
+
+
+def required_placeholders(*, path: str) -> Tuple[str, ...]:
+    """The path parameters a call must give: ``placeholders`` of the path with every optional ``(...)`` group removed
+    (issue #40, design.md D1)."""
+    return placeholders(path=OPTIONAL_GROUP.sub(repl="", string=path))
 
 
 def _segment(*, name: str, values: Mapping[str, Any]) -> str:
@@ -228,17 +250,54 @@ def _segment(*, name: str, values: Mapping[str, Any]) -> str:
     return quote(string=text, safe="")
 
 
-def expand(*, operation: RestOperation, values: Mapping[str, Any]) -> str:
-    """The record's path with every ``:name`` replaced by its value as ONE percent-encoded segment (AC-2.2).
+def _glob(*, name: str, values: Mapping[str, Any]) -> str:
+    """The value of the glob ``*name`` with each ``/`` kept, each part between them written as ``_segment`` writes one
+    segment (issue #40, design.md D1)."""
+    value = values.get(name)
+    if value is None:
+        raise ValueError(f"no value for the path parameter {GLOB_SIGIL}{name}")
+    text = str(value)
+    parts = text.split(sep=GLOB_SEPARATOR)
+    for part in parts:
+        if part in REFUSED_SEGMENTS:
+            raise GitLabAPIError(
+                f"the path parameter {GLOB_SIGIL}{name} is {text!r}, whose part {part!r} is not one path segment"
+            )
+    return GLOB_SEPARATOR.join(quote(string=part, safe="") for part in parts)
 
-    ``quote(str(value), safe="")`` encodes ``/`` as well, so ``group/project`` becomes ``group%2Fproject``
-    (``conventions.md`` "URL-encoding path parameters": the default ``safe="/"`` is wrong). An empty value, ``.`` and
-    ``..`` raise ``GitLabAPIError``; a path parameter without a value raises ``ValueError``."""
+
+def expand(*, operation: RestOperation, values: Mapping[str, Any]) -> str:
+    """The record's path with its values written in, in three steps (issue #40, design.md D1):
+
+    1. each optional ``(...)`` group is written as the text between its parentheses when every path parameter in it has
+       a value other than ``None``, and is left out whole otherwise;
+    2. each parenthesis the path escapes with a backslash is written without the backslash;
+    3. each ``:name`` is replaced by its value as ONE percent-encoded segment (AC-2.2), and each ``*name`` glob by its
+       value with each ``/`` kept and each part between them such a segment.
+
+    Steps 1 and 2 read the template alone, and of a value step 1 reads only whether it is given, so no value is read as
+    a group, an escape or a parameter. ``quote(str(value), safe="")`` encodes ``/`` as well, so ``group/project``
+    becomes ``group%2Fproject`` (``conventions.md`` "URL-encoding path parameters": the default ``safe="/"`` is
+    wrong). An empty value, ``.`` and ``..``, and a glob part that is one of them, raise ``GitLabAPIError``; a path
+    parameter without a value outside an optional group raises ``ValueError``."""
+
+    def group(match: re.Match[str]) -> str:
+        inner = match.group(GROUP_INNER)
+        given = all(values.get(name) is not None for name in placeholders(path=inner))
+        return inner if given else ""
+
+    def parenthesis(match: re.Match[str]) -> str:
+        return match.group(GROUP_PARENTHESIS)
 
     def substitute(match: re.Match[str]) -> str:
-        return _segment(name=match.group(GROUP_NAME), values=values)
+        name = match.group(GROUP_NAME)
+        if match.group(GROUP_SIGIL) == GLOB_SIGIL:
+            return _glob(name=name, values=values)
+        return _segment(name=name, values=values)
 
-    return PLACEHOLDER.sub(repl=substitute, string=operation.path)
+    template = OPTIONAL_GROUP.sub(repl=group, string=operation.path)
+    template = ESCAPED_PARENTHESIS.sub(repl=parenthesis, string=template)
+    return PLACEHOLDER.sub(repl=substitute, string=template)
 
 
 # --- Attribute and variable names -------------------------------------------------------------------------------
@@ -404,18 +463,36 @@ def split_uploads(*, values: Mapping[str, Any]) -> Tuple[Dict[str, Any], Tuple[T
 # --- Calls ------------------------------------------------------------------------------------------------------
 
 
-def send(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Response:
+def send(
+    transport: Transport,
+    operation_id: str,
+    *,
+    values: Optional[Mapping[str, Any]] = None,
+    data: Optional[bytes] = None,
+) -> Response:
     """One call of the REST record declared with ``operation_id``, its ``Response`` returned (issue #41, design.md D2).
 
     The record is found with this module's ``lookup``, its values encoded and its path expanded first — a value it does
-    not declare raises ``encode``'s ``ValueError`` before any request — and then sent with ``transport.request``. A
-    GraphQL record raises ``ValueError`` with nothing sent."""
+    not declare raises ``encode``'s ``ValueError`` before any request. A record whose ``content_type`` is ``None`` is
+    then sent with ``transport.request``; any other with ``transport.request_raw``, ``data`` unchanged as its body under
+    the record's ``content_type`` and its query pairs as its query (issue #40, design.md D5). A GraphQL record, and a
+    ``data`` value for a record whose ``content_type`` is ``None``, raise ``ValueError`` with nothing sent."""
     operation = lookup(operation_id=operation_id)
     if not isinstance(operation, RestOperation):
         raise ValueError(f"{operation_id!r} is a GraphQL record; send sends REST records")
+    if operation.content_type is None and data is not None:
+        raise ValueError(f"{operation_id!r} declares no content_type, so send sends no raw body for it")
     given: Mapping[str, Any] = values or {}
     encoded = encode(operation=operation, values=given)
     path = expand(operation=operation, values=given)
+    if operation.content_type is not None:
+        return transport.request_raw(
+            method=operation.method,
+            path=path,
+            query=encoded.query,
+            data=data,
+            content_type=operation.content_type,
+        )
     return transport.request(
         method=operation.method,
         path=path,

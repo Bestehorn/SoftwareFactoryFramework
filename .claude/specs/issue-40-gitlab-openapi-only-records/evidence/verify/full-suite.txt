@@ -1,0 +1,54 @@
+# Whole-suite verdict: CI run 43016731121 (read through the wrapper, 2026-11-11)
+
+Fields quoted verbatim from the complete output of the commands below; the complete JSON and the complete job logs
+were read in full.
+
+## python scripts/github_wrapper.py get-run 43016731121 (exit 0)
+
+"id": 43016731121
+"name": "ci"
+"head_branch": "issue-40-gitlab-openapi-only-records"
+"head_sha": "48929f37dfb9098b6d430c0a442ad8ad97345a92"  # pragma: allowlist secret
+"event": "pull_request"
+"status": "completed"
+"conclusion": "success"
+"pull_requests": number 62, head sha 48929f37dfb9098b6d430c0a442ad8ad97345a92  # pragma: allowlist secret
+"pull_requests": base ref main, base sha 7ec47d104336c091201af2f49552a5aea7043d6b  # pragma: allowlist secret
+"head_commit": "message": "Name call --input in the usage and the map; record the residuals"
+"run_attempt": 1
+
+## python scripts/github_wrapper.py get-jobs 43016731121 (exit 0), complete output
+
+130509554261   completed    success      verify (tests)
+130509554609   completed    success      verify (security)
+130509554703   completed    success      verify (types)
+130509554786   completed    success      verify (lint)
+130510559813   completed    success      report
+
+## The tree the run judged
+
+git rev-parse HEAD in the worktree: 48929f37dfb9098b6d430c0a442ad8ad97345a92  # pragma: allowlist secret
+git merge-base HEAD origin/main:   7ec47d104336c091201af2f49552a5aea7043d6b  # pragma: allowlist secret
+git rev-parse origin/main:         7ec47d104336c091201af2f49552a5aea7043d6b  # pragma: allowlist secret
+git status --porcelain: empty. The run's head SHA is the worktree's HEAD; the base is origin/main, the merge base.
+
+## python scripts/github_wrapper.py get-logs 43016731121, job "verify (tests)", step "run_checks.py --group tests"
+
+--- RUN  tests/pytest: python scripts/run_tests.py --workers auto --coverage --junit reports/junit.xml
+4 workers [3504 items]
+src/payload/scripts/gitlab_api/commands/call.py                               219      0   100%
+src/payload/scripts/gitlab_api/families/deploy.py                               7      0   100%
+src/payload/scripts/gitlab_api/families/openapi_only.py                         7      0   100%
+src/payload/scripts/gitlab_api/registry.py                                    250      3    99%   246, 533, 537
+src/payload/scripts/gitlab_api/transport.py                                   376     15    96%   211-212, 241, 282-283, 324, 341, 432, 462-463, 472, 583, 595, 722-725
+Required test coverage of 80% reached. Total coverage: 91.88%
+======================= 3504 passed in 88.37s (0:01:28) ========================
+--- PASS tests/pytest (89.2s, exit 0)
+1053 passed in 6.86s
+--- PASS tests/hook-suite (7.1s, exit 0)
+CHECK SUMMARY - 2 passed, 0 failed, 0 skipped
+
+The log holds no SKIPPED, XFAIL or deselected line. The registry and transport lines listed as missed are blamed
+on commits 678c076b and 140bbe44 (2026-11-10), outside origin/main..HEAD: no line of this change is unexecuted.
+
+Verdict: GREEN (conclusion success on the worktree's HEAD; every job success).

@@ -1781,3 +1781,234 @@ def test_call_takes_no_token_option() -> None:
         f"no option string of `call` holds {TOKEN_TEXT!r}: the credential comes from config/gitlab.json only "
         f"(UB-2.1); options: {options}"
     )
+
+
+# --- Issue #40 AC-2.3, AC-2.4, AC-3.2: an optional path parameter and the raw body ------------------------------------
+
+# Issue #40's records the cases call (families/openapi_only.py), each the Reference of its index row:
+# `GET` and `PUT /projects/:id/packages/generic/:package_name/*package_version/(*path/):file_name`, and
+# `GET /projects/:id/packages/npm/*package_name` (rest/openapi-only.md "Download package file", "Upload package file",
+# "NPM registry metadata endpoint").
+OP_DOWNLOAD_PACKAGE_FILE = "openapi-only#download-package-file"
+OP_UPLOAD_PACKAGE_FILE = "openapi-only#upload-package-file"
+OP_NPM_METADATA = "openapi-only#npm-registry-metadata-endpoint-2"
+# The generic package's path values but `file_name` and the optional group's `path`; then with `file_name`.
+PACKAGE_PATH = (OPTION_PATH, "package_name=pkg", OPTION_PATH, "package_version=1.0")
+PACKAGE_FILE_PATH = (*PACKAGE_PATH, OPTION_PATH, "file_name=file.txt")
+# How check_parameters says a path parameter has no value, and how documented_text lists the record's path parameters
+# (#41 design.md D4): `the path parameter <name> has no value`, `its path parameters: <a>, <b>; its attributes: ...`.
+NO_VALUE_SUFFIX = " has no value"
+PATH_PARAMETERS_LABEL = "its path parameters: "
+PATH_PARAMETERS_END = ";"
+PATH_PARAMETERS_SEPARATOR = ", "
+# A file the raw body is read from that is never written into the project.
+MISSING_INPUT_NAME = "missing.bin"
+
+
+class OptionalCase(NamedTuple):
+    """A call leaving path parameters without a value (issue #40 AC-2.3, AC-2.4): those outside an optional group,
+    which one log record says have no value; those of an optional group, which no log record says have none; and the
+    record's path parameters as that log record lists them, in path order."""
+
+    argv: Tuple[str, ...]
+    missing: Tuple[str, ...]
+    left_out: Tuple[str, ...]
+    path_parameters: Tuple[str, ...]
+
+
+def says_no_value(*, text: str, name: str) -> bool:
+    """Whether ``text`` says the path parameter ``name``, a word of its own, has no value."""
+    pattern = f"{NAME_EDGE_BEFORE}{re.escape(pattern=name)}{re.escape(pattern=NO_VALUE_SUFFIX)}"
+    return re.search(pattern=pattern, string=text) is not None
+
+
+def listed_path_parameters(*, text: str) -> Optional[Tuple[str, ...]]:
+    """The path parameters ``text`` lists after ``its path parameters: ``, in its order; ``None`` when it lists none."""
+    _, label, rest = text.partition(PATH_PARAMETERS_LABEL)
+    if not label:
+        return None
+    return tuple(rest.partition(PATH_PARAMETERS_END)[0].split(sep=PATH_PARAMETERS_SEPARATOR))
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(
+            OptionalCase(
+                argv=(OP_DOWNLOAD_PACKAGE_FILE, *PACKAGE_PATH),
+                missing=("file_name",),
+                left_out=("path",),
+                path_parameters=(PATH_ID, "package_name", "package_version", "path", "file_name"),
+            ),
+            id="optional-group-left-out-beside-a-missing-segment",
+        ),
+        pytest.param(
+            OptionalCase(
+                argv=(OP_NPM_METADATA,),
+                missing=("package_name",),
+                left_out=(),
+                path_parameters=(PATH_ID, "package_name"),
+            ),
+            id="glob-outside-a-group",
+        ),
+    ],
+)
+def test_a_missing_path_parameter_is_refused_unless_optional(
+    case: OptionalCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #40 AC-2.3, AC-2.4 (design.md D2): a path parameter outside an optional group left without a value, a glob
+    included, is refused as #41 AC-2.3 refuses one, exit 2 with no request; one log record says it has no value and
+    lists the record's path parameters, an optional group's among them; and no log record says that an optional
+    group's parameter the call leaves out has none."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=case.argv)
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    naming = [
+        message
+        for message in messages
+        if all(says_no_value(text=message, name=name) for name in case.missing)
+        and listed_path_parameters(text=message) == case.path_parameters
+    ]
+    assert naming, (
+        f"one log record says {list(case.missing)} have no value and lists the path parameters "
+        f"{list(case.path_parameters)} (issue #40 AC-2.3, AC-2.4); logged: {messages!r}"
+    )
+    refusing_a_group = [
+        message for message in messages if any(says_no_value(text=message, name=name) for name in case.left_out)
+    ]
+    assert refusing_a_group == [], (
+        f"a call may leave out the optional group's parameter {list(case.left_out)}, and the group is then not sent: "
+        f"no log record says it has no value (issue #40 AC-2.3); logged: {refusing_a_group!r}"
+    )
+
+
+class RawBodyCase(NamedTuple):
+    """A call given a raw body it cannot send (issue #40 AC-3.2, design.md D5): the arguments before the raw body's
+    option; the texts one log record holds beside that option's name; whether the file the option names is the
+    ``project`` fixture's upload or a file never written; and the synthetic records."""
+
+    argv: Tuple[str, ...]
+    named: Tuple[str, ...] = ()
+    written: bool = True
+    synthetic: Tuple[Synthetic, ...] = ()
+
+
+# A refusal of a raw body beside `-f` or `-F` names both body options as argparse names them, and `--query`, with which
+# a raw-body record's attributes are given (design.md D5 step 1).
+BOTH_BODIES_NAMED = (RAW_FIELD_OPTION_NAME, FIELD_OPTION_NAME, OPTION_QUERY)
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(
+            RawBodyCase(
+                argv=(OP_UPLOAD_PACKAGE_FILE, *PACKAGE_FILE_PATH, OPTION_RAW_FIELD, "status=hidden"),
+                named=BOTH_BODIES_NAMED,
+            ),
+            id="beside-a-raw-field",
+        ),
+        pytest.param(
+            RawBodyCase(
+                argv=(OP_UPLOAD_PACKAGE_FILE, *PACKAGE_FILE_PATH, OPTION_FIELD, 'status="hidden"'),
+                named=BOTH_BODIES_NAMED,
+            ),
+            id="beside-a-field",
+        ),
+        pytest.param(
+            RawBodyCase(argv=(OP_RETRIEVE_ISSUE, *ISSUE_PATH), named=(OP_RETRIEVE_ISSUE,)),
+            id="json-bodied-rest-record",
+        ),
+        pytest.param(
+            RawBodyCase(argv=(OP_GRAPHQL_PROJECT,), named=(OP_GRAPHQL_PROJECT,), synthetic=(GRAPHQL_PROJECT_RECORD,)),
+            id="graphql-record",
+        ),
+        pytest.param(
+            RawBodyCase(argv=(OP_UPLOAD_PACKAGE_FILE, *PACKAGE_FILE_PATH), written=False),
+            id="file-that-does-not-exist",
+        ),
+    ],
+)
+def test_a_raw_body_the_call_cannot_send_is_refused(
+    case: RawBodyCase,
+    project: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #40 AC-3.2 (design.md D5): ``--input`` beside ``-f`` or ``-F`` on a raw-body record, and ``--input`` on a
+    record that is none (a JSON-bodied REST record, a GraphQL record), each exit 2 with no request and one log record
+    naming ``--input`` and, beside ``-f`` or ``-F``, ``-f/--raw-field``, ``-F/--field`` and ``--query``, else the ID;
+    ``--input`` naming a file that does not exist is argparse's usage error, whose ``argument --input:`` message names
+    the path as ``json.dumps`` renders it, exit 2 with no request."""
+    option_input = "--input"
+    install(monkeypatch=monkeypatch, records=case.synthetic)
+    source = UPLOAD_MARK if case.written else str(project / MISSING_INPUT_NAME)
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=(*case.argv, option_input, source))
+    if case.written:
+        messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+        expected = (option_input, *case.named)
+        assert any(all(text in message for text in expected) for message in messages), (
+            f"one log record names {list(expected)} (issue #40 design.md D5); logged: {messages!r}"
+        )
+        return
+    captured = capsys.readouterr()
+    assert code == EXIT_USAGE, f"a {option_input} file that does not exist exits {EXIT_USAGE}, got {code}"
+    assert sent(fake=fake_gitlab) == [], "argparse refuses the file before the config is read: no request"
+    assert captured.out == "", f"a usage error prints nothing on standard output:\n{captured.out}"
+    named_option = argument_named(option=option_input)
+    messages = [
+        line.split(sep=named_option, maxsplit=1)[1] for line in captured.err.splitlines() if named_option in line
+    ]
+    assert messages, f"no usage error names the option {option_input} (design.md D5); stderr:\n{captured.err}"
+    rendered = json.dumps(obj=source)
+    assert any(rendered in message for message in messages), (
+        f"the usage error names the path as json.dumps renders it, {rendered} (design.md D5): {messages}"
+    )
+
+
+OPTION_INPUT = "--input"
+# A gated ID `GATED_OPERATIONS` maps to no subcommand (graphql_only.py, issue #44 design.md D6).
+OP_WORK_ITEM_CREATE = "graphql#workItemCreate"
+# The text only the refusal of a raw body beside `-f` or `-F` writes (design.md D5 step 1); the gate's refusal and the
+# lookup's name the ID and neither input.
+BOTH_BODIES_REFUSED = "--input together with -f/--raw-field or -F/--field"
+
+
+@pytest.mark.parametrize(
+    argnames="operation_id",
+    argvalues=[
+        pytest.param(OP_MERGE_MR, id="gated-to-a-subcommand"),
+        pytest.param(OP_WORK_ITEM_CREATE, id="gated-to-no-subcommand"),
+        pytest.param(OP_UNDECLARED, id="not-in-the-reference"),
+    ],
+)
+def test_a_raw_body_beside_a_field_is_refused_first(
+    operation_id: str,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #40 AC-3.2 (design.md D5 step 1, "first"): ``call <id> -f title=T --input <file>`` of a gated ID, of each
+    form ``refuse_gated`` writes, and of an ID no record declares, exits 2 with no request although the next request
+    would be answered; one log record holds ``--input together with -f/--raw-field or -F/--field`` and no log record
+    names the ID: the refusal of both bodies comes before the gate and the lookup, whose messages name the ID."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=(operation_id, OPTION_RAW_FIELD, "title=T", OPTION_INPUT, UPLOAD_MARK))
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    assert any(BOTH_BODIES_REFUSED in message for message in messages), (
+        f"one log record holds {BOTH_BODIES_REFUSED!r}: a raw body beside -f or -F is refused first (design.md D5 "
+        f"step 1); logged: {messages!r}"
+    )
+    naming_the_id = [message for message in messages if operation_id in message]
+    assert naming_the_id == [], (
+        f"no log record names {operation_id!r}: the gate and the lookup, whose refusals name it, come after the "
+        f"refusal of both bodies (design.md D5 step 1); logged: {naming_the_id!r}"
+    )

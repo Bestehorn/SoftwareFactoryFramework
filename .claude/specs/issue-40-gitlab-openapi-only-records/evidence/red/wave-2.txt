@@ -1,0 +1,465 @@
+# tasks: 2.1 2.2 2.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_call.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_transport.py test/test_gitlab_api_properties.py src/payload/test/test_gitlab_wrapper_compat.py test/test_gitlab_api_call_properties.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_verify.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [459 items]
+
+..FFFF...F.F..F.F.F..F.F.F..F.F.F.F.F..F.F..F.F.F.F.FF.F.FF..F.F.F.FF... [ 15%]
+............F..F.F.F.F.F.F.............................................. [ 31%]
+........................................................................ [ 47%]
+........................................................................ [ 62%]
+........................................................................ [ 78%]
+........................................................................ [ 94%]
+...........................                                              [100%]
+================================== FAILURES ===================================
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_openapi_only.py:1036: in test_nothing_is_pending
+    assert pending == [], f"PENDING holds {len(pending)} key(s); each has its record (AC-1.6): {pending}"
+E   AssertionError: PENDING holds 267 key(s); each has its record (AC-1.6): [('DELETE', '/groups/:id/-/packages/npm/-/package/*package_name/dist-tags/:tag'), ('DELETE', '/groups/:id/epics/:epic_iid/award_emoji/:award_id'), ('DELETE', '/groups/:id/epics/:epic_iid/notes/:note_id/award_emoji/:award_id'), ('DELETE', '/groups/:id/integrations/:slug'), ('DELETE', '/hooks/:hook_id/custom_headers/:key'), ('DELETE', '/integrations/jira_forge/subscriptions/:id'), ('DELETE', '/namespaces/:id/storage/limit_exclusion'), ('DELETE', '/organizations/:id'), ('DELETE', '/packages/npm/-/package/*package_name/dist-tags/:tag'), ('DELETE', '/personal_access_tokens/self'), ('DELETE', '/projects/:id/integrations/:slug'), ('DELETE', '/projects/:id/merge_requests/:merge_request_iid/notes/:note_id/award_emoji/:award_id'), ('DELETE', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision'), ('DELETE', '/projects/:id/packages/npm/-/package/*package_name/dist-tags/:tag'), ('DELETE', '/projects/:id/services/:slug'), ('DELETE', '/projects/:id/snippets/:snippet_id/notes/:note_id/award_emoji/:award_id'), ('DELETE', '/projects/:id/terraform/state/:name'), ('DELETE', '/projects/:id/terraform/state/:name/lock'), ('DELETE', '/projects/:id/terraform/state/:name/versions/:serial'), ('DELETE', '/projects/:id/terraform/state_protection_rules/:terraform_state_protection_rule_id'), ('DELETE', '/runners/managers'), ('GET', '/admin/batched_background_operations'), ('GET', '/admin/batched_background_operations/:id'), ('GET', '/admin/databases/:database_name/dictionary/tables/:table_name'), ('GET', '/databases/:database_name/dictionary/tables'), ('GET', '/feature_flags/unleash/:project_id'), ('GET', '/feature_flags/unleash/:project_id/client/features'), ('GET', '/feature_flags/unleash/:project_id/features'), ('GET', '/geo/proxy'), ('GET', '/geo/repositories/:gl_repository/pipeline_refs'), ('GET', '/geo/retrieve/:replicable_name/:replicable_id'), ('GET', '/group/:id/-/packages/composer/*package_name'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/:component/binary-:architecture/Packages'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/:component/binary-:architecture/by-hash/SHA256/:file_sha256'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/:component/debian-installer/binary-:architecture/Packages'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/:component/debian-installer/binary-:architecture/by-hash/SHA256/:file_sha256'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/:component/source/Sources'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/:component/source/by-hash/SHA256/:file_sha256'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/InRelease'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/Release'), ('GET', '/groups/:id/-/packages/debian/dists/*distribution/Release.gpg'), ('GET', '/groups/:id/-/packages/debian/pool/:distribution/:project_id/:letter/:package_name/:package_version/:file_name'), ('GET', '/groups/:id/-/packages/npm/*package_name'), ('GET', '/groups/:id/-/packages/npm/-/package/*package_name/dist-tags'), ('GET', '/groups/:id/-/packages/nuget/index'), ('GET', '/groups/:id/-/packages/nuget/metadata/*package_name/*package_version'), ('GET', '/groups/:id/-/packages/nuget/metadata/*package_name/index'), ('GET', '/groups/:id/-/packages/nuget/query'), ('GET', '/groups/:id/-/packages/nuget/symbolfiles/*file_name/*signature/*same_file_name'), ('GET', '/groups/:id/-/packages/nuget/v2'), ('GET', '/groups/:id/-/packages/nuget/v2/$metadata'), ('GET', '/groups/:id/epics/:epic_iid/award_emoji'), ('GET', '/groups/:id/epics/:epic_iid/award_emoji/:award_id'), ('GET', '/groups/:id/epics/:epic_iid/notes/:note_id/award_emoji'), ('GET', '/groups/:id/epics/:epic_iid/notes/:note_id/award_emoji/:award_id'), ('GET', '/groups/:id/integrations/:slug'), ('GET', '/integrations/jira_forge/subscriptions'), ('GET', '/jobs/:id/artifacts'), ('GET', '/jobs/:id/runtime_environment_key'), ('GET', '/namespaces/:id/gitlab_subscription'), ('GET', '/namespaces/storage/limit_exclusions'), ('GET', '/offline_exports'), ('GET', '/offline_exports/:id'), ('GET', '/packages/npm/*package_name'), ('GET', '/packages/npm/-/package/*package_name/dist-tags'), ('GET', '/packages/terraform/modules/v1/:module_namespace/:module_name/:module_system/*module_version'), ('GET', '/personal_access_tokens/self'), ('GET', '/projects/:id/integrations/:slug'), ('GET', '/projects/:id/merge_requests/:merge_request_iid/notes/:note_id/award_emoji'), ('GET', '/projects/:id/merge_requests/:merge_request_iid/notes/:note_id/award_emoji/:award_id'), ('GET', '/projects/:id/packages/:package_id/package_files/:package_file_id/download'), ('GET', '/projects/:id/packages/cargo/1/:package_name'), ('GET', '/projects/:id/packages/cargo/2/:package_name'), ('GET', '/projects/:id/packages/cargo/3/:first_char/:package_name'), ('GET', '/projects/:id/packages/cargo/:package_name/:package_version/download'), ('GET', '/projects/:id/packages/cargo/:prefix_1/:prefix_2/:package_name'), ('GET', '/projects/:id/packages/cargo/config.json'), ('GET', '/projects/:id/packages/conan/v1/conans/:package_name/:package_version/:package_username/:package_channel'), ('GET', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/packages/:conan_package_reference/revisions/:package_revision/files'), ('GET', '/projects/:id/packages/debian/dists/*distribution/:component/binary-:architecture/Packages'), ('GET', '/projects/:id/packages/debian/dists/*distribution/:component/binary-:architecture/by-hash/SHA256/:file_sha256'), ('GET', '/projects/:id/packages/debian/dists/*distribution/:component/debian-installer/binary-:architecture/Packages'), ('GET', '/projects/:id/packages/debian/dists/*distribution/:component/debian-installer/binary-:architecture/by-hash/SHA256/:file_sha256'), ('GET', '/projects/:id/packages/debian/dists/*distribution/:component/source/Sources'), ('GET', '/projects/:id/packages/debian/dists/*distribution/:component/source/by-hash/SHA256/:file_sha256'), ('GET', '/projects/:id/packages/debian/dists/*distribution/InRelease'), ('GET', '/projects/:id/packages/debian/dists/*distribution/Release'), ('GET', '/projects/:id/packages/debian/dists/*distribution/Release.gpg'), ('GET', '/projects/:id/packages/generic/:package_name/*package_version/(*path/):file_name'), ('GET', '/projects/:id/packages/npm/*package_name'), ('GET', '/projects/:id/packages/npm/-/package/*package_name/dist-tags'), ('GET', '/projects/:id/packages/nuget/index'), ('GET', '/projects/:id/packages/nuget/metadata/*package_name/*package_version'), ('GET', '/projects/:id/packages/nuget/metadata/*package_name/index'), ('GET', '/projects/:id/packages/nuget/query'), ('GET', '/projects/:id/packages/nuget/symbolfiles/*file_name/*signature/*same_file_name'), ('GET', '/projects/:id/packages/nuget/v2'), ('GET', '/projects/:id/packages/nuget/v2/$metadata'), ('GET', '/projects/:id/packages/rpm/*package_file_id/*file_name'), ('GET', '/projects/:id/packages/rpm/repodata/*file_name'), ('GET', '/projects/:id/packages/terraform/modules/:module_name/:module_system'), ('GET', '/projects/:id/pages_access'), ('GET', '/projects/:id/pipelines/:pipeline_id/bridges'), ('GET', '/projects/:id/repository/archive'), ('GET', '/projects/:id/services'), ('GET', '/projects/:id/services/:slug'), ('GET', '/projects/:id/snippets/:snippet_id/notes/:note_id/award_emoji'), ('GET', '/projects/:id/snippets/:snippet_id/notes/:note_id/award_emoji/:award_id'), ('GET', '/projects/:id/terraform/state/:name'), ('GET', '/projects/:id/terraform/state/:name/versions/:serial'), ('GET', '/projects/:id/terraform/state_protection_rules'), ('GET', '/projects/:project_id/packages/nuget/v2/FindPackagesById\\(\\)'), ('GET', "/projects/:project_id/packages/nuget/v2/Packages\\(Id='*package_name',Version='*package_version'\\)"), ('GET', '/projects/:project_id/packages/nuget/v2/Packages\\(\\)'), ('GET', '/runners/:id/projects'), ('HEAD', '/projects/:id/repository/branches/:branch'), ('PATCH', '/jobs/:id/trace'), ('PATCH', '/projects/:id/terraform/state_protection_rules/:terraform_state_protection_rule_id'), ('POST', '/container_registry_event/events'), ('POST', '/feature_flags/unleash/:project_id/client/metrics'), ('POST', '/feature_flags/unleash/:project_id/client/register'), ('POST', '/geo/failures'), ('POST', '/geo/node_proxy/:id/graphql'), ('POST', '/geo/proxy_git_ssh/info_refs_receive_pack'), ('POST', '/geo/proxy_git_ssh/info_refs_upload_pack'), ('POST', '/geo/proxy_git_ssh/receive_pack'), ('POST', '/geo/proxy_git_ssh/upload_pack'), ('POST', '/geo/status'), ('POST', '/groups/:id/-/packages/npm/-/npm/v1/security/advisories/bulk'), ('POST', '/groups/:id/-/packages/npm/-/npm/v1/security/audits/quick'), ('POST', '/groups/:id/access_tokens/self/rotate'), ('POST', '/groups/:id/epics/:epic_iid/award_emoji'), ('POST', '/groups/:id/epics/:epic_iid/notes/:note_id/award_emoji'), ('POST', '/groups/:id/placeholder_reassignments/authorize'), ('POST', '/groups/:id/transfer_to_organization'), ('POST', '/groups/:id/uploads/authorize'), ('POST', '/groups/import/authorize'), ('POST', '/integrations/jira_connect/subscriptions'), ('POST', '/integrations/jira_forge/installation/forge_token'), ('POST', '/integrations/jira_forge/subscriptions'), ('POST', '/integrations/slack/events'), ('POST', '/integrations/slack/interactions'), ('POST', '/integrations/slack/options'), ('POST', '/jobs/:id/artifacts'), ('POST', '/jobs/:id/artifacts/authorize'), ('POST', '/jobs/request'), ('POST', '/namespaces/:id/storage/limit_exclusion'), ('POST', '/offline_exports'), ('POST', '/offline_imports'), ('POST', '/packages/npm/-/npm/v1/security/advisories/bulk'), ('POST', '/packages/npm/-/npm/v1/security/audits/quick'), ('POST', '/personal_access_tokens/self/rotate'), ('POST', '/projects/:id/access_tokens/self/rotate'), ('POST', '/projects/:id/alert_management_alerts/:alert_iid/metric_images/authorize'), ('POST', '/projects/:id/catalog/publish'), ('POST', '/projects/:id/create_ci_config'), ('POST', '/projects/:id/import/git'), ('POST', '/projects/:id/integrations/mattermost_slash_commands/trigger'), ('POST', '/projects/:id/issues/:issue_iid/metric_images/authorize'), ('POST', '/projects/:id/merge_requests/:merge_request_iid/approvals'), ('POST', '/projects/:id/merge_requests/:merge_request_iid/notes/:note_id/award_emoji'), ('POST', '/projects/:id/packages/helm/api/:channel/charts/authorize'), ('POST', '/projects/:id/packages/npm/-/npm/v1/security/advisories/bulk'), ('POST', '/projects/:id/packages/npm/-/npm/v1/security/audits/quick'), ('POST', '/projects/:id/packages/pypi/authorize'), ('POST', '/projects/:id/packages/rpm'), ('POST', '/projects/:id/packages/rpm/authorize'), ('POST', '/projects/:id/packages/rubygems/api/v1/gems/authorize'), ('POST', '/projects/:id/repository_size'), ('POST', '/projects/:id/services/mattermost_slash_commands/trigger'), ('POST', '/projects/:id/snippets/:snippet_id/notes/:note_id/award_emoji'), ('POST', '/projects/:id/terraform/state/:name'), ('POST', '/projects/:id/terraform/state/:name/authorize'), ('POST', '/projects/:id/terraform/state/:name/lock'), ('POST', '/projects/:id/terraform/state_protection_rules'), ('POST', '/projects/:id/uploads/authorize'), ('POST', '/projects/import-relation/authorize'), ('POST', '/projects/import/authorize'), ('POST', '/slack/trigger'), ('POST', '/usage_data/increment_counter'), ('POST', '/usage_data/increment_unique_users'), ('POST', '/usage_data/track_events'), ('PUT', '/admin/batched_background_operations/:id/restart'), ('PUT', '/admin/batched_background_operations/:id/stop'), ('PUT', '/groups/:id/-/packages/npm/-/package/*package_name/dist-tags/:tag'), ('PUT', '/groups/:id/integrations/apple-app-store'), ('PUT', '/groups/:id/integrations/google-play'), ('PUT', '/groups/:id/integrations/jenkins'), ('PUT', '/groups/:id/integrations/mock-monitoring'), ('PUT', '/groups/:id/integrations/zentao'), ('PUT', '/hooks/:hook_id/custom_headers/:key'), ('PUT', '/integrations/jira_forge/installation'), ('PUT', '/jobs/:id'), ('PUT', '/namespaces/:id'), ('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name/authorize'), ('PUT', '/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name/authorize'), ('PUT', '/packages/npm/-/package/*package_name/dist-tags/:tag'), ('PUT', '/projects/:id/integrations/apple-app-store'), ('PUT', '/projects/:id/integrations/mock-monitoring'), ('PUT', '/projects/:id/integrations/zentao'), ('PUT', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/export/:file_name/authorize'), ('PUT', '/projects/:id/packages/conan/v1/files/:package_name/:package_version/:package_username/:package_channel/:recipe_revision/package/:conan_package_reference/:package_revision/:file_name/authorize'), ('PUT', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/files/:file_name/authorize'), ('PUT', '/projects/:id/packages/conan/v2/conans/:package_name/:package_version/:package_username/:package_channel/revisions/:recipe_revision/packages/:conan_package_reference/revisions/:package_revision/files/:file_name/authorize'), ('PUT', '/projects/:id/packages/debian/:file_name/authorize'), ('PUT', '/projects/:id/packages/generic/:package_name/*package_version/(*path/):file_name'), ('PUT', '/projects/:id/packages/generic/:package_name/*package_version/(*path/):file_name/authorize'), ('PUT', '/projects/:id/packages/maven/*path/:file_name/authorize'), ('PUT', '/projects/:id/packages/npm/-/package/*package_name/dist-tags/:tag'), ('PUT', '/projects/:id/packages/nuget/authorize'), ('PUT', '/projects/:id/packages/nuget/symbolpackage/authorize'), ('PUT', '/projects/:id/packages/nuget/v2/authorize'), ('PUT', '/projects/:id/packages/terraform/modules/:module_name/:module_system/*module_version/file'), ('PUT', '/projects/:id/packages/terraform/modules/:module_name/:module_system/*module_version/file/authorize'), ('PUT', '/projects/:id/repository/branches/:branch/protect'), ('PUT', '/projects/:id/repository/branches/:branch/unprotect'), ('PUT', '/projects/:id/services/apple-app-store'), ('PUT', '/projects/:id/services/asana'), ('PUT', '/projects/:id/services/assembla'), ('PUT', '/projects/:id/services/bamboo'), ('PUT', '/projects/:id/services/bugzilla'), ('PUT', '/projects/:id/services/buildkite'), ('PUT', '/projects/:id/services/campfire'), ('PUT', '/projects/:id/services/clickup'), ('PUT', '/projects/:id/services/confluence'), ('PUT', '/projects/:id/services/custom-issue-tracker'), ('PUT', '/projects/:id/services/datadog'), ('PUT', '/projects/:id/services/diffblue-cover'), ('PUT', '/projects/:id/services/discord'), ('PUT', '/projects/:id/services/drone-ci'), ('PUT', '/projects/:id/services/emails-on-push'), ('PUT', '/projects/:id/services/ewm'), ('PUT', '/projects/:id/services/external-wiki'), ('PUT', '/projects/:id/services/git-guardian'), ('PUT', '/projects/:id/services/github'), ('PUT', '/projects/:id/services/gitlab-slack-application'), ('PUT', '/projects/:id/services/google-cloud-platform-artifact-registry'), ('PUT', '/projects/:id/services/google-cloud-platform-workload-identity-federation'), ('PUT', '/projects/:id/services/google-play'), ('PUT', '/projects/:id/services/hangouts-chat'), ('PUT', '/projects/:id/services/harbor'), ('PUT', '/projects/:id/services/irker'), ('PUT', '/projects/:id/services/jenkins'), ('PUT', '/projects/:id/services/jira'), ('PUT', '/projects/:id/services/jira-cloud-app'), ('PUT', '/projects/:id/services/linear'), ('PUT', '/projects/:id/services/matrix'), ('PUT', '/projects/:id/services/mattermost'), ('PUT', '/projects/:id/services/mattermost-slash-commands'), ('PUT', '/projects/:id/services/microsoft-teams'), ('PUT', '/projects/:id/services/mock-ci'), ('PUT', '/projects/:id/services/mock-monitoring'), ('PUT', '/projects/:id/services/packagist'), ('PUT', '/projects/:id/services/phorge'), ('PUT', '/projects/:id/services/pipelines-email'), ('PUT', '/projects/:id/services/pivotaltracker'), ('PUT', '/projects/:id/services/pumble'), ('PUT', '/projects/:id/services/pushover'), ('PUT', '/projects/:id/services/redmine'), ('PUT', '/projects/:id/services/slack'), ('PUT', '/projects/:id/services/squash-tm'), ('PUT', '/projects/:id/services/teamcity'), ('PUT', '/projects/:id/services/telegram'), ('PUT', '/projects/:id/services/unify-circuit'), ('PUT', '/projects/:id/services/webex-teams'), ('PUT', '/projects/:id/services/youtrack'), ('PUT', '/projects/:id/services/zentao')]
+E   assert [('DELETE', '...ns/:id'), ...] == []
+E     
+E     Left contains 267 more items, first extra item: [0m([33m'[39;49;00m[33mDELETE[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/groups/:id/-/packages/npm/-/package/*package_name/dist-tags/:tag[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_openapi_only.py:1057: in test_every_param_is_typed_as_its_row
+    assert typed == KINDS, "the Params that are not Kind.SCALAR are not the rows' (AC-1.3):\n" + mapping_difference(
+E   AssertionError: the Params that are not Kind.SCALAR are not the rows' (AC-1.3):
+E     missing: 'openapi-only#create-or-update-the-jira-integration'
+E     missing: 'openapi-only#internal-endpoint-that-posts-git-receive-pack-for-git-push'
+E     missing: 'openapi-only#internal-endpoint-that-posts-git-upload-pack-for-clone-or-pull-operations'
+E     missing: 'openapi-only#internal-endpoint-that-posts-the-current-node-status'
+E     missing: 'openapi-only#internal-endpoint-that-reports-persistent-verification-failures-to-the-primary'
+E     missing: 'openapi-only#internal-endpoint-that-returns-git-received-pack-output-for-git-push'
+E     missing: 'openapi-only#internal-endpoint-that-returns-info-refs-upload-pack-for-clone-or-pull-operations'
+E     missing: 'openapi-only#postapiv4integrationsslackevents'
+E     missing: 'openapi-only#publish-a-new-component-project-release-as-version-to-the-cicd-catalog'
+E     missing: 'openapi-only#putapiv4jobsid'
+E     missing: 'openapi-only#request-a-job'
+E     missing: 'openapi-only#retrieve-file-archive-from-a-repository'
+E     missing: 'openapi-only#start-a-new-offline-transfer-export'
+E     missing: 'openapi-only#start-a-new-offline-transfer-import'
+E     missing: 'openapi-only#track-multiple-internal-gitlab-events'
+E     missing: 'openapi-only#update-a-namespace'
+E     missing: 'openapi-only#upload-job-artifacts'
+E   assert {} == {'openapi-onl... 'HASH'}, ...}
+E     
+E     Right contains 17 more items:
+E     [0m{[33m'[39;49;00m[33mopenapi-only#create-or-update-the-jira-integration[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mproject_keys[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mARRAY[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mopenapi-only#internal-endpoint-that-posts-git-receive-pack-for-git-push[39;49;00m[33m'[39;49;00m: {[33m'[39;49;00m[33mdata[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mHASH[39;49;00m[33m'[39;49;00m}}[90m[39;49;00m
+E     [0m{[33m'[39;49;00m[33mopenapi-only#internal-endpoint-that-posts-git-...
+E     
+E     ...Full output truncated, use '-vv' to show
+____________________ test_no_param_names_a_path_parameter _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_openapi_only.py:1092: in test_no_param_names_a_path_parameter
+    assert records, "openapi_only.OPERATIONS declares no record, so no Param can be checked (AC-1.4)"
+E   AssertionError: openapi_only.OPERATIONS declares no record, so no Param can be checked (AC-1.4)
+E   assert ()
+____________________ test_only_the_list_records_are_paged _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_openapi_only.py:1112: in test_only_the_list_records_are_paged
+    assert paged == PAGED_RECORDS, "the records not Paging.NONE are not the list records (AC-1.5):\n" + (
+E   AssertionError: the records not Paging.NONE are not the list records (AC-1.5):
+E     missing: 'openapi-only#list-all-bridge-jobs-by-pipeline'
+E     missing: 'openapi-only#list-all-emoji-reactions-for-a-merge-request-comment'
+E     missing: 'openapi-only#list-all-emoji-reactions-for-a-snippet-comment'
+E     missing: 'openapi-only#list-all-emoji-reactions-for-an-epic'
+E     missing: 'openapi-only#list-all-emoji-reactions-for-an-epic-comment'
+E     missing: 'openapi-only#list-all-offline-transfer-exports'
+E     missing: 'openapi-only#list-runners-projects'
+E     missing: 'openapi-only#retrieve-all-limit-exclusions'
+E   assert {} == {'openapi-onl...'OFFSET', ...}
+E     
+E     Right contains 8 more items:
+E     [0m{[33m'[39;49;00m[33mopenapi-only#list-all-bridge-jobs-by-pipeline[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33mopenapi-only#list-all-emoji-reactions-for-a-merge-request-comment[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33mopenapi-only#list-all-emoji-reactions-for-a-snippet-comment[39;49;00m[33m'[39;49;00m: [33m'[39;49;00m[33mOFFSET[39;49;00m[33m'[39;49;00m,[90m[39;49;00m
+E      [33m'[39;49;00m[33mop...
+E     
+E     ...Full output truncated, use '-vv' to show
+_ test_a_list_record_prints_every_page[list-all-emoji-reactions-for-an-epic] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#list-all-emoji-reactions-for-an-epic', '--path', 'id=12', '--path', 'epic_iid=3'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#list-all-emoji-reactions-for-an-epic': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-emoji-reactions-for-an-epic-comment] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#list-all-emoji-reactions-for-an-epic-comment', '--path', 'id=12', '--path', 'epic_iid=3', '--path', 'note_id=8'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#list-all-emoji-reactions-for-an-epic-comment': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-emoji-reactions-for-a-merge-request-comment] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#list-all-emoji-reactions-for-a-merge-request-comment', '--path', 'merge_request_iid=3', '--path', 'note_id=8'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#list-all-emoji-reactions-for-a-merge-request-comment': no family module and no graphql_only record declares it
+_ test_a_list_record_prints_every_page[list-all-emoji-reactions-for-a-snippet-comment] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#list-all-emoji-reactions-for-a-snippet-comment', '--path', 'snippet_id=3', '--path', 'note_id=8'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#list-all-emoji-reactions-for-a-snippet-comment': no family module and no graphql_only record declares it
+_____ test_a_list_record_prints_every_page[retrieve-all-limit-exclusions] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#retrieve-all-limit-exclusions'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#retrieve-all-limit-exclusions': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-offline-transfer-exports] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#list-all-offline-transfer-exports'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#list-all-offline-transfer-exports': no family module and no graphql_only record declares it
+___ test_a_list_record_prints_every_page[list-all-bridge-jobs-by-pipeline] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#list-all-bridge-jobs-by-pipeline', '--path', 'pipeline_id=9'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#list-all-bridge-jobs-by-pipeline': no family module and no graphql_only record declares it
+_________ test_a_list_record_prints_every_page[list-runners-projects] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1141: in test_a_list_record_prints_every_page
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#list-runners-projects', '--path', 'id=6'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#list-runners-projects': no family module and no graphql_only record declares it
+____ test_a_path_form_is_sent_as_the_route_declares[glob-holding-a-slash] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1164: in test_a_path_form_is_sent_as_the_route_declares
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#workhorse-authorize-the-maven-package-file-upload', '--path', 'path=a/rc 1', '--path', 'file_name=x.jar'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#workhorse-authorize-the-maven-package-file-upload': no family module and no graphql_only record declares it
+____ test_a_path_form_is_sent_as_the_route_declares[optional-group-given] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1164: in test_a_path_form_is_sent_as_the_route_declares
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#download-package-file', '--path', 'package_name=pkg', '--path', 'package_version=1.0', '--path', 'path=a/b', '--path', 'file_name=file.txt'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#download-package-file': no family module and no graphql_only record declares it
+___ test_a_path_form_is_sent_as_the_route_declares[optional-group-left-out] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1164: in test_a_path_form_is_sent_as_the_route_declares
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#download-package-file', '--path', 'package_name=pkg', '--path', 'package_version=1.0', '--path', 'file_name=file.txt'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#download-package-file': no family module and no graphql_only record declares it
+_ test_a_path_form_is_sent_as_the_route_declares[escaped-parentheses-with-globs] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1164: in test_a_path_form_is_sent_as_the_route_declares
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#the-nuget-v2-feed-single-package-metadata-endpoint', '--path', 'project_id=7', '--path', 'package_name=N', '--path', 'package_version=1.0'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#the-nuget-v2-feed-single-package-metadata-endpoint': no family module and no graphql_only record declares it
+__ test_a_path_form_is_sent_as_the_route_declares[escaped-parentheses-empty] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1164: in test_a_path_form_is_sent_as_the_route_declares
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#the-nuget-v2-feed-enumerate-packages-endpoint', '--path', 'project_id=7', '--query', '$filter=x'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#the-nuget-v2-feed-enumerate-packages-endpoint': no family module and no graphql_only record declares it
+_ test_a_path_form_is_sent_as_the_route_declares[escaped-parentheses-beside-a-query-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1164: in test_a_path_form_is_sent_as_the_route_declares
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#the-nuget-v2-feed-find-packages-by-id-endpoint', '--path', 'project_id=7', '--query', 'id=N'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#the-nuget-v2-feed-find-packages-by-id-endpoint': no family module and no graphql_only record declares it
+_______ test_a_path_form_is_sent_as_the_route_declares[dollar-metadata] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1164: in test_a_path_form_is_sent_as_the_route_declares
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#the-nuget-v2-feed-package-metadata-endpoint-1'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#the-nuget-v2-feed-package-metadata-endpoint-1': no family module and no graphql_only record declares it
+________ test_a_glob_part_that_is_no_segment_sends_nothing[empty-part] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1178: in test_a_glob_part_that_is_no_segment_sends_nothing
+    assert code == EXIT_API_ERROR, f"call {list(argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#workhorse-authorize-the-maven-package-file-upload', '--path', 'path=a//b', '--path', 'file_name=x.jar'] exits 1, got 2; stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#workhorse-authorize-the-maven-package-file-upload': no family module and no graphql_only record declares it
+______ test_a_glob_part_that_is_no_segment_sends_nothing[leading-slash] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1178: in test_a_glob_part_that_is_no_segment_sends_nothing
+    assert code == EXIT_API_ERROR, f"call {list(argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#workhorse-authorize-the-maven-package-file-upload', '--path', 'path=/a', '--path', 'file_name=x.jar'] exits 1, got 2; stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#workhorse-authorize-the-maven-package-file-upload': no family module and no graphql_only record declares it
+_______ test_a_glob_part_that_is_no_segment_sends_nothing[dot-dot-part] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1178: in test_a_glob_part_that_is_no_segment_sends_nothing
+    assert code == EXIT_API_ERROR, f"call {list(argv)} exits {EXIT_API_ERROR}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#workhorse-authorize-the-maven-package-file-upload', '--path', 'path=a/../b', '--path', 'file_name=x.jar'] exits 1, got 2; stderr:
+E     
+E   assert 2 == 1
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#workhorse-authorize-the-maven-package-file-upload': no family module and no graphql_only record declares it
+__________ test_the_job_artifacts_upload_sends_the_file_as_its_part ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1209: in test_the_job_artifacts_upload_sends_the_file_as_its_part
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#upload-job-artifacts', '--path', 'id=5', '--file', 'file=D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1592\\popen-gw0\\test_the_job_artifacts_upload_0\\artifacts.zip', '-f', 'artifact_type=archive'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#upload-job-artifacts': no family module and no graphql_only record declares it
+_____ test_a_raw_upload_sends_the_bytes_as_its_body[upload-package-file] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1239: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#upload-package-file', '--path', 'package_name=pkg', '--path', 'package_version=1.0', '--path', 'file_name=f.bin', '--query', 'status=hidden', '--query', 'select=package_file', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1592\\popen-gw0\\test_a_raw_upload_sends_the_by0\\upload.bin'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw0\test_a_raw_upload_sends_the_by0\upload.bin
+E     
+E   assert 2 == 0
+_ test_a_raw_upload_sends_the_bytes_as_its_body[upload-terraform-module-package-file] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1239: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#upload-terraform-module-package-file', '--path', 'module_name=infra', '--path', 'module_system=aws', '--path', 'module_version=1.0.0', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1592\\popen-gw0\\test_a_raw_upload_sends_the_by1\\upload.bin'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw0\test_a_raw_upload_sends_the_by1\upload.bin
+E     
+E   assert 2 == 0
+_ test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-terraform-state] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1239: in test_a_raw_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#create-or-update-a-terraform-state', '--path', 'name=production', '--input', 'D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-1592\\popen-gw0\\test_a_raw_upload_sends_the_by2\\upload.bin'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw0\test_a_raw_upload_sends_the_by2\upload.bin
+E     
+E   assert 2 == 0
+__________________ test_a_token_attribute_is_the_value_given __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_openapi_only.py:1260: in test_a_token_attribute_is_the_value_given
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['openapi-only#request-a-job', '-f', 'token=runner-token'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#request-a-job': no family module and no graphql_only record declares it
+___________________________ test_nothing_is_pending ___________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_deploy.py:209: in test_nothing_is_pending
+    assert pending == [], f"PENDING holds {len(pending)} key(s); each has its record (AC-1.6): {pending}"
+E   AssertionError: PENDING holds 3 key(s); each has its record (AC-1.6): [('GET', '/projects/:id/packages/ml_models/:model_version_id/files/(*path/):file_name'), ('PUT', '/projects/:id/packages/ml_models/:model_version_id/files/(*path/):file_name'), ('PUT', '/projects/:id/packages/ml_models/:model_version_id/files/(*path/):file_name/authorize')]
+E   assert [('GET', '/pr...e/authorize')] == []
+E     
+E     Left contains 3 more items, first extra item: [0m([33m'[39;49;00m[33mGET[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m/projects/:id/packages/ml_models/:model_version_id/files/(*path/):file_name[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+____________________ test_every_param_is_typed_as_its_row _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_api_deploy.py:250: in test_every_param_is_typed_as_its_row
+    assert params == {operation_id: () for operation_id in OPERATION_IDS}, (
+E   AssertionError: each of the three records declares no Param: its rows are path parameters or the raw body (AC-1.3, AC-1.4, AC-3.2): {}
+E   assert {} == {'deploy#auth...the-file': ()}
+E     
+E     Right contains 3 more items:
+E     [0m{[33m'[39;49;00m[33mdeploy#authorize-the-upload[39;49;00m[33m'[39;49;00m: (),[90m[39;49;00m
+E      [33m'[39;49;00m[33mdeploy#download-a-machine-learning-model-package-file[39;49;00m[33m'[39;49;00m: (),[90m[39;49;00m
+E      [33m'[39;49;00m[33mdeploy#send-the-file[39;49;00m[33m'[39;49;00m: ()}[90m[39;49;00m
+E     Use -v to get more diff
+____ test_the_optional_group_is_sent_only_when_given[download-group-given] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_deploy.py:307: in test_the_optional_group_is_sent_only_when_given
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['deploy#download-a-machine-learning-model-package-file', '--path', 'model_version_id=3', '--path', 'file_name=model.bin', '--path', 'path=dir/sub'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'deploy#download-a-machine-learning-model-package-file': no family module and no graphql_only record declares it
+__ test_the_optional_group_is_sent_only_when_given[download-group-left-out] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_deploy.py:307: in test_the_optional_group_is_sent_only_when_given
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['deploy#download-a-machine-learning-model-package-file', '--path', 'model_version_id=3', '--path', 'file_name=model.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'deploy#download-a-machine-learning-model-package-file': no family module and no graphql_only record declares it
+__ test_the_optional_group_is_sent_only_when_given[authorize-group-left-out] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_deploy.py:307: in test_the_optional_group_is_sent_only_when_given
+    assert code == EXIT_OK, f"call {list(case.argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['deploy#authorize-the-upload', '--path', 'model_version_id=3', '--path', 'file_name=model.bin'] exits 0, got 2; stderr:
+E     
+E   assert 2 == 0
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'deploy#authorize-the-upload': no family module and no graphql_only record declares it
+_________________ test_the_upload_sends_the_bytes_as_its_body _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_deploy.py:331: in test_the_upload_sends_the_bytes_as_its_body
+    assert code == EXIT_OK, f"call {list(argv)} exits {EXIT_OK}, got {code}; stderr:\n{captured.err}"
+E   AssertionError: call ['deploy#send-the-file', '--path', 'model_version_id=3', '--path', 'file_name=model.bin', '--path', 'path=dir', '--input', '-'] exits 0, got 2; stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input -
+E     
+E   assert 2 == 0
+_ test_a_missing_path_parameter_is_refused_unless_optional[optional-group-left-out-beside-a-missing-segment] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:1876: in test_a_missing_path_parameter_is_refused_unless_optional
+    assert naming, (
+E   AssertionError: one log record says ['file_name'] have no value and lists the path parameters ['id', 'package_name', 'package_version', 'path', 'file_name'] (issue #40 AC-2.3, AC-2.4); logged: ["unknown operation id 'openapi-only#download-package-file': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#download-package-file': no family module and no graphql_only record declares it
+_ test_a_missing_path_parameter_is_refused_unless_optional[glob-outside-a-group] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:1876: in test_a_missing_path_parameter_is_refused_unless_optional
+    assert naming, (
+E   AssertionError: one log record says ['package_name'] have no value and lists the path parameters ['id', 'package_name'] (issue #40 AC-2.3, AC-2.4); logged: ["unknown operation id 'openapi-only#npm-registry-metadata-endpoint-2': no family module and no graphql_only record declares it"]
+E   assert []
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m gitlab_api.commands.call:call.py:379 unknown operation id 'openapi-only#npm-registry-metadata-endpoint-2': no family module and no graphql_only record declares it
+_____ test_a_raw_body_the_call_cannot_send_is_refused[beside-a-raw-field] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:1955: in test_a_raw_body_the_call_cannot_send_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw1\test_a_raw_body_the_call_canno0\upload.bin
+E     
+E   assert []
+_______ test_a_raw_body_the_call_cannot_send_is_refused[beside-a-field] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:1955: in test_a_raw_body_the_call_cannot_send_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw1\test_a_raw_body_the_call_canno1\upload.bin
+E     
+E   assert []
+__ test_a_raw_body_the_call_cannot_send_is_refused[json-bodied-rest-record] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:1955: in test_a_raw_body_the_call_cannot_send_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw1\test_a_raw_body_the_call_canno2\upload.bin
+E     
+E   assert []
+_______ test_a_raw_body_the_call_cannot_send_is_refused[graphql-record] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:1955: in test_a_raw_body_the_call_cannot_send_is_refused
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:351: in refused_messages
+    assert messages, (
+E   AssertionError: call_operation logs its refusal with logger.error before returning 2 (design.md D4); no ERROR record was logged. stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw1\test_a_raw_body_the_call_canno3\upload.bin
+E     
+E   assert []
+__ test_a_raw_body_the_call_cannot_send_is_refused[file-that-does-not-exist] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-40\src\payload\test\test_gitlab_api_call.py:1969: in test_a_raw_body_the_call_cannot_send_is_refused
+    assert messages, f"no usage error names the option {option_input} (design.md D5); stderr:\n{captured.err}"
+E   AssertionError: no usage error names the option --input (design.md D5); stderr:
+E     usage: gitlab_wrapper.py [-h] subcommand ...
+E     gitlab_wrapper.py: error: unrecognized arguments: --input D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-1592\popen-gw1\test_a_raw_body_the_call_canno4\missing.bin
+E     
+E   assert []
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_nothing_is_pending
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_no_param_names_a_path_parameter
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_only_the_list_records_are_paged
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[list-all-emoji-reactions-for-an-epic]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[list-all-emoji-reactions-for-an-epic-comment]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[list-all-emoji-reactions-for-a-merge-request-comment]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[list-all-emoji-reactions-for-a-snippet-comment]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[retrieve-all-limit-exclusions]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[list-all-offline-transfer-exports]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[list-all-bridge-jobs-by-pipeline]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_list_record_prints_every_page[list-runners-projects]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_path_form_is_sent_as_the_route_declares[glob-holding-a-slash]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_path_form_is_sent_as_the_route_declares[optional-group-given]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_path_form_is_sent_as_the_route_declares[optional-group-left-out]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_path_form_is_sent_as_the_route_declares[escaped-parentheses-with-globs]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_path_form_is_sent_as_the_route_declares[escaped-parentheses-empty]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_path_form_is_sent_as_the_route_declares[escaped-parentheses-beside-a-query-id]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_path_form_is_sent_as_the_route_declares[dollar-metadata]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_glob_part_that_is_no_segment_sends_nothing[empty-part]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_glob_part_that_is_no_segment_sends_nothing[leading-slash]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_glob_part_that_is_no_segment_sends_nothing[dot-dot-part]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_the_job_artifacts_upload_sends_the_file_as_its_part
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-package-file]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_raw_upload_sends_the_bytes_as_its_body[upload-terraform-module-package-file]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_raw_upload_sends_the_bytes_as_its_body[create-or-update-a-terraform-state]
+FAILED src/payload/test/test_gitlab_api_openapi_only.py::test_a_token_attribute_is_the_value_given
+FAILED src/payload/test/test_gitlab_api_deploy.py::test_nothing_is_pending - ...
+FAILED src/payload/test/test_gitlab_api_deploy.py::test_every_param_is_typed_as_its_row
+FAILED src/payload/test/test_gitlab_api_deploy.py::test_the_optional_group_is_sent_only_when_given[download-group-given]
+FAILED src/payload/test/test_gitlab_api_deploy.py::test_the_optional_group_is_sent_only_when_given[download-group-left-out]
+FAILED src/payload/test/test_gitlab_api_deploy.py::test_the_optional_group_is_sent_only_when_given[authorize-group-left-out]
+FAILED src/payload/test/test_gitlab_api_deploy.py::test_the_upload_sends_the_bytes_as_its_body
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_missing_path_parameter_is_refused_unless_optional[optional-group-left-out-beside-a-missing-segment]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_missing_path_parameter_is_refused_unless_optional[glob-outside-a-group]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[beside-a-raw-field]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[beside-a-field]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[json-bodied-rest-record]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[graphql-record]
+FAILED src/payload/test/test_gitlab_api_call.py::test_a_raw_body_the_call_cannot_send_is_refused[file-that-does-not-exist]
+================= 40 failed, 419 passed in 158.27s (0:02:38) ==================
+exit=1

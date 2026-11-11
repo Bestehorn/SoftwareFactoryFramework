@@ -7,6 +7,10 @@
 join `Transport.request` applies (design.md D4), and read back with
 `urllib.parse.parse_qsl(..., keep_blank_values=True)`, which keeps the empty values the strategies generate.
 
+A `*name` glob keeps each `/` of its value (issue #40, AC-2.1 and AC-2.2): `test_glob_value_keeps_each_slash` has
+`expand` write each `/`-separated part as one such segment, and `test_a_glob_value_with_a_refused_part_is_refused` has
+it refuse a value with an empty, `.` or `..` part, a leading, trailing or doubled `/` among them.
+
 The properties live in this repository's own `test/`, where Hypothesis is a dev extra; the shipped `src/payload/test/`
 stays pytest-only. `src/payload/scripts` is put on `sys.path`, and `gitlab_api` is imported inside each test, so the
 module collects whether or not the package exists yet.
@@ -31,6 +35,7 @@ from types import ModuleType
 from typing import Any
 from urllib.parse import parse_qsl, quote, unquote, urlencode
 
+import pytest
 from hypothesis import assume, example, given, settings
 from hypothesis import strategies as st
 
@@ -61,6 +66,20 @@ PATH_TEMPLATE = PATH_PREFIX + ":" + PATH_PARAMETER + PATH_SUFFIX
 PLACEHOLDER_FREE_PATH = "/issues"
 QUERY_PARAMETER = "k"
 ARRAY_PAIR_NAME = QUERY_PARAMETER + "[]"
+
+# The glob properties (issue #40, design.md "Correctness Properties" AC-2.1 and AC-2.2): one `*glob` between the same
+# prefix and suffix, its value the parts joined by `/`.
+ERRORS_MODULE = "gitlab_api.errors"
+GLOB_PARAMETER = "glob"
+GLOB_PATH_TEMPLATE = PATH_PREFIX + "*" + GLOB_PARAMETER + PATH_SUFFIX
+PART_SEPARATOR = "/"
+# A part is any text UTF-8 can encode but `/`, other than the empty part, `.` and `..`, which are no segment.
+PART_ALPHABET = TEXT_ALPHABET.filter(lambda character: character != PART_SEPARATOR)
+GLOB_PARTS = st.lists(
+    elements=st.text(alphabet=PART_ALPHABET, min_size=1).filter(lambda part: part not in DOT_SEGMENTS),
+    min_size=1,
+)
+REFUSED_PARTS = ("", ".", "..")
 
 # The UB-2 scan: the entry script and every module under the package, named by their paths below `SCRIPTS`.
 PACKAGE_NAME = "gitlab_api"
@@ -147,6 +166,63 @@ def test_array_and_hash_pairs(items: list[str], mapping: dict[str, str]) -> None
     assert sorted(parse_qsl(qs=hash_query, keep_blank_values=True)) == sorted(
         (hash_pair_name(key=key), entry) for key, entry in mapping.items()
     ), hash_query
+
+
+def load_errors() -> ModuleType:
+    """Import `gitlab_api.errors` at test time, as `load_registry` imports the registry."""
+    return importlib.import_module(name=ERRORS_MODULE)
+
+
+def glob_operation(*, registry: ModuleType, name: str) -> Any:
+    """A GET record whose path is `/projects/*glob/issues`."""
+    return registry.RestOperation(operation_id=OPERATION_ID_PREFIX + name, method=METHOD_GET, path=GLOB_PATH_TEMPLATE)
+
+
+@st.composite
+def parts_with_a_refused_part(draw: st.DrawFn) -> list[str]:
+    """`GLOB_PARTS` with `""`, `.` or `..` inserted at any position, both ends included, so the joined value has an
+    empty part (a leading, trailing or doubled `/`), a `.` part or a `..` part."""
+    parts = draw(strategy=GLOB_PARTS)
+    refused = draw(strategy=st.sampled_from(elements=REFUSED_PARTS))
+    position = draw(strategy=st.integers(min_value=0, max_value=len(parts)))
+    return [*parts[:position], refused, *parts[position:]]
+
+
+@settings(deadline=None)  # the first example also pays for importing the package
+@given(parts=GLOB_PARTS)
+@example(parts=["1.0", "rc 1"])
+def test_glob_value_keeps_each_slash(parts: list[str]) -> None:
+    """AC-2.1: a glob value, its parts joined by `/`, is written with each `/` kept and one piece per part, each piece
+    a segment free of delimiters that decodes to its part."""
+    registry = load_registry()
+    operation = glob_operation(registry=registry, name="glob-keeps-each-slash")
+
+    path = registry.expand(operation=operation, values={GLOB_PARAMETER: PART_SEPARATOR.join(parts)})
+
+    assert path.startswith(PATH_PREFIX), path
+    assert path.endswith(PATH_SUFFIX), path
+    pieces = path[len(PATH_PREFIX) : -len(PATH_SUFFIX)].split(sep=PART_SEPARATOR)
+    assert len(pieces) == len(parts), path
+    assert [delimiter for piece in pieces for delimiter in SEGMENT_DELIMITERS if delimiter in piece] == [], path
+    assert [unquote(string=piece) for piece in pieces] == parts, path
+
+
+@settings(deadline=None)  # the first example also pays for importing the package
+@given(parts=parts_with_a_refused_part())
+@example(parts=["", "1.0"])
+@example(parts=["1.0", ""])
+@example(parts=["1.0", "", "rc 1"])
+@example(parts=["1.0", ".", "rc 1"])
+@example(parts=["1.0", "..", "rc 1"])
+def test_a_glob_value_with_a_refused_part_is_refused(parts: list[str]) -> None:
+    """AC-2.2: a glob value with an empty, `.` or `..` part anywhere — `/1.0`, `1.0/`, `1.0//rc 1`, `1.0/../rc 1` — is
+    refused with `GitLabAPIError`."""
+    registry = load_registry()
+    errors = load_errors()
+    operation = glob_operation(registry=registry, name="glob-refused-part")
+
+    with pytest.raises(expected_exception=errors.GitLabAPIError):
+        registry.expand(operation=operation, values={GLOB_PARAMETER: PART_SEPARATOR.join(parts)})
 
 
 def scanned_sources() -> dict[str, str]:

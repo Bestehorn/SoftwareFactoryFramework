@@ -1093,3 +1093,102 @@ def test_graphql_sends_files_as_one_multipart_request(
         )
 
     assert len(fake_gitlab.requests) == 1, "a job token is refused before any file is read and before any request"
+
+
+# --- issue #40 AC-3.2 raw bodies --------------------------------------------------------------------------------------
+
+# Bytes a raw body carries as given (#40 design.md D5): a CRLF, a NUL, bytes that are no UTF-8 (`\xff`, `\xc3(`), and
+# the characters a form or query encoding would rewrite (`+`, `=`, `&`, `%`, a space).
+RAW_BODY_BYTES = b"name=a+b&size=10%\r\n\x00\xff\xfe\xc3( binary tail\r\n"
+RAW_UPLOAD_PATH = "/projects/1/packages/generic/p/1.0/f.bin"
+RAW_UPLOAD_QUERY = (("select", "package_file"),)
+RAW_UPLOAD_URL = f"{REST_BASE}{RAW_UPLOAD_PATH}?select=package_file"
+RAW_UPLOAD_ANSWER = {"message": "201 Created"}
+
+
+@pytest.mark.parametrize("token_type", TOKEN_TYPES)
+def test_a_raw_body_is_sent_unchanged(fake_gitlab: Any, sleeper: RecordingSleep, token_type: str) -> None:
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper, token_type=token_type)
+    assert CRLF in RAW_BODY_BYTES, "the bytes hold a CRLF"
+    with pytest.raises(UnicodeDecodeError):
+        RAW_BODY_BYTES.decode(encoding="utf-8")
+    fake_gitlab.script(method="PUT", url=RAW_UPLOAD_URL, status=201, body=RAW_UPLOAD_ANSWER)
+    fake_gitlab.script(method="PUT", url=RAW_UPLOAD_URL, status=201, body=RAW_UPLOAD_ANSWER)
+
+    response = client.request_raw(
+        method="PUT",
+        path=RAW_UPLOAD_PATH,
+        query=RAW_UPLOAD_QUERY,
+        data=RAW_BODY_BYTES,
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+    )
+
+    assert response.status == 201
+    assert response.value == RAW_UPLOAD_ANSWER, "request_raw returns the response, decoded as request's is"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("PUT", RAW_UPLOAD_URL)], (
+        "one request to the configured origin, its query pairs in the URL (#40 AC-3.2)"
+    )
+    sent = fake_gitlab.requests[0]
+    assert sent.body == RAW_BODY_BYTES, "the bytes are the body, unchanged: no envelope and no encoding (#40 AC-3.2)"
+    assert sent.header(name=HEADER_CONTENT_TYPE) == CONTENT_TYPE_OCTET_STREAM, "the body carries the Content-Type given"
+    assert credentials_sent(request=sent) == EXPECTED_CREDENTIAL[token_type], (
+        f"token type {token_type!r} sends exactly its one credential header with a raw body (AC-2.1)"
+    )
+    assert TOKEN not in sent.url and TOKEN.encode(encoding="ascii") not in sent.body, (
+        "the token enters neither the URL nor the body"
+    )
+
+    unsent = client.request_raw(
+        method="PUT",
+        path=RAW_UPLOAD_PATH,
+        query=RAW_UPLOAD_QUERY,
+        data=None,
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+    )
+
+    assert unsent.status == 201
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("PUT", RAW_UPLOAD_URL)] * 2
+    empty = fake_gitlab.requests[1]
+    assert empty.body is None, "data=None sends no body"
+    assert empty.header(name=HEADER_CONTENT_TYPE) is None, "a request with no body carries no Content-Type"
+    assert credentials_sent(request=empty) == EXPECTED_CREDENTIAL[token_type], (
+        f"token type {token_type!r} sends exactly its one credential header with no body (AC-2.1)"
+    )
+
+
+def test_a_raw_body_answered_429_is_retried(
+    fake_gitlab: Any, sleeper: RecordingSleep, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Issue #40 design.md D5: ``request_raw`` returns what ``_send`` returns, so a raw-body request answered ``429``
+    with ``Retry-After: 3`` and then ``200`` waits three seconds, is sent again with the same bytes and
+    ``Content-Type``, and returns the ``200``, as ``request`` does (#13 AC-3.2)."""
+    transport = gitlab_module(name="transport")
+    client = make_client(transport=transport, sleeper=sleeper)
+    caplog.set_level(level=logging.DEBUG)
+    fake_gitlab.script(
+        method="PUT", url=RAW_UPLOAD_URL, status=429, headers=[(HEADER_RETRY_AFTER, "3")], body=RATE_LIMITED_BODY
+    )
+    fake_gitlab.script(method="PUT", url=RAW_UPLOAD_URL, status=200, body=RAW_UPLOAD_ANSWER)
+
+    response = client.request_raw(
+        method="PUT",
+        path=RAW_UPLOAD_PATH,
+        query=RAW_UPLOAD_QUERY,
+        data=RAW_BODY_BYTES,
+        content_type=CONTENT_TYPE_OCTET_STREAM,
+    )
+
+    assert response.status == 200, f"the retried raw-body request's answer is returned, got {response.status}"
+    assert response.value == RAW_UPLOAD_ANSWER, "the 200's body is returned, decoded as request's is"
+    assert sleeper.calls == [3], "a 429 with Retry-After waits that many seconds, once (#13 AC-3.2)"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("PUT", RAW_UPLOAD_URL)] * 2, (
+        "the same raw-body request is sent again after the 429"
+    )
+    assert [request.body for request in fake_gitlab.requests] == [RAW_BODY_BYTES] * 2, (
+        "the retry carries the same bytes, unchanged"
+    )
+    assert [request.header(name=HEADER_CONTENT_TYPE) for request in fake_gitlab.requests] == [
+        CONTENT_TYPE_OCTET_STREAM
+    ] * 2, "the retry carries the same Content-Type"
+    assert TOKEN not in caplog.text, "no log record carries the token"
