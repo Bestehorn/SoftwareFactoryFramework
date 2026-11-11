@@ -993,3 +993,103 @@ def test_is_json_reads_the_content_type(
         f"is_json is {expected} for Content-Type {headers!r}: the media type alone decides, parameters ignored and "
         "text/plain assumed when the header is absent (#41 D2, AC-1.5)"
     )
+
+
+# --- issue #44 AC-3.1 the multipart GraphQL request ----------------------------------------------------------------
+
+UPLOAD_MUTATION = (
+    "mutation DesignUpload($projectPath: ID!, $iid: ID!, $files: [Upload!]!) "
+    "{ designManagementUpload(input: {projectPath: $projectPath, iid: $iid, files: $files}) "
+    "{ designs { id } skippedDesigns { id } errors } }"
+)
+# The variables as `registry.split_uploads` gives them to `Transport.graphql`: each Upload item `null` (#44 D4).
+UPLOAD_VARIABLES = {"projectPath": "group/project", "iid": "5", "files": [None, None]}
+# Each file: the operations path it fills, its name in `tmp_path`, its bytes (a CRLF and bytes that are not UTF-8).
+UPLOADS = (
+    ("variables.files.0", "first.png", b"\x89PNG\r\n\x1a\nfirst design\r\n\xff\xfe"),
+    ("variables.files.1", "second.png", b"\x89PNG\r\n\x1a\nsecond design\r\n\xfd"),
+)
+PART_OPERATIONS = "operations"
+PART_MAP = "map"
+# graphql/conventions.md "File uploads" and #44 D4: `operations`, then `map`, then one part per file named `str(i)`.
+UPLOAD_PART_ORDER = [PART_OPERATIONS, PART_MAP, "0", "1"]
+UPLOAD_MAP = {"0": ["variables.files.0"], "1": ["variables.files.1"]}
+UPLOAD_DATA = {
+    "designManagementUpload": {
+        "designs": [
+            {"id": "gid://gitlab/DesignManagement::Design/1"},
+            {"id": "gid://gitlab/DesignManagement::Design/2"},
+        ],
+        "skippedDesigns": [],
+        FIELD_ERRORS: [],
+    }
+}
+# The text of the job-token refusal; a file read first would raise `_file_part`'s "cannot read the file" instead.
+JOB_TOKEN_REFUSAL = "job tokens cannot authenticate GraphQL"
+
+
+def test_graphql_sends_files_as_one_multipart_request(
+    fake_gitlab: Any, sleeper: RecordingSleep, tmp_path: Path
+) -> None:
+    transport = gitlab_module(name="transport")
+    errors = gitlab_module(name="errors")
+    client = make_client(transport=transport, sleeper=sleeper)
+    files = []
+    for operations_path, file_name, content in UPLOADS:
+        stored = tmp_path / file_name
+        stored.write_bytes(content)
+        files.append((operations_path, stored))
+    fake_gitlab.script(method="POST", url=GRAPHQL_URL, body={FIELD_DATA: UPLOAD_DATA})
+
+    result = client.graphql(document=UPLOAD_MUTATION, variables=UPLOAD_VARIABLES, files=tuple(files))
+
+    assert result == UPLOAD_DATA, "graphql returns the response's data"
+    assert [(request.method, request.url) for request in fake_gitlab.requests] == [("POST", GRAPHQL_URL)], (
+        "the files and the operation travel in one POST to /api/graphql (AC-3.1)"
+    )
+    sent = fake_gitlab.requests[0]
+    assert credentials_sent(request=sent) == BEARER_CREDENTIAL, (
+        "a multipart GraphQL request sends Authorization: Bearer"
+    )
+    boundary = multipart_boundary(content_type=sent.header(name=HEADER_CONTENT_TYPE))
+    assert sent.body is not None
+    assert TOKEN.encode("ascii") not in sent.body, "the token never enters the body"
+    parts = multipart_parts(body=sent.body, boundary=boundary)
+    assert [part.disposition.get("name") for part in parts] == UPLOAD_PART_ORDER, (
+        "the parts are `operations`, `map`, then one per file named after its `map` key, in that order (#44 D4)"
+    )
+    assert all(part.disposition_type == "form-data" for part in parts)
+    by_name = {part.disposition.get("name"): part for part in parts}
+
+    operations = by_name[PART_OPERATIONS]
+    assert operations.disposition == {"name": PART_OPERATIONS}, "`operations` is a plain form field"
+    assert json.loads(operations.content.decode("utf-8")) == {
+        FIELD_QUERY: UPLOAD_MUTATION,
+        FIELD_VARIABLES: UPLOAD_VARIABLES,
+    }, "`operations` is the JSON of the document and the variables, each Upload item null (AC-3.1)"
+
+    file_map = by_name[PART_MAP]
+    assert file_map.disposition == {"name": PART_MAP}, "`map` is a plain form field"
+    assert json.loads(file_map.content.decode("utf-8")) == UPLOAD_MAP, (
+        "`map` maps each file part's name to the operations path it fills (AC-3.1)"
+    )
+
+    for index, (_, file_name, content) in enumerate(UPLOADS):
+        file_part = by_name[str(index)]
+        assert file_part.disposition == {"name": str(index), "filename": file_name}, (
+            f"file {index} is the part {str(index)!r} with its file name"
+        )
+        assert media_type(value=file_part.headers.get("content-type")) == CONTENT_TYPE_OCTET_STREAM
+        assert file_part.content == content, f"file {index}'s bytes are sent unchanged"
+
+    job_client = make_client(transport=transport, sleeper=sleeper, token_type=TOKEN_TYPE_JOB)
+    never_written = tmp_path / "never-written.png"
+
+    with pytest.raises(errors.GitLabAPIError, match=JOB_TOKEN_REFUSAL):
+        job_client.graphql(
+            document=UPLOAD_MUTATION,
+            variables=UPLOAD_VARIABLES,
+            files=((UPLOADS[0][0], never_written),),
+        )
+
+    assert len(fake_gitlab.requests) == 1, "a job token is refused before any file is read and before any request"
