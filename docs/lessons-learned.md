@@ -9,3 +9,8 @@ Incident narratives belong in docs/archive/incidents/<date>-<slug>.md, never her
 - Lesson: Git Bash rewrites a command argument that begins with a slash into a Windows path (a leading-slash word became C:/Program Files/Git/...), so never start a CLI argument value with a slash
 - Enforced-by: none
 - Scope: shell arguments on Windows (memory_compile.py ledger add)
+## 2026-11-11 — Take a decision-log timestamp from date -u in the same step
+- Date: 2026-11-11
+- Lesson: Take a decision-log timestamp from date -u in the same step that writes the entry; never type one
+- Enforced-by: none
+- Scope: agent-state-convention decision log
