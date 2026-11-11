@@ -41,7 +41,9 @@ Usage:
         # --path NAME=VALUE (id defaults to project_id on a /projects/:id path); --query NAME=VALUE (a query
         # attribute as text; repeat it for each item of an array); -f/--raw-field NAME=TEXT (an attribute, a string);
         # -F/--field NAME=JSON (an attribute: a number, boolean, array, object or quoted string); --file NAME=PATH
-        # (a file attribute, sent multipart). A GraphQL record takes its variables with -f and -F.
+        # (a file attribute, sent multipart); --input FILE (a raw-body record's body: the bytes of FILE, or of standard
+        # input for -, sent unchanged; the record's attributes go in --query; refused beside -f or -F, and for a record
+        # that takes no raw body). A GraphQL record takes its variables with -f and -F.
         # A list prints as one JSON array of every page's items, a JSON response as indented JSON, an empty body as
         # nothing, any other body as its bytes unchanged. An unknown operation, an undocumented parameter, a missing
         # path parameter, a value of the wrong shape, and ai-coding#merge-a-merge-request and plan#create-an-issue

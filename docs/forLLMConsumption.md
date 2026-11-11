@@ -47,9 +47,10 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   `test_gitlab_wrapper_coverage.py` (every API-reference operation covered by a record or pending). The product
   wrapper calls any declared record by its operation ID:
   `python scripts/gitlab_wrapper.py call plan#retrieve-a-project-issue --path issue_iid=5` (`--path`, `--query`,
-  `-f/--raw-field`, `-F/--field`, `--file`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2).
-  `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. A GraphQL-only
-  capability is a record of `graphql_only.py`, called the same way:
+  `-f/--raw-field`, `-F/--field`, `--file`, and `--input FILE` for a raw-body upload such as
+  `openapi-only#upload-package-file`, its bytes sent unchanged, `-` reading standard input; a GraphQL record's variables
+  with `-f`/`-F`; a refusal exits 2). `test/test_gitlab_wrapper_contract.py` checks each record against its
+  `rest/<stage>.md` section. A GraphQL-only capability is a record of `graphql_only.py`, called the same way:
   `python scripts/gitlab_wrapper.py call graphql#Project.workItems -f fullPath=group/project` (`-f`/`-F` give the
   document's variables, `--file NAME=PATH` an `Upload` variable's file). `test/test_gitlab_graphql_contract.py` checks
   each document against `graphql/`. Not installed here: the repository is on GitHub (`config/toolchain.json`).
