@@ -28,6 +28,9 @@ exactly, every ``POST`` as ``GoldenCase.writes`` holds it (method, path, and the
 - ``test_a_raw_body_is_refused`` (issue #46 AC-1.1, AC-1.3) gives ``--input`` a file under ``tmp_path``, alone and
   beside ``-F input=...``, and is answered by that route too: a GraphQL record has no ``content_type``, so its call
   takes no raw body.
+- ``test_a_raw_body_beside_a_variable_is_refused_first`` (issue #46 AC-1.3) gives ``--input`` beside ``-F input={}``
+  to two gated IDs and to one no record declares, and matches the text only ``refuse_both_bodies`` writes, so a
+  refusal by the gate or the lookup, which names neither input, cannot satisfy it.
 - ``test_the_usage_names_every_graphql_record`` (AC-4.1) reads the entry script's ``__doc__`` within its GraphQL entry
   only (the ``call graphql/`` usage line and the ``#`` lines under it), so what the docstring says of a REST ``call``
   cannot satisfy it.
@@ -899,6 +902,44 @@ def test_a_raw_body_is_refused(
         slug=raw.slug,
         argv=(CALL, OP_PIN_ISSUE, *raw.arguments, OPTION_INPUT, str(path)),
         patterns=raw.patterns,
+    )
+
+    _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Issue #46 AC-1.3 — a raw body beside a variable is refused first, for a gated or an undeclared ID too
+# ---------------------------------------------------------------------------------------------------------------------
+
+#: An ID no record of ``graphql_only.OPERATIONS`` declares.
+OP_UNDECLARED = "graphql/noSuchRecord"
+#: The text only the refusal of both bodies (``call.refuse_both_bodies``) writes: ``--input`` together with both
+#: variable options. ``refuse_graphql_raw_body``'s message names the three options too, but not in this phrase.
+BOTH_BODIES_REFUSED = f"{OPTION_INPUT} together with {NAMED_RAW_FIELD} or {NAMED_FIELD}"
+#: IDs whose later refusal names neither input: a gated ID of each form of ``refuse_gated`` (no subcommand sends it,
+#: or the subcommand to use) and an ID no record declares (``registry.graphql_lookup``).
+BOTH_BODIES_IDS: Tuple[str, ...] = (OP_TRANSFER_ISSUE, OP_ENABLE_AUTO_MERGE, OP_UNDECLARED)
+
+
+@pytest.mark.parametrize(argnames="operation_id", argvalues=BOTH_BODIES_IDS)
+def test_a_raw_body_beside_a_variable_is_refused_first(
+    operation_id: str,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #46 AC-1.3 and its design D1 step 1: ``call <id> -F input={} --input <file under tmp_path>`` of a gated
+    ID and of an ID no record declares exits 2 with no request, although ``POST /graphql`` would be answered, and a
+    log record holds ``--input together with -f/--raw-field or -F/--field``: the refusal of both bodies comes before
+    the gate and the lookup, whose messages name neither input."""
+    path = tmp_path / INPUT_FILE
+    path.write_bytes(data=INPUT_CONTENT)
+    case = _refusal(
+        criterion=ISSUE_46_AC_1_3,
+        slug=f"input-beside-a-variable/{operation_id}",
+        argv=(CALL, operation_id, *json_field(name=VARIABLE_INPUT, value={}), OPTION_INPUT, str(path)),
+        patterns=(re.escape(pattern=BOTH_BODIES_REFUSED),),
     )
 
     _judge_logged(case=case, tmp_path=tmp_path, monkeypatch=monkeypatch, capsys=capsys, caplog=caplog)

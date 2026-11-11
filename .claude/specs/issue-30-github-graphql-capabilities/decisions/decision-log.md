@@ -80,3 +80,12 @@
 **Evidence:** .claude/specs/issue-46-github-call-raw-bodies/requirements.md AC-1.3, design.md D1, D6; test_a_raw_body_is_refused red on 5e6ad6f, green on c0b697b.
 **Supersedes:** none
 **Artifacts touched:** src/payload/scripts/github_api/commands/call.py, src/payload/test/test_github_api_graphql_only.py
+
+## DL-010 — 2026-11-11T09:49:55Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept round 3's C3 as a test gap: `test_a_raw_body_beside_a_variable_is_refused_first` runs `-F input={} --input` on `graphql/transferIssue`, `graphql/enablePullRequestAutoMerge` and `graphql/noSuchRecord` and requires the both-bodies message, which only `refuse_both_bodies` writes; no product change, then a delta re-verification.
+**Driver:** evidence/verify/refutation-report-3.md C3; #46 AC-1.3 (the both-bodies refusal comes first and names both inputs).
+**Alternatives considered:** none
+**Evidence:** evidence/green/rework-2.txt (3 failed under C3, 78 passed restored).
+**Supersedes:** none
+**Artifacts touched:** src/payload/test/test_github_api_graphql_only.py
