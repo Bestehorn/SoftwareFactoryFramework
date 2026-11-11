@@ -41,7 +41,11 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   `gitlab_wrapper.py`: the transport, the registry of operation records (one `families/` module per REST family of
   `docs/api-reference/gitlab/`, plus `graphql_only.py`) and the subcommand modules in `commands/`. Suites:
   `src/payload/test/test_gitlab_api_*.py`, `src/payload/test/test_gitlab_wrapper_compat.py`; in `test/`,
-  `test_gitlab_wrapper_coverage.py` (every API-reference operation covered by a record or pending). Not installed
+  `test_gitlab_wrapper_coverage.py` (every API-reference operation covered by a record or pending). The product
+  wrapper calls any declared record by its operation ID:
+  `python scripts/gitlab_wrapper.py call plan#retrieve-a-project-issue --path issue_iid=5` (`--path`, `--query`,
+  `-f/--raw-field`, `-F/--field`, `--file`; a GraphQL record's variables with `-f`/`-F`; a refusal exits 2).
+  `test/test_gitlab_wrapper_contract.py` checks each record against its `rest/<stage>.md` section. Not installed
   here: the repository is on GitHub (`config/toolchain.json`).
 - `templates/` — config skeletons, CI templates, git hooks, `docs/` shipped verbatim. No Python.
 - `docs/reports/`, `docs/design/agents/` — this repository's own records; `docs/README.md` maps the old layout.
