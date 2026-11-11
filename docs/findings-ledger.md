@@ -30,3 +30,7 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | gitlab_api plan | emoji combined path row declared as written; giving it sends a stray attribute | issue-39 change.md Residuals | N needs the row; no failure seen | open |
 | 2026-11-11 | gitlab_api plan | the clone quick action runs from saved issue notes and descriptions (part 1, update-an-issue-note) | issue-39 review iteration-01 C3 | quick actions run server-side; guarding is a mechanism | open |
 | 2026-11-11 | gitlab_api call | integration secrets passed with -f are visible in process arguments | issue-36 change.md Residuals; #41 design Residuals | no non-argv text input; guarding is a new mechanism | open |
+| 2026-11-11 | gitlab_api create | the 13 branch-writing create and ai-coding ids stay pending (commit, cherry-pick, revert, file writes, suggestions, mirror pull, rebase) | issue-35 DL-002 | no no-subcommand gate on GitLab | open |
+| 2026-11-11 | gitlab_api create | archive[.format], the two-:id group SSH certificate path and changelog.txt stay pending | issue-35 change.md Residuals | forms part 1 lacks; one record per Reference | open |
+| 2026-11-11 | gitlab_api create | the clone and rebase quick actions run from saved notes and descriptions on records here | issue-35 DL-004; review iteration-01 | quick actions run server-side; guarding is a mechanism | open |
+| 2026-11-11 | gitlab_api create | auth_password of update-project-pull-mirroring-settings shows in the command line | issue-35 change.md Residuals; #36 DL-003 | #41 Residuals; no failure seen | open |
