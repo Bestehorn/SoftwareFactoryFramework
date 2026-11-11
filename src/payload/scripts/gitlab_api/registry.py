@@ -431,14 +431,17 @@ def call(transport: Transport, operation_id: str, *, values: Optional[Mapping[st
 
     A ``RestOperation`` is sent with ``send`` and its ``Response.value`` returned. A ``GraphQLOperation`` sends its
     document with ``values`` as the variables, through ``transport.graphql_nodes`` when it names a connection and
-    ``transport.graphql`` otherwise. The record is found with this module's ``lookup``."""
+    ``transport.graphql`` otherwise; without a connection the files are first taken out of the values with
+    ``split_uploads`` and sent as ``transport.graphql``'s ``files`` (issue #44, design.md D4), so no ``Path`` is
+    written into the JSON of the request. The record is found with this module's ``lookup``."""
     operation = lookup(operation_id=operation_id)
     if isinstance(operation, RestOperation):
         return send(transport=transport, operation_id=operation_id, values=values).value
     given: Mapping[str, Any] = values or {}
     if operation.connection:
         return transport.graphql_nodes(document=operation.document, variables=given, connection=operation.connection)
-    return transport.graphql(document=operation.document, variables=given)
+    sent, files = split_uploads(values=given)
+    return transport.graphql(document=operation.document, variables=sent, files=files)
 
 
 def pages(transport: Transport, operation_id: str, *, values: Optional[Mapping[str, Any]] = None) -> Iterator[Any]:
