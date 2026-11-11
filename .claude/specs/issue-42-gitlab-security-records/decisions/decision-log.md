@@ -71,3 +71,12 @@
 **Evidence:** review/spec-review-agent/iteration-02.md Verdict line.
 **Supersedes:** none
 **Artifacts touched:** change.md
+
+## DL-009 — 2026-11-11T08:38:03Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's AC-3 refutation as a test gap: each of the five F modules gains `test_every_body_is_json_and_unfixed` (every record's `body` is JSON and `fixed` empty), proven by the verifier's B1/B3 mutants; no product change, then a delta re-verification.
+**Driver:** evidence/verify/refutation-report.md AC-3 row (B1, B3 survived).
+**Alternatives considered:** one check in N (rejected: N is #41 D8's never-edit row).
+**Evidence:** evidence/verify/refutation-report.md; change.md AC-3.
+**Supersedes:** none
+**Artifacts touched:** the five src/payload/test/test_gitlab_api_<module>.py files

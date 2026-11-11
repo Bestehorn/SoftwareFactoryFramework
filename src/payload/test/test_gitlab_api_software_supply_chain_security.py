@@ -17,6 +17,8 @@ pinned:
 - AC-2: ``PENDING`` is the other endpoints of those sections ("Custom Attributes API", the four access-request
   sections, "Set your user status"), ``GET https://HOST/oauth/token/info`` and the external control's status ``PATCH``
   (DL-003);
+- AC-3, its ``body`` and ``fixed`` clause: every record, part 1's two included, has ``body`` ``BodyFormat.JSON`` and
+  no ``fixed`` pair, and the family declares a record;
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``FILE`` for a row noted "file upload" and for
   ``avatar`` on ``PUT /user/avatar``, ``POST /users`` and ``PUT /users/:id``; ``ARRAY_OF_HASHES`` for an ``array`` row
   with ``name[].…`` rows; ``ARRAY`` for any other Type naming an array), and the ``required`` ``Param`` names of each
@@ -652,6 +654,27 @@ def test_only_the_unmapped_keys_are_pending() -> None:
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, "software_supply_chain_security.PENDING is not the keys AC-2 keeps pending:\n" + (
         set_difference(declared=pending, expected=PENDING_KEYS)
+    )
+
+
+# --- AC-3: body and fixed ---------------------------------------------------------------------------------------------
+
+
+def test_every_body_is_json_and_unfixed() -> None:
+    """AC-3: every record of ``OPERATIONS``, part 1's two included (they comply too), has ``body``
+    ``BodyFormat.JSON`` and ``fixed`` empty; a family declaring no record fails, as the clause would then hold of
+    nothing."""
+    registry = gitlab_module(name=REGISTRY)
+    family = gitlab_module(name=FAMILY_MODULE)
+    records = tuple(family.OPERATIONS)
+    assert records, f"{FAMILY_MODULE}.OPERATIONS declares no record, so no body or fixed is checked (AC-3)"
+    offending = sorted(
+        f"{record.operation_id}: body {record.body!r}, fixed {record.fixed!r}"
+        for record in records
+        if record.body is not registry.BodyFormat.JSON or record.fixed != ()
+    )
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+        "\n".join(offending)
     )
 
 

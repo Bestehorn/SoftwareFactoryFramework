@@ -10,6 +10,8 @@ record is a new one. What is pinned:
 - AC-1: ``{(method, path): operation_id}`` over the records is the five index keys of the family, each with the
   Reference of its one row (every section has one endpoint);
 - AC-2: ``PENDING`` is empty;
+- AC-3, its ``body`` and ``fixed`` clause: every record has ``body`` ``BodyFormat.JSON`` and no ``fixed`` pair, and
+  the family declares a record;
 - AC-4: the ``Kind`` of every ``Param`` that is not ``SCALAR`` (``package_manager``, a ``string array`` row, is
   ``ARRAY``), and the ``required`` ``Param`` names of each record, exactly its Required ``yes`` query and body rows;
 - AC-5: the ``Paging.OFFSET`` records are the ``GET`` sections headed "List" or "Get all" but
@@ -270,6 +272,26 @@ def test_only_the_unmapped_keys_are_pending() -> None:
     pending = frozenset(family.PENDING)
     assert pending == PENDING_KEYS, "security_factory.PENDING is not the keys AC-2 keeps pending:\n" + (
         set_difference(declared=pending, expected=PENDING_KEYS)
+    )
+
+
+# --- AC-3: body and fixed ---------------------------------------------------------------------------------------------
+
+
+def test_every_body_is_json_and_unfixed() -> None:
+    """AC-3: every record of ``OPERATIONS`` has ``body`` ``BodyFormat.JSON`` and ``fixed`` empty; a family declaring
+    no record fails, as the clause would then hold of nothing."""
+    registry = gitlab_module(name=REGISTRY)
+    family = gitlab_module(name=FAMILY_MODULE)
+    records = tuple(family.OPERATIONS)
+    assert records, f"{FAMILY_MODULE}.OPERATIONS declares no record, so no body or fixed is checked (AC-3)"
+    offending = sorted(
+        f"{record.operation_id}: body {record.body!r}, fixed {record.fixed!r}"
+        for record in records
+        if record.body is not registry.BodyFormat.JSON or record.fixed != ()
+    )
+    assert offending == [], "records whose body is not BodyFormat.JSON or whose fixed is not empty (AC-3):\n" + (
+        "\n".join(offending)
     )
 
 
