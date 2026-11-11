@@ -1,0 +1,44 @@
+# mutant M10: reactions/list-for-issue paging LINK -> NONE
+# file: src/payload/scripts/github_api/families/reactions.py
+# sha256 original: adeb65a23839efa4c57525ca974004fdb402b32904120e7e1bd8ec48f9330feb  # pragma: allowlist secret
+# sha256 mutated:  f49819bdca35e52f0e47bc83c9d696a1c1a0045f2ff8d02c767b248561c05273  # pragma: allowlist secret
+# sha256 restored: adeb65a23839efa4c57525ca974004fdb402b32904120e7e1bd8ec48f9330feb  # pragma: allowlist secret
+# restored byte-identical: True
+# run_tests exit: 1 -> KILLED
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe scripts/run_tests.py src/payload/test/test_github_api_reactions.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_reactions.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [31 items]
+
+.F...F.........................                                          [100%]
+================================== FAILURES ===================================
+_______________ test_the_records_follow_the_transcription_rules _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_reactions.py:219: in test_the_records_follow_the_transcription_rules
+    assert paged == PAGED_IDS, f"Paging.LINK records {sorted(paged)}, sections with a Paging line {sorted(PAGED_IDS)}"
+E   AssertionError: Paging.LINK records ['reactions/list-for-commit-comment', 'reactions/list-for-issue-comment', 'reactions/list-for-pull-request-review-comment', 'reactions/list-for-release'], sections with a Paging line ['reactions/list-for-commit-comment', 'reactions/list-for-issue', 'reactions/list-for-issue-comment', 'reactions/list-for-pull-request-review-comment', 'reactions/list-for-release']
+E   assert frozenset({'r...for-release'}) == frozenset({'r...for-release'})
+E     
+E     Extra items in the right set:
+E     [0m[33m'[39;49;00m[33mreactions/list-for-issue[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-issue] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\test_github_api_reactions.py:230: in test_a_paged_record_prints_every_page
+    requests = fx.run_product_case(case=case, root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-32\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-4/exit-0/reactions/list-for-issue: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_reactions.py::test_the_records_follow_the_transcription_rules
+FAILED src/payload/test/test_github_api_reactions.py::test_a_paged_record_prints_every_page[AC-4/exit-0/reactions/list-for-issue]
+======================== 2 failed, 29 passed in 39.90s ========================
