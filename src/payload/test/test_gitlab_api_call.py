@@ -2012,3 +2012,214 @@ def test_a_raw_body_beside_a_field_is_refused_first(
         f"no log record names {operation_id!r}: the gate and the lookup, whose refusals name it, come after the "
         f"refusal of both bodies (design.md D5 step 1); logged: {naming_the_id!r}"
     )
+
+
+# --- Issue #43 AC-2.4, AC-2.5, AC-3.1: the route prefix and the hyphenated name ---------------------------------------
+
+# Issue #43's records the cases call (families/package.py), each the Reference of its index row:
+# `GET /<route-prefix>/-/package/:package_name/dist-tags` (rest/package.md "npm API", "List all dist-tags") and
+# `PUT /projects/:id/packages/terraform/modules/:module-name/:module-system/:module-version/file` ("Terraform Module
+# Registry API", "Upload module").
+OP_LIST_DIST_TAGS = "package#list-all-dist-tags"
+OP_UPLOAD_MODULE = "package#upload-module"
+OPTION_ROUTE_PREFIX = "--route-prefix"
+# The npm page's `<route-prefix>` values, in its line's order (rest/package.md "npm API").
+NPM_PREFIX_INSTANCE = "/packages/npm"
+NPM_PREFIX_PROJECT = "/projects/:id/packages/npm"
+NPM_PREFIX_GROUP = "/groups/:id/-/packages/npm"
+NPM_PREFIXES = (NPM_PREFIX_INSTANCE, NPM_PREFIX_PROJECT, NPM_PREFIX_GROUP)
+DIST_TAGS_PATH = (OPTION_PATH, "package_name=pkg")
+# Texts no npm record lists (issue #43 design.md "Correctness Properties" AC-2.4): another page's value, a listed value
+# with a `/` added, a listed value with its `:id` written in, and Git Bash's rewrite of `/packages/npm` (Operability).
+UNLISTED_PREFIXES = (
+    ("/projects/:id/packages/debian", "another-pages-prefix"),
+    ("/packages/npm/", "listed-value-and-a-slash"),
+    ("/groups/7/-/packages/npm", "listed-value-with-its-id-written-in"),
+    ("C:/Program Files/Git/packages/npm", "git-bash-rewrite"),
+)
+# A character of a path or a prefix value: a message names a value as one of its own only with none before or after
+# it, so `/packages/npm` inside `/projects/:id/packages/npm` or `"/packages/npm/"` does not name `/packages/npm`.
+PATH_CHARACTER = r"[A-Za-z0-9_:./-]"
+
+
+def names_value(*, text: str, value: str) -> bool:
+    """Whether ``text`` names the prefix value ``value`` whole: no path character before or after it."""
+    pattern = f"(?<!{PATH_CHARACTER}){re.escape(pattern=value)}(?!{PATH_CHARACTER})"
+    return re.search(pattern=pattern, string=text) is not None
+
+
+class PrefixRefusalCase(NamedTuple):
+    """A call naming no route prefix, or one its record does not list (issue #43 AC-2.4): the texts one log record
+    holds, the prefix values it names each as a value of its own, and the path parameters it says have no value."""
+
+    argv: Tuple[str, ...]
+    texts: Tuple[str, ...] = ()
+    values: Tuple[str, ...] = ()
+    missing: Tuple[str, ...] = ()
+    synthetic: Tuple[Synthetic, ...] = ()
+
+
+def prefix_refusal_cases() -> List[Any]:
+    """Issue #43 design.md "Correctness Properties" AC-2.4, AC-2.5 (refusals): each case exits 2 with no request."""
+    cases = [
+        pytest.param(
+            PrefixRefusalCase(argv=(OP_LIST_DIST_TAGS, *DIST_TAGS_PATH), values=NPM_PREFIXES), id="no-route-prefix"
+        )
+    ]
+    cases.extend(
+        pytest.param(
+            PrefixRefusalCase(
+                argv=(OP_LIST_DIST_TAGS, *DIST_TAGS_PATH, OPTION_ROUTE_PREFIX, text),
+                texts=(json.dumps(obj=text),),
+                values=NPM_PREFIXES,
+            ),
+            id=case_id,
+        )
+        for text, case_id in UNLISTED_PREFIXES
+    )
+    cases.extend(
+        [
+            pytest.param(
+                PrefixRefusalCase(
+                    argv=(
+                        OP_LIST_DIST_TAGS,
+                        *DIST_TAGS_PATH,
+                        OPTION_ROUTE_PREFIX,
+                        NPM_PREFIX_INSTANCE,
+                        OPTION_PATH,
+                        "id=7",
+                    ),
+                    texts=(json.dumps(obj=PATH_ID), OPTION_PATH),
+                ),
+                id="id-under-the-instance-prefix",
+            ),
+            pytest.param(
+                PrefixRefusalCase(
+                    argv=(OP_LIST_DIST_TAGS, *DIST_TAGS_PATH, OPTION_ROUTE_PREFIX, NPM_PREFIX_GROUP),
+                    missing=(PATH_ID,),
+                ),
+                id="group-prefix-without-an-id",
+            ),
+            pytest.param(
+                PrefixRefusalCase(
+                    argv=(OP_RETRIEVE_ISSUE, *ISSUE_PATH, OPTION_ROUTE_PREFIX, NPM_PREFIX_INSTANCE),
+                    texts=(OP_RETRIEVE_ISSUE,),
+                ),
+                id="rest-record-without-a-prefix-path",
+            ),
+            pytest.param(
+                PrefixRefusalCase(
+                    argv=(OP_GRAPHQL_PROJECT, OPTION_ROUTE_PREFIX, NPM_PREFIX_INSTANCE),
+                    texts=(OP_GRAPHQL_PROJECT,),
+                    synthetic=(GRAPHQL_PROJECT_RECORD,),
+                ),
+                id="graphql-record",
+            ),
+        ]
+    )
+    return cases
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=prefix_refusal_cases())
+def test_a_route_prefix_the_record_does_not_list_is_refused(
+    case: PrefixRefusalCase,
+    project: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #43 AC-2.4, AC-2.5 (design.md D2, D3): a prefix record called with no ``--route-prefix``, or with a text
+    that none of its values equals, exits 2 with no request and one log record naming each of the record's values (and
+    the text given, as ``json.dumps`` renders it); under a value, a path parameter neither it nor the path holds is
+    refused as #41 AC-2.2 refuses one, and an ``id`` the value holds but the call leaves without one as #41 AC-2.3; and
+    a ``--route-prefix`` for a record whose path does not start with ``/<route-prefix>/``, a GraphQL record included,
+    exits 2 with no request and one log record naming the ID."""
+    install(monkeypatch=monkeypatch, records=case.synthetic)
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=case.argv)
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    naming = [
+        message
+        for message in messages
+        if all(text in message for text in case.texts)
+        and all(names_value(text=message, value=value) for value in case.values)
+        and all(says_no_value(text=message, name=name) for name in case.missing)
+    ]
+    assert naming, (
+        f"one log record holds {list(case.texts)}, names the prefix values {list(case.values)} and says "
+        f"{list(case.missing)} have no value (issue #43 AC-2.4); logged: {messages!r}"
+    )
+
+
+# The Terraform module's path values and its raw body (rest/package.md "Upload module"; issue #43 design.md D5), and its
+# path parameters in path order, each hyphenated name one of them (issue #43 design.md D1).
+MODULE_NAME_PATH = (OPTION_PATH, "module-name=infra")
+MODULE_SYSTEM_PATH = (OPTION_PATH, "module-system=aws")
+MODULE_VERSION_PATH = (OPTION_PATH, "module-version=1.0.0")
+MODULE_INPUT = (OPTION_INPUT, UPLOAD_MARK)
+MODULE_PATH_PARAMETERS = (PATH_ID, "module-name", "module-system", "module-version")
+
+
+class HyphenatedCase(NamedTuple):
+    """A call of ``package#upload-module`` (issue #43 AC-3.1): the path parameters one log record says have no value,
+    and the names it says were given with ``--path`` undocumented."""
+
+    argv: Tuple[str, ...]
+    missing: Tuple[str, ...] = ()
+    undocumented: Tuple[str, ...] = ()
+
+
+@pytest.mark.parametrize(
+    argnames="case",
+    argvalues=[
+        pytest.param(
+            HyphenatedCase(
+                argv=(OP_UPLOAD_MODULE, *MODULE_NAME_PATH, *MODULE_VERSION_PATH, *MODULE_INPUT),
+                missing=("module-system",),
+            ),
+            id="hyphenated-name-left-without-a-value",
+        ),
+        pytest.param(
+            HyphenatedCase(
+                argv=(
+                    OP_UPLOAD_MODULE,
+                    *MODULE_NAME_PATH,
+                    *MODULE_SYSTEM_PATH,
+                    *MODULE_VERSION_PATH,
+                    OPTION_PATH,
+                    "module=infra",
+                    *MODULE_INPUT,
+                ),
+                undocumented=("module",),
+            ),
+            id="name-before-the-hyphen-undocumented",
+        ),
+    ],
+)
+def test_a_hyphenated_name_is_documented_and_required(
+    case: HyphenatedCase,
+    project: Path,
+    fake_gitlab: Any,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Issue #43 AC-3.1 (design.md D1): ``call package#upload-module --input <file>`` without ``--path module-system``
+    exits 2 with no request, one log record saying ``module-system`` has no value and listing ``id``, ``module-name``,
+    ``module-system`` and ``module-version`` as the path parameters; with every hyphenated name given and ``--path
+    module=infra`` added, one log record names ``"module"`` given with ``--path`` and lists the same path parameters."""
+    answer_anything(fake=fake_gitlab)
+    code = run_call(root=project, argv=case.argv)
+    messages = refused_messages(code=code, fake=fake_gitlab, caplog=caplog, capsys=capsys)
+    naming = [
+        message
+        for message in messages
+        if all(says_no_value(text=message, name=name) for name in case.missing)
+        and all(json.dumps(obj=name) in message and OPTION_PATH in message for name in case.undocumented)
+        and listed_path_parameters(text=message) == MODULE_PATH_PARAMETERS
+    ]
+    assert naming, (
+        f"one log record says {list(case.missing)} have no value, names {list(case.undocumented)} given with "
+        f"{OPTION_PATH} undocumented, and lists the path parameters {list(MODULE_PATH_PARAMETERS)} (issue #43 AC-3.1); "
+        f"logged: {messages!r}"
+    )
