@@ -1,0 +1,45 @@
+# mutant: link-none-apps-webhook-deliveries
+# purpose: flip apps/list-webhook-deliveries paging LINK to NONE
+# sha256 before apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197  # pragma: allowlist secret
+# sha256 mutant apps.py: 3b7e56f8a305d6bc053b287519b5006cfbc3d52f445751983a5b7a6a3be82a74  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored apps.py: 8ca72b4622ed882b7b86df4ced9ab1991e28c091ed072637e4db8940ac265197 MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_apps.py::test_every_list_record_has_a_case
+# FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-webhook-deliveries]
+# ======================== 2 failed, 27 passed in 41.50s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_apps.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [29 items]
+
+...F..............F..........                                            [100%]
+================================== FAILURES ===================================
+______________________ test_every_list_record_has_a_case ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_apps.py:405: in test_every_list_record_has_a_case
+    assert not problems, "\n".join(problems)
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['apps/list-webhook-deliveries']
+E   assert not ["Paging.LINK records without a case: []; cases without a Paging.LINK record: ['apps/list-webhook-deliveries']"]
+_____ test_a_list_record_prints_every_item[apps/list-webhook-deliveries] ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_apps.py:415: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/apps/list-webhook-deliveries: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_apps.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_apps.py::test_a_list_record_prints_every_item[apps/list-webhook-deliveries]
+======================== 2 failed, 27 passed in 41.50s ========================

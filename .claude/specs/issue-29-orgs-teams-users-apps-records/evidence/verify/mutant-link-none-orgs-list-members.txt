@@ -1,0 +1,45 @@
+# mutant: link-none-orgs-list-members
+# purpose: flip orgs/list-members paging LINK to NONE
+# sha256 before orgs.py: 441fa37c711dd644cd7332d49f11b9a2a49216fb579d131d73aa1a9927383058  # pragma: allowlist secret
+# sha256 mutant orgs.py: 8d63a83721e524f5715d26094e710293746aa989002849a34559ea07b2791c0f  # pragma: allowlist secret
+# command: python scripts/run_tests.py src/payload/test/test_github_api_orgs.py test/test_github_wrapper_contract.py
+# exit: 1
+# verdict: KILLED
+# sha256 restored orgs.py: 441fa37c711dd644cd7332d49f11b9a2a49216fb579d131d73aa1a9927383058 MATCH  # pragma: allowlist secret
+# --- summary ---
+# FAILED src/payload/test/test_github_api_orgs.py::test_every_list_record_has_a_case
+# FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-members]
+# ======================== 2 failed, 40 passed in 37.47s ========================
+# --- complete output ---
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_api_orgs.py test/test_github_wrapper_contract.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [42 items]
+
+...F..............F.......................                               [100%]
+================================== FAILURES ===================================
+______________________ test_every_list_record_has_a_case ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_api_orgs.py:556: in test_every_list_record_has_a_case
+    assert not problems, "\n".join(problems)
+E   AssertionError: Paging.LINK records without a case: []; cases without a Paging.LINK record: ['orgs/list-members']
+E   assert not ["Paging.LINK records without a case: []; cases without a Paging.LINK record: ['orgs/list-members']"]
+___________ test_a_list_record_prints_every_item[orgs/list-members] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\test_github_api_orgs.py:566: in test_a_list_record_prints_every_item
+    requests = fx.run_product_case(case=list_case(listed=listed), root=tmp_path, monkeypatch=monkeypatch, capsys=capsys)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2803: in run_product_case
+    assert_outcome(case=case, outcome=Outcome(stdout=stdout, exit_code=exit_code, requests=tuple(host.requests)))
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-29\src\payload\test\github_wrapper_fixtures.py:2709: in assert_outcome
+    assert outcome.stdout == case.stdout, f"{case.name}: the standard output differs from the golden"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: AC-3/exit-0/orgs/list-members: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_api_orgs.py::test_every_list_record_has_a_case
+FAILED src/payload/test/test_github_api_orgs.py::test_a_list_record_prints_every_item[orgs/list-members]
+======================== 2 failed, 40 passed in 37.47s ========================
