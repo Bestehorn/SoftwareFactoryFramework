@@ -14,35 +14,36 @@ its `design.md` Correctness Properties entry; each IMPL follows the D section it
 
 ## Wave 1 — The origin guard, the forge job and the credential primitives
 
-- [ ] 1.1 TEST: W, the guard (D2): `test_the_marker_refuses_an_origin_without_the_prefix`,
+- [x] 1.1 TEST: W, the guard (D2): `test_the_marker_refuses_an_origin_without_the_prefix`,
   `test_the_interpreter_option_reaches_the_entry_script`, `test_the_marker_lets_an_ephemeral_origin_through`,
   `test_without_the_marker_every_origin_is_served`, in-process on `github_wrapper_fixtures.load_script` (the call
   C's `load_wrapper` makes), `enter_project` and `FakeGitHub`, the fixtures module loaded by path as C loads it, the
   entry-script example as a subprocess — Files: src/payload/test/test_github_wrapper_marker.py — Validates: AC-4.1,
   AC-4.2, AC-4.3, UB-1, UB-3
-- [ ] 1.2 TEST: L, created; the workflow read as text: `test_the_forge_job_runs_beside_verify`,
+- [x] 1.2 TEST: L, created; the workflow read as text: `test_the_forge_job_runs_beside_verify`,
   `test_the_secret_reaches_one_step`, `test_the_report_judges_the_forge_job`; and <!-- pragma: allowlist secret -->
   `test_the_default_configuration_collects_no_forge_test` (red while `test/forge/` does not exist) — Files:
   test/test_forge_suite_layout.py — Validates: AC-5.1, AC-5.2, AC-5.4, AC-6.3, AC-7.1, UB-1
-- [ ] 1.3 TEST: S, created. It loads `test/forge/ephemeral.py` by path from inside each test body, through a cached
-  helper, never at import and never in a fixture; nothing at S's module level names a symbol of `ephemeral.py`. Its
-  doubles (2.1, 3.1) are built from the loaded module the same way, and so is 4.2's load of `write_credential.py`,
-  so S collects in every wave and a test whose symbol does not exist yet fails in its own body:
+- [x] 1.3 TEST: S, created. It loads `test/forge/ephemeral.py` by path from inside each test body, through a cached
+  helper that, like P's `_load_fixtures`, registers it in `sys.modules` before executing it and reuses it when its
+  `__file__` is this path, never at import and never in a fixture; nothing at S's module level names a symbol of
+  `ephemeral.py`. Its doubles (2.1, 3.1) are built from the loaded module the same way, and so is 4.2's load of
+  `write_credential.py`, so S collects in every wave and a test whose symbol does not exist yet fails in its own body:
   `test_a_distributed_run_is_refused`, `test_the_credential_helper_answers_git_with_the_clone_token`,
   `test_the_test_credential_is_found_in_the_checkout_or_its_main_tree`, and
   `test_a_missing_secret_fails_the_credential_step` with its `write_test_credential` assertions (4.2 adds
   `write_credential.main`); checkouts in `tmp_path`, local git only — Files: test/test_forge_support.py — Validates:
   AC-1.1, AC-5.3, AC-6.1, AC-6.3, UB-1
-- [ ] 1.4 TEST: the unchanged-behaviour guards, no file written, added to every wave's red and green runs (green
+- [x] 1.4 TEST: the unchanged-behaviour guards, no file written, added to every wave's red and green runs (green
   before and after): C, P, K and V (UB-3), I (UB-4) — Files: src/payload/test/test_github_wrapper_compat.py,
   test/test_github_wrapper_fork_parity.py, test/test_github_wrapper_contract.py, test/test_github_wrapper_coverage.py,
   test/test_toolchain_integrity.py, all unedited — Validates: UB-3, UB-4
-- [ ] 1.5 IMPL: the origin guard (D2): `TEST_MARKER_OPTION`, `EPHEMERAL_REPOSITORY_PREFIX`, `_test_marker_set`,
+- [x] 1.5 IMPL: the origin guard (D2): `TEST_MARKER_OPTION`, `EPHEMERAL_REPOSITORY_PREFIX`, `_test_marker_set`,
   `_refuse_unless_ephemeral`, its call in `main` after `_detect_repo`, the docstrings of `main` and of the exit
   paragraph — Files: src/payload/scripts/github_wrapper.py — Validates: AC-4.1, AC-4.2, AC-4.3, UB-3
-- [ ] 1.6 IMPL: the job `forge` and the changed `report` (D5) — Files: .github/workflows/ci.yml — Validates: AC-5.1,
+- [x] 1.6 IMPL: the job `forge` and the changed `report` (D5) — Files: .github/workflows/ci.yml — Validates: AC-5.1,
   AC-5.2, AC-5.4, AC-6.3
-- [ ] 1.7 IMPL: `ephemeral.py`, part 1 (D10): `ForgeSuiteError` (`details=None`) and its four subclasses;
+- [x] 1.7 IMPL: `ephemeral.py`, part 1 (D10): `ForgeSuiteError` (`details=None`) and its four subclasses;
   `refuse_distributed_run` (D1); `credential_helper_arguments` (D3); `find_test_credential` and
   `write_test_credential` (D8); the constants they use — Files: test/forge/ephemeral.py — Validates: AC-1.1, AC-5.3,
   AC-6.1, AC-6.3, AC-7.1

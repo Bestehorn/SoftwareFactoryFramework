@@ -20,3 +20,9 @@ Incident narratives belong in docs/archive/incidents/<date>-<slug>.md, never her
 - Lesson: Run no git operation in a worktree while a delegate tests or mutates there; it owns the tree until its report
 - Enforced-by: none
 - Scope: issue-work-orchestrator worktrees
+
+## 2026-11-12 — A delegate probing git credentials must pass -c credential.h
+- Date: 2026-11-12
+- Lesson: A delegate probing git credentials must pass -c credential.helper= first; without it git credential fill printed the system Git Credential Manager's real github.com token into the session
+- Enforced-by: test/test_forge_support.py test_the_credential_helper_answers_git_with_the_clone_token
+- Scope: forge suite, git credential helper
