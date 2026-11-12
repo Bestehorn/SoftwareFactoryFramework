@@ -31,3 +31,11 @@
 **Alternatives considered:** keep `credentials/README.md` (unmaintainable by any agent; the existing file is the setup prompt's); ask the operator to relax the deny rule (a security setting stays the operator's).
 **Evidence:** `.claude/settings.json` `Read(./credentials/**)`; `git ls-files credentials/` lists `README.md` and `github-pat.txt.template` (so D7's "ships no github-pat.txt.template" clause is also corrected).
 **Artifacts touched:** design.md D7, D10, Correctness Properties AC-9.1; tasks.md 3.4; test/test_forge_suite_layout.py (task 3.2)
+
+## DL-005 — 2026-11-13T00:10:00Z — issue-work-orchestrator — phase:IMPLEMENT
+
+**Decision:** `test/forge/conftest.py` registers the by-path-loaded `ephemeral.py` as `sys.modules["forge_ephemeral"]` (the name `test/test_forge_support.py` and `write_credential.py` use); a forge module reaches the support functions (`is_leftover`, `TEST_ORGANIZATION`) through that entry inside its test bodies.
+**Driver:** D10 "loads `ephemeral.py` by path once per process (`sys.modules` holds it)" and D1's "defines one fixture" leave how a forge module reaches the helpers open; D6's `test_no_leftover_survives_the_sweep` needs `is_leftover`.
+**Alternatives considered:** a second fixture returning the module (D1 names one fixture); `import ephemeral` by name (a second copy beside the by-path one).
+**Evidence:** design.md D1, D10; task 3.1's `_ephemeral()` loader registers `forge_ephemeral`.
+**Artifacts touched:** test/forge/conftest.py, test/forge/forge_*.py (wave 4)

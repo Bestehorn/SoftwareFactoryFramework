@@ -85,29 +85,29 @@ its `design.md` Correctness Properties entry; each IMPL follows the D section it
 
 ## Wave 4 — The session fixture, the suite's collection, the CI credential step and the real-forge tests of the deferred slices (D6)
 
-- [ ] 4.1 TEST: L, `test_the_session_fixture_wraps_one_provision`, `test_the_forge_path_collects_every_forge_test`,
+- [x] 4.1 TEST: L, `test_the_session_fixture_wraps_one_provision`, `test_the_forge_path_collects_every_forge_test`,
   `test_nothing_keeps_a_forge_test_from_running` — Files: test/test_forge_suite_layout.py — Validates: AC-1.1,
   AC-1.4, AC-5.2, AC-7.2, AC-7.3
-- [ ] 4.2 TEST: S, `test_a_missing_secret_fails_the_credential_step` extended: `write_credential.main`, loaded by
+- [x] 4.2 TEST: S, `test_a_missing_secret_fails_the_credential_step` extended: `write_credential.main`, loaded by
   path, returns 1 on the refusal — Files: test/test_forge_support.py — Validates: AC-5.3
-- [ ] 4.3 TEST: F:fixture, `test_the_run_owns_a_private_seeded_repository`, `test_no_leftover_survives_the_sweep`
+- [x] 4.3 TEST: F:fixture, `test_the_run_owns_a_private_seeded_repository`, `test_no_leftover_survives_the_sweep`
   (D6), with its module docstring — Files: test/forge/forge_fixture.py — Validates: AC-1.1, AC-1.3, AC-3.1, AC-4.2,
   AC-8.1
-- [ ] 4.4 IMPL: the suite's configuration (D1 "Mechanism") — Files: test/forge/pytest.ini — Validates: AC-5.2,
+- [x] 4.4 IMPL: the suite's configuration (D1 "Mechanism") — Files: test/forge/pytest.ini — Validates: AC-5.2,
   AC-7.2, AC-7.3
-- [ ] 4.5 IMPL: the by-path load of `ephemeral.py` and the session fixture `ephemeral_repository` (D1 "One repository
+- [x] 4.5 IMPL: the by-path load of `ephemeral.py` and the session fixture `ephemeral_repository` (D1 "One repository
   per run", D9, D10) — Files: test/forge/conftest.py — Validates: AC-1.1, AC-1.4, AC-7.1, AC-7.3
-- [ ] 4.6 IMPL: the CI step's command (D8 "CI"): it loads `ephemeral.py` by path, as `conftest.py` does (D10), and
+- [x] 4.6 IMPL: the CI step's command (D8 "CI"): it loads `ephemeral.py` by path, as `conftest.py` does (D10), and
   calls `write_test_credential` — Files: test/forge/write_credential.py — Validates: AC-5.3
-- [ ] 4.7 TEST: F:subcommands (#17), `test_an_issue_round_trip`, `test_a_pull_request_round_trip`, with its module
+- [x] 4.7 TEST: F:subcommands (#17), `test_an_issue_round_trip`, `test_a_pull_request_round_trip`, with its module
   docstring (D10) — Files: test/forge/forge_subcommands.py — Validates: AC-4.2, AC-8.1, AC-8.2
-- [ ] 4.8 TEST: F:repos_git (#27), `test_the_repository_record_names_the_seed_branch`,
+- [x] 4.8 TEST: F:repos_git (#27), `test_the_repository_record_names_the_seed_branch`,
   `test_the_git_records_read_the_seed_commit`, with its module docstring (D10) — Files: test/forge/forge_repos_git.py
   — Validates: AC-1.3, AC-4.2, AC-8.1, AC-8.3
-- [ ] 4.9 TEST: F:ci_security (#31), `test_no_workflow_has_run`, `test_code_scanning_answers_as_documented`,
+- [x] 4.9 TEST: F:ci_security (#31), `test_no_workflow_has_run`, `test_code_scanning_answers_as_documented`,
   `test_secret_scanning_answers_as_documented`, `test_dependabot_lists_no_secret`; its module docstring (D10) <!-- pragma: allowlist secret -->
   names `checks` with its reason — Files: test/forge/forge_ci_security.py — Validates: AC-4.2, AC-8.1, AC-8.4
-- [ ] 4.10 TEST: F:collaboration (#32), `test_issue_and_reaction_records`,
+- [x] 4.10 TEST: F:collaboration (#32), `test_issue_and_reaction_records`,
   `test_pulls_search_activity_and_gists_records`, with its module docstring (D10) — Files:
   test/forge/forge_collaboration.py — Validates: AC-4.2, AC-8.1, AC-8.5
 

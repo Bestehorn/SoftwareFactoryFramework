@@ -102,3 +102,4 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | gitlab_api dedicated | archive imports and import-relation declared, call refuses each | issue-15 DL-002 | closes the imports of the issue-38 DL-005 row | enforced src/payload/test/test_gitlab_api_gitlab_dedicated.py |
 | 2026-11-11 | gitlab_api package | PUT projects/:id/ (container registry visibility) declared; call refuses it | issue-15 DL-002 | closes the issue-43 DL-006 row | enforced src/payload/test/test_gitlab_api_package.py |
 | 2026-11-11 | gitlab_api tenant-scale | tenant-scale#update-a-project keeps the branch-overwriting mirror rows and stays callable | issue-15 change.md Residuals | gating an existing record is outside issue-15's ask | open |
+| 2026-11-12 | forge provision | failed wrapper load before provision's try leaves an empty temp dir | test/forge/ephemeral.py provision; #10 task 4.5 | not observed; reaper clears it | open |

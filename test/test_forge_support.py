@@ -16,9 +16,11 @@ process. No test opens a connection or needs a test credential file (UB-1).
 ``ephemeral.py`` is loaded by path from inside each test body through ``_ephemeral``, never at import and never in a
 fixture, and nothing at this module's level names one of its symbols: this file collects whatever ``ephemeral.py``
 holds, and a test whose symbol does not exist yet fails in its own body (``_require``). The test doubles are built from
-the loaded module the same way, inside a helper a test body calls. The product wrapper, whose marker and origin pattern
-are the oracles of D10 and D4, is loaded by path for the test that reads it, and its directory is on ``sys.path`` only
-until that test ends.
+the loaded module the same way, inside a helper a test body calls. ``test/forge/write_credential.py``, the CI step's
+command, is loaded the same way, through ``_credential_step`` from inside the one test that runs its ``main``, and the
+``SFF_TEST_TOKEN`` that ``main`` reads is set or removed only through that test's ``monkeypatch``. The product
+wrapper, whose marker and origin pattern are the oracles of D10 and D4, is loaded by path for the test that reads it,
+and its directory is on ``sys.path`` only until that test ends.
 
 Run: ``python scripts/run_tests.py test/test_forge_support.py`` (needs git on PATH).
 """
@@ -78,6 +80,13 @@ DECOY_HELPER = f"!f() {{ printf '{USER_FIELD}={DECOY_VALUE}\\n{TOKEN_FIELD}={DEC
 
 # D8: the CI step's refusal of an empty secret.
 UNAVAILABLE_TOKEN_MESSAGE = "the secret SFF_TEST_TOKEN is unavailable to this run"
+# D8 "CI": the CI step's command, loaded by path as ``ephemeral.py`` is, the one environment variable its ``main``
+# reads, and the exit codes ``main`` returns.
+WRITE_CREDENTIAL_PATH = ROOT / "test" / "forge" / "write_credential.py"
+WRITE_CREDENTIAL_MODULE = "forge_write_credential"
+SECRET_VARIABLE = "SFF_TEST_TOKEN"  # pragma: allowlist secret
+STEP_WROTE = 0
+STEP_REFUSED = 1
 
 GIT = "git"
 GIT_EXIT_OK = 0
@@ -182,27 +191,36 @@ MAX_LISTING = 12
 SWEEP_EXAMPLES = 60
 
 
-def _ephemeral() -> ModuleType:
-    """``test/forge/ephemeral.py``, loaded by path once per process and reused while ``sys.modules`` holds it.
+def _load_by_path(*, path: Path, name: str, description: str) -> ModuleType:
+    """The file ``path``, loaded by path as the module ``name`` once per process and reused while ``sys.modules`` holds
+    it; it is registered there before it runs, so its dataclasses resolve their module.
 
-    Called from inside each test body, so a missing module fails that test with this assertion, never the collection.
+    Called from inside a test body, so a missing file fails that test with this assertion, never the collection.
     """
-    loaded = sys.modules.get(EPHEMERAL_MODULE)
-    if loaded is not None and Path(str(loaded.__file__)).resolve() == EPHEMERAL_PATH:
+    loaded = sys.modules.get(name)
+    if loaded is not None and Path(str(loaded.__file__)).resolve() == path:
         return loaded
-    assert EPHEMERAL_PATH.is_file(), (
-        f"the forge suite's support module {EPHEMERAL_PATH.relative_to(ROOT).as_posix()} does not exist"
-    )
-    spec = importlib.util.spec_from_file_location(name=EPHEMERAL_MODULE, location=EPHEMERAL_PATH)
-    assert spec is not None and spec.loader is not None, f"cannot load {EPHEMERAL_PATH}"
+    assert path.is_file(), f"{description} {path.relative_to(ROOT).as_posix()} does not exist"
+    spec = importlib.util.spec_from_file_location(name=name, location=path)
+    assert spec is not None and spec.loader is not None, f"cannot load {path}"
     module = importlib.util.module_from_spec(spec=spec)
-    sys.modules[EPHEMERAL_MODULE] = module
+    sys.modules[name] = module
     try:
         spec.loader.exec_module(module=module)
     except BaseException:
-        sys.modules.pop(EPHEMERAL_MODULE, None)
+        sys.modules.pop(name, None)
         raise
     return module
+
+
+def _ephemeral() -> ModuleType:
+    """``test/forge/ephemeral.py``, the forge suite's support module, loaded by path (``_load_by_path``)."""
+    return _load_by_path(path=EPHEMERAL_PATH, name=EPHEMERAL_MODULE, description="the forge suite's support module")
+
+
+def _credential_step() -> ModuleType:
+    """``test/forge/write_credential.py``, the CI step's command, loaded by path (``_load_by_path``)."""
+    return _load_by_path(path=WRITE_CREDENTIAL_PATH, name=WRITE_CREDENTIAL_MODULE, description="the CI step's command")
 
 
 def _git(*, arguments: Sequence[str], cwd: Path, request: str = "") -> subprocess.CompletedProcess[str]:
@@ -345,9 +363,13 @@ def test_the_test_credential_is_found_in_the_checkout_or_its_main_tree(tmp_path:
     )
 
 
-def test_a_missing_secret_fails_the_credential_step(tmp_path: Path) -> None:
-    """AC-5.3 (D8 "CI"): an empty secret is refused and nothing is written; a token is written followed by a line
-    end, as the checkout's test credential file."""
+def test_a_missing_secret_fails_the_credential_step(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """AC-5.3 (D5, D8 "CI"): an empty secret is refused and nothing is written; a token is written followed by a line
+    end, as the checkout's test credential file. ``write_credential.main``, the CI step's command, given
+    ``SFF_TEST_TOKEN`` unset or empty, logs the refusal, writes nothing and returns 1; given a token, it writes the
+    checkout's test credential file and returns 0."""
     forge = _ephemeral()
     checkout = tmp_path / "checkout"
     (checkout / CREDENTIALS_DIRECTORY).mkdir(parents=True)
@@ -368,6 +390,52 @@ def test_a_missing_secret_fails_the_credential_step(tmp_path: Path) -> None:
         (token + LINE_END).encode(encoding=TEXT_ENCODING),
         (token + WINDOWS_LINE_END).encode(encoding=TEXT_ENCODING),
     ), "the test credential file does not hold the token followed by a line end"
+
+    _assert_the_credential_step_judges_the_secret(
+        step=_credential_step(), checkout=tmp_path / "ci step checkout", monkeypatch=monkeypatch, caplog=caplog
+    )
+
+
+def _assert_the_credential_step_judges_the_secret(
+    *, step: ModuleType, checkout: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """AC-5.3 (D5, D8 "CI"): ``step.main(checkout=checkout)`` with ``SFF_TEST_TOKEN`` removed, then empty, logs the
+    refusal, returns 1 and leaves ``checkout`` as it was; with a token, it writes the token and a line end as the
+    checkout's test credential file, touches no other file, logs no record holding the token and returns 0."""
+    (checkout / CREDENTIALS_DIRECTORY).mkdir(parents=True)
+    before = _tree(root=checkout)
+    caplog.set_level(level=logging.DEBUG)
+
+    for unavailable in (None, ""):
+        if unavailable is None:
+            monkeypatch.delenv(name=SECRET_VARIABLE, raising=False)
+        else:
+            monkeypatch.setenv(name=SECRET_VARIABLE, value=unavailable)
+        state = "unset" if unavailable is None else "empty"
+        caplog.clear()
+        exit_code = step.main(checkout=checkout)
+        assert exit_code == STEP_REFUSED, f"main returned {exit_code!r} with {SECRET_VARIABLE} {state}, not 1"
+        refusals = [record for record in caplog.records if UNAVAILABLE_TOKEN_MESSAGE in record.getMessage()]
+        assert refusals, (
+            f"main logged no record saying {UNAVAILABLE_TOKEN_MESSAGE!r} with {SECRET_VARIABLE} {state}: "
+            f"{caplog.messages}"
+        )
+        assert _tree(root=checkout) == before, f"main left a file in the checkout with {SECRET_VARIABLE} {state}"
+
+    token = _new_token(label="ci-step")
+    monkeypatch.setenv(name=SECRET_VARIABLE, value=token)
+    caplog.clear()
+    exit_code = step.main(checkout=checkout)
+    assert exit_code == STEP_WROTE, f"main returned {exit_code!r} with a token in {SECRET_VARIABLE}, not 0"
+    written = checkout / CREDENTIALS_DIRECTORY / TEST_CREDENTIAL_NAME
+    assert _tree(root=checkout) == sorted([*before, written.relative_to(checkout).as_posix()]), (
+        "main touched another file than the checkout's test credential file"
+    )
+    assert written.read_bytes() in (
+        (token + LINE_END).encode(encoding=TEXT_ENCODING),
+        (token + WINDOWS_LINE_END).encode(encoding=TEXT_ENCODING),
+    ), "main's test credential file does not hold the token followed by a line end"
+    assert token not in caplog.text, "a record main logged holds the token"
 
 
 # ---------------------------------------------------------------------------------------------------------------------

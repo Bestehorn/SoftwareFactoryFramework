@@ -1,12 +1,16 @@
-"""L: the forge suite's separation and its CI wiring, read from the repository (issue #10, design.md D1, D5, D6, D10).
+"""L: the forge suite's separation and its CI wiring, read from the repository (issue #10, design.md D1, D5, D6, D9,
+D10).
 
 The forge suite (``test/forge/``) talks to github.com and runs in its own CI job; these tests run in the default
 collection with no network and no test credential (UB-1). They read ``.github/workflows/ci.yml`` as text, through a
 small indentation-based reader of the YAML the workflow uses (block mappings and sequences, one-line flow
 collections, block scalars, comments), because PyYAML is not a dependency of the dev extra; they run
-``pytest --collect-only`` on ``test/forge`` under the default configuration; and they parse the ``.py`` files of
-``test/forge/`` with ``ast`` to bound what the suite reaches: only ``ephemeral.py`` starts the product wrapper, and
-nothing creates, deletes or targets a repository but the ephemeral one (AC-4.3, AC-8.1, AC-8.6). They read the test
+``pytest --collect-only`` on ``test/forge`` under the default configuration and under the suite's own
+``test/forge/pytest.ini``, which no fixture runs under, so no token or network is needed (AC-7.1, AC-7.2); and they
+parse the ``.py`` files of ``test/forge/`` with ``ast`` to bound what the suite reaches: only ``ephemeral.py`` starts
+the product wrapper, and nothing creates, deletes or targets a repository but the ephemeral one (AC-4.3, AC-8.1,
+AC-8.6); the session fixture of ``conftest.py`` wraps one provision (AC-1.1, AC-1.4); and nothing skips, xfails,
+ends or hooks a forge test's run, ``pytest.ini`` read with ``configparser`` (AC-5.2, AC-7.3). They read the test
 credential's setup note ``docs/forge-suite.md`` (D7), the map ``docs/forLLMConsumption.md`` and
 ``docs/ProjectPlan.md`` (D10) as text (AC-9.1 to AC-9.3).
 
@@ -16,12 +20,13 @@ Run: ``python scripts/run_tests.py test/test_forge_suite_layout.py``.
 from __future__ import annotations
 
 import ast
+import configparser
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any, Optional, Sequence, Union
 
 import pytest
 
@@ -167,6 +172,45 @@ WHITESPACE_RUN = re.compile(r"\s+")
 # A paragraph break, or a line that opens a Markdown block: a table row, a heading, a quote or a list item.
 BLOCK_BREAK = re.compile(r"\n[ \t]*\n|\n(?=[ \t]*(?:[|#>]|[*+-][ \t]|\d+[.)][ \t]))")
 SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
+
+# The suite's own configuration and its conftest, read with `configparser` and `ast` (D1, D9, D10).
+FORGE_CONFIGURATION_NAME = "test/forge/pytest.ini"
+FORGE_CONFIGURATION = ROOT / FORGE_CONFIGURATION_NAME
+CONFTEST_NAME = "test/forge/conftest.py"
+CONFTEST = ROOT / CONFTEST_NAME
+CONFIGURATION_SECTION = "pytest"
+FORGE_MODULES = "forge_*.py"
+# D1 "Mechanism", exactly: so no fail-fast, selecting, deselecting, ignoring or collect-only option reaches the run.
+EXPECTED_FORGE_CONFIGURATION = {
+    "python_files": FORGE_MODULES,
+    "addopts": "-p no:cacheprovider",
+    "log_cli": "true",
+    "log_cli_level": "INFO",
+}
+TEST_PREFIX = "test_"
+FUNCTION_NODES = (ast.FunctionDef, ast.AsyncFunctionDef)
+WITH_NODES = (ast.With, ast.AsyncWith)
+YIELD_NODES = (ast.Yield, ast.YieldFrom)
+FunctionNode = Union[ast.FunctionDef, ast.AsyncFunctionDef]
+WithNode = Union[ast.With, ast.AsyncWith]
+# One line of `--collect-only -q`: a node id `<module>::<test>`, a parametrized test's id with its `[...]` parameters.
+COLLECTED_ITEM = re.compile(r"^(?P<module>[^\s:][^:]*\.py)::(?P<test>[^\s\[]+)(?:\[.*\])?$")
+SESSION_FIXTURE = "ephemeral_repository"
+FIXTURE_FUNCTION = "fixture"
+SCOPE_KEYWORD = "scope"
+SESSION_SCOPE = "session"
+WORKER_ID = "worker_id"
+DISTRIBUTED_RUN_REFUSAL = "refuse_distributed_run"
+PROVISION = "provision"
+PYTEST_MODULE = "pytest"
+PYTEST_PACKAGES = (PYTEST_MODULE, "_pytest")
+# What skips, xfails or ends a test or the run: as an attribute of a pytest name (`pytest.skip`, `pytest.mark.xfail`,
+# `mark.skipif` after `from pytest import mark`), or imported from pytest (`from pytest import skip as s`).
+SKIPPING_OUTCOMES = frozenset({"skip", "skipif", "xfail", "importorskip", "exit"})
+STAR_IMPORT = "*"
+SKIP_EXCEPTION = "SkipTest"
+HOOK_PREFIX = "pytest_"
+COLLECT_IGNORE_PREFIX = "collect_ignore"
 
 # The YAML reader's syntax.
 KEY_LINE = re.compile(r"^(?P<key>[A-Za-z0-9_][\w.\-/]*|\"[^\"]*\"|'[^']*')[ \t]*:(?:[ \t]+(?P<value>.*))?$")
@@ -807,6 +851,270 @@ def says_only_local_machines_need_it(*, text: str) -> bool:
     return any(all(word.search(sentence) for word in LOCAL_ONLY_WORDS) for sentence in sentences_of(text=text))
 
 
+def collect_only(*, arguments: Sequence[str]) -> subprocess.CompletedProcess[str]:
+    """``python -m pytest --collect-only -q -p no:cacheprovider`` with ``arguments``, from the repository root."""
+    return subprocess.run(
+        args=[sys.executable, "-m", "pytest", "--collect-only", "-q", "-p", "no:cacheprovider", *arguments],
+        cwd=ROOT,
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=COLLECTION_TIMEOUT_SECONDS,
+        check=False,
+    )
+
+
+def forge_test_functions() -> set[tuple[str, str]]:
+    """Each module-level ``test_`` function of ``test/forge/forge_*.py``: its module's path from ``test/forge``, the
+    rootdir the suite's own configfile makes, and its name."""
+    found: set[tuple[str, str]] = set()
+    for path in sorted(FORGE_DIRECTORY.glob(FORGE_MODULES)):
+        tree = ast.parse(source=read_document(path=path), filename=str(path))
+        module = path.relative_to(FORGE_DIRECTORY).as_posix()
+        found.update(
+            (module, node.name)
+            for node in tree.body
+            if isinstance(node, FUNCTION_NODES) and node.name.startswith(TEST_PREFIX)
+        )
+    return found
+
+
+def collected_tests(*, output: str) -> set[tuple[str, str]]:
+    """Each test ``--collect-only -q`` lists: its module's path from the rootdir and its name, without parameters."""
+    items = (COLLECTED_ITEM.match(line.strip()) for line in output.splitlines())
+    return {(item.group("module"), item.group("test")) for item in items if item}
+
+
+@dataclass(frozen=True)
+class PytestBindings:
+    """What a module binds to pytest: the names of a pytest package (``pytest``, ``import pytest as pt``, ``import
+    _pytest.outcomes``), and each name an import from one binds, with the name it imports (``from pytest import mark
+    as m`` binds ``m`` to ``mark``)."""
+
+    modules: frozenset[str]
+    imported: dict[str, str]
+
+    def roots(self) -> frozenset[str]:
+        return self.modules | frozenset(self.imported)
+
+
+def is_pytest_package(*, module: str) -> bool:
+    return any(is_within(module=module, package=package) for package in PYTEST_PACKAGES)
+
+
+def pytest_bindings(*, tree: ast.Module) -> PytestBindings:
+    modules = {PYTEST_MODULE}
+    imported: dict[str, str] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            modules.update(
+                alias.asname or alias.name.split(MODULE_SEPARATOR)[0]
+                for alias in node.names
+                if is_pytest_package(module=alias.name)
+            )
+        elif isinstance(node, ast.ImportFrom) and is_pytest_package(module=node.module or ""):
+            imported.update({alias.asname or alias.name: alias.name for alias in node.names})
+    return PytestBindings(modules=frozenset(modules), imported=imported)
+
+
+def root_name(*, node: ast.AST) -> Optional[str]:
+    """The name an attribute chain starts from: ``pytest`` for ``pytest.mark.skip``; ``None`` for any other root."""
+    while isinstance(node, ast.Attribute):
+        node = node.value
+    return node.id if isinstance(node, ast.Name) else None
+
+
+def is_rooted_in(*, node: ast.AST, roots: frozenset[str]) -> bool:
+    name = root_name(node=node)
+    return name is not None and name in roots
+
+
+def reaches_skipping_outcome(*, node: ast.AST, roots: frozenset[str]) -> bool:
+    """``node`` is a skipping attribute of a pytest name (``pytest.skip``, ``pytest.mark.xfail``), or names one by a
+    string (``getattr(pytest, "exit")``)."""
+    if isinstance(node, ast.Attribute):
+        return node.attr in SKIPPING_OUTCOMES and is_rooted_in(node=node.value, roots=roots)
+    attribute = attribute_by_string(node=node)
+    if attribute is None or attribute not in SKIPPING_OUTCOMES:
+        return False
+    return isinstance(node, ast.Call) and bool(node.args) and is_rooted_in(node=node.args[0], roots=roots)
+
+
+def imports_skipping_outcome(*, node: ast.AST) -> bool:
+    """``node`` imports a skipping name, or every name, from a pytest package (``from pytest import skip as s``)."""
+    if not isinstance(node, ast.ImportFrom) or not is_pytest_package(module=node.module or ""):
+        return False
+    return any(alias.name in SKIPPING_OUTCOMES or alias.name == STAR_IMPORT for alias in node.names)
+
+
+def skipping_outcomes(*, tree: ast.Module) -> list[int]:
+    """The lines that reach what skips, xfails or ends a test or the run, and every line naming ``SkipTest``."""
+    roots = pytest_bindings(tree=tree).roots()
+    reached = [
+        line_of(node=node)
+        for node in ast.walk(tree)
+        if reaches_skipping_outcome(node=node, roots=roots) or imports_skipping_outcome(node=node)
+    ]
+    return sorted(reached + lines_naming(root=tree, identifier=SKIP_EXCEPTION))
+
+
+def defines_hook(*, node: ast.AST) -> bool:
+    """``node`` defines or binds a ``pytest_`` name: a hook function, or ``pytest_plugins``."""
+    if isinstance(node, FUNCTION_NODES):
+        return node.name.startswith(HOOK_PREFIX)
+    return isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store) and node.id.startswith(HOOK_PREFIX)
+
+
+def collection_hooks(*, tree: ast.Module) -> list[int]:
+    """The lines that define a pytest hook or bind ``pytest_plugins``, and the lines that name ``collect_ignore`` or
+    ``collect_ignore_glob``, as an identifier or a string."""
+    hooks = [
+        line_of(node=node)
+        for node in ast.walk(tree)
+        if defines_hook(node=node)
+        or any(identifier.startswith(COLLECT_IGNORE_PREFIX) for identifier in named_identifiers(node=node))
+    ]
+    ignores = [line for line, text in string_constants(tree=tree) if text.startswith(COLLECT_IGNORE_PREFIX)]
+    return sorted(hooks + ignores)
+
+
+class CaseKeepingParser(configparser.ConfigParser):
+    """An INI reader that keeps each key as written, as pytest reads its ``pytest.ini``."""
+
+    def optionxform(self, optionstr: str) -> str:
+        return optionstr
+
+
+def configuration_problems() -> list[str]:
+    """D1 "Mechanism": ``test/forge/pytest.ini`` holds the one section ``[pytest]`` with exactly its four keys."""
+    if not FORGE_CONFIGURATION.is_file():
+        return [f"{FORGE_CONFIGURATION_NAME} does not exist"]
+    parser = CaseKeepingParser(interpolation=None)
+    try:
+        parser.read_string(string=read_document(path=FORGE_CONFIGURATION), source=FORGE_CONFIGURATION_NAME)
+    except configparser.Error as exc:
+        return [f"{FORGE_CONFIGURATION_NAME} is not an INI file configparser reads: {exc}"]
+    sections = parser.sections()
+    if sections != [CONFIGURATION_SECTION]:
+        return [f"{FORGE_CONFIGURATION_NAME} holds the sections {sections}, not exactly [{CONFIGURATION_SECTION}]"]
+    keys = dict(parser[CONFIGURATION_SECTION])
+    if keys != EXPECTED_FORGE_CONFIGURATION:
+        return [f"{FORGE_CONFIGURATION_NAME} holds {keys}, not exactly {EXPECTED_FORGE_CONFIGURATION}"]
+    return []
+
+
+def is_session_fixture(*, decorator: ast.expr, bindings: PytestBindings) -> bool:
+    """``decorator`` is ``pytest.fixture(scope="session")``, or ``fixture(scope="session")`` imported from pytest."""
+    if not isinstance(decorator, ast.Call):
+        return False
+    function = decorator.func
+    if isinstance(function, ast.Attribute):
+        names_fixture = function.attr == FIXTURE_FUNCTION and is_rooted_in(node=function.value, roots=bindings.modules)
+    else:
+        names_fixture = isinstance(function, ast.Name) and bindings.imported.get(function.id) == FIXTURE_FUNCTION
+    scopes = [keyword.value for keyword in decorator.keywords if keyword.arg == SCOPE_KEYWORD]
+    return (
+        names_fixture and len(scopes) == 1 and isinstance(scopes[0], ast.Constant) and scopes[0].value == SESSION_SCOPE
+    )
+
+
+def parameter_names(*, function: FunctionNode) -> list[str]:
+    arguments = function.args
+    return [argument.arg for argument in (*arguments.posonlyargs, *arguments.args, *arguments.kwonlyargs)]
+
+
+def body_nodes(*, function: FunctionNode) -> list[ast.AST]:
+    """Every node of ``function``'s body; its decorators and its parameters' defaults left out."""
+    return [node for statement in function.body for node in ast.walk(statement)]
+
+
+def calls_named(*, nodes: Sequence[ast.AST], name: str) -> list[ast.Call]:
+    return [node for node in nodes if isinstance(node, ast.Call) and called_name(call=node) == name]
+
+
+def holding_statement(*, function: FunctionNode, node: ast.AST) -> int:
+    """The index of the statement of ``function``'s body that holds ``node``, a node of its body."""
+    return next(
+        index for index, statement in enumerate(function.body) if any(part is node for part in ast.walk(statement))
+    )
+
+
+def the_refusal(*, function: FunctionNode, nodes: Sequence[ast.AST]) -> Optional[ast.Call]:
+    """The one ``refuse_distributed_run(...)`` call of ``nodes``, when it is a statement of ``function``'s own body,
+    so it runs whatever happens; ``None`` otherwise."""
+    refusals = calls_named(nodes=nodes, name=DISTRIBUTED_RUN_REFUSAL)
+    if len(refusals) != 1:
+        return None
+    statements = [statement for statement in function.body if isinstance(statement, ast.Expr)]
+    return refusals[0] if any(statement.value is refusals[0] for statement in statements) else None
+
+
+def passes_own_worker_id(*, call: ast.Call) -> bool:
+    """``call`` passes exactly ``worker_id=worker_id``."""
+    if call.args or len(call.keywords) != 1:
+        return False
+    keyword = call.keywords[0]
+    return keyword.arg == WORKER_ID and isinstance(keyword.value, ast.Name) and keyword.value.id == WORKER_ID
+
+
+def the_provision_block(*, nodes: Sequence[ast.AST]) -> Optional[WithNode]:
+    """The ``with`` statement whose item is the one ``provision(...)`` call of ``nodes``; ``None`` unless
+    ``provision`` is called exactly once, as a ``with`` item."""
+    provisions = calls_named(nodes=nodes, name=PROVISION)
+    if len(provisions) != 1:
+        return None
+    blocks = [
+        node
+        for node in nodes
+        if isinstance(node, WITH_NODES) and any(item.context_expr is provisions[0] for item in node.items)
+    ]
+    return blocks[0] if blocks else None
+
+
+def yield_problems(*, nodes: Sequence[ast.AST], block: Optional[WithNode]) -> list[str]:
+    """The fixture's body holds one ``yield``, and it lies inside the ``with provision(...)`` block."""
+    yields = [node for node in nodes if isinstance(node, YIELD_NODES)]
+    if len(yields) != 1 or not isinstance(yields[0], ast.Yield):
+        return [f"its body holds {len(yields)} `yield` or `yield from` expressions, not one `yield`"]
+    inside = block is not None and any(node is yields[0] for statement in block.body for node in ast.walk(statement))
+    return [] if inside else [f"its `yield` is not inside the `with {PROVISION}(...)` block"]
+
+
+def refusal_problems(*, function: FunctionNode, nodes: Sequence[ast.AST], block: Optional[WithNode]) -> list[str]:
+    """The fixture calls ``refuse_distributed_run(worker_id=worker_id)`` once, unconditionally, before ``provision``."""
+    refusal = the_refusal(function=function, nodes=nodes)
+    if refusal is None:
+        return [f"it does not call `{DISTRIBUTED_RUN_REFUSAL}` exactly once, as a statement of its own body"]
+    problems = []
+    if not passes_own_worker_id(call=refusal):
+        problems.append(f"it does not call `{DISTRIBUTED_RUN_REFUSAL}({WORKER_ID}={WORKER_ID})`")
+    if block is not None and holding_statement(function=function, node=refusal) >= holding_statement(
+        function=function, node=block
+    ):
+        problems.append(f"it calls `{DISTRIBUTED_RUN_REFUSAL}` after, not before, `{PROVISION}`")
+    return problems
+
+
+def session_fixture_problems(*, function: FunctionNode, bindings: PytestBindings) -> list[str]:
+    """AC-1.1, AC-1.4: ``ephemeral_repository`` is a session fixture taking ``worker_id``, refuses a distributed run
+    before it provisions, and yields once, inside the one ``with provision(...)`` block."""
+    problems = []
+    if not any(is_session_fixture(decorator=decorator, bindings=bindings) for decorator in function.decorator_list):
+        problems.append(f'it is not decorated `pytest.fixture({SCOPE_KEYWORD}="{SESSION_SCOPE}")`')
+    parameters = parameter_names(function=function)
+    if WORKER_ID not in parameters:
+        problems.append(f"it takes no `{WORKER_ID}` parameter; its parameters are {parameters}")
+    nodes = body_nodes(function=function)
+    block = the_provision_block(nodes=nodes)
+    if block is None:
+        problems.append(f"it does not call `{PROVISION}` exactly once, as the item of a `with` statement")
+    problems += refusal_problems(function=function, nodes=nodes, block=block)
+    problems += yield_problems(nodes=nodes, block=block)
+    return problems
+
+
 def test_the_forge_job_runs_beside_verify() -> None:
     workflow = read_workflow()
     triggers = workflow.get(KEY_ON)
@@ -932,3 +1240,43 @@ def test_the_debt_line_is_gone() -> None:
     assert PROJECT_PLAN.is_file(), f"{PROJECT_PLAN_NAME} does not exist"
     prose = collapse_whitespace(text=read_document(path=PROJECT_PLAN)).casefold()
     assert DEBT_LINE.casefold() not in prose, f"{PROJECT_PLAN_NAME} still lists the known debt `{DEBT_LINE}`"
+
+
+def test_the_session_fixture_wraps_one_provision() -> None:
+    assert CONFTEST.is_file(), f"{CONFTEST_NAME}, which defines the session fixture `{SESSION_FIXTURE}`, does not exist"
+    tree = ast.parse(source=read_document(path=CONFTEST), filename=str(CONFTEST))
+    fixtures = [node for node in tree.body if isinstance(node, FUNCTION_NODES) and node.name == SESSION_FIXTURE]
+    assert len(fixtures) == 1, f"{CONFTEST_NAME} defines `{SESSION_FIXTURE}` at module level {len(fixtures)} times"
+    problems = session_fixture_problems(function=fixtures[0], bindings=pytest_bindings(tree=tree))
+    assert not problems, f"{CONFTEST_NAME} `{SESSION_FIXTURE}`:\n" + "\n".join(problems)
+
+
+def test_the_forge_path_collects_every_forge_test() -> None:
+    assert FORGE_CONFIGURATION.is_file(), f"{FORGE_CONFIGURATION_NAME}, the forge suite's configfile, does not exist"
+    expected = forge_test_functions()
+    assert expected, f"{FORGE_SUITE}/{FORGE_MODULES} defines no module-level `{TEST_PREFIX}` function"
+    completed = collect_only(arguments=[FORGE_SUITE])
+    output = completed.stdout + completed.stderr
+    succeeded = int(pytest.ExitCode.OK)
+    assert completed.returncode == succeeded, (
+        f"the collection exited {completed.returncode}, not {succeeded}:\n{output}"
+    )
+    errors = [marker for marker in COLLECTION_ERROR_MARKERS if marker in output]
+    assert not errors, f"the collection reports {errors}:\n{output}"
+    collected = collected_tests(output=completed.stdout)
+    assert collected == expected, (
+        f"the collection of {FORGE_SUITE} lists {sorted(collected - expected)} beyond the `{TEST_PREFIX}` functions "
+        f"of {FORGE_SUITE}/{FORGE_MODULES} and misses {sorted(expected - collected)}:\n{output}"
+    )
+
+
+def test_nothing_keeps_a_forge_test_from_running() -> None:
+    problems = configuration_problems()
+    if not CONFTEST.is_file():
+        problems.append(f"{CONFTEST_NAME} does not exist")
+    for module in read_forge_modules():
+        outcomes = skipping_outcomes(tree=module.tree)
+        problems += located(module=module, lines=outcomes, problem="skips, xfails or ends a test or the run")
+        hooks = collection_hooks(tree=module.tree)
+        problems += located(module=module, lines=hooks, problem="defines a pytest hook or names `collect_ignore`")
+    assert not problems, "something keeps a forge test from running:\n" + "\n".join(problems)
