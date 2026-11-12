@@ -4,10 +4,12 @@ The forge suite (``test/forge/``, run by ``python scripts/run_tests.py --workers
 wrapper against an ephemeral ``sff-test-*`` repository of the test organization. This module holds the logic that
 decides without the forge, so the default collection proves it (``test/test_forge_support.py``): the refusal of a
 distributed run (D1), the per-command git credential helper (D3), the run id and the repository name it gives (D4),
-where the test credential file is found and how the CI step writes it (D8), the teardown guard and the leftover sweep
-(D9). The runners are its one way out to a process (D10): ``SubprocessWrapperRunner`` starts the product wrapper with
-the test marker, ``SubprocessGitRunner`` starts git, and the logic above takes a ``WrapperRunner`` or ``GitRunner``, so
-a test gives it a double.
+where the test credential file is found, how its token is read and how the CI step writes it (D8), the teardown guard
+and the leftover sweep (D9), and ``provision``, the context manager around one run's repository: it reads the test
+token, prepares the clone, sweeps, creates and seeds the repository, and afterwards deletes it and removes the
+workspace (D3 "The clone", D9). The runners are its one way out to a process (D10): ``SubprocessWrapperRunner`` starts
+the product wrapper with the test marker, ``SubprocessGitRunner`` starts git, and the logic above takes a
+``WrapperRunner`` or ``GitRunner``, so a test gives it a double.
 
 Loaded by path, never imported by name and never collected: its name matches neither the default ``python_files`` nor
 the suite's ``forge_*.py``, and under ``--import-mode=importlib`` a test directory's utility module is not importable.
@@ -21,15 +23,19 @@ import importlib.util
 import json
 import logging
 import re
+import shutil
+import stat
 import subprocess
 import sys
+import time
 import uuid
 from abc import ABC, abstractmethod
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
+from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +49,8 @@ CREDENTIALS_DIRECTORY = Path("credentials")
 CLONE_CREDENTIAL_FILE = CREDENTIALS_DIRECTORY / "github-pat.txt"
 #: The operator's test token for the test organization, git-ignored like every file of ``credentials/``.
 TEST_CREDENTIAL_FILE = CREDENTIALS_DIRECTORY / "github-sff-testing-pat.txt"
+#: The test credential's setup note (D7), which every refusal of the test credential file points to.
+SETUP_NOTE = "docs/forge-suite.md"
 
 # D3: the global git options of an authenticated command. The empty value empties the helper list, so no configured
 # helper (Git Credential Manager) is asked; the github.com helper is a shell snippet that answers only ``get``, from
@@ -68,20 +76,27 @@ TEXT_ENCODING = "utf-8"
 #: The bound of every subprocess the suite starts.
 SUBPROCESS_TIMEOUT_SECONDS = 300
 
+#: D8: the working tree holding the suite, the repository root above ``test/forge/``: the ``checkout`` whose test
+#: credential file a run reads.
+CHECKOUT = Path(__file__).resolve().parents[2]
 # D10: the product entry script the suite starts, and the fixed ``sys.modules`` key of its by-path load, whose
 # ``TEST_MARKER_OPTION`` and ``EPHEMERAL_REPOSITORY_PREFIX`` this module reads rather than redefines.
-PRODUCT_WRAPPER = Path(__file__).resolve().parents[2] / "src" / "payload" / "scripts" / "github_wrapper.py"
+PRODUCT_WRAPPER = CHECKOUT / "src" / "payload" / "scripts" / "github_wrapper.py"
 PRODUCT_WRAPPER_MODULE = "forge_product_wrapper"
 INTERPRETER_OPTION = "-X"
-# D3, D10: every git command's working tree option and the suite's commit identity (a runner has no global one).
+# D3, D10: every git command's working tree option and the suite's commit identity (a runner has no global one), with
+# signing off, so no commit asks for a signing key on a machine whose git configuration signs (DL-003).
 GIT_DIRECTORY_OPTION = "-C"
 COMMIT_USER_NAME = "SFF Forge Suite"
 COMMIT_USER_EMAIL = "forge-suite@example.invalid"
+COMMIT_SIGNING = "false"
 COMMIT_IDENTITY = (
     CONFIG_OPTION,
     f"user.name{CONFIG_ASSIGNMENT}{COMMIT_USER_NAME}",
     CONFIG_OPTION,
     f"user.email{CONFIG_ASSIGNMENT}{COMMIT_USER_EMAIL}",
+    CONFIG_OPTION,
+    f"commit.gpgSign{CONFIG_ASSIGNMENT}{COMMIT_SIGNING}",
 )
 
 # D4, D5: the run id, the UTC time of its creation then a random part, and the test organization, the one place the
@@ -113,6 +128,53 @@ WRAPPER_EXIT_OK = 0
 #: no longer exists (``transport._http_failure``: ``... failed: HTTP <status>``).
 WRAPPER_API_FAILURE = 1
 NOT_FOUND_ANSWER = re.compile(r"\bHTTP 404\b")
+
+# D9 step 5: the creation (docs.github.com "Create an organization repository"), as ``call`` arguments, and the fields
+# of its answer the record is made of; ``details`` of the refusal of a public repository carries the kept record.
+REPOSITORY_CREATION = "repos/create-in-org"
+RAW_FIELD_OPTION = "-f"
+TYPED_FIELD_OPTION = "-F"
+FIELD_PRIVATE = "private"
+FIELD_AUTO_INIT = "auto_init"
+FIELD_DEFAULT_BRANCH = "default_branch"
+TYPED_TRUE = "true"
+DETAIL_CREATED = "created"
+
+# D3 "The clone", D8 "Writing", D9 steps 3 and 6: the clone under the workspace, its git files, its origin and the git
+# commands that prepare and seed it.
+CLONE_DIRECTORY = "clone"
+GIT_METADATA_DIRECTORY = ".git"
+GIT_EXCLUDE_FILE = Path(GIT_METADATA_DIRECTORY) / "info" / "exclude"
+#: The line the clone's ``.git/info/exclude`` gains, so no commit of the clone holds its credential file.
+EXCLUDED_CREDENTIALS = CREDENTIALS_DIRECTORY.as_posix() + "/"
+#: Owner-only where the OS honours it; on Windows only the read-only flag follows a mode (docs.python.org ``os.chmod``).
+CLONE_CREDENTIAL_MODE = 0o600
+ORIGIN_REMOTE = "origin"
+ORIGIN_URL = "https://github.com/{owner}/{name}.git"
+GIT_INIT = "init"
+GIT_REMOTE = "remote"
+GIT_REMOTE_ADD = "add"
+GIT_FETCH = "fetch"
+GIT_CHECKOUT = "checkout"
+GIT_RESET_BRANCH_OPTION = "-B"
+GIT_TRACK_OPTION = "--track"
+REMOTE_BRANCH_SEPARATOR = "/"
+GIT_REV_PARSE = "rev-parse"
+GIT_LS_TREE = "ls-tree"
+GIT_RECURSIVE_OPTION = "-r"
+GIT_NAME_ONLY_OPTION = "--name-only"
+HEAD = "HEAD"
+HEAD_TREE = "HEAD^{tree}"
+SEED_REVISION_COUNT = 2
+#: A seed path under this directory would start a workflow on the first push; the seed must hold none.
+WORKFLOW_DIRECTORY = ".github/workflows/"
+#: ``git ls-tree`` quotes a path holding an unusual character (``core.quotePath``); the directory part stays literal.
+GIT_PATH_QUOTE = '"'
+
+# D9 step 7: ``remove_tree``'s retries, for the read-only attribute git gives its object files on Windows and a brief
+# "in use by another process" lock there.
+REMOVAL_ATTEMPTS = 5
+REMOVAL_PAUSE_SECONDS = 0.5
 
 
 class ForgeSuiteError(Exception):
@@ -215,7 +277,7 @@ def find_test_credential(*, checkout: Path) -> Path:
     raise ForgeSetupError(
         message=(
             f"No test credential file: {searched}. Paste the test organization's token, on one line, into the "
-            "checkout's file (credentials/README.md)"
+            f"checkout's file ({SETUP_NOTE})"
         )
     )
 
@@ -530,3 +592,305 @@ def delete_leftover(*, wrapper: WrapperRunner, record: RepositoryRecord, now: da
         logger.info("The leftover repository %s was already deleted", record.full_name)
         return
     raise _failure(action=f"Deleting the leftover repository {record.full_name}", invocation=invocation)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The test token (D8) and the provision of one run's repository (D3 "The clone", D9 steps 1 to 7)
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class EphemeralRepository:
+    """The repository one run owns, as ``provision`` yields it (D9): the run id, the repository's owner, name and
+    default branch, its seed commit and tree, the moment of the run's sweep (aware UTC), the clone, and the two
+    runners bound to the clone. It holds no token, so neither does its ``repr``."""
+
+    run_id: str
+    owner: str
+    name: str
+    default_branch: str
+    seed_sha: str
+    seed_tree_sha: str
+    swept_at: datetime
+    clone: Path
+    wrapper: WrapperRunner
+    git: GitRunner
+
+
+def read_test_token(*, path: Path) -> str:
+    """D8 "Reading": the token of the test credential file ``path``, refused as the product wrapper's ``_load_token``
+    refuses its own file, through the product's ``_one_token`` and ``PLACEHOLDER``.
+
+    A missing or unreadable file, a file that is not one token, an empty one and the placeholder each raise
+    ``ForgeSetupError`` naming ``path`` and none of its contents. Nothing logs the token.
+    """
+    product = product_wrapper()
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise ForgeSetupError(
+            message=f"The test credential file {path} cannot be read ({exc.strerror}); see {SETUP_NOTE}"
+        ) from None
+    not_one_token = (
+        f"The test credential file {path} does not hold a single token. Paste only the test organization's token, on "
+        f"one line, into this file ({SETUP_NOTE})"
+    )
+    try:
+        token: str = product._one_token(data=data, refusal=not_one_token)
+    except product.GitHubAPIError:
+        raise ForgeSetupError(message=not_one_token) from None
+    if not token or token == product.PLACEHOLDER:
+        raise ForgeSetupError(
+            message=(
+                f"The test credential file {path} is empty or still holds the placeholder. Paste the test "
+                f"organization's token, on one line, into this file ({SETUP_NOTE})"
+            )
+        )
+    return token
+
+
+def _origin_url(*, name: str) -> str:
+    """D3's ``origin`` of the test organization's repository ``name``: no userinfo, so ``.git/config`` holds no
+    token."""
+    return ORIGIN_URL.format(owner=TEST_ORGANIZATION, name=name)
+
+
+def _run_git(*, git: GitRunner, arguments: Sequence[str], authenticated: bool = False) -> Invocation:
+    """``git`` run with ``arguments``; an exit other than 0 raises ``ForgeCommandError`` with git's standard error."""
+    invocation = git.run(arguments=arguments, authenticated=authenticated)
+    if invocation.returncode != GIT_EXIT_OK:
+        raise ForgeCommandError(
+            message=(
+                f"`{GIT} {' '.join(arguments)}` exited {invocation.returncode} in the clone: "
+                f"{invocation.stderr.strip()}"
+            )
+        )
+    return invocation
+
+
+def _write_clone_credential(*, clone: Path, token: str) -> None:
+    """D8 "Writing": the clone's ``credentials/github-pat.txt``, created owner-only (``CLONE_CREDENTIAL_MODE``) and
+    then given ``token`` and ``\\n`` as bytes; a file already there raises ``FileExistsError``, so none is
+    overwritten."""
+    credential = clone / CLONE_CREDENTIAL_FILE
+    credential.parent.mkdir()
+    credential.touch(mode=CLONE_CREDENTIAL_MODE, exist_ok=False)
+    credential.write_bytes(data=(token + LINE_END).encode(encoding=TEXT_ENCODING))
+
+
+def _exclude_credentials(*, clone: Path) -> None:
+    """D8 "Writing": appends ``credentials/`` to the clone's ``.git/info/exclude``, on a line of its own, so no commit
+    of the clone holds its credential file."""
+    exclude = clone / GIT_EXCLUDE_FILE
+    exclude.parent.mkdir(parents=True, exist_ok=True)
+    existing = exclude.read_bytes() if exclude.is_file() else b""
+    line_end = LINE_END.encode(encoding=TEXT_ENCODING)
+    separator = line_end if existing and not existing.endswith(line_end) else b""
+    exclude.write_bytes(data=existing + separator + EXCLUDED_CREDENTIALS.encode(encoding=TEXT_ENCODING) + line_end)
+
+
+def prepare_clone(*, clone: Path, token: str, name: str, git: GitRunner) -> None:
+    """D9 step 3 (D3 "The clone"): creates ``clone`` with ``Path.mkdir`` and runs ``git init`` in it, writes its
+    credential file and exclude line (D8), then ``git remote add origin`` of the test organization's repository
+    ``name``. ``git`` is bound to ``clone``; its commands run unauthenticated, and a failure raises
+    ``ForgeCommandError``."""
+    clone.mkdir()
+    _run_git(git=git, arguments=[GIT_INIT])
+    _write_clone_credential(clone=clone, token=token)
+    _exclude_credentials(clone=clone)
+    _run_git(git=git, arguments=[GIT_REMOTE, GIT_REMOTE_ADD, ORIGIN_REMOTE, _origin_url(name=name)])
+
+
+def _field_argument(*, option: str, field: str, value: str) -> List[str]:
+    """A ``call`` body member, ``<option> <field>=<value>``: ``-f`` for text, ``-F`` for a JSON value."""
+    return [option, field + PARAMETER_ASSIGNMENT + value]
+
+
+def _creation_arguments(*, name: str) -> List[str]:
+    """D9 step 5's ``call repos/create-in-org --path org=bestehorn-sff-test -f name=<name> -F private=true -F
+    auto_init=true``."""
+    return [
+        CALL_SUBCOMMAND,
+        REPOSITORY_CREATION,
+        *_path_argument(parameter=ORG_PARAMETER, value=TEST_ORGANIZATION),
+        *_field_argument(option=RAW_FIELD_OPTION, field=FIELD_NAME, value=name),
+        *_field_argument(option=TYPED_FIELD_OPTION, field=FIELD_PRIVATE, value=TYPED_TRUE),
+        *_field_argument(option=TYPED_FIELD_OPTION, field=FIELD_AUTO_INIT, value=TYPED_TRUE),
+    ]
+
+
+def _created_record(*, answer: Any, requested: str) -> CreatedRepository:
+    """The record of a creation's printed answer, its ``owner.login``, ``name`` and ``default_branch``; an answer
+    without them raises ``ForgeCommandError``."""
+    fields: Mapping[str, Any] = answer if isinstance(answer, Mapping) else {}
+    owner = fields.get(FIELD_OWNER)
+    login = owner.get(FIELD_LOGIN) if isinstance(owner, Mapping) else None
+    name = fields.get(FIELD_NAME)
+    branch = fields.get(FIELD_DEFAULT_BRANCH)
+    if not (isinstance(login, str) and isinstance(name, str) and isinstance(branch, str)):
+        raise ForgeCommandError(
+            message=(
+                f"The creation of {TEST_ORGANIZATION}{FULL_NAME_SEPARATOR}{requested} answered no "
+                f"{FIELD_OWNER}.{FIELD_LOGIN}, {FIELD_NAME} and {FIELD_DEFAULT_BRANCH} text"
+            )
+        )
+    return CreatedRepository(owner=login, name=name, default_branch=branch)
+
+
+def create_ephemeral(*, wrapper: WrapperRunner, name: str) -> CreatedRepository:
+    """D9 step 5: creates the test organization's repository ``name``, private, with an initial commit.
+
+    A non-zero exit raises ``ForgeCommandError``: nothing was created. The answer's ``owner.login``, ``name`` and
+    ``default_branch`` make the record; an answer whose ``private`` is not true raises ``ForgeSetupError`` whose
+    ``details`` keep the record under ``DETAIL_CREATED``, so the teardown still deletes the repository.
+    """
+    target = TEST_ORGANIZATION + FULL_NAME_SEPARATOR + name
+    invocation = wrapper.run(arguments=_creation_arguments(name=name))
+    if invocation.returncode != WRAPPER_EXIT_OK:
+        raise _failure(action=f"Creating this run's repository {target}", invocation=invocation)
+    answer = invocation.json()
+    created = _created_record(answer=answer, requested=name)
+    logger.info("Created this run's repository %s", created.owner + FULL_NAME_SEPARATOR + created.name)
+    private = answer.get(FIELD_PRIVATE)
+    if private is not True:
+        raise ForgeSetupError(
+            message=(
+                f"This run's repository {target} was created with {FIELD_PRIVATE} {private!r}, not private; the "
+                "teardown deletes it"
+            ),
+            details={DETAIL_CREATED: created},
+        )
+    return created
+
+
+def _kept_record(*, error: ForgeSuiteError) -> Optional[CreatedRepository]:
+    """The record a refused creation kept in its ``details`` (``create_ephemeral``), else ``None``."""
+    kept = (error.details or {}).get(DETAIL_CREATED)
+    return kept if isinstance(kept, CreatedRepository) else None
+
+
+def _seed_workflows(*, listing: str) -> List[str]:
+    """The paths of a ``git ls-tree -r --name-only`` ``listing`` under ``.github/workflows/``; a quoted path is read
+    without its opening quote, since the quoting escapes only the unusual characters after the directory part."""
+    paths = [line[len(GIT_PATH_QUOTE) :] if line.startswith(GIT_PATH_QUOTE) else line for line in listing.splitlines()]
+    return [path for path in paths if path.startswith(WORKFLOW_DIRECTORY)]
+
+
+def fetch_seed(*, git: GitRunner, default_branch: str) -> Tuple[str, str]:
+    """D9 step 6 (D3 "The clone"): an authenticated ``git fetch origin`` and ``git checkout -B <default branch> --track
+    origin/<default branch>``, then the seed's commit and tree (``git rev-parse HEAD HEAD^{tree}``), answered in that
+    order.
+
+    A seed whose ``git ls-tree -r --name-only HEAD`` names a path under ``.github/workflows/`` raises
+    ``ForgeSetupError``; a git failure, or a ``rev-parse`` answering other than two revisions, raises
+    ``ForgeCommandError``.
+    """
+    tracked = ORIGIN_REMOTE + REMOTE_BRANCH_SEPARATOR + default_branch
+    _run_git(git=git, arguments=[GIT_FETCH, ORIGIN_REMOTE], authenticated=True)
+    _run_git(git=git, arguments=[GIT_CHECKOUT, GIT_RESET_BRANCH_OPTION, default_branch, GIT_TRACK_OPTION, tracked])
+    revisions = _run_git(git=git, arguments=[GIT_REV_PARSE, HEAD, HEAD_TREE]).stdout.split()
+    if len(revisions) != SEED_REVISION_COUNT:
+        raise ForgeCommandError(
+            message=(
+                f"`{GIT} {GIT_REV_PARSE} {HEAD} {HEAD_TREE}` answered {len(revisions)} revisions, not "
+                f"{SEED_REVISION_COUNT}"
+            )
+        )
+    listing = _run_git(git=git, arguments=[GIT_LS_TREE, GIT_RECURSIVE_OPTION, GIT_NAME_ONLY_OPTION, HEAD]).stdout
+    workflows = _seed_workflows(listing=listing)
+    if workflows:
+        raise ForgeSetupError(
+            message=(
+                f"The seed of this run's repository holds paths under {WORKFLOW_DIRECTORY}, whose workflows a push "
+                f"would start: {workflows}"
+            )
+        )
+    return revisions[0], revisions[1]
+
+
+def _clear_read_only(*, root: Path) -> None:
+    """Adds the owner's write permission to ``root`` and to everything under it that is no symbolic link: on Windows
+    that clears the read-only attribute git gives its object files, which refuses their removal. A path that cannot be
+    changed is passed over; the next removal attempt names what is left."""
+    try:
+        paths = [root, *root.rglob(pattern="*")]
+    except OSError as exc:
+        logger.debug("Could not list %s to clear its read-only attributes: %s", root, exc)
+        return
+    for path in paths:
+        try:
+            if not path.is_symlink():
+                path.chmod(mode=path.stat().st_mode | stat.S_IWRITE)
+        except OSError as exc:
+            logger.debug("Could not clear the read-only attribute of %s: %s", path, exc)
+
+
+def remove_tree(*, path: Path) -> None:
+    """D9 step 7: removes the directory ``path`` and everything under it; a ``path`` that no longer exists is done.
+
+    A refused removal is retried, up to ``REMOVAL_ATTEMPTS`` attempts ``REMOVAL_PAUSE_SECONDS`` apart, after clearing
+    the read-only attribute git gives its object files on Windows; the pause also outlasts a brief "in use by another
+    process" lock there. The last refusal raises ``ForgeSuiteError`` naming ``path``.
+    """
+    for attempt in range(1, REMOVAL_ATTEMPTS + 1):
+        if not path.exists():
+            return
+        try:
+            shutil.rmtree(path=path)
+            return
+        except OSError as exc:
+            if attempt == REMOVAL_ATTEMPTS:
+                raise ForgeSuiteError(message=f"Could not remove {path} in {REMOVAL_ATTEMPTS} attempts: {exc}") from exc
+            logger.debug("Removing %s was refused (%s); retrying", path, exc)
+        _clear_read_only(root=path)
+        time.sleep(REMOVAL_PAUSE_SECONDS)
+
+
+@contextmanager
+def provision(
+    *, checkout: Path, workspace: Path, wrapper: WrapperRunner, git: GitRunner
+) -> Iterator[EphemeralRepository]:
+    """D9: one run's repository around the ``with`` body; ``wrapper`` and ``git`` are bound to ``<workspace>/clone``.
+
+    1. Before the ``try``, the run id and the repository's name; nothing is sent. 2. The test token,
+    ``read_test_token`` of ``find_test_credential(checkout=checkout)``, a local of this function only. 3.
+    ``prepare_clone``. 4. ``sweep_leftovers`` at the UTC now, kept as ``swept_at``. 5. ``create_ephemeral``. 6.
+    ``fetch_seed``, then the yield of the ``EphemeralRepository``. 7. In the ``finally``, whether a step or the body
+    returned or raised: ``delete_ephemeral`` of step 5's record (``None`` when the creation never succeeded, so
+    nothing is deleted), then, in its own ``finally``, ``remove_tree`` of ``workspace``; a failure of either is raised.
+    """
+    run_id = new_run_id()
+    name = ephemeral_name(run_id=run_id)
+    clone = workspace / CLONE_DIRECTORY
+    created: Optional[CreatedRepository] = None
+    try:
+        token = read_test_token(path=find_test_credential(checkout=checkout))
+        prepare_clone(clone=clone, token=token, name=name, git=git)
+        # The generator's frame lives on through the yield; the token does not.
+        del token
+        swept_at = datetime.now(tz=timezone.utc)
+        sweep_leftovers(wrapper=wrapper, now=swept_at)
+        try:
+            record = create_ephemeral(wrapper=wrapper, name=name)
+        except ForgeSetupError as refused:
+            created = _kept_record(error=refused)
+            raise
+        created = record
+        seed_sha, seed_tree_sha = fetch_seed(git=git, default_branch=record.default_branch)
+        yield EphemeralRepository(
+            run_id=run_id,
+            owner=record.owner,
+            name=record.name,
+            default_branch=record.default_branch,
+            seed_sha=seed_sha,
+            seed_tree_sha=seed_tree_sha,
+            swept_at=swept_at,
+            clone=clone,
+            wrapper=wrapper,
+            git=git,
+        )
+    finally:
+        try:
+            delete_ephemeral(wrapper=wrapper, created=created, run_id=run_id)
+        finally:
+            remove_tree(path=workspace)

@@ -1,0 +1,140 @@
+# tasks: 3.1 3.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py test/test_forge_suite_layout.py test/test_instruction_corpus_budget.py src/payload/test/test_github_wrapper_marker.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_toolchain_integrity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [686 items]
+
+......................................................FF.FF..F.F.F.FF.F. [ 10%]
+...................................FFF.................................. [ 20%]
+........................................................................ [ 31%]
+........................................................................ [ 41%]
+........................................................................ [ 52%]
+........................................................................ [ 62%]
+........................................................................ [ 73%]
+........................................................................ [ 83%]
+........................................................................ [ 94%]
+......................................                                   [100%]
+================================== FAILURES ===================================
+______________ test_provisioning_runs_in_order[the-body-returns] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1278: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+______________ test_provisioning_runs_in_order[the-body-raises] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1278: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+___________ test_provisioning_runs_in_order[a-workflow-in-the-seed] ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1278: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+_____________ test_provisioning_runs_in_order[the-deletion-fails] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1278: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+________________________ test_no_creation_no_deletion _________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1311: in test_no_creation_no_deletion
+    _require(module=forge, names=(*PROVISION_SYMBOLS, "delete_ephemeral"))
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+________ test_a_bad_test_credential_fails_before_any_request[missing] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1348: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+_________ test_a_bad_test_credential_fails_before_any_request[empty] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1348: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+____ test_a_bad_test_credential_fails_before_any_request[the-placeholder] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1348: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+_ test_a_bad_test_credential_fails_before_any_request[two-tokens-on-two-lines] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1348: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1419: in test_the_token_is_written_only_to_the_clone
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_support.py:457: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no EphemeralRepository, provision
+E   assert not ['EphemeralRepository', 'provision']
+__________________ test_the_setup_note_names_the_credential ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:903: in test_the_setup_note_names_the_credential
+    assert SETUP_NOTE.is_file(), f"the test credential's setup note {SETUP_NOTE_NAME} does not exist"
+E   AssertionError: the test credential's setup note docs/forge-suite.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-10/docs/forge-suite.md').is_file
+_____________________ test_the_map_names_the_forge_suite ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:928: in test_the_map_names_the_forge_suite
+    assert not missing, f"{LLM_MAP_NAME} does not name: {missing}"
+E   AssertionError: docs/forLLMConsumption.md does not name: ['the forge suite `test/forge`, beside its command', 'the local command `python scripts/run_tests.py --workers 1 test/forge`', 'the test credential file `credentials/github-sff-testing-pat.txt`', 'the setup note `docs/forge-suite.md`', 'the CI job `forge`']
+E   assert not ['the forge suite `test/forge`, beside its command', 'the local command `python scripts/run_tests.py --workers 1 test/...redential file `credentials/github-sff-testing-pat.txt`', 'the setup note `docs/forge-suite.md`', 'the CI job `forge`']
+_________________________ test_the_debt_line_is_gone __________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:934: in test_the_debt_line_is_gone
+    assert DEBT_LINE.casefold() not in prose, f"{PROJECT_PLAN_NAME} still lists the known debt `{DEBT_LINE}`"
+E   AssertionError: docs/ProjectPlan.md still lists the known debt `the ephemeral-repository forge tests need their dedicated create/delete token`
+E   assert 'the ephemer...delete token' not in '# project p...elete token.'
+E     
+E     'the ephemeral-repo...create/delete token' is contained here:
+E       nstall: - the ephemeral-repository forge tests need their dedicated create/delete token.
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[the-body-returns]
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[the-body-raises]
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[a-workflow-in-the-seed]
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[the-deletion-fails]
+FAILED test/test_forge_support.py::test_no_creation_no_deletion - AssertionEr...
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[missing]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[empty]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[the-placeholder]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[two-tokens-on-two-lines]
+FAILED test/test_forge_support.py::test_the_token_is_written_only_to_the_clone
+FAILED test/test_forge_suite_layout.py::test_the_setup_note_names_the_credential
+FAILED test/test_forge_suite_layout.py::test_the_map_names_the_forge_suite - ...
+FAILED test/test_forge_suite_layout.py::test_the_debt_line_is_gone - Assertio...
+================= 13 failed, 673 passed in 144.28s (0:02:24) ==================
+exit=1

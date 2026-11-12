@@ -296,14 +296,13 @@ Dependabot alerts (not called), Checks (not grantable to this token kind).
 
 ### D7 — The credential's setup note; no template (AC-9.1)
 
-The note is `credentials/README.md`, tracked by `.gitignore` `!credentials/README.md`: beside the file it describes,
-and it gives every checkout a `credentials/` directory. It names the test credential file, the token kind
-(fine-grained), its resource owner (`bestehorn-sff-test`), its repository access ("All repositories"), D6's permission
-table, the Actions secret `SFF_TEST_TOKEN`, the local command, and that only a machine that runs the forge suite
-locally needs the file (CI writes it from the secret). No `credentials/github-sff-testing-pat.txt.template` ships.
+The note is `docs/forge-suite.md`. It names the test credential file, the token kind (fine-grained), its resource
+owner (`bestehorn-sff-test`), its repository access ("All repositories"), D6's permission table, the Actions secret
+`SFF_TEST_TOKEN`, the local command, and that only a machine that runs the forge suite locally needs the file (CI
+writes it from the secret). No `credentials/github-sff-testing-pat.txt.template` ships.
 
-Alternatives: a template stub (a placeholder file the suite must refuse, AC-6.2, and this repository ships no
-`github-pat.txt.template` either); the note under `docs/` (away from the directory the operator works in).
+Alternatives: `credentials/README.md` (`.claude/settings.json` denies `Read(./credentials/**)`, so no agent can
+maintain a note there); a template stub (a placeholder file the suite must refuse, AC-6.2).
 
 ### D8 — The test credential (AC-6.1 to AC-6.3; UB-2)
 
@@ -386,8 +385,8 @@ deletion is logged by full name (AC-3.1, AC-3.2).
 | `test/forge/forge_fixture.py`, `forge_subcommands.py`, `forge_repos_git.py`, `forge_ci_security.py`, `forge_collaboration.py` | new: D6, one module docstring per slice |
 | `test/test_forge_support.py`, `test/test_forge_suite_layout.py` | new: S, L |
 | `.github/workflows/ci.yml` | D5 |
-| `credentials/README.md` | new: D7 |
-| `docs/forLLMConsumption.md` | the `Testing` section names the forge suite (`test/forge/`), its local command, the test credential file and its setup note `credentials/README.md`, and the forge job, under its cap |
+| `docs/forge-suite.md` | new: D7 |
+| `docs/forLLMConsumption.md` | the `Testing` section names the forge suite (`test/forge/`), its local command, the test credential file and its setup note `docs/forge-suite.md`, and the forge job, under its cap |
 | `docs/ProjectPlan.md` | the debt line "the ephemeral-repository forge tests need their dedicated create/delete token" removed |
 
 - `SubprocessWrapperRunner(*, directory)` is the one place the suite starts the product wrapper:
@@ -521,11 +520,11 @@ every toolchain file (`config/toolchain.json` and what it lists).
 - **AC-8.6** — Structural, L `test_the_forge_tests_reach_only_the_ephemeral_repository`: the forge modules give no
   `--path owner=` or `--path repo=`, import no `github_wrapper_fixtures` and patch no `urllib`; repository creation and
   deletion occur only in `ephemeral.py`.
-- **AC-9.1** — Example, L `test_the_setup_note_names_the_credential`: `credentials/README.md` names the file,
+- **AC-9.1** — Example, L `test_the_setup_note_names_the_credential`: `docs/forge-suite.md` names the file,
   "fine-grained", `bestehorn-sff-test`, "All repositories", each permission of D6's table, `SFF_TEST_TOKEN`, and that
   only a machine running the suite locally needs the file.
 - **AC-9.2** — Example, L `test_the_map_names_the_forge_suite`: `docs/forLLMConsumption.md` names `test/forge`, the
-  local command, the test credential file and the forge job; B `test_llm_map_within_cap`.
+  local command, the test credential file, `docs/forge-suite.md` and the forge job; B `test_llm_map_within_cap`.
 - **AC-9.3** — Example, L `test_the_debt_line_is_gone`: `docs/ProjectPlan.md` no longer holds the debt line.
 - **UB-1** — W, S and L run in `verify` with no network and no test credential file (W on `FakeGitHub` and a refusal,
   S on doubles and local git in `tmp_path`, L on `--collect-only`); the fake-host suites are unedited.

@@ -68,20 +68,20 @@ its `design.md` Correctness Properties entry; each IMPL follows the D section it
 
 ## Wave 3 — Provisioning, the setup note and the docs
 
-- [ ] 3.1 TEST: S, extended with `ScriptedGitRunner(GitRunner)`: `test_provisioning_runs_in_order`,
+- [x] 3.1 TEST: S, extended with `ScriptedGitRunner(GitRunner)`: `test_provisioning_runs_in_order`,
   `test_no_creation_no_deletion`, `test_a_bad_test_credential_fails_before_any_request`,
   `test_the_token_is_written_only_to_the_clone` — Files: test/test_forge_support.py — Validates: AC-1.1, AC-1.3,
   AC-1.4, AC-2.3, AC-6.2, AC-6.3, UB-2
-- [ ] 3.2 TEST: L, the docs read as text: `test_the_setup_note_names_the_credential`,
+- [x] 3.2 TEST: L, the docs read as text: `test_the_setup_note_names_the_credential`,
   `test_the_map_names_the_forge_suite`, `test_the_debt_line_is_gone`; B `test_llm_map_within_cap` joins this wave's
   runs — Files: test/test_forge_suite_layout.py — Validates: AC-9.1, AC-9.2, AC-9.3
-- [ ] 3.3 IMPL: `ephemeral.py`, part 3: `EphemeralRepository`, `CHECKOUT`, `CLONE_CREDENTIAL_FILE`, `read_test_token`
+- [x] 3.3 IMPL: `ephemeral.py`, part 3: `EphemeralRepository`, `CHECKOUT`, `CLONE_CREDENTIAL_FILE`, `read_test_token`
   (D8); `prepare_clone`, `create_ephemeral`, `fetch_seed`, `remove_tree` and the context manager `provision` (D9
   steps 1 to 7, D3 "The clone") — Files: test/forge/ephemeral.py — Validates: AC-1.1, AC-1.3, AC-1.4, AC-2.3, AC-6.2,
   AC-6.3, UB-2
-- [ ] 3.4 IMPL: the setup note (D7) — Files: credentials/README.md — Validates: AC-9.1
-- [ ] 3.5 IMPL: the map's `Testing` section, under its cap, and the debt line removed (D10) — Files:
-  docs/forLLMConsumption.md, docs/ProjectPlan.md — Validates: AC-9.2, AC-9.3
+- [x] 3.4 IMPL: the setup note (D7) — Files: docs/forge-suite.md — Validates: AC-9.1
+- [x] 3.5 IMPL: the map's `Testing` section, naming `docs/forge-suite.md`, under its cap, and the debt line removed
+  (D10) — Files: docs/forLLMConsumption.md, docs/ProjectPlan.md — Validates: AC-9.2, AC-9.3
 
 ## Wave 4 — The session fixture, the suite's collection, the CI credential step and the real-forge tests of the deferred slices (D6)
 

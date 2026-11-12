@@ -79,7 +79,12 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
 - CI runs every check and the full suite: `.github/workflows/ci.yml` → `python scripts/run_checks.py --group <g>`.
 - Never as a commit gate. The pre-push hook runs mypy, and the suite only while CI-OUTAGE MODE is declared.
 - The product suites: `src/hooks/tests/` (hook runtime), `src/payload/test/` (shipped scripts; the steward suite
-  is slow, minutes). Forge-facing integration tests use ephemeral `sff-test-*` repositories, never this backlog.
+  is slow, minutes).
+- The forge suite `test/forge/`: real-forge integration tests of the product wrapper against ephemeral `sff-test-*`
+  repositories in `bestehorn-sff-test`, never this backlog; its own `pytest.ini` keeps it out of the default
+  collection. Locally: `python scripts/run_tests.py --workers 1 test/forge`, token in
+  `credentials/github-sff-testing-pat.txt` (setup: `docs/forge-suite.md`). In CI the `forge` job runs beside
+  `verify` with the secret `SFF_TEST_TOKEN`; `report` fails unless it succeeded. <!-- pragma: allowlist secret -->
 
 ## Common commands
 - `python scripts/run_tests.py <paths>` — affected tests; no paths = all three suites (pyproject `testpaths`).

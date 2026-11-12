@@ -6,7 +6,9 @@ small indentation-based reader of the YAML the workflow uses (block mappings and
 collections, block scalars, comments), because PyYAML is not a dependency of the dev extra; they run
 ``pytest --collect-only`` on ``test/forge`` under the default configuration; and they parse the ``.py`` files of
 ``test/forge/`` with ``ast`` to bound what the suite reaches: only ``ephemeral.py`` starts the product wrapper, and
-nothing creates, deletes or targets a repository but the ephemeral one (AC-4.3, AC-8.1, AC-8.6).
+nothing creates, deletes or targets a repository but the ephemeral one (AC-4.3, AC-8.1, AC-8.6). They read the test
+credential's setup note ``docs/forge-suite.md`` (D7), the map ``docs/forLLMConsumption.md`` and
+``docs/ProjectPlan.md`` (D10) as text (AC-9.1 to AC-9.3).
 
 Run: ``python scripts/run_tests.py test/test_forge_suite_layout.py``.
 """
@@ -126,6 +128,45 @@ URLLIB_TEXT = re.compile(r"^urllib(?:\.|$)")
 TARGETING_ARGUMENT = re.compile(r"(?:^|--path[ =])(?:owner|repo)=")
 # The records that create and delete a repository; the `repos/delete-*` records of a repository's parts are others.
 REPOSITORY_LIFECYCLE = re.compile(r"(?<![\w/-])repos/(?:create-in-org|delete)(?![\w/-])")
+
+# The test credential's setup note and the docs, read as text (D7, D10; AC-9.1 to AC-9.3).
+SETUP_NOTE_NAME = "docs/forge-suite.md"
+SETUP_NOTE = ROOT / SETUP_NOTE_NAME
+LLM_MAP_NAME = "docs/forLLMConsumption.md"
+LLM_MAP = ROOT / LLM_MAP_NAME
+PROJECT_PLAN_NAME = "docs/ProjectPlan.md"
+PROJECT_PLAN = ROOT / PROJECT_PLAN_NAME
+TEST_CREDENTIAL_FILE = "credentials/github-sff-testing-pat.txt"
+TOKEN_KIND = "fine-grained"
+TEST_ORGANIZATION = "bestehorn-sff-test"
+REPOSITORY_ACCESS = "All repositories"
+ACCESS_READ = "read"
+ACCESS_WRITE = "write"
+# D6's table: each repository permission the forge suite's requests need, spelled as docs.github.com "Permissions
+# required for fine-grained personal access tokens" spells it, and its access.
+TOKEN_PERMISSIONS = (
+    ("Administration", ACCESS_WRITE),
+    ("Contents", ACCESS_WRITE),
+    ("Metadata", ACCESS_READ),
+    ("Issues", ACCESS_WRITE),
+    ("Pull requests", ACCESS_WRITE),
+    ("Actions", ACCESS_READ),
+    ("Code scanning alerts", ACCESS_READ),
+    ("Secret scanning alerts", ACCESS_READ),
+    ("Dependabot secrets", ACCESS_READ),
+)
+READ_WORD = re.compile(r"\bread\b", re.IGNORECASE)
+WRITE_WORD = re.compile(r"\bwrite\b", re.IGNORECASE)
+# The words of one sentence saying that only a machine running the forge suite locally needs the file.
+LOCAL_ONLY_WORDS = tuple(re.compile(r"\b" + word + r"\b", re.IGNORECASE) for word in ("only", "machine", "locally"))
+LOCAL_ONLY_CLAIM = "a sentence saying that only a machine that runs the forge suite locally needs the file"
+# The forge job, as "`forge` job", "forge job", "forge CI job" or "job `forge`".
+FORGE_JOB_MENTION = re.compile(r"(?:`forge`|\bforge)\s+(?:CI\s+)?job\b|\bjob[,:]?\s+`forge`", re.IGNORECASE)
+DEBT_LINE = "the ephemeral-repository forge tests need their dedicated create/delete token"
+WHITESPACE_RUN = re.compile(r"\s+")
+# A paragraph break, or a line that opens a Markdown block: a table row, a heading, a quote or a list item.
+BLOCK_BREAK = re.compile(r"\n[ \t]*\n|\n(?=[ \t]*(?:[|#>]|[*+-][ \t]|\d+[.)][ \t]))")
+SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
 
 # The YAML reader's syntax.
 KEY_LINE = re.compile(r"^(?P<key>[A-Za-z0-9_][\w.\-/]*|\"[^\"]*\"|'[^']*')[ \t]*:(?:[ \t]+(?P<value>.*))?$")
@@ -718,6 +759,54 @@ def module_problems(*, module: ForgeModule) -> list[str]:
     return [problem for lines, text in checks for problem in located(module=module, lines=lines, problem=text)]
 
 
+def read_document(*, path: Path) -> str:
+    return path.read_text(encoding=SOURCE_ENCODING)
+
+
+def collapse_whitespace(*, text: str) -> str:
+    """``text`` with every run of whitespace, line ends included, read as one space."""
+    return WHITESPACE_RUN.sub(" ", text).strip()
+
+
+def phrase_pattern(*, phrase: str) -> re.Pattern[str]:
+    """``phrase`` as whole words, any run of whitespace between them."""
+    return re.compile(r"\b" + r"\s+".join(re.escape(word) for word in phrase.split()) + r"\b")
+
+
+def grants(*, line: str, access: str) -> bool:
+    """``line`` names ``access``: ``write`` for write access; ``read`` and no ``write`` for read access."""
+    writes = WRITE_WORD.search(line) is not None
+    if access == ACCESS_WRITE:
+        return writes
+    return READ_WORD.search(line) is not None and not writes
+
+
+def missing_permissions(*, text: str) -> list[str]:
+    """The permissions of D6's table that no line of ``text`` names together with their access."""
+    lines = text.splitlines()
+    missing = []
+    for permission, access in TOKEN_PERMISSIONS:
+        name = phrase_pattern(phrase=permission)
+        if not any(name.search(line) and grants(line=line, access=access) for line in lines):
+            missing.append(f"the permission {permission} ({access})")
+    return missing
+
+
+def sentences_of(*, text: str) -> list[str]:
+    """The sentences of a Markdown ``text``, whitespace collapsed: split at a paragraph break, at a line that opens a
+    block, and at whitespace after a full stop, a question mark or an exclamation mark."""
+    return [
+        collapse_whitespace(text=sentence)
+        for block in BLOCK_BREAK.split(text)
+        for sentence in SENTENCE_END.split(block)
+        if sentence.strip()
+    ]
+
+
+def says_only_local_machines_need_it(*, text: str) -> bool:
+    return any(all(word.search(sentence) for word in LOCAL_ONLY_WORDS) for sentence in sentences_of(text=text))
+
+
 def test_the_forge_job_runs_beside_verify() -> None:
     workflow = read_workflow()
     triggers = workflow.get(KEY_ON)
@@ -808,3 +897,38 @@ def test_the_forge_tests_reach_only_the_ephemeral_repository() -> None:
     problems = product_wrapper_problems(module=supports[0])
     problems += [problem for module in modules for problem in module_problems(module=module)]
     assert not problems, "the forge suite reaches past its ephemeral repository:\n" + "\n".join(problems)
+
+
+def test_the_setup_note_names_the_credential() -> None:
+    assert SETUP_NOTE.is_file(), f"the test credential's setup note {SETUP_NOTE_NAME} does not exist"
+    text = read_document(path=SETUP_NOTE)
+    prose = collapse_whitespace(text=text)
+    phrases = (TEST_CREDENTIAL_FILE, TEST_ORGANIZATION, REPOSITORY_ACCESS, SECRET_NAME)
+    missing = [f"`{phrase}`" for phrase in phrases if phrase not in prose]
+    if TOKEN_KIND not in prose.casefold():
+        missing.append(f"the token kind `{TOKEN_KIND}`")
+    missing += missing_permissions(text=text)
+    if not says_only_local_machines_need_it(text=text):
+        missing.append(LOCAL_ONLY_CLAIM)
+    assert not missing, f"{SETUP_NOTE_NAME} does not name: {missing}"
+
+
+def test_the_map_names_the_forge_suite() -> None:
+    assert LLM_MAP.is_file(), f"the map {LLM_MAP_NAME} does not exist"
+    prose = collapse_whitespace(text=read_document(path=LLM_MAP))
+    beside_the_command = prose.replace(FORGE_COMMAND, "")
+    checks = (
+        (FORGE_SUITE in beside_the_command, f"the forge suite `{FORGE_SUITE}`, beside its command"),
+        (FORGE_COMMAND in prose, f"the local command `{FORGE_COMMAND}`"),
+        (TEST_CREDENTIAL_FILE in prose, f"the test credential file `{TEST_CREDENTIAL_FILE}`"),
+        (SETUP_NOTE_NAME in prose, f"the setup note `{SETUP_NOTE_NAME}`"),
+        (FORGE_JOB_MENTION.search(prose) is not None, f"the CI job `{JOB_FORGE}`"),
+    )
+    missing = [item for present, item in checks if not present]
+    assert not missing, f"{LLM_MAP_NAME} does not name: {missing}"
+
+
+def test_the_debt_line_is_gone() -> None:
+    assert PROJECT_PLAN.is_file(), f"{PROJECT_PLAN_NAME} does not exist"
+    prose = collapse_whitespace(text=read_document(path=PROJECT_PLAN)).casefold()
+    assert DEBT_LINE.casefold() not in prose, f"{PROJECT_PLAN_NAME} still lists the known debt `{DEBT_LINE}`"

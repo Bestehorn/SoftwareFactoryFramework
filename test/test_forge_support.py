@@ -4,11 +4,14 @@
 test/forge``) against github.com. What its support module decides without the forge is proven here: the refusal of a
 distributed run, the per-command credential helper git authenticates with, where the test credential file is found,
 and the CI step's write of it; the run id and the repository name it gives (D4); the marker on every product-wrapper
-invocation (D10); the teardown guard and the leftover sweep (D9). Only local git runs (``git init``, ``git worktree
-add``, ``git credential fill``), in checkouts under pytest's ``tmp_path``; the wrapper runner's ``subprocess.run`` is
-replaced by a recorder, and the teardown and the sweep are given ``RecordingWrapperRunner``, a ``WrapperRunner`` that
-records each argv and answers it from the test's script. No test opens a connection or needs a test credential file
-(UB-1).
+invocation (D10); the teardown guard and the leftover sweep (D9); and the provision around them, its steps in order, the
+test credential's refusals and the token written only to the clone (D3 "The clone", D8, D9). Only local git runs (``git
+init``, ``git worktree add``, ``git credential fill``, ``git remote add``, ``git config``), in checkouts under pytest's
+``tmp_path``; the wrapper runner's ``subprocess.run`` is replaced by a recorder, and the teardown and the sweep are
+given ``RecordingWrapperRunner``, a ``WrapperRunner`` that records each argv and answers it from the test's script. A
+provision is also given ``ScriptedGitRunner``, a ``GitRunner`` that records each argv, hands ``init`` and ``remote`` to
+real local git in the clone and answers the rest (``fetch``, ``checkout``, the seed's reads) from the script without a
+process. No test opens a connection or needs a test credential file (UB-1).
 
 ``ephemeral.py`` is loaded by path from inside each test body through ``_ephemeral``, never at import and never in a
 fixture, and nothing at this module's level names one of its symbols: this file collects whatever ``ephemeral.py``
@@ -22,17 +25,21 @@ Run: ``python scripts/run_tests.py test/test_forge_support.py`` (needs git on PA
 
 from __future__ import annotations
 
+import builtins
 import importlib.util
+import io
 import json
+import logging
+import os
 import re
 import subprocess
 import sys
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, Dict, List, Sequence, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import pytest
 from hypothesis import given, settings
@@ -780,3 +787,661 @@ def test_the_sweep_boundaries_and_refusals() -> None:
         full_name = no_leftover[FIELD_FULL_NAME]
         assert full_name in str(refused.value), f"the refusal does not name {full_name}: {refused.value}"
         assert runner.recorded == [], f"the refused deletion of {full_name} sent {runner.recorded}"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Provisioning (D3 "The clone", D8, D9 steps 1 to 7)
+# ---------------------------------------------------------------------------------------------------------------------
+
+# The symbols the provisioning tests need of ``ephemeral.py`` (D9, D10).
+GIT_RUNNER_SYMBOLS = ("GitRunner", "Invocation")
+PROVISION_SYMBOLS = (
+    *RUNNER_SYMBOLS,
+    *GIT_RUNNER_SYMBOLS,
+    "ForgeSetupError",
+    "ForgeCommandError",
+    "EphemeralRepository",
+    "provision",
+)
+
+# D9: the test's tree. The workspace stands for the session fixture's ``tempfile.mkdtemp`` directory; the clone is
+# ``<workspace>/clone``, and its git files are read where git writes them.
+CHECKOUT_NAME = "checkout"
+WORKSPACE_NAME = "workspace"
+CLONE_NAME = "clone"
+GIT_DIRECTORY = ".git"
+GIT_CONFIG_NAME = "config"
+GIT_INFO_DIRECTORY = "info"
+GIT_EXCLUDE_NAME = "exclude"
+ORIGIN_URL_KEY = "remote.origin.url"
+#: D8: the line the clone's ``.git/info/exclude`` gains, so no commit of the clone holds its credential file.
+EXCLUDED_CREDENTIALS = "credentials/"
+SENTINEL_LABEL = "sentinel"
+
+# D9 step 5: the creation, and the repository GitHub answers it with (docs.github.com "Create an organization
+# repository"). The default branch is not ``main``, so a checkout of a branch the answer did not name is seen.
+CREATE_OPERATION = "repos/create-in-org"
+RAW_FIELD_OPTION = "-f"
+TYPED_FIELD_OPTION = "-F"
+NAME_FIELD = "name="
+PRIVATE_FIELD = "private=true"
+AUTO_INIT_FIELD = "auto_init=true"
+FIELD_DEFAULT_BRANCH = "default_branch"
+SEED_BRANCH = "trunk"
+EMPTY_LISTING = _Answer(returncode=0, stdout=json.dumps(obj=[]) + LINE_END)
+CREATION_FAILURE = _Answer(
+    returncode=WRAPPER_API_FAILURE,
+    stderr=f"ERROR: GitHub API POST https://api.github.com/orgs/{TEST_ORGANIZATION}/repos failed: HTTP 422",
+)
+DELETION_FAILURE = _http_failure(full_name=f"{TEST_ORGANIZATION}/{EPHEMERAL_PREFIX}this-run", status=FORBIDDEN_STATUS)
+
+# D3, D9 step 6: the git commands a provision runs, and what the scripted git answers them with.
+GIT_INIT = "init"
+GIT_REMOTE = "remote"
+GIT_FETCH = "fetch"
+GIT_CHECKOUT = "checkout"
+GIT_REV_PARSE = "rev-parse"
+GIT_LS_TREE = "ls-tree"
+ORIGIN_REMOTE = "origin"
+OPTION_PREFIX = "-"
+#: The commands the scripted git hands to real local git in the clone: they write only the clone's ``.git/``.
+LOCAL_GIT_SUBCOMMANDS = (GIT_INIT, GIT_REMOTE)
+REMOTE_ADD = (GIT_REMOTE, "add", ORIGIN_REMOTE)
+FETCH_ARGUMENTS = (GIT_FETCH, ORIGIN_REMOTE)
+CHECKOUT_ARGUMENTS = (GIT_CHECKOUT, "-B", SEED_BRANCH, "--track", f"{ORIGIN_REMOTE}/{SEED_BRANCH}")
+LS_TREE_ARGUMENTS = (GIT_LS_TREE, "-r", "--name-only", "HEAD")
+SEED_SHA = "5eed" * 10
+SEED_TREE_SHA = "7ee5" * 10
+#: ``rev-parse``'s answer per revision D9 step 6 asks for.
+SEED_REVISIONS = {"HEAD": SEED_SHA, "HEAD^{tree}": SEED_TREE_SHA}
+SEED_TREE = ("README.md",)
+WORKFLOW_SEED_TREE = (*SEED_TREE, ".github/workflows/ci.yml")
+
+# AC-1.1: a provision's timeline, as the steps of D9 it shows.
+WRAPPER_RUNNER = "wrapper"
+GIT_RUNNER = "git"
+BODY_RUNNER = "body"
+STEP_INIT = "git init"
+STEP_REMOTE = "git remote add origin <this run's URL>"
+STEP_LISTING = "the listing"
+STEP_CREATION = "the creation"
+STEP_FETCH = "the authenticated git fetch origin"
+STEP_CHECKOUT = "git checkout -B <default branch> --track origin/<default branch>"
+STEP_READ = "the seed's reads"
+STEP_BODY = "the body"
+STEP_DELETION = "the deletion"
+PREPARED_STEPS = (STEP_INIT, STEP_REMOTE, STEP_LISTING, STEP_CREATION, STEP_FETCH, STEP_CHECKOUT, STEP_READ)
+
+# AC-6.2: the bad test credential files, one per refusal ``_load_token`` makes.
+MISSING_CREDENTIAL = "missing"
+EMPTY_CREDENTIAL = "empty"
+PLACEHOLDER_CREDENTIAL = "the-placeholder"
+TWO_TOKENS_CREDENTIAL = "two-tokens-on-two-lines"
+
+# UB-2: the calls a read or a write of a file goes through, replaced by a recorder during a provision.
+OPEN_TARGETS: Tuple[Tuple[ModuleType, str], ...] = ((builtins, "open"), (io, "open"), (os, "open"))
+
+
+class _BodyFailure(Exception):
+    """What a test body raises, to show that the teardown runs whatever the body does (AC-1.4)."""
+
+
+@dataclass(frozen=True)
+class _Event:
+    """One entry of a provision's timeline: a wrapper or git invocation, or the body's entry. At a wrapper invocation,
+    ``origin`` is the URL the clone's ``.git/config`` named then, ``None`` when it named none."""
+
+    runner: str
+    arguments: Tuple[str, ...] = ()
+    authenticated: bool = False
+    origin: Optional[str] = None
+
+
+def _origin_url(*, name: str) -> str:
+    """D3's origin URL of the test organization's repository ``name``."""
+    return ORIGIN_URL.format(owner=TEST_ORGANIZATION, name=name)
+
+
+def _creation(*, name: str) -> List[str]:
+    """D9 step 5's ``call repos/create-in-org`` of ``name``."""
+    return [
+        CALL_SUBCOMMAND,
+        CREATE_OPERATION,
+        PATH_OPTION,
+        f"{ORG_PARAMETER}={TEST_ORGANIZATION}",
+        RAW_FIELD_OPTION,
+        NAME_FIELD + name,
+        TYPED_FIELD_OPTION,
+        PRIVATE_FIELD,
+        TYPED_FIELD_OPTION,
+        AUTO_INIT_FIELD,
+    ]
+
+
+def _requested_name(*, arguments: Sequence[str]) -> str:
+    """The repository name a creation asks for with ``-f name=<name>``; a creation naming none fails the test."""
+    for option, value in zip(arguments, arguments[1:]):
+        if option == RAW_FIELD_OPTION and value.startswith(NAME_FIELD):
+            return value[len(NAME_FIELD) :]
+    raise AssertionError(f"the creation names no repository with {RAW_FIELD_OPTION} {NAME_FIELD}<name>: {arguments}")
+
+
+def _created_item(*, name: str) -> Dict[str, Any]:
+    """The repository the creation of ``name`` answers with, as GitHub answers it: private, ``SEED_BRANCH`` its
+    default branch."""
+    return {
+        FIELD_NAME: name,
+        FIELD_FULL_NAME: f"{TEST_ORGANIZATION}/{name}",
+        FIELD_OWNER: {FIELD_LOGIN: TEST_ORGANIZATION},
+        FIELD_PRIVATE: True,
+        FIELD_DEFAULT_BRANCH: SEED_BRANCH,
+    }
+
+
+def _origin_of(*, clone: Path) -> Optional[str]:
+    """The ``origin`` URL the clone's ``.git/config`` names, read by local git from that file alone; ``None`` while the
+    file is absent or names none."""
+    config = clone / GIT_DIRECTORY / GIT_CONFIG_NAME
+    if not config.is_file():
+        return None
+    result = subprocess.run(
+        args=[GIT, "config", "--file", str(config), "--get", ORIGIN_URL_KEY],
+        capture_output=True,
+        text=True,
+        encoding=TEXT_ENCODING,
+        timeout=GIT_TIMEOUT_SECONDS,
+        check=False,
+    )
+    return result.stdout.strip() if result.returncode == GIT_EXIT_OK else None
+
+
+def _revisions(*, arguments: Sequence[str]) -> _Answer:
+    """``rev-parse``'s answer: one line per revision asked for, options aside; a revision D9 step 6 does not ask for
+    fails the test."""
+    asked = [argument for argument in arguments[1:] if not argument.startswith(OPTION_PREFIX)]
+    unknown = [revision for revision in asked if revision not in SEED_REVISIONS]
+    assert asked and not unknown, f"the provision asked rev-parse for revisions the test scripted none for: {arguments}"
+    return _Answer(returncode=GIT_EXIT_OK, stdout="".join(SEED_REVISIONS[revision] + LINE_END for revision in asked))
+
+
+class _ProvisionScript:
+    """The forge and the git one provision meets, scripted, noting every invocation and the body's entry in one
+    ``timeline``, in order.
+
+    The wrapper answers the listing with no repository, the creation with the repository it names (``_created_item``)
+    or with ``creation`` when one is given, and the deletion with ``deletion``; at each invocation it notes the clone's
+    ``origin``. The git hands ``init`` and ``remote`` to real local git in the clone, which must exist by then, and
+    answers ``fetch`` and ``checkout`` with success, ``rev-parse`` from ``SEED_REVISIONS`` and ``ls-tree -r --name-only
+    HEAD`` with ``seed_tree``, starting no process. Any other invocation fails the test.
+    """
+
+    def __init__(
+        self, *, clone: Path, seed_tree: Sequence[str], creation: Optional[_Answer], deletion: _Answer
+    ) -> None:
+        self.clone = clone
+        self.seed_tree = tuple(seed_tree)
+        self.creation = creation
+        self.deletion = deletion
+        self.timeline: List[_Event] = []
+        #: The repository name the creation asked for, once it was sent.
+        self.name: Optional[str] = None
+
+    def wrapper(self, *, arguments: List[str]) -> _Answer:
+        """The script of the provision's ``RecordingWrapperRunner``."""
+        self.timeline.append(
+            _Event(runner=WRAPPER_RUNNER, arguments=tuple(arguments), origin=_origin_of(clone=self.clone))
+        )
+        if arguments == list(LISTING_ARGUMENTS):
+            return EMPTY_LISTING
+        if arguments[:2] == [CALL_SUBCOMMAND, CREATE_OPERATION]:
+            self.name = _requested_name(arguments=arguments)
+            if self.creation is not None:
+                return self.creation
+            return _Answer(returncode=0, stdout=json.dumps(obj=_created_item(name=self.name), indent=2) + LINE_END)
+        if arguments[:2] == [CALL_SUBCOMMAND, DELETE_OPERATION]:
+            return self.deletion
+        raise AssertionError(f"the provision sent an invocation the test scripted no answer for: {arguments}")
+
+    def git(self, *, arguments: List[str], authenticated: bool) -> _Answer:
+        """The script of the provision's ``ScriptedGitRunner``."""
+        self.timeline.append(_Event(runner=GIT_RUNNER, arguments=tuple(arguments), authenticated=authenticated))
+        subcommand = arguments[0] if arguments else ""
+        if subcommand in LOCAL_GIT_SUBCOMMANDS:
+            assert self.clone.is_dir(), f"`git {' '.join(arguments)}` ran before the clone {self.clone} existed"
+            completed = _git(arguments=arguments, cwd=self.clone)
+            return _Answer(returncode=completed.returncode, stdout=completed.stdout, stderr=completed.stderr)
+        if subcommand in (GIT_FETCH, GIT_CHECKOUT):
+            return SUCCESS
+        if subcommand == GIT_REV_PARSE:
+            return _revisions(arguments=arguments)
+        if arguments == list(LS_TREE_ARGUMENTS):
+            return _Answer(returncode=GIT_EXIT_OK, stdout="".join(path + LINE_END for path in self.seed_tree))
+        raise AssertionError(f"the provision ran a git command the test scripted no answer for: {arguments}")
+
+    def enter(self) -> None:
+        """Notes the body's entry."""
+        self.timeline.append(_Event(runner=BODY_RUNNER))
+
+    def steps(self) -> List[str]:
+        """The timeline as D9's steps, consecutive seed reads as one; an invocation of no step is named as sent."""
+        steps: List[str] = []
+        for event in self.timeline:
+            step = self._step(event=event)
+            if step != STEP_READ or steps[-1:] != [STEP_READ]:
+                steps.append(step)
+        return steps
+
+    def _step(self, *, event: _Event) -> str:
+        if event.runner == BODY_RUNNER:
+            return STEP_BODY
+        if event.runner == GIT_RUNNER and not event.authenticated:
+            if event.arguments[:1] == (GIT_INIT,):
+                return STEP_INIT
+            if event.arguments[:1] == (GIT_REV_PARSE,) or event.arguments == LS_TREE_ARGUMENTS:
+                return STEP_READ
+        name = self.name or ""
+        steps = {
+            (GIT_RUNNER, (*REMOTE_ADD, _origin_url(name=name)), False): STEP_REMOTE,
+            (WRAPPER_RUNNER, LISTING_ARGUMENTS, False): STEP_LISTING,
+            (WRAPPER_RUNNER, tuple(_creation(name=name)), False): STEP_CREATION,
+            (GIT_RUNNER, FETCH_ARGUMENTS, True): STEP_FETCH,
+            (GIT_RUNNER, CHECKOUT_ARGUMENTS, False): STEP_CHECKOUT,
+            (WRAPPER_RUNNER, tuple(_deletion(owner=TEST_ORGANIZATION, name=name)), False): STEP_DELETION,
+        }
+        unexpected = (
+            f"an unexpected {event.runner} invocation {list(event.arguments)} (authenticated: {event.authenticated})"
+        )
+        return steps.get((event.runner, event.arguments, event.authenticated), unexpected)
+
+
+def _scripted_git_runner(*, forge: ModuleType, script: Callable[..., _Answer]) -> Any:
+    """A ``ScriptedGitRunner``, the loaded module's ``GitRunner`` double: it records each argv with its
+    ``authenticated`` flag in ``recorded`` and answers it with ``script(arguments=<the argv>, authenticated=<the
+    flag>)`` as an ``Invocation``; it starts a process only where ``script`` does."""
+    _require(module=forge, names=GIT_RUNNER_SYMBOLS)
+    git_runner: Any = forge.GitRunner
+
+    class ScriptedGitRunner(git_runner):
+        """Records each git argv and answers it from the test's script."""
+
+        def __init__(self) -> None:
+            self.recorded: List[Tuple[List[str], bool]] = []
+
+        def run(self, *, arguments: Sequence[str], authenticated: bool = False) -> Any:
+            argv = [str(part) for part in arguments]
+            self.recorded.append((argv, authenticated))
+            answer = script(arguments=argv, authenticated=authenticated)
+            return forge.Invocation(returncode=answer.returncode, stdout=answer.stdout, stderr=answer.stderr)
+
+    return ScriptedGitRunner()
+
+
+def _refuse_every_git_command(*, arguments: List[str], authenticated: bool) -> _Answer:
+    """A script for a git runner that may run nothing: any command fails the test."""
+    raise AssertionError(f"git was run where nothing may run: {arguments} (authenticated: {authenticated})")
+
+
+@dataclass(frozen=True)
+class _Provisioning:
+    """A scripted provision's inputs: under ``root``, a ``git init`` checkout holding the test credential file with
+    ``token`` and a sentinel ``credentials/github-pat.txt`` (UB-2), the workspace, and the two doubles, which note in
+    ``script``'s timeline."""
+
+    root: Path
+    checkout: Path
+    workspace: Path
+    token: str
+    test_credential: Path
+    sentinel: Path
+    script: _ProvisionScript
+    wrapper: Any
+    git: Any
+
+    @property
+    def clone(self) -> Path:
+        """D9 step 3's ``<workspace>/clone``."""
+        return self.workspace / CLONE_NAME
+
+
+def _provisioning(
+    *,
+    forge: ModuleType,
+    tmp_path: Path,
+    seed_tree: Sequence[str] = SEED_TREE,
+    creation: Optional[_Answer] = None,
+    deletion: _Answer = SUCCESS,
+) -> _Provisioning:
+    """A scripted provision's tree under ``tmp_path`` and its two doubles, sharing one ``_ProvisionScript``."""
+    checkout = tmp_path / CHECKOUT_NAME
+    _init_checkout(path=checkout)
+    token = _new_token(label="test")
+    test_credential = _write_credential(directory=checkout, name=TEST_CREDENTIAL_NAME, token=token)
+    sentinel = _write_credential(directory=checkout, name=CLONE_CREDENTIAL_NAME, token=_new_token(label=SENTINEL_LABEL))
+    workspace = tmp_path / WORKSPACE_NAME
+    workspace.mkdir()
+    script = _ProvisionScript(clone=workspace / CLONE_NAME, seed_tree=seed_tree, creation=creation, deletion=deletion)
+    return _Provisioning(
+        root=tmp_path,
+        checkout=checkout,
+        workspace=workspace,
+        token=token,
+        test_credential=test_credential,
+        sentinel=sentinel,
+        script=script,
+        wrapper=_recording_runner(forge=forge, script=script.wrapper),
+        git=_scripted_git_runner(forge=forge, script=script.git),
+    )
+
+
+@dataclass(frozen=True)
+class _Entered:
+    """What a provision's body found on entry: the yielded repository and its ``repr``, the moment, the clone's files,
+    and the files of the test's tree that held the token, the sentinel aside (its content is compared on its own)."""
+
+    repository: Any
+    representation: str
+    at: datetime
+    clone_is_directory: bool
+    #: Kept out of the ``repr``, so that pytest's introspection of a failed assertion never prints the token.
+    clone_credential: Optional[bytes] = field(repr=False)
+    exclude_lines: Tuple[str, ...]
+    git_config: str
+    holders: Tuple[str, ...]
+
+
+def _holders(*, setup: _Provisioning) -> List[str]:
+    """The files under the test's tree holding the token, relative and in forward-slash form, the sentinel aside."""
+    token = setup.token.encode(encoding=TEXT_ENCODING)
+    return sorted(
+        path.relative_to(setup.root).as_posix()
+        for path in setup.root.rglob(pattern="*")
+        if path.is_file() and path != setup.sentinel and token in path.read_bytes()
+    )
+
+
+def _text_of(*, path: Path) -> str:
+    """The text of ``path``; empty while it is no file."""
+    return path.read_text(encoding=TEXT_ENCODING) if path.is_file() else ""
+
+
+def _enter(*, repository: Any, setup: _Provisioning) -> _Entered:
+    """What the body of a provision over ``setup`` finds on entry (``_Entered``)."""
+    git_directory = setup.clone / GIT_DIRECTORY
+    credential = setup.clone / CREDENTIALS_DIRECTORY / CLONE_CREDENTIAL_NAME
+    exclude = _text_of(path=git_directory / GIT_INFO_DIRECTORY / GIT_EXCLUDE_NAME)
+    return _Entered(
+        repository=repository,
+        representation=repr(repository),
+        at=datetime.now(tz=timezone.utc),
+        clone_is_directory=setup.clone.is_dir(),
+        clone_credential=credential.read_bytes() if credential.is_file() else None,
+        exclude_lines=tuple(line.strip() for line in exclude.splitlines()),
+        git_config=_text_of(path=git_directory / GIT_CONFIG_NAME),
+        holders=tuple(_holders(setup=setup)),
+    )
+
+
+def _provide(*, forge: ModuleType, setup: _Provisioning, entered: List[_Entered], body_raises: bool) -> None:
+    """One ``provision`` over ``setup``. Its body notes what it found in ``entered`` and its entry in the timeline, then
+    returns or raises ``_BodyFailure``; it asserts nothing, so a teardown error cannot hide a failed assertion."""
+    with forge.provision(
+        checkout=setup.checkout, workspace=setup.workspace, wrapper=setup.wrapper, git=setup.git
+    ) as repository:
+        entered.append(_enter(repository=repository, setup=setup))
+        setup.script.enter()
+        if body_raises:
+            raise _BodyFailure("the test body raised")
+
+
+@dataclass(frozen=True)
+class _ProvisionCase:
+    """One way a provision ends: the seed's tree, whether the body raises, the deletion's answer, whether the body is
+    entered, and the error of ``ephemeral.py`` the context then raises, by name (``None``: the body's own, or none)."""
+
+    seed_tree: Tuple[str, ...]
+    body_raises: bool
+    deletion: _Answer
+    yields: bool
+    error: Optional[str] = None
+
+
+PROVISION_CASES = (
+    pytest.param(
+        _ProvisionCase(seed_tree=SEED_TREE, body_raises=False, deletion=SUCCESS, yields=True), id="the-body-returns"
+    ),
+    pytest.param(
+        _ProvisionCase(seed_tree=SEED_TREE, body_raises=True, deletion=SUCCESS, yields=True), id="the-body-raises"
+    ),
+    pytest.param(
+        _ProvisionCase(
+            seed_tree=WORKFLOW_SEED_TREE, body_raises=False, deletion=SUCCESS, yields=False, error="ForgeSetupError"
+        ),
+        id="a-workflow-in-the-seed",
+    ),
+    pytest.param(
+        _ProvisionCase(
+            seed_tree=SEED_TREE, body_raises=False, deletion=DELETION_FAILURE, yields=True, error="ForgeCommandError"
+        ),
+        id="the-deletion-fails",
+    ),
+)
+
+
+def _expected_error(*, forge: ModuleType, case: _ProvisionCase) -> Any:
+    """The exception the context raises in ``case``: the body's ``_BodyFailure``, the named error of ``ephemeral.py``,
+    or ``None``."""
+    if case.body_raises:
+        return _BodyFailure
+    return getattr(forge, case.error) if case.error is not None else None
+
+
+def _deletions(*, setup: _Provisioning) -> List[List[str]]:
+    """The ``call repos/delete`` invocations the provision's wrapper recorded."""
+    return [argv for argv in setup.wrapper.recorded if argv[:2] == [CALL_SUBCOMMAND, DELETE_OPERATION]]
+
+
+def _assert_yielded(*, forge: ModuleType, entered: _Entered, setup: _Provisioning, started: datetime) -> None:
+    """AC-1.1, AC-1.3 (D9): the yielded ``EphemeralRepository`` names this run's repository as the creation answered
+    it, the seed the git reads answered, the time of the sweep, the existing clone, and the runners it was given."""
+    repository = entered.repository
+    assert isinstance(repository, forge.EphemeralRepository), f"provision yielded {type(repository)}, no record"
+    assert (repository.owner, repository.name, repository.default_branch) == (
+        TEST_ORGANIZATION,
+        setup.script.name,
+        SEED_BRANCH,
+    ), f"the yielded repository is {repository.owner}/{repository.name} on {repository.default_branch}"
+    assert repository.name == EPHEMERAL_PREFIX + repository.run_id, (
+        f"the run id {repository.run_id!r} is not the name's"
+    )
+    assert (repository.seed_sha, repository.seed_tree_sha) == (SEED_SHA, SEED_TREE_SHA), (
+        f"the yielded seed is {repository.seed_sha} {repository.seed_tree_sha}, not the git reads' answer"
+    )
+    swept_at = repository.swept_at
+    assert isinstance(swept_at, datetime) and swept_at.utcoffset() == timedelta(0), f"swept_at is {swept_at!r}"
+    assert started.replace(microsecond=0) <= swept_at <= entered.at, f"swept_at {swept_at} is not this run's sweep"
+    assert entered.clone_is_directory and Path(repository.clone).resolve() == setup.clone.resolve(), (
+        f"the yielded clone is {repository.clone}, not the existing {setup.clone}"
+    )
+    assert repository.wrapper is setup.wrapper and repository.git is setup.git, "the yielded runners are not the given"
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=PROVISION_CASES)
+def test_provisioning_runs_in_order(tmp_path: Path, case: _ProvisionCase) -> None:
+    """AC-1.1, AC-1.3, AC-1.4 (D3 "The clone", D9): one provision runs ``git init`` in the created ``<workspace>/clone``
+    and adds D3's origin, lists the organization, sends exactly one creation of ``sff-test-<run id>``, fetches
+    authenticated and checks the answered default branch out, then reads the seed; every wrapper invocation meets the
+    clone's origin of this run's repository. Whether the body returns or raises, after the context exactly one
+    deletion of this run's repository is recorded and the workspace no longer exists; a seed naming
+    ``.github/workflows/ci.yml`` raises ``ForgeSetupError`` before the yield and the deletion is still sent; a deletion
+    answering exit 1 raises ``ForgeCommandError`` and the workspace is still removed."""
+    forge = _ephemeral()
+    _require(module=forge, names=PROVISION_SYMBOLS)
+    setup = _provisioning(forge=forge, tmp_path=tmp_path, seed_tree=case.seed_tree, deletion=case.deletion)
+    expected_error = _expected_error(forge=forge, case=case)
+    entered: List[_Entered] = []
+    started = datetime.now(tz=timezone.utc)
+
+    if expected_error is None:
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+    else:
+        with pytest.raises(expected_exception=expected_error):
+            _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+
+    expected_steps = [*PREPARED_STEPS, *([STEP_BODY] if case.yields else []), STEP_DELETION]
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+    name = str(setup.script.name)
+    assert name.startswith(EPHEMERAL_PREFIX) and RUN_ID_PATTERN.fullmatch(string=name[len(EPHEMERAL_PREFIX) :]), (
+        f"the creation asked for {name!r}, not sff-test-<run id> (D4)"
+    )
+    origins = [event.origin for event in setup.script.timeline if event.runner == WRAPPER_RUNNER]
+    assert set(origins) == {_origin_url(name=name)}, f"the wrapper ran where the clone's origin was {origins}"
+    assert _deletions(setup=setup) == [_deletion(owner=TEST_ORGANIZATION, name=name)], (
+        f"the provision sent the deletions {_deletions(setup=setup)}"
+    )
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+    assert len(entered) == (1 if case.yields else 0), f"the body was entered {len(entered)} times"
+    if case.yields:
+        _assert_yielded(forge=forge, entered=entered[0], setup=setup, started=started)
+
+
+def test_no_creation_no_deletion(tmp_path: Path) -> None:
+    """AC-2.3 (D9): ``delete_ephemeral`` given ``created=None`` sends nothing; a provision whose creation answers exit
+    1 raises ``ForgeCommandError`` without entering the body, sends no ``repos/delete``, and removes the workspace."""
+    forge = _ephemeral()
+    _require(module=forge, names=(*PROVISION_SYMBOLS, "delete_ephemeral"))
+    untouched = _recording_runner(forge=forge, script=_refuse_every_invocation)
+    assert forge.delete_ephemeral(wrapper=untouched, created=None, run_id=_run_id()) is None
+    assert untouched.recorded == [], f"the teardown of no creation sent {untouched.recorded}"
+
+    setup = _provisioning(forge=forge, tmp_path=tmp_path, creation=CREATION_FAILURE)
+    entered: List[_Entered] = []
+    with pytest.raises(expected_exception=forge.ForgeCommandError):
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+
+    expected_steps = [STEP_INIT, STEP_REMOTE, STEP_LISTING, STEP_CREATION]
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+    assert _deletions(setup=setup) == [], f"the provision whose creation failed sent {_deletions(setup=setup)}"
+    assert entered == [], "the provision yielded though its creation failed"
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+
+
+def _bad_credential_text(*, kind: str, placeholder: str) -> Optional[str]:
+    """The text of a bad test credential file of ``kind``; ``None`` for a missing one."""
+    texts = {
+        EMPTY_CREDENTIAL: "",
+        PLACEHOLDER_CREDENTIAL: placeholder + LINE_END,
+        TWO_TOKENS_CREDENTIAL: _new_token(label="first") + LINE_END + _new_token(label="second") + LINE_END,
+    }
+    return texts.get(kind)
+
+
+@pytest.mark.parametrize(
+    argnames="kind", argvalues=(MISSING_CREDENTIAL, EMPTY_CREDENTIAL, PLACEHOLDER_CREDENTIAL, TWO_TOKENS_CREDENTIAL)
+)
+def test_a_bad_test_credential_fails_before_any_request(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, kind: str
+) -> None:
+    """AC-6.2 (D8, D9 step 2): a test credential file that is missing, empty, the product wrapper's ``PLACEHOLDER`` or
+    two tokens on two lines makes ``provision`` raise ``ForgeSetupError`` naming the file and none of its text, before
+    any wrapper or git invocation and without entering the body; the workspace no longer exists."""
+    forge = _ephemeral()
+    _require(module=forge, names=PROVISION_SYMBOLS)
+    checkout = tmp_path / CHECKOUT_NAME
+    _init_checkout(path=checkout)
+    credential = checkout / CREDENTIALS_DIRECTORY / TEST_CREDENTIAL_NAME
+    text = _bad_credential_text(kind=kind, placeholder=str(_product_wrapper(monkeypatch=monkeypatch).PLACEHOLDER))
+    if text is not None:
+        credential.parent.mkdir()
+        credential.write_bytes(data=text.encode(encoding=TEXT_ENCODING))
+    workspace = tmp_path / WORKSPACE_NAME
+    workspace.mkdir()
+    wrapper = _recording_runner(forge=forge, script=_refuse_every_invocation)
+    git = _scripted_git_runner(forge=forge, script=_refuse_every_git_command)
+    yielded: List[Any] = []
+
+    with pytest.raises(expected_exception=forge.ForgeSetupError) as refused:
+        with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as repository:
+            yielded.append(repository)
+
+    message = str(refused.value)
+    assert _names_one_of(message=message, paths=(credential,)), f"the refusal does not name {credential}: {message}"
+    held = [line.strip() for line in (text or "").splitlines() if line.strip()]
+    assert not [line for line in held if line in message], "the refusal holds the test credential file's text"
+    assert (wrapper.recorded, git.recorded) == ([], []), f"the refused provision ran {wrapper.recorded} {git.recorded}"
+    assert yielded == [], "the provision yielded with a bad test credential file"
+    assert not workspace.exists(), f"the workspace {workspace} outlived the refused provision"
+
+
+def _noting_open(*, original: Callable[..., Any], opened: List[Path]) -> Callable[..., Any]:
+    """``original``, an ``open``, that first notes in ``opened`` the resolved path of a file it is given by name."""
+
+    def noting_open(file: Any, *positional: Any, **keywords: Any) -> Any:
+        if isinstance(file, (str, bytes, os.PathLike)):
+            opened.append(Path(os.fsdecode(filename=file)).resolve())
+        return original(file, *positional, **keywords)
+
+    return noting_open
+
+
+def _record_opens(*, patch: pytest.MonkeyPatch) -> List[Path]:
+    """Replaces ``open``, ``io.open`` and ``os.open`` through ``patch`` with ``_noting_open``; returns the list the
+    opened paths are noted in."""
+    opened: List[Path] = []
+    for target, attribute in OPEN_TARGETS:
+        original = getattr(target, attribute)
+        patch.setattr(target=target, name=attribute, value=_noting_open(original=original, opened=opened))
+    return opened
+
+
+def _assert_sentinel_untouched(*, setup: _Provisioning, content: bytes, opened: Sequence[Path]) -> None:
+    """UB-2: the checkout's ``credentials/github-pat.txt`` keeps ``content``, and of the files named
+    ``credentials/github-pat.txt`` the provision opened, none lies outside the clone."""
+    assert setup.sentinel.read_bytes() == content, "the checkout's credentials/github-pat.txt changed"
+    sentinel = setup.sentinel.resolve()
+    assert sentinel not in opened, f"the provision opened the checkout's {sentinel}"
+    clone = setup.workspace.resolve() / CLONE_NAME
+    outside = [
+        path
+        for path in opened
+        if (path.parent.name, path.name) == (CREDENTIALS_DIRECTORY, CLONE_CREDENTIAL_NAME) and clone not in path.parents
+    ]
+    assert outside == [], f"the provision opened a credentials/github-pat.txt outside its clone: {outside}"
+
+
+def test_the_token_is_written_only_to_the_clone(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    """AC-6.3, UB-2 (D3, D8): in a scripted provision's body, the files of the test's tree holding the token are the
+    test credential file and the clone's ``credentials/github-pat.txt``, which holds exactly the token and ``\\n``; no
+    recorded argv holds it, nor the clone's ``.git/config``, and its ``.git/info/exclude`` names ``credentials/``; no
+    record captured at DEBUG holds it, nor the ``repr`` of the yielded ``EphemeralRepository``; afterwards only the
+    test credential file holds it. The checkout's own ``credentials/github-pat.txt`` keeps its content, and no
+    ``credentials/github-pat.txt`` outside the clone is opened."""
+    forge = _ephemeral()
+    _require(module=forge, names=PROVISION_SYMBOLS)
+    setup = _provisioning(forge=forge, tmp_path=tmp_path)
+    sentinel_content = setup.sentinel.read_bytes()
+    entered: List[_Entered] = []
+    caplog.set_level(level=logging.DEBUG)
+
+    with pytest.MonkeyPatch.context() as patch:
+        opened = _record_opens(patch=patch)
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+
+    assert len(entered) == 1, f"the body was entered {len(entered)} times"
+    found = entered[0]
+    test_credential = setup.test_credential.relative_to(setup.root).as_posix()
+    clone_credential = (setup.clone / CREDENTIALS_DIRECTORY / CLONE_CREDENTIAL_NAME).relative_to(setup.root).as_posix()
+    assert list(found.holders) == sorted([test_credential, clone_credential]), f"the token was in {found.holders}"
+    # Compared into a bool first, so that no assertion prints the file's bytes.
+    written = found.clone_credential == (setup.token + LINE_END).encode(encoding=TEXT_ENCODING)
+    assert written, "the clone's credentials/github-pat.txt does not hold exactly the test token and a \\n"
+    recorded = [*setup.wrapper.recorded, *(argv for argv, _ in setup.git.recorded)]
+    assert not [argv for argv in recorded if any(setup.token in part for part in argv)], (
+        "a recorded argv holds the token"
+    )
+    assert setup.token not in found.git_config, "the clone's .git/config holds the token"
+    assert EXCLUDED_CREDENTIALS in found.exclude_lines, f"the clone's .git/info/exclude names no {EXCLUDED_CREDENTIALS}"
+    holding = [f"{record.name} {record.levelname}" for record in caplog.records if setup.token in record.getMessage()]
+    assert holding == [] and setup.token not in caplog.text, f"captured log records hold the token: {holding}"
+    assert setup.token not in found.representation, "the repr of the yielded EphemeralRepository holds the token"
+    assert _holders(setup=setup) == [test_credential], "a file holding the token outlived the provision"
+    _assert_sentinel_untouched(setup=setup, content=sentinel_content, opened=opened)

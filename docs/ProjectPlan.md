@@ -13,5 +13,4 @@
 
 ## TODOs and open issues
 The live list is the GitHub issue backlog of `Bestehorn/SoftwareFactoryFramework`, read with
-`python scripts/github_wrapper.py list-issues`. Known debt recorded at the self-install:
-- the ephemeral-repository forge tests need their dedicated create/delete token.
+`python scripts/github_wrapper.py list-issues`. No debt recorded at the self-install remains open.
