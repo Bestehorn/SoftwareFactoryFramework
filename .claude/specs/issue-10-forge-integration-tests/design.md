@@ -33,7 +33,9 @@ commands go through `SubprocessGitRunner` with a per-command credential helper (
 Patterns followed: test support loaded by path, never collected by name (`src/payload/test/github_wrapper_fixtures.py`;
 `test/test_github_wrapper_fork_parity.py`'s loader); a suite outside the default collection with its own command
 (`run_checks.py` `hook_suite_argv`); a refusal raised as `GitHubAPIError` inside `main`'s existing refusal block
-(`_load_token`, `_detect_repo`). No deviation.
+(`_load_token`, `_detect_repo`). One deviation: the forge job's check is the `run_tests.py` command above,
+not a `run_checks.py` group, because `run_checks.py` is toolchain (D5 Alternatives); a local `run_checks.py` does not
+run the forge suite.
 
 ## Design
 
@@ -42,7 +44,9 @@ Patterns followed: test support loaded by path, never collected by name (`src/pa
 **Location.** `test/forge/` (`testing.md` rule 1: `test/` holds this repository's own tests).
 
 **Mechanism.** `test/forge/pytest.ini`: `[pytest]`, `python_files = forge_*.py`, `addopts = -p no:cacheprovider` (no
-cache written beside the suite, as `hook_suite_argv` does). The test modules are `forge_*.py`; the support files are
+cache written beside the suite, as `hook_suite_argv` does), `log_cli = true`, `log_cli_level = INFO` (each creation
+and deletion reaches the job log as it is logged: "pytest will output logging records as they are emitted directly
+into the console", docs.pytest.org `how-to/logging.html`). The test modules are `forge_*.py`; the support files are
 `conftest.py`, `ephemeral.py` and `write_credential.py` (D10).
 
 - **The forge run.** `python scripts/run_tests.py --workers 1 test/forge`, in the forge job and locally.
@@ -76,8 +80,10 @@ Alternatives: `test/forge/test_*.py` with `norecursedirs` or `--ignore` in `pypr
 exclusion, and a later subdirectory of `test/` would drop out unseen); a top-level directory outside `testpaths`
 (`file-organization.md` puts tests in `test/`, and `test/test_layout.py`
 `test_python_lives_only_in_src_test_and_scripts` refuses Python elsewhere); `forge_*.py` with `-o python_files=` on
-the command line (AC-7.2 has the path alone run the suite); a `forge` group in `run_checks.py` (a toolchain file, and
-the shipped script would carry this repository's suite).
+the command line (the module convention would belong to the command, not to the suite's own configuration);
+`test/e2e/` (`run_checks.py` `e2e_argv`, a post-merge group that runs only on request and that `ci.yml` does not run,
+whereas S4 runs the suite on every pull request; `test/forge/` is this project's equivalent); a `forge` group in
+`run_checks.py` (D5 Alternatives).
 
 ### D2 — The test marker and the origin guard (AC-4.1 to AC-4.3; UB-3)
 
@@ -95,8 +101,10 @@ variable, the same in any working directory, and no file of a checkout can set i
   `sys._xoptions` has no marker).
 - `_refuse_unless_ephemeral(*, owner: str, repo: str) -> None`: when the marker is set and `repo` does not start with
   `EPHEMERAL_REPOSITORY_PREFIX`, raises `GitHubAPIError(message=f"The test marker (-X {TEST_MARKER_OPTION}) is set and
-  the origin names {owner}/{repo}, which is not an {EPHEMERAL_REPOSITORY_PREFIX}* repository; nothing was sent")`.
-  `owner` and `repo` are `_detect_repo`'s groups of `GITHUB_REPOSITORY_PATTERN`, which never hold a URL's userinfo.
+  the origin names {shown}/{repo}, which is not an {EPHEMERAL_REPOSITORY_PREFIX}* repository; nothing was sent")`.
+  `owner` and `repo` are `_detect_repo`'s groups of `GITHUB_REPOSITORY_PATTERN`; `shown` is the owner after its last
+  `@` (`owner.rpartition("@")[2]`), because the owner group of an origin whose userinfo ends in `github.com:` holds the
+  rest of that userinfo.
 - `main` calls it inside its existing `try`, right after `owner, repo = _detect_repo()`. The existing
   `logger.error("%s", exc)` writes the message to standard error (`ERROR: ` and the message, `LOG_FORMAT`) and `main`
   returns `EXIT_REFUSED` before the delivery-verb branch (`steward_delegate`) and `_run_command` (which builds the
@@ -118,7 +126,7 @@ command (fetch, push), the global options
 
 ```
 -c credential.helper=
--c credential.helper=!f() { test "$1" = get || return 0; read -r t < '<clone>/credentials/github-pat.txt' || test -n "$t"; printf 'username=x-access-token\npassword=%s\n' "$t"; }; f
+-c credential.https://github.com.helper=!f() { test "$1" = get || return 0; read -r t < '<clone>/credentials/github-pat.txt' || test -n "$t"; printf 'username=x-access-token\npassword=%s\n' "$t"; }; f
 ```
 
 with `<clone>` the clone's absolute path in forward-slash form (`Path.as_posix()`), single-quoted so a space ("Code
@@ -126,9 +134,10 @@ Workspace") is literal; a path holding `'` raises `ForgeSetupError` before any g
 
 - git-scm.com/docs/gitcredentials: "If the helper string begins with "!", it is considered a shell snippet, and
   everything after the "!" becomes the command"; "If `credential.helper` is configured to the empty string, this
-  resets the helper list to empty"; a helper "will have one "operation" argument appended" (`get`, `store`,
-  `erase`), and for `get` writes `username=` and `password=` lines on standard output. git-scm.com/docs/git `-c`:
-  "Pass a configuration parameter to the command. The value given will override values from configuration files."
+  resets the helper list to empty"; a `credential.<URL>` context matches when "both protocols are the same and both
+  hosts are the same" ("CREDENTIAL CONTEXTS"), so the helper answers only for `https://github.com`; a helper "will
+  have one "operation" argument appended" (`get`, `store`, `erase`), and for `get` writes `username=` and
+  `password=` lines on standard output. git-scm.com/docs/git `-c`: "Pass a configuration parameter to the command."
 - docs.github.com "Managing your personal access tokens": "the username is not used to authenticate you. Instead,
   the personal access token is used to authenticate you."
 - The token goes from the clone's file through the shell built-ins `read` and `printf` to git's pipe: no argv holds
@@ -138,14 +147,14 @@ Workspace") is literal; a path holding `'` raises `ForgeSetupError` before any g
 - Platforms: git runs a `!` helper with a POSIX shell — `/bin/sh` (dash) on the ubuntu runner, the `sh` Git for
   Windows ships; `read` and `printf` are built-ins of both (dash(1) "Builtins"; GNU Bash manual "Bash Builtin
   Commands"). S `test_the_credential_helper_answers_git_with_the_clone_token` runs the helper through `git credential
-  fill` on each platform the default collection runs on.
+  fill` (`protocol=https`, `host=github.com`) on each platform the default collection runs on.
 
 **The clone** is made by git clone's own steps ("creates remote-tracking branches for each branch in the cloned
 repository ... and creates and checks out an initial branch", git-scm.com/docs/git-clone), split so that the file the
 helper reads exists before the first authenticated command ("Cloning into an existing directory is only allowed if
-the directory is empty", ibid.): `git init <clone>`, the clone's credential file (D9), `git remote add origin
-https://github.com/bestehorn-sff-test/<name>.git`, and after the creation an authenticated `git fetch origin` and
-`git checkout -B <default branch> --track origin/<default branch>`. The origin URL carries no userinfo, so
+the directory is empty", ibid.): `git init` in the created `<clone>`, the clone's credential file (D9), `git remote
+add origin https://github.com/bestehorn-sff-test/<name>.git`, and after the creation an authenticated `git fetch
+origin` and `git checkout -B <default branch> --track origin/<default branch>`. The origin URL carries no userinfo, so
 `.git/config` holds no token. The pull-request test pushes its branch with an authenticated `git push origin
 <branch>`. Every git command passes the suite's commit identity with `-c user.name=` and `-c user.email=` (constants
 of `ephemeral.py`; a runner has no global identity).
@@ -153,8 +162,7 @@ of `ephemeral.py`; a runner has no global identity).
 Alternatives: the token in the URL's userinfo (in argv and `.git/config`); `http.extraHeader` (in argv;
 `--config-env` reads an environment variable); `GIT_ASKPASS` (an environment variable); the `store` helper or `git
 credential approve` (a second copy on disk); `git clone` with the helper reading the test credential file (that file
-is the operator's text and may end in CRLF, which `read` keeps; the clone's file holds the token as `_one_token`
-strips it).
+is the operator's text; the clone's file holds exactly the token `_one_token` accepted from it).
 
 ### D4 — The run id (AC-1.2)
 
@@ -170,7 +178,8 @@ suite only through an environment variable); the process id (reused).
 ### D5 — The forge CI job (AC-5.1 to AC-5.4)
 
 `.github/workflows/ci.yml` gains the job `forge` and changes `report`; `verify`, `on:`, the workflow `concurrency` and
-`permissions` are unchanged.
+`permissions` are unchanged. `ci.yml` is not toolchain: `config/toolchain.json` lists no workflow, its `not_installed`
+entry `templates/ci/*` records `ci.yml` as this project's own, and `templates/ci/` holds no source for it.
 
 ```yaml
   forge:
@@ -225,11 +234,9 @@ suite only through an environment variable); the process id (reused).
   before writing anything is judged by that result, since it writes no `checks-*.json`.
 - **Concurrency.** The workflow's group `ci-${{ github.ref }}` applies: a superseded pull-request run is cancelled, a
   run on `main` never is. Runs of different refs proceed together; their run ids keep their repositories apart, and the
-  sweep spares any repository a day old or less. A cancelled run whose teardown did not finish leaves a repository the
-  next run's sweep deletes once it is more than a day old.
+  sweep spares any repository a day old or less. What a cancelled run leaves is in Operability, Leftovers.
 - **The test organization** is the constant `TEST_ORGANIZATION = "bestehorn-sff-test"` of `ephemeral.py`, the one
-  place the suite names it. Alternative: a configuration file (a second file and a parser for one value no other tool
-  reads).
+  place the suite names it. Alternative: a configuration file (a second file and a parser for one value).
 
 Alternatives: a `forge` group in `run_checks.py` (toolchain; no such group can exist before a promotion); the suite in
 the `verify` matrix (`verify` would need the network and the secret, against UB-1); a `checks-forge.json` written by
@@ -246,7 +253,7 @@ answer printed; `<hex>` is a fresh `uuid.uuid4().hex` of the test.
 | Module (slice) | Test | Invocations and what is asserted |
 |---|---|---|
 | F:fixture | `test_the_run_owns_a_private_seeded_repository` | `call repos/get`: `full_name` `bestehorn-sff-test/sff-test-<run id>`, `private` true; in the clone, `HEAD` equals `origin/<default branch>`, `git ls-tree -r --name-only HEAD` names nothing under `.github/workflows/`, `git remote get-url origin` is the repository's URL, `credentials/github-pat.txt` exists (AC-1.1, AC-1.3) |
-| F:fixture | `test_no_leftover_survives_the_sweep` | `call repos/list-for-org --path org=bestehorn-sff-test`: no item `is_leftover` at the test's time (AC-3.1) |
+| F:fixture | `test_no_leftover_survives_the_sweep` | `call repos/list-for-org --path org=bestehorn-sff-test`: no item `is_leftover` with `now=swept_at` (AC-3.1) |
 | F:subcommands (#17) | `test_an_issue_round_trip` | `call issues/create-label -f name=forge-label`; `create-issue --title T --body B` (`state` open, `title` T); `get-issue N` (T, B, open); `comment-issue N --body C` (`body` C); `get-issue-comments N` (one comment, C); `label-add N --labels forge-label` (names it); `get-issue N` (its `labels` name it); `update-issue N --state closed` (closed); `get-issue N` (closed) |
 | F:subcommands (#17) | `test_a_pull_request_round_trip` | git: a branch `forge-pull-request` from the seed, one file committed, pushed, the default branch checked out again; `create-pr --head forge-pull-request --base <default branch> --title T --body B` (`head.ref`, `head.sha` the pushed commit, `base.ref`, open); `get-pr N` (same, `merged` false); `merge-pr N` (`merged` true); `get-pr N` (`merged` true, closed) |
 | F:repos_git (#27) | `test_the_repository_record_names_the_seed_branch` | `call repos/get`: `default_branch` is the one the creation answered and the clone checked out |
@@ -303,17 +310,18 @@ Alternatives: a template stub (a placeholder file the suite must refuse, AC-6.2,
 - **Lookup** (`find_test_credential(*, checkout: Path) -> Path`, `checkout` the working tree holding the suite,
   `CHECKOUT`): `checkout/credentials/github-sff-testing-pat.txt` when it is a file; else, for a linked worktree, which
   has no git-ignored files, the same path under the main working tree, the parent of `git rev-parse
-  --git-common-dir` run in `checkout` (relative to `checkout` when it prints a relative path); else `ForgeSetupError`
-  naming both paths.
+  --path-format=absolute --git-common-dir` run in `checkout`; else `ForgeSetupError` naming both paths.
 - **Reading** (`read_test_token(*, path: Path) -> str`): the refusals `_load_token` makes for `CREDENTIALS_FILE`,
   through the product wrapper's own `_one_token` and `PLACEHOLDER` (`product_wrapper()`, D10): a file that is not one
-  token, empty, or the placeholder raises `ForgeSetupError` naming the path and none of its contents. It is
-  `provision`'s first step, before any request (AC-6.2); a session fixture that raises errors every test that uses
-  it, so none is skipped.
-- **Writing** (D9 step 3): the clone's `credentials/github-pat.txt` holds the token and a line end, owner-only file
-  mode, and `credentials/` is appended to the clone's `.git/info/exclude`, so no commit of the pull-request test can
-  hold it. The token is a local of `provision` only; no object the tests receive holds it, and nothing logs or prints
-  it.
+  token, empty, or the placeholder raises `ForgeSetupError` naming the path and none of its contents. It precedes
+  every request (D9 step 2; AC-6.2); a session fixture that raises errors every test that uses it, so none is
+  skipped.
+- **Writing** (D9 step 3): the clone's `credentials/github-pat.txt` holds the token and `\n`, written as bytes
+  (`Path.write_bytes`), file mode `0o600` (owner-only on POSIX; on Windows, where one "can only set the file's
+  read-only flag", docs.python.org `os.chmod`, the owner-only protection is the `tempfile.mkdtemp` workspace's, D9:
+  "readable, writable, and searchable only by the creating user ID"), and `credentials/` is appended to the clone's
+  `.git/info/exclude`, so no commit of the pull-request test can hold it. The token is a local of `provision` only; no
+  object the tests receive holds it, and nothing logs or prints it.
 - **CI** (`write_test_credential(*, token: str, checkout: Path) -> None`): an empty `token` raises `ForgeSetupError`
   saying that the secret `SFF_TEST_TOKEN` is unavailable to this run, writing nothing; otherwise it writes
   `checkout/credentials/github-sff-testing-pat.txt`. `write_credential.py` `main` calls it with the value of
@@ -323,21 +331,23 @@ Alternatives: a template stub (a placeholder file the suite must refuse, AC-6.2,
 ### D9 — Provisioning, the sweep and the teardown guard (AC-1, AC-2, AC-3)
 
 `provision(*, checkout, workspace, wrapper: WrapperRunner, git: GitRunner)` is a context manager yielding an
-`EphemeralRepository` (`run_id`, `owner`, `name`, `default_branch`, `seed_sha`, `seed_tree_sha`, `clone`, `wrapper`,
-`git`). `ephemeral_repository` (session scope) calls it with a `tempfile.mkdtemp` workspace — not pytest's
-`tmp_path_factory`, whose directories outlive the session — and the runners bound to `<workspace>/clone`.
+`EphemeralRepository` (`run_id`, `owner`, `name`, `default_branch`, `seed_sha`, `seed_tree_sha`, `swept_at`, `clone`,
+`wrapper`, `git`; `swept_at` is the `now` step 4 passed to `sweep_leftovers`). `ephemeral_repository` (session scope)
+calls it with a `tempfile.mkdtemp` workspace — not pytest's `tmp_path_factory`, whose directories outlive the session
+— and the runners bound to `<workspace>/clone`.
 
-1. `read_test_token(path=find_test_credential(checkout=checkout))`.
-2. `run_id = new_run_id()`, `name = ephemeral_name(run_id=run_id)`.
-3. `prepare_clone`: `git init`, the clone's credential file and exclude line (D8), `git remote add origin`.
-4. `sweep_leftovers(wrapper=..., now=<UTC now>)`.
+1. Before the `try`: `run_id = new_run_id()`, `name = ephemeral_name(run_id=run_id)` (no request).
+2. `read_test_token(path=find_test_credential(checkout=checkout))`.
+3. `prepare_clone`: `<workspace>/clone` created with `Path.mkdir`, then `git init`, the clone's credential file and
+   exclude line (D8), `git remote add origin`.
+4. `sweep_leftovers(wrapper=..., now=swept_at)`, `swept_at` the UTC now.
 5. `create_ephemeral(wrapper=..., name=name) -> CreatedRepository`: `call repos/create-in-org --path
    org=bestehorn-sff-test -f name=<name> -F private=true -F auto_init=true`; a non-zero exit raises
    `ForgeCommandError` (nothing was created); the answer's `owner.login`, `name`, `default_branch` make the record,
    and a `private` that is not true raises `ForgeSetupError` after the record is kept, so step 7 deletes it.
 6. `fetch_seed`: D3's fetch and checkout; `seed_sha` (`git rev-parse HEAD`), `seed_tree_sha` (`HEAD^{tree}`); a path
    under `.github/workflows/` in `git ls-tree -r --name-only HEAD` raises `ForgeSetupError`. Then the yield.
-7. In the `finally` around steps 1 to 6 and the yield: `delete_ephemeral(wrapper=..., created=<step 5's record, else
+7. In the `finally` around steps 2 to 6 and the yield: `delete_ephemeral(wrapper=..., created=<step 5's record, else
    None>, run_id=run_id)`, then, in its own `finally`, `remove_tree(path=workspace)`, which clears the read-only
    attribute git gives its object files on Windows before retrying a refused removal. A failure of either is raised,
    so the session ends in an error.
@@ -346,17 +356,17 @@ Alternatives: a template stub (a placeholder file the suite must refuse, AC-6.2,
 
 - `created` is `None` (step 5 never succeeded): returns, nothing sent (AC-2.3);
 - `(created.owner, created.name)` is not `("bestehorn-sff-test", ephemeral_name(run_id=run_id))`: raises
-  `TeardownRefusedError` naming the refused `owner/name` and this run's, nothing sent (AC-2.2);
+  `ForgeTeardownRefusedError` naming the refused `owner/name` and this run's, nothing sent (AC-2.2);
 - else `call repos/delete --path owner=<owner> --path repo=<name>`; a non-zero exit raises `ForgeCommandError`
   naming the target (AC-2.1, AC-1.4).
 
-**The sweep.** `RepositoryRecord.of(item)` reads `owner.login`, `name` and `created_at` (`%Y-%m-%dT%H:%M:%SZ`, UTC);
-an item without them raises `ForgeCommandError`. `is_leftover(*, record, now) -> bool`: the owner is
-`TEST_ORGANIZATION`, the name starts with `EPHEMERAL_REPOSITORY_PREFIX`, and `now - record.created_at` exceeds
-`LEFTOVER_AGE` (`timedelta(days=1)`). `select_leftovers(*, records, now)` keeps exactly those.
+**The sweep.** `RepositoryRecord.of(item=<item>)` reads `owner.login`, `name` and `created_at`
+(`%Y-%m-%dT%H:%M:%SZ`, UTC); an item without them raises `ForgeCommandError`. `is_leftover(*, record, now) -> bool`:
+the owner is `TEST_ORGANIZATION`, the name starts with `EPHEMERAL_REPOSITORY_PREFIX`, and `now - record.created_at`
+exceeds `LEFTOVER_AGE` (`timedelta(days=1)`). `select_leftovers(*, records, now)` keeps exactly those.
 `sweep_leftovers(*, wrapper, now)` runs `call repos/list-for-org --path org=bestehorn-sff-test` (`call` reads every
 page of this `Paging.LINK` record), a non-zero exit raising `ForgeCommandError`, then `delete_leftover` for each
-selected record. `delete_leftover(*, wrapper, record, now)` raises `SweepRefusedError` naming the record, nothing
+selected record. `delete_leftover(*, wrapper, record, now)` raises `ForgeSweepRefusedError` naming the record, nothing
 sent, when `is_leftover` is false; else sends `call repos/delete` for it, and takes exit 1 with `HTTP 404` on
 standard error as already deleted (a concurrent run's sweep); any other failure raises `ForgeCommandError`. Each
 deletion is logged by full name (AC-3.1, AC-3.2).
@@ -369,13 +379,13 @@ deletion is logged by full name (AC-3.1, AC-3.2).
 | `src/payload/test/test_github_wrapper_marker.py` | new: W |
 | `test/forge/pytest.ini` | new: D1 |
 | `test/forge/conftest.py` | new: loads `ephemeral.py` by path once per process (`sys.modules` holds it, as P's loader holds the fake host); the session fixture `ephemeral_repository` (D9) |
-| `test/forge/ephemeral.py` | new: the constants D3 to D9 name, the commit identity and a subprocess timeout; `ForgeSuiteError` (`details=None`) and its subclasses `ForgeSetupError`, `ForgeCommandError`, `TeardownRefusedError`, `SweepRefusedError`; the dataclasses `Invocation`, `RepositoryRecord`, `CreatedRepository`, `EphemeralRepository`; `WrapperRunner` (abstract `run(*, arguments) -> Invocation`) and `SubprocessWrapperRunner`; `GitRunner` (abstract `run(*, arguments, authenticated=False) -> Invocation`) and `SubprocessGitRunner`; `product_wrapper()`; the functions of D1, D3, D4, D8 and D9 |
+| `test/forge/ephemeral.py` | new: the constants D3 to D9 name except `TEST_MARKER_OPTION` and `EPHEMERAL_REPOSITORY_PREFIX`, which it reads from `product_wrapper()` as it reads `_one_token` and `PLACEHOLDER`, the commit identity and a subprocess timeout; `ForgeSuiteError` (`details=None`) and its subclasses `ForgeSetupError`, `ForgeCommandError`, `ForgeTeardownRefusedError`, `ForgeSweepRefusedError`; the dataclasses `Invocation`, `RepositoryRecord`, `CreatedRepository`, `EphemeralRepository`; `WrapperRunner` (abstract `run(*, arguments) -> Invocation`) and `SubprocessWrapperRunner`; `GitRunner` (abstract `run(*, arguments, authenticated=False) -> Invocation`) and `SubprocessGitRunner`; `product_wrapper()`; the functions of D1, D3, D4, D8 and D9 |
 | `test/forge/write_credential.py` | new: the CI step's command (D8) |
 | `test/forge/forge_fixture.py`, `forge_subcommands.py`, `forge_repos_git.py`, `forge_ci_security.py`, `forge_collaboration.py` | new: D6, one module docstring per slice |
 | `test/test_forge_support.py`, `test/test_forge_suite_layout.py` | new: S, L |
 | `.github/workflows/ci.yml` | D5 |
 | `credentials/README.md` | new: D7 |
-| `docs/forLLMConsumption.md` | the `Testing` section names the forge suite (`test/forge/`), its local command, the test credential file and the forge job, under its cap |
+| `docs/forLLMConsumption.md` | the `Testing` section names the forge suite (`test/forge/`), its local command, the test credential file and its setup note `credentials/README.md`, and the forge job, under its cap |
 | `docs/ProjectPlan.md` | the debt line "the ephemeral-repository forge tests need their dedicated create/delete token" removed |
 
 - `SubprocessWrapperRunner(*, directory)` is the one place the suite starts the product wrapper:
@@ -406,41 +416,49 @@ every toolchain file (`config/toolchain.json` and what it lists).
   on `test/forge` (no fixture is set up), reads the forge modules with `ast`, and reads `ci.yml`, the note and the
   docs as text.
 - **The forge suite** (F) is the end-to-end check: the product wrapper driven through its command line against
-  github.com, by the forge job on every pull request, push to `main` and dispatch; locally `python
-  scripts/run_tests.py --workers 1 test/forge`. Its verdict on the PR's head is read through the wrapper's
-  `get-pr-checks` and `get-run`.
+  github.com, by the forge job on every pull request, push to `main` and dispatch; locally D1's command. Its verdict
+  on the PR's head is read through the wrapper's `get-pr-checks` and `get-run`.
 - **Runner.** W, S and L: `python scripts/run_tests.py <these paths>`; in CI, `verify` leg `tests`.
 
 ## Correctness Properties
 
 - **AC-1.1** — Integration, F:fixture `test_the_run_owns_a_private_seeded_repository` (D6). Example, S
   `test_provisioning_runs_in_order`: one provision records, in order, the listing, exactly one D9 step 5 creation,
-  the fetch and the checkout, every wrapper invocation in the one clone directory.
+  the fetch and the checkout, every wrapper invocation in the one clone directory. Example, S
+  `test_a_distributed_run_is_refused`: `refuse_distributed_run(worker_id="gw0")` raises `ForgeSetupError` naming
+  `--workers 1`; `worker_id="master"` returns. Structural, L `test_the_session_fixture_wraps_one_provision`: by `ast`
+  of `test/forge/conftest.py`, `ephemeral_repository` is decorated `pytest.fixture(scope="session")`, calls
+  `refuse_distributed_run` before `provision`, and its one `yield` lies inside the `with provision(...)` block.
 - **AC-1.2** — Example, S `test_a_run_id_is_unique_and_names_a_repository`: ids from repeated calls are pairwise
   distinct and of D4's form; `GITHUB_REPOSITORY_PATTERN` reads the origin URL of `ephemeral_name` back as
   `("bestehorn-sff-test", ephemeral_name(...))`.
 - **AC-1.3** — Integration, F:fixture `test_the_run_owns_a_private_seeded_repository` and F:repos_git
   `test_the_git_records_read_the_seed_commit` (D6). Example, S `test_provisioning_runs_in_order`: a scripted tree
-  naming `.github/workflows/ci.yml` raises `ForgeSetupError` before the yield, and the deletion is still sent.
+  naming `.github/workflows/ci.yml` raises `ForgeSetupError` before the yield, the deletion is still sent, and the
+  workspace no longer exists.
 - **AC-1.4** — Parametrized example, S `test_provisioning_runs_in_order`: whether the body returns or raises, after
   the context exactly one `repos/delete` of this run's repository is recorded and the workspace no longer exists; a
-  deletion answering exit 1 raises `ForgeCommandError` and the workspace is still removed.
+  deletion answering exit 1 raises `ForgeCommandError` and the workspace is still removed. Structural, L
+  `test_the_session_fixture_wraps_one_provision` (AC-1.1).
 - **AC-2.1** — Example, S `test_the_teardown_deletes_only_this_runs_repository`: a record of this run's name records
   one `call repos/delete --path owner=bestehorn-sff-test --path repo=sff-test-<run id>`.
 - **AC-2.2** — Parametrized example, S `test_the_teardown_refuses_any_other_target`: another owner, a name without
-  the prefix, another run's id: `TeardownRefusedError` whose message names the refused `owner/name`, nothing recorded.
+  the prefix, another run's id: `ForgeTeardownRefusedError` whose message names the refused `owner/name`, nothing
+  recorded.
 - **AC-2.3** — Example, S `test_no_creation_no_deletion`: `created=None`, and a provision whose creation answers exit
-  1: no `repos/delete` recorded.
+  1: no `repos/delete` recorded, and after the provision the workspace no longer exists.
 - **AC-3.1, AC-3.2** — Property, S `test_the_sweep_deletes_exactly_the_old_ephemeral_repositories`: over listings of
   records (owner the test organization or another, a name with the prefix or not, `created_at` on either side of the
   one-day line), `sweep_leftovers` records one `repos/delete` per record that has all three properties and none for
-  any other. Example, S `test_the_sweep_boundaries_and_refusals`: exactly a day old is kept, just over is deleted; an
-  `HTTP 404` answer counts as deleted; `delete_leftover` of a non-leftover raises `SweepRefusedError`, nothing
-  recorded. Integration, F:fixture `test_no_leftover_survives_the_sweep`.
+  any other (the expected set computed from the strategy's drawn owner, prefix and age side, never through
+  `is_leftover` or `select_leftovers`). Example, S `test_the_sweep_boundaries_and_refusals`: exactly a day old is
+  kept, just over is deleted; an `HTTP 404` answer counts as deleted; `delete_leftover` of a non-leftover raises
+  `ForgeSweepRefusedError`, nothing recorded. Integration, F:fixture `test_no_leftover_survives_the_sweep`.
 - **AC-4.1** — Parametrized example, W `test_the_marker_refuses_an_origin_without_the_prefix`, over `call repos/get`,
   `get-issue 1`, `list-runs`, `enqueue-pr 1` and `wait-landed 1` with origin `Bestehorn/SoftwareFactoryFramework`:
   exit 2, no request recorded, `steward_delegate` not called, one log record naming the test marker and
-  `Bestehorn/SoftwareFactoryFramework` and not the configured token. Example, W
+  `Bestehorn/SoftwareFactoryFramework` and not the configured token; with origin
+  `https://github.com:<sentinel>@example.com/repo`, the same refusal and no log record holds the sentinel. Example, W
   `test_the_interpreter_option_reaches_the_entry_script`: the subprocess exits 2 and its standard error holds that
   message.
 - **AC-4.2** — Example, W `test_the_marker_lets_an_ephemeral_origin_through`: with origin
@@ -448,15 +466,18 @@ every toolchain file (`config/toolchain.json` and what it lists).
   same argv without the marker. Integration: every F test runs with the marker set.
 - **AC-4.3** — Example, S `test_every_wrapper_invocation_carries_the_marker`: `SubprocessWrapperRunner`'s argv starts
   `sys.executable, "-X", TEST_MARKER_OPTION, <PRODUCT_WRAPPER>` and `subprocess.run` receives no `env`; L
-  `test_the_forge_tests_reach_only_the_ephemeral_repository`: no other file of `test/forge/` starts the wrapper. W's
+  `test_the_forge_tests_reach_only_the_ephemeral_repository`: no file of `test/forge/` but `ephemeral.py` imports
+  `subprocess`, and `PRODUCT_WRAPPER` is named only in `SubprocessWrapperRunner` and `product_wrapper`. W's
   subprocess example runs in a directory other than the repository. W `test_without_the_marker_every_origin_is_served`:
   without the option the same origin is served (exit 0, the request recorded).
 - **AC-5.1** — Structural, L `test_the_forge_job_runs_beside_verify`: `ci.yml` has a `forge` job with no `needs:`,
-  `verify` names no `forge`, the triggers are unchanged, and the forge job's last step is `python
+  `verify` names no `forge`, `on:` holds exactly `push` (`branches: [main]`), `pull_request` and `workflow_dispatch`,
+  and the forge job's last step is `python
   scripts/run_tests.py --workers 1 test/forge`. Integration: the PR's run lists the job.
 - **AC-5.2** — Structural, L `test_the_secret_reaches_one_step`: `secrets.SFF_TEST_TOKEN` occurs once, in the `env:`
   of the step running `python test/forge/write_credential.py`; the forge checkout has `persist-credentials: false`;
-  one check command (AC-5.1's).
+  one check command (AC-5.1's). Structural, L `test_nothing_keeps_a_forge_test_from_running`: `pytest.ini` holds no
+  fail-fast option (AC-7.3).
 - **AC-5.3** — Example, S `test_a_missing_secret_fails_the_credential_step`: `write_test_credential(token="", ...)`
   raises with "the secret SFF_TEST_TOKEN is unavailable to this run" and writes nothing; a token is written followed
   by a line end; `write_credential.main` returns 1 on the refusal.
@@ -470,18 +491,21 @@ every toolchain file (`config/toolchain.json` and what it lists).
   no wrapper or git invocation recorded.
 - **AC-6.3** — Example, S `test_the_token_is_written_only_to_the_clone`: after a scripted provision, the files of the
   test's tree holding the token are the test credential file and the clone's `credentials/github-pat.txt`, no
-  recorded argv holds it, and `.git/info/exclude` names `credentials/`. Example, S
-  `test_the_credential_helper_answers_git_with_the_clone_token`: `git credential fill` with D3's options answers
+  recorded argv holds it, `.git/info/exclude` names `credentials/`, no record `caplog` captured at `DEBUG` during the
+  provision holds it, nor does the `repr` of the yielded `EphemeralRepository`. Example, S
+  `test_the_credential_helper_answers_git_with_the_clone_token`: `git credential fill` with D3's options, given
+  `protocol=https` and `host=github.com`, answers
   `username=x-access-token` and the clone file's token, the helper string holds no token, and a path holding `'`
   raises. Structural, L `test_the_secret_reaches_one_step`.
 - **AC-7.1** — Example, L `test_the_default_configuration_collects_no_forge_test`: `--collect-only` on `test/forge`
   with `-c pyproject.toml` exits 5, "no tests collected", with no import error.
 - **AC-7.2** — Example, L `test_the_forge_path_collects_every_forge_test`: `--collect-only -q test/forge` lists
   exactly the `test_` functions `ast` finds in `test/forge/forge_*.py`.
-- **AC-7.3** — Structural, L `test_nothing_keeps_a_forge_test_from_running`: no file of `test/forge/` holds
-  `pytest.mark.skip`, `skipif`, `xfail`, `pytest.skip(`, `importorskip` or `pytest.exit(`; `conftest.py` defines no
-  `pytest_` function and no `collect_ignore`; `pytest.ini`'s `addopts` holds no `-m`, `-k`, `--deselect` or
-  `--ignore`.
+- **AC-7.3** — Structural, L `test_nothing_keeps_a_forge_test_from_running`: in no file of `test/forge/`, by `ast`,
+  a `pytest.` attribute `skip`, `skipif`, `xfail`, `importorskip` or `exit`, one of these imported from `pytest`, or
+  `SkipTest`; `conftest.py` defines no `pytest_` function and no `collect_ignore`; `pytest.ini`, read with
+  `configparser`, holds exactly the `[pytest]` keys `python_files` = `forge_*.py`, `addopts` = `-p no:cacheprovider`,
+  `log_cli` = `true` and `log_cli_level` = `INFO`.
 - **AC-8.1** — Structural, L `test_the_forge_tests_reach_only_the_ephemeral_repository`; every F test asserts each
   invocation's exit code and its printed JSON (D6).
 - **AC-8.2** — Integration, F:subcommands `test_an_issue_round_trip`, `test_a_pull_request_round_trip` (D6).
@@ -501,7 +525,8 @@ every toolchain file (`config/toolchain.json` and what it lists).
 - **UB-1** — W, S and L run in `verify` with no network and no test credential file (W on `FakeGitHub` and a refusal,
   S on doubles and local git in `tmp_path`, L on `--collect-only`); the fake-host suites are unedited.
 - **UB-2** — Example, S `test_the_token_is_written_only_to_the_clone`: a sentinel `credentials/github-pat.txt` in the
-  test's checkout keeps its content, and no path the provision reads is that file.
+  test's checkout keeps its content, and the clone's `credentials/github-pat.txt` holds the test token, not the
+  sentinel's text.
 - **UB-3** — C, P, K and V pass unedited (V `test_the_wrapper_imports_only_the_standard_library` included); W
   `test_without_the_marker_every_origin_is_served`.
 - **UB-4** — I passes; the PR diff names no file `config/toolchain.json` lists.
@@ -518,7 +543,8 @@ every toolchain file (`config/toolchain.json` and what it lists).
 - **CI trust.** Fork and Dependabot pull requests get no secret ("secrets are not passed to the runner when a
   workflow is triggered from a forked repository"; "Secrets are not available to workflows triggered by Dependabot
   events", docs.github.com "Using secrets in GitHub Actions"), so their forge job fails (AC-5.3). A same-repository
-  pull request, whose author can push to the repository, runs its own suite with the secret.
+  pull request or a `workflow_dispatch` on any branch runs that branch's own suite and `ci.yml` with the secret, so
+  its bound is the token's reach, every repository of `bestehorn-sff-test`, not D9's guards.
 - **External input.** Repository names from the listing reach the wrapper only as `--path` values in a list argv (no
   shell), which `registry.expand` encodes.
 - **Dependencies.** None added: the wrapper uses `sys`; the suite uses pytest, pytest-xdist and Hypothesis, already
@@ -527,12 +553,15 @@ every toolchain file (`config/toolchain.json` and what it lists).
 ## Operability
 
 - **Logs.** pytest's `-ra` summary lists every non-passing forge test; the suite logs each repository it creates and
-  deletes by full name; a wrapper refusal is its `ERROR:` line. A permission the token lacks fails the test that
-  needs it with GitHub's `403` "Resource not accessible by personal access token".
-- **Leftovers.** A repository whose teardown did not finish is deleted by the first run more than a day after its
-  creation.
-- **Rollback.** Revert the change: the job, the suite and the guard go together; a remaining leftover goes with a
-  later run's sweep.
+  deletes by full name, printed live into the job log (`log_cli`, D1); a wrapper refusal is its `ERROR:` line. A
+  permission the token lacks fails the test that needs it with GitHub's `403` "Resource not accessible by personal
+  access token".
+- **Leftovers.** An interrupted run (a cancelled or superseded CI run, a local Ctrl-C) does not finish its teardown.
+  Its repository is deleted by the first run more than a day after its creation; an interrupted local run also
+  leaves its workspace, the clone and its credential file, in the temporary directory.
+- **Rollback.** Revert the change: the job, the suite with its sweep, and the guard go together. A leftover from
+  before the revert stays in `bestehorn-sff-test` until the suite returns; the secret and the token's grants can
+  stay.
 
 ## Acceptance Criteria Mapping
 
@@ -543,10 +572,10 @@ B = `test_instruction_corpus_budget.py`. In `test/forge/`: F:<module> = `forge_<
 
 | Criterion | Component | Tests |
 |---|---|---|
-| AC-1.1 | D9 `provision`, `create_ephemeral` | F:fixture `test_the_run_owns_a_private_seeded_repository`; S `test_provisioning_runs_in_order` |
+| AC-1.1 | D9 `provision`, `create_ephemeral`; D1 `refuse_distributed_run` | F:fixture `test_the_run_owns_a_private_seeded_repository`; S `test_provisioning_runs_in_order`, `test_a_distributed_run_is_refused`; L `test_the_session_fixture_wraps_one_provision` |
 | AC-1.2 | D4 `new_run_id`, `ephemeral_name` | S `test_a_run_id_is_unique_and_names_a_repository` |
 | AC-1.3 | D3 clone; D9 `fetch_seed` | F:fixture `test_the_run_owns_a_private_seeded_repository`; F:repos_git `test_the_git_records_read_the_seed_commit`; S `test_provisioning_runs_in_order` |
-| AC-1.4 | D9 step 7, `remove_tree` | S `test_provisioning_runs_in_order` |
+| AC-1.4 | D9 step 7, `remove_tree` | S `test_provisioning_runs_in_order`; L `test_the_session_fixture_wraps_one_provision` |
 | AC-2.1 | D9 `delete_ephemeral` | S `test_the_teardown_deletes_only_this_runs_repository` |
 | AC-2.2 | D9 `delete_ephemeral` | S `test_the_teardown_refuses_any_other_target` |
 | AC-2.3 | D9 `delete_ephemeral`, step 5 | S `test_no_creation_no_deletion` |
@@ -556,7 +585,7 @@ B = `test_instruction_corpus_budget.py`. In `test/forge/`: F:<module> = `forge_<
 | AC-4.2 | D2 | W `test_the_marker_lets_an_ephemeral_origin_through`; every F test |
 | AC-4.3 | D2 `-X`; D10 `SubprocessWrapperRunner` | S `test_every_wrapper_invocation_carries_the_marker`; L `test_the_forge_tests_reach_only_the_ephemeral_repository`; W `test_the_interpreter_option_reaches_the_entry_script`, `test_without_the_marker_every_origin_is_served` |
 | AC-5.1 | D5 `forge` | L `test_the_forge_job_runs_beside_verify` |
-| AC-5.2 | D5; D8 `write_test_credential` | L `test_the_secret_reaches_one_step` |
+| AC-5.2 | D5; D8 `write_test_credential`; D1 `pytest.ini` | L `test_the_secret_reaches_one_step`, `test_nothing_keeps_a_forge_test_from_running` |
 | AC-5.3 | D5; D8 `write_test_credential`, `write_credential.py` | S `test_a_missing_secret_fails_the_credential_step` |
 | AC-5.4 | D5 `report` | L `test_the_report_judges_the_forge_job` |
 | AC-6.1 | D8 `find_test_credential` | S `test_the_test_credential_is_found_in_the_checkout_or_its_main_tree` |
@@ -581,7 +610,12 @@ B = `test_instruction_corpus_budget.py`. In `test/forge/`: F:<module> = `forge_<
 
 ## Residuals
 
-- The `requirements.md` Residuals stand.
-- D6 needs Dependabot secrets read, which the operator was asked for (issue #10 comment 6829880820); the Dependabot
-  alerts record is not called.
-- Fork and Dependabot pull requests fail the forge job by AC-5.3.
+- The `requirements.md` Residuals stand; D6's Dependabot secrets read was asked for (issue #10 comment 6829880820).
+- Fork and Dependabot pull requests fail the forge job (AC-5.3); no protected environment guards `SFF_TEST_TOKEN`.
+- `report` keeps `if: always()`, not GitHub's recommended `if: ${{ !cancelled() }}` (docs.github.com "Expressions").
+- The workflow's action pins declare the deprecated Node 20 runtime (GitHub changelog 2025-09-19).
+- Without the marker `_detect_repo` accepts an owner group holding `@`, and the request path carries it (UB-3).
+- A `403` names no permission: the wrapper prints no `X-Accepted-GitHub-Permissions` header.
+- The token's expiry and rotation are named nowhere; an expired token fails every forge job.
+- Nothing removes the workspace an interrupted local run leaves in the temporary directory.
+- `project-specific.md` and the map's "Two halves" call `.github/workflows/` promotion-only (D5: `ci.yml` is not).

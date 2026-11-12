@@ -115,8 +115,9 @@ pipeline, so that a forge regression cannot merge unseen.
 As the operator, I want the test token kept in one git-ignored file and exposed nowhere, so that the dedicated token
 cannot leak and never mixes with the backlog's token.
 
-- AC-6.1 THE forge suite SHALL read the test token only from the test credential file of the repository checkout that
-  runs it (git-ignored by `.gitignore` `credentials/*`).
+- AC-6.1 THE forge suite SHALL read the test token only from the test credential file of the checkout that runs it
+  or, when that checkout is a linked worktree without one, of the repository's main working tree (both git-ignored by
+  `.gitignore` `credentials/*`).
 - AC-6.2 IF the test credential file is missing, is empty or holds a placeholder, or does not hold one token (the
   refusals `github_wrapper.py` `_load_token` makes for `CREDENTIALS_FILE`), THEN THE run SHALL fail before any request
   with a message that names the file and none of its contents; no forge test SHALL be skipped for it.
@@ -190,7 +191,7 @@ so that the suite can be run without reading its code.
   (`src/payload/test/test_github_wrapper_compat.py`, `test/test_github_wrapper_fork_parity.py`,
   `test/test_github_wrapper_contract.py`, `test/test_github_wrapper_coverage.py` among them) SHALL CONTINUE TO pass
   with no assertion edited, and it SHALL CONTINUE TO import only the standard library
-  (`test_the_wrapper_imports_only_the_standard_library`).
+  (`test/test_github_wrapper_coverage.py` `test_the_wrapper_imports_only_the_standard_library`).
 - UB-4 No toolchain file (`config/toolchain.json` and the files it lists, the installed `scripts/github_wrapper.py`,
   `scripts/run_tests.py` and `scripts/run_checks.py` among them) SHALL be edited by this change,
   `test/test_toolchain_integrity.py` SHALL CONTINUE TO pass, and nothing in this change SHALL depend on a product change
@@ -203,8 +204,9 @@ github.com, by the forge job on every pull request (Requirement 5). Nothing depl
 
 - The merge steward and the delivery CI against a real forge: S4 names them, issue #10's work items do not.
 - GitLab's ephemeral projects: #11.
-- The token as recorded (Administration and Contents write) lacks what Requirement 8's issue, pull-request, Actions
-  and alert calls need (docs.github.com "Permissions required for fine-grained personal access tokens": Issues write,
-  Pull requests write, Actions read, the alerts' read); granting them is the operator's step AC-9.1 names.
+- The token as recorded (Administration and Contents write) lacks what Requirement 8's issue, pull-request, Actions,
+  scanning and Dependabot calls need (docs.github.com "Permissions required for fine-grained personal access tokens":
+  Issues write, Pull requests write, Actions read, Code scanning alerts read, Secret scanning alerts read, Dependabot
+  secrets read); granting them is the operator's step AC-9.1 names.
 - The origin guard judges the repository name, as issue #10 AC-4 does, not the owner; the test token reaches no owner
   but the test organization.
