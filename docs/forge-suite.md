@@ -46,6 +46,8 @@ GitHub's `403` "Resource not accessible by personal access token".
 The repository Actions secret `SFF_TEST_TOKEN` holds the same token. The `forge` CI job hands it to one step,
 `python test/forge/write_credential.py`, which writes the credential file into the job's checkout. An unset secret
 fails the job before the suite runs; GitHub passes no secret to a pull request from a fork or from Dependabot.
+A secret that is set but malformed (two pasted lines, the placeholder) is written to the runner's credential file, and
+the run then fails with a message naming that file: in CI, replace the secret `SFF_TEST_TOKEN`, and locally the file.
 
 When the token expires or is revoked, replace the secret and the file on every machine that has one.
 

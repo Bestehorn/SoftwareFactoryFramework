@@ -81,8 +81,9 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
 - The product suites: `src/hooks/tests/` (hook runtime), `src/payload/test/` (shipped scripts; the steward suite
   is slow, minutes).
 - The forge suite `test/forge/`: real-forge integration tests of the product wrapper against ephemeral `sff-test-*`
-  repositories in `bestehorn-sff-test`, never this backlog; its own `pytest.ini` keeps it out of the default
-  collection. Locally: `python scripts/run_tests.py --workers 1 test/forge`, token in
+  repositories in `bestehorn-sff-test`, never this backlog. Its modules are named `forge_*.py`, which no default
+  `python_files` pattern matches, so the default collection skips them; `test/forge/pytest.ini`
+  (`python_files = forge_*.py`) is what collects them for `python scripts/run_tests.py --workers 1 test/forge`. Token in
   `credentials/github-sff-testing-pat.txt` (setup: `docs/forge-suite.md`). In CI the `forge` job runs beside
   `verify` with the secret `SFF_TEST_TOKEN`; `report` fails unless it succeeded. <!-- pragma: allowlist secret -->
 

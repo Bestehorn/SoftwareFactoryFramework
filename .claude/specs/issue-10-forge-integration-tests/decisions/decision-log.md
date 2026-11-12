@@ -55,3 +55,11 @@
 **Alternatives considered:** none — a surviving mutant is a missing test, and the production code holds the designed behaviour.
 **Evidence:** evidence/verify/mutant-wave-1.txt (1b), mutant-wave-3.txt (3k, 3l, 3m, 3n); coverage.txt (unexercised lines).
 **Artifacts touched:** src/payload/test/test_github_wrapper_marker.py, test/test_forge_support.py; tasks.md 1.1, 3.1
+
+## DL-008 — 2026-11-12T22:30:00Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** The VERIFY panel's one B (standards: `_BodyFailure` without `details=None`) is fixed in the test file, with the C/D edits that restate or tighten; the residuals are routed to twelve findings-ledger rows; no further review round (the VERIFY pass is single by rule).
+**Driver:** review/standards-reviewer/verify-01.md B1; review/review-latest.md (VERIFY); `spec-phase-implement.md` "No further review rounds are opened in VERIFY".
+**Alternatives considered:** a second panel pass (not offered by the phase rule; the fix is a constructor in a test helper).
+**Evidence:** evidence/green/rework-2.txt (760 passed); docs/findings-ledger.md rows dated 2026-11-12.
+**Artifacts touched:** test/test_forge_support.py, test/test_forge_suite_layout.py, docs/forge-suite.md, docs/forLLMConsumption.md, docs/lessons-learned.md, docs/findings-ledger.md

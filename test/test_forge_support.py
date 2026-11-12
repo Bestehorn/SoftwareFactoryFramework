@@ -962,6 +962,10 @@ OPEN_TARGETS: Tuple[Tuple[ModuleType, str], ...] = ((builtins, "open"), (io, "op
 class _BodyFailure(Exception):
     """What a test body raises, to show that the teardown runs whatever the body does (AC-1.4)."""
 
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(message)
+        self.details = details
+
 
 @dataclass(frozen=True)
 class _Event:
@@ -1287,7 +1291,7 @@ def _provide(*, forge: ModuleType, setup: _Provisioning, entered: List[_Entered]
         entered.append(_enter(repository=repository, setup=setup))
         setup.script.enter()
         if body_raises:
-            raise _BodyFailure("the test body raised")
+            raise _BodyFailure(message="the test body raised")
 
 
 @dataclass(frozen=True)

@@ -49,6 +49,8 @@ KEY_WITH = "with"
 KEY_ENV = "env"
 KEY_BRANCHES = "branches"
 KEY_PERSIST_CREDENTIALS = "persist-credentials"
+# docs.github.com "Workflow syntax for GitHub Actions": on a step, it "allow[s] a job to pass when this step fails".
+KEY_CONTINUE_ON_ERROR = "continue-on-error"
 
 JOB_VERIFY = "verify"
 JOB_FORGE = "forge"
@@ -458,7 +460,7 @@ class WorkflowReader:
 
 
 def read_workflow() -> dict[str, Any]:
-    return WorkflowReader(text=WORKFLOW.read_text(encoding="utf-8")).read()
+    return WorkflowReader(text=WORKFLOW.read_text(encoding=SOURCE_ENCODING)).read()
 
 
 def job_named(*, workflow: dict[str, Any], name: str) -> dict[str, Any]:
@@ -1124,12 +1126,20 @@ def test_the_forge_job_runs_beside_verify() -> None:
     assert not naming_forge, f"the job `{JOB_VERIFY}` names `{JOB_FORGE}`: {naming_forge}"
     forge = job_named(workflow=workflow, name=JOB_FORGE)
     assert KEY_NEEDS not in forge, f"the job `{JOB_FORGE}` has `{KEY_NEEDS}: {forge.get(KEY_NEEDS)}`; it runs beside"
-    last = steps_of(job=forge, name=JOB_FORGE)[-1]
+    steps = steps_of(job=forge, name=JOB_FORGE)
+    assert KEY_CONTINUE_ON_ERROR not in forge, (
+        f"the job `{JOB_FORGE}` has `{KEY_CONTINUE_ON_ERROR}: {forge.get(KEY_CONTINUE_ON_ERROR)}`; it hides a failure"
+    )
+    muted = [step for step in steps if KEY_CONTINUE_ON_ERROR in step]
+    assert not muted, (
+        f"steps of `{JOB_FORGE}` have `{KEY_CONTINUE_ON_ERROR}:`, so their failure passes the job: {muted}"
+    )
+    last = steps[-1]
     assert run_of(step=last) == FORGE_COMMAND, f"the last step of `{JOB_FORGE}` is {last}, not `run: {FORGE_COMMAND}`"
 
 
 def test_the_secret_reaches_one_step() -> None:
-    references = SECRET_REFERENCE.findall(WORKFLOW.read_text(encoding="utf-8"))
+    references = SECRET_REFERENCE.findall(WORKFLOW.read_text(encoding=SOURCE_ENCODING))
     assert len(references) == 1, f"{WORKFLOW_NAME} references the secret {SECRET_NAME} {len(references)} times"
     forge = job_named(workflow=read_workflow(), name=JOB_FORGE)
     steps = steps_of(job=forge, name=JOB_FORGE)
