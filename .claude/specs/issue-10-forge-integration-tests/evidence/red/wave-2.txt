@@ -1,0 +1,114 @@
+# tasks: 2.1 2.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py test/test_forge_suite_layout.py src/payload/test/test_github_wrapper_marker.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_toolchain_integrity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [664 items]
+
+..............................F.FFFF.F.................................. [ 10%]
+...................................F..F................................. [ 21%]
+......F................................................................. [ 32%]
+........................................................................ [ 43%]
+........................................................................ [ 54%]
+........................................................................ [ 65%]
+........................................................................ [ 75%]
+........................................................................ [ 86%]
+........................................................................ [ 97%]
+................                                                         [100%]
+================================== FAILURES ===================================
+_______________ test_a_run_id_is_unique_and_names_a_repository ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:584: in test_a_run_id_is_unique_and_names_a_repository
+    _require(module=forge, names=RUN_ID_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no new_run_id, ephemeral_name, TEST_ORGANIZATION
+E   assert not ['new_run_id', 'ephemeral_name', 'TEST_ORGANIZATION']
+______________ test_every_wrapper_invocation_carries_the_marker _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:615: in test_every_wrapper_invocation_carries_the_marker
+    _require(module=forge, names=SUBPROCESS_RUNNER_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no WrapperRunner, Invocation, SubprocessWrapperRunner, PRODUCT_WRAPPER
+E   assert not ['WrapperRunner', 'Invocation', 'SubprocessWrapperRunner', 'PRODUCT_WRAPPER']
+_____________ test_the_teardown_deletes_only_this_runs_repository _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:660: in test_the_teardown_deletes_only_this_runs_repository
+    _require(module=forge, names=TEARDOWN_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no WrapperRunner, Invocation, CreatedRepository, delete_ephemeral
+E   assert not ['WrapperRunner', 'Invocation', 'CreatedRepository', 'delete_ephemeral']
+__________ test_the_teardown_refuses_any_other_target[another-owner] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:685: in test_the_teardown_refuses_any_other_target
+    _require(module=forge, names=TEARDOWN_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no WrapperRunner, Invocation, CreatedRepository, delete_ephemeral
+E   assert not ['WrapperRunner', 'Invocation', 'CreatedRepository', 'delete_ephemeral']
+____ test_the_teardown_refuses_any_other_target[a-name-without-the-prefix] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:685: in test_the_teardown_refuses_any_other_target
+    _require(module=forge, names=TEARDOWN_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no WrapperRunner, Invocation, CreatedRepository, delete_ephemeral
+E   assert not ['WrapperRunner', 'Invocation', 'CreatedRepository', 'delete_ephemeral']
+_________ test_the_teardown_refuses_any_other_target[another-runs-id] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:685: in test_the_teardown_refuses_any_other_target
+    _require(module=forge, names=TEARDOWN_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no WrapperRunner, Invocation, CreatedRepository, delete_ephemeral
+E   assert not ['WrapperRunner', 'Invocation', 'CreatedRepository', 'delete_ephemeral']
+________ test_the_sweep_deletes_exactly_the_old_ephemeral_repositories ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:702: in test_the_sweep_deletes_exactly_the_old_ephemeral_repositories
+    @given(listing=LISTINGS, now=SWEEP_MOMENTS)
+                   ^^^
+test\test_forge_support.py:711: in test_the_sweep_deletes_exactly_the_old_ephemeral_repositories
+    _require(module=forge, names=SWEEP_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no WrapperRunner, Invocation, RepositoryRecord, LEFTOVER_AGE, is_leftover, select_leftovers, sweep_leftovers, delete_leftover
+E   assert not ['WrapperRunner', 'Invocation', 'RepositoryRecord', 'LEFTOVER_AGE', 'is_leftover', 'select_leftovers', ...]
+E   Failing test case: test_the_sweep_deletes_exactly_the_old_ephemeral_repositories(
+E       # The test always failed when commented parts were varied together.
+E       listing=[],  # or any other generated value
+E       now=datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),  # or any other generated value
+E   )
+___________________ test_the_sweep_boundaries_and_refusals ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:739: in test_the_sweep_boundaries_and_refusals
+    _require(module=forge, names=SWEEP_SYMBOLS)
+test\test_forge_support.py:450: in _require
+    assert not missing, f"the forge suite's support module defines no {', '.join(missing)}"
+E   AssertionError: the forge suite's support module defines no WrapperRunner, Invocation, RepositoryRecord, LEFTOVER_AGE, is_leftover, select_leftovers, sweep_leftovers, delete_leftover
+E   assert not ['WrapperRunner', 'Invocation', 'RepositoryRecord', 'LEFTOVER_AGE', 'is_leftover', 'select_leftovers', ...]
+__________ test_the_forge_tests_reach_only_the_ephemeral_repository ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:810: in test_the_forge_tests_reach_only_the_ephemeral_repository
+    assert not problems, "the forge suite reaches past its ephemeral repository:\n" + "\n".join(problems)
+E   AssertionError: the forge suite reaches past its ephemeral repository:
+E     test/forge/ephemeral.py: defines `PRODUCT_WRAPPER` at module level 0 times
+E     test/forge/ephemeral.py: `SubprocessWrapperRunner` does not name `PRODUCT_WRAPPER`
+E     test/forge/ephemeral.py: `product_wrapper` does not name `PRODUCT_WRAPPER`
+E   assert not ['test/forge/ephemeral.py: defines `PRODUCT_WRAPPER` at module level 0 times', 'test/forge/ephemeral.py: `SubprocessWr...Runner` does not name `PRODUCT_WRAPPER`', 'test/forge/ephemeral.py: `product_wrapper` does not name `PRODUCT_WRAPPER`']
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_run_id_is_unique_and_names_a_repository
+FAILED test/test_forge_support.py::test_every_wrapper_invocation_carries_the_marker
+FAILED test/test_forge_support.py::test_the_teardown_deletes_only_this_runs_repository
+FAILED test/test_forge_support.py::test_the_teardown_refuses_any_other_target[another-owner]
+FAILED test/test_forge_support.py::test_the_teardown_refuses_any_other_target[a-name-without-the-prefix]
+FAILED test/test_forge_support.py::test_the_teardown_refuses_any_other_target[another-runs-id]
+FAILED test/test_forge_support.py::test_the_sweep_deletes_exactly_the_old_ephemeral_repositories
+FAILED test/test_forge_support.py::test_the_sweep_boundaries_and_refusals - A...
+FAILED test/test_forge_suite_layout.py::test_the_forge_tests_reach_only_the_ephemeral_repository
+================== 9 failed, 655 passed in 141.94s (0:02:21) ==================
+exit=1

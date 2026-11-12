@@ -50,16 +50,16 @@ its `design.md` Correctness Properties entry; each IMPL follows the D section it
 
 ## Wave 2 — The runners, the run id and the two deletion paths
 
-- [ ] 2.1 TEST: S, extended with `RecordingWrapperRunner(WrapperRunner)`:
+- [x] 2.1 TEST: S, extended with `RecordingWrapperRunner(WrapperRunner)`:
   `test_a_run_id_is_unique_and_names_a_repository`, `test_every_wrapper_invocation_carries_the_marker`,
   `test_the_teardown_deletes_only_this_runs_repository`, `test_the_teardown_refuses_any_other_target`,
   `test_the_sweep_deletes_exactly_the_old_ephemeral_repositories` (the one Hypothesis property),
   `test_the_sweep_boundaries_and_refusals` — Files: test/test_forge_support.py — Validates: AC-1.2, AC-2.1, AC-2.2,
   AC-3.1, AC-3.2, AC-4.3, UB-1
-- [ ] 2.2 TEST: L, `test_the_forge_tests_reach_only_the_ephemeral_repository`, by `ast` of the `.py` files of
+- [x] 2.2 TEST: L, `test_the_forge_tests_reach_only_the_ephemeral_repository`, by `ast` of the `.py` files of
   `test/forge/`; "`PRODUCT_WRAPPER` is named ... only in `SubprocessWrapperRunner` and `product_wrapper`" is read as
   exactly there, so it is red until 2.3 — Files: test/test_forge_suite_layout.py — Validates: AC-4.3, AC-8.1, AC-8.6
-- [ ] 2.3 IMPL: `ephemeral.py`, part 2: `Invocation`, `RepositoryRecord`, `CreatedRepository`, `WrapperRunner`,
+- [x] 2.3 IMPL: `ephemeral.py`, part 2: `Invocation`, `RepositoryRecord`, `CreatedRepository`, `WrapperRunner`,
   `SubprocessWrapperRunner`, `GitRunner`, `SubprocessGitRunner`, `PRODUCT_WRAPPER`, `product_wrapper()`, the commit
   identity and the subprocess timeout (D10); `TEST_ORGANIZATION` (D5); `new_run_id`, `ephemeral_name` (D4);
   `delete_ephemeral`, `RepositoryRecord.of`, `LEFTOVER_AGE`, `is_leftover`, `select_leftovers`, `sweep_leftovers`,

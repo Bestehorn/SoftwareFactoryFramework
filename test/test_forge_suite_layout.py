@@ -1,22 +1,25 @@
-"""L: the forge suite's separation and its CI wiring, read from the repository (issue #10, design.md D1 and D5).
+"""L: the forge suite's separation and its CI wiring, read from the repository (issue #10, design.md D1, D5, D6, D10).
 
 The forge suite (``test/forge/``) talks to github.com and runs in its own CI job; these tests run in the default
 collection with no network and no test credential (UB-1). They read ``.github/workflows/ci.yml`` as text, through a
 small indentation-based reader of the YAML the workflow uses (block mappings and sequences, one-line flow
-collections, block scalars, comments), because PyYAML is not a dependency of the dev extra; and they run
-``pytest --collect-only`` on ``test/forge`` under the default configuration.
+collections, block scalars, comments), because PyYAML is not a dependency of the dev extra; they run
+``pytest --collect-only`` on ``test/forge`` under the default configuration; and they parse the ``.py`` files of
+``test/forge/`` with ``ast`` to bound what the suite reaches: only ``ephemeral.py`` starts the product wrapper, and
+nothing creates, deletes or targets a repository but the ephemeral one (AC-4.3, AC-8.1, AC-8.6).
 
 Run: ``python scripts/run_tests.py test/test_forge_suite_layout.py``.
 """
 
 from __future__ import annotations
 
+import ast
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 import pytest
 
@@ -91,6 +94,38 @@ STATUS_EXIT = re.compile(r"^exit\s+\"?\$\{?status\}?\"?$")
 
 NO_TESTS_COLLECTED = "no tests collected"
 COLLECTION_ERROR_MARKERS = ("ERROR collecting", "ImportError", "ModuleNotFoundError")
+
+# The forge suite's modules, read with `ast` (D2, D6, D10): every `.py` file under test/forge/, whichever wave adds it.
+FORGE_DIRECTORY = ROOT / FORGE_SUITE
+PYTHON_FILES = "*.py"
+SOURCE_ENCODING = "utf-8"
+SUPPORT_MODULE = "ephemeral.py"
+SUBPROCESS_MODULE = "subprocess"
+PRODUCT_WRAPPER_LOADER = "product_wrapper"
+PRODUCT_WRAPPER_PATH = "PRODUCT_WRAPPER"
+WRAPPER_RUNNER = "SubprocessWrapperRunner"
+# Outside its definition, `PRODUCT_WRAPPER` is named in exactly these two of ephemeral.py, and in each of them (D10).
+PRODUCT_WRAPPER_SCOPES = (WRAPPER_RUNNER, PRODUCT_WRAPPER_LOADER)
+MODULE_LEVEL = "the module level"
+ENTRY_POINT = "main"
+FIXTURES_MODULE = "github_wrapper_fixtures"
+URLLIB_PACKAGE = "urllib"
+MODULE_SEPARATOR = "."
+DOCUMENTED_NODES = (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+SCOPE_NODES = (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
+# `getattr(obj, "name")` and its siblings, as builtins or as methods (`monkeypatch.setattr(obj, "name", value)`).
+ATTRIBUTE_BUILTINS = frozenset({"getattr", "hasattr", "setattr", "delattr"})
+ATTRIBUTE_NAME_INDEX = 1
+# `__import__("m")` and `importlib.import_module("m")`.
+DYNAMIC_IMPORTS = frozenset({"__import__", "import_module"})
+# `patch(...)`, `setattr(...)`; `mock.patch(...)`, `patch.object(...)`, `patch.dict(...)`, `monkeypatch.setattr(...)`.
+PATCH_FUNCTIONS = frozenset({"patch", "setattr", "delattr"})
+PATCH_METHODS = frozenset({"patch", "object", "dict", "multiple", "setattr", "delattr", "setitem", "delitem"})
+URLLIB_TEXT = re.compile(r"^urllib(?:\.|$)")
+# A `--path owner=` or `--path repo=`, its value an argv entry of its own or after `--path` in one string.
+TARGETING_ARGUMENT = re.compile(r"(?:^|--path[ =])(?:owner|repo)=")
+# The records that create and delete a repository; the `repos/delete-*` records of a repository's parts are others.
+REPOSITORY_LIFECYCLE = re.compile(r"(?<![\w/-])repos/(?:create-in-org|delete)(?![\w/-])")
 
 # The YAML reader's syntax.
 KEY_LINE = re.compile(r"^(?P<key>[A-Za-z0-9_][\w.\-/]*|\"[^\"]*\"|'[^']*')[ \t]*:(?:[ \t]+(?P<value>.*))?$")
@@ -400,6 +435,289 @@ def assert_fails_unless_forge_succeeded(*, script: str) -> None:
     assert STATUS_EXIT.match(lines[-1]), f'the verdict ends with `{lines[-1]}`, not with `exit "$status"`'
 
 
+@dataclass(frozen=True)
+class ForgeModule:
+    """One ``.py`` file under ``test/forge/``, parsed; ``name`` is its path from the repository root."""
+
+    name: str
+    tree: ast.Module
+    is_support: bool
+
+
+def read_forge_modules() -> list[ForgeModule]:
+    support = FORGE_DIRECTORY / SUPPORT_MODULE
+    return [
+        ForgeModule(
+            name=path.relative_to(ROOT).as_posix(),
+            tree=ast.parse(source=path.read_text(encoding=SOURCE_ENCODING), filename=str(path)),
+            is_support=path == support,
+        )
+        for path in sorted(FORGE_DIRECTORY.rglob(PYTHON_FILES))
+    ]
+
+
+def line_of(*, node: ast.AST) -> int:
+    return int(getattr(node, "lineno", 0))
+
+
+def located(*, module: ForgeModule, lines: list[int], problem: str) -> list[str]:
+    return [f"{module.name}:{line}: {problem}" for line in lines]
+
+
+def is_within(*, module: str, package: str) -> bool:
+    """``module`` is ``package`` or one of its submodules."""
+    return module == package or module.startswith(package + MODULE_SEPARATOR)
+
+
+def docstring_constants(*, tree: ast.Module) -> set[ast.AST]:
+    """The docstrings of ``tree``'s module, classes and functions."""
+    found: set[ast.AST] = set()
+    for node in ast.walk(tree):
+        first = node.body[0] if isinstance(node, DOCUMENTED_NODES) and node.body else None
+        if isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and isinstance(first.value.value, str):
+            found.add(first.value)
+    return found
+
+
+def string_constants(*, tree: ast.Module) -> list[tuple[int, str]]:
+    """The line and text of every string constant of ``tree`` but its docstrings, f-strings' literal parts included."""
+    docstrings = docstring_constants(tree=tree)
+    return [
+        (node.lineno, node.value)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Constant) and isinstance(node.value, str) and node not in docstrings
+    ]
+
+
+def constants_matching(*, tree: ast.Module, pattern: re.Pattern[str]) -> list[int]:
+    return [line for line, text in string_constants(tree=tree) if pattern.search(text)]
+
+
+def called_name(*, call: ast.Call) -> Optional[str]:
+    """The name a call spells its function with: ``f`` for ``f(...)`` and for ``obj.f(...)``."""
+    if isinstance(call.func, ast.Name):
+        return call.func.id
+    if isinstance(call.func, ast.Attribute):
+        return call.func.attr
+    return None
+
+
+def string_argument(*, call: ast.Call, index: int) -> Optional[str]:
+    """The call's positional argument ``index`` when it is a string constant."""
+    argument = call.args[index] if len(call.args) > index else None
+    if isinstance(argument, ast.Constant) and isinstance(argument.value, str):
+        return argument.value
+    return None
+
+
+def imported_modules(*, node: ast.AST) -> list[str]:
+    """What an import statement loads: ``m`` for ``import m``; ``m`` and ``m.a`` for ``from m import a``."""
+    if isinstance(node, ast.Import):
+        return [alias.name for alias in node.names]
+    if not isinstance(node, ast.ImportFrom):
+        return []
+    base = node.module or ""
+    loaded = [base + MODULE_SEPARATOR + alias.name if base else alias.name for alias in node.names]
+    return [base, *loaded] if base else loaded
+
+
+def dynamic_imports(*, node: ast.AST) -> list[str]:
+    """The module ``__import__("m")`` or ``importlib.import_module("m")`` loads."""
+    if isinstance(node, ast.Call) and called_name(call=node) in DYNAMIC_IMPORTS:
+        module = string_argument(call=node, index=0)
+        return [] if module is None else [module]
+    return []
+
+
+def attribute_by_string(*, node: ast.AST) -> Optional[str]:
+    """The attribute ``getattr(obj, "name")`` names, or ``hasattr``, ``setattr`` or ``delattr``."""
+    if isinstance(node, ast.Call) and called_name(call=node) in ATTRIBUTE_BUILTINS:
+        return string_argument(call=node, index=ATTRIBUTE_NAME_INDEX)
+    return None
+
+
+def named_identifiers(*, node: ast.AST) -> list[str]:
+    """The identifiers ``node`` itself names: a name, an attribute, every dotted part and alias of an import, a
+    ``global`` or ``nonlocal`` name, and an attribute named by a string."""
+    if isinstance(node, ast.Name):
+        return [node.id]
+    if isinstance(node, ast.Attribute):
+        return [node.attr]
+    if isinstance(node, (ast.Global, ast.Nonlocal)):
+        return list(node.names)
+    if isinstance(node, (ast.Import, ast.ImportFrom)):
+        parts = [part for module in imported_modules(node=node) for part in module.split(MODULE_SEPARATOR)]
+        return parts + [alias for alias in (name.asname for name in node.names) if alias]
+    attribute = attribute_by_string(node=node)
+    return [] if attribute is None else [attribute]
+
+
+def read_attributes(*, node: ast.AST) -> list[str]:
+    """The attributes ``node`` itself reads: an attribute, a name ``from m import`` takes from ``m``, and an
+    attribute named by a string."""
+    if isinstance(node, ast.Attribute):
+        return [node.attr]
+    if isinstance(node, ast.ImportFrom):
+        return [alias.name for alias in node.names]
+    attribute = attribute_by_string(node=node)
+    return [] if attribute is None else [attribute]
+
+
+def lines_naming(*, root: ast.AST, identifier: str, excluded: Sequence[ast.AST] = ()) -> list[int]:
+    """The lines of the nodes under ``root`` (``root`` included, ``excluded`` left out) that name ``identifier``."""
+    return [
+        line_of(node=node)
+        for node in ast.walk(root)
+        if identifier in named_identifiers(node=node) and all(node is not skipped for skipped in excluded)
+    ]
+
+
+def entry_point_reads(*, tree: ast.Module) -> list[int]:
+    return [line_of(node=node) for node in ast.walk(tree) if ENTRY_POINT in read_attributes(node=node)]
+
+
+def fixture_loads(*, tree: ast.Module) -> list[int]:
+    """An import of ``github_wrapper_fixtures`` (as any dotted part), or a string naming it, as a load by path would."""
+    imports = [
+        line_of(node=node)
+        for node in ast.walk(tree)
+        if any(FIXTURES_MODULE in module.split(MODULE_SEPARATOR) for module in imported_modules(node=node))
+    ]
+    paths = [line for line, text in string_constants(tree=tree) if FIXTURES_MODULE in text]
+    return sorted(imports + paths)
+
+
+def subprocess_imports(*, tree: ast.Module) -> list[int]:
+    return [
+        line_of(node=node)
+        for node in ast.walk(tree)
+        if any(
+            is_within(module=module, package=SUBPROCESS_MODULE)
+            for module in imported_modules(node=node) + dynamic_imports(node=node)
+        )
+    ]
+
+
+def urllib_bindings(*, tree: ast.Module) -> set[str]:
+    """``urllib`` and every local name an import of ``urllib`` or a part of it binds."""
+    bindings = {URLLIB_PACKAGE}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            bindings.update(
+                alias.asname or alias.name.split(MODULE_SEPARATOR)[0]
+                for alias in node.names
+                if is_within(module=alias.name, package=URLLIB_PACKAGE)
+            )
+        elif isinstance(node, ast.ImportFrom) and is_within(module=node.module or "", package=URLLIB_PACKAGE):
+            bindings.update(alias.asname or alias.name for alias in node.names)
+    return bindings
+
+
+def refers_to_urllib(*, node: ast.AST, bindings: set[str]) -> bool:
+    """``node`` holds a name bound to ``urllib`` or a string spelling a part of it (``"urllib.request.urlopen"``)."""
+    for part in ast.walk(node):
+        if isinstance(part, ast.Name) and part.id in bindings:
+            return True
+        if isinstance(part, ast.Constant) and isinstance(part.value, str) and URLLIB_TEXT.match(part.value):
+            return True
+    return False
+
+
+def patched_operands(*, node: ast.AST) -> list[ast.expr]:
+    """What ``node`` patches: the arguments of a patching call, and the targets of an assignment or a deletion that
+    are no bare name (``urllib.request.urlopen = ...``, ``sys.modules["urllib.request"] = ...``)."""
+    if isinstance(node, ast.Call):
+        function = node.func
+        patching = (isinstance(function, ast.Name) and function.id in PATCH_FUNCTIONS) or (
+            isinstance(function, ast.Attribute) and function.attr in PATCH_METHODS
+        )
+        return [*node.args, *(keyword.value for keyword in node.keywords)] if patching else []
+    if isinstance(node, (ast.Assign, ast.Delete)):
+        targets = list(node.targets)
+    elif isinstance(node, (ast.AugAssign, ast.AnnAssign)):
+        targets = [node.target]
+    else:
+        return []
+    return [target for target in targets if not isinstance(target, ast.Name)]
+
+
+def urllib_patches(*, tree: ast.Module) -> list[int]:
+    bindings = urllib_bindings(tree=tree)
+    return [
+        line_of(node=node)
+        for node in ast.walk(tree)
+        if any(refers_to_urllib(node=operand, bindings=bindings) for operand in patched_operands(node=node))
+    ]
+
+
+def product_wrapper_definitions(*, statement: ast.stmt) -> list[ast.expr]:
+    """The ``PRODUCT_WRAPPER`` names a module-level assignment binds."""
+    if isinstance(statement, ast.Assign):
+        targets = list(statement.targets)
+    elif isinstance(statement, ast.AnnAssign):
+        targets = [statement.target]
+    else:
+        return []
+    return [target for target in targets if isinstance(target, ast.Name) and target.id == PRODUCT_WRAPPER_PATH]
+
+
+def product_wrapper_problems(*, module: ForgeModule) -> list[str]:
+    """D10 in ``ephemeral.py``: one module-level definition of ``PRODUCT_WRAPPER``, which outside it is named only in
+    ``SubprocessWrapperRunner`` and ``product_wrapper``, and in each of them."""
+    definitions: list[ast.expr] = []
+    scopes: dict[str, list[int]] = {}
+    for statement in module.tree.body:
+        definitions += product_wrapper_definitions(statement=statement)
+        scope = statement.name if isinstance(statement, SCOPE_NODES) else MODULE_LEVEL
+        lines = lines_naming(root=statement, identifier=PRODUCT_WRAPPER_PATH, excluded=definitions)
+        if lines:
+            scopes.setdefault(scope, []).extend(lines)
+    problems = []
+    if len(definitions) != 1:
+        problems.append(f"{module.name}: defines `{PRODUCT_WRAPPER_PATH}` at module level {len(definitions)} times")
+    for scope, lines in scopes.items():
+        if scope not in PRODUCT_WRAPPER_SCOPES:
+            outside = f"names `{PRODUCT_WRAPPER_PATH}` in {scope}, not in {WRAPPER_RUNNER} or {PRODUCT_WRAPPER_LOADER}"
+            problems += located(module=module, lines=lines, problem=outside)
+    problems += [
+        f"{module.name}: `{scope}` does not name `{PRODUCT_WRAPPER_PATH}`"
+        for scope in PRODUCT_WRAPPER_SCOPES
+        if scope not in scopes
+    ]
+    return problems
+
+
+def module_problems(*, module: ForgeModule) -> list[str]:
+    """What ``module`` may not do: read an attribute ``main``, load ``github_wrapper_fixtures`` or patch ``urllib``;
+    and, unless it is ``ephemeral.py``, import ``subprocess``, name ``product_wrapper`` or ``PRODUCT_WRAPPER``, give
+    ``--path owner=`` or ``--path repo=``, or create or delete a repository."""
+    tree = module.tree
+    checks = [
+        (entry_point_reads(tree=tree), f"reads the attribute `{ENTRY_POINT}`"),
+        (fixture_loads(tree=tree), f"loads `{FIXTURES_MODULE}`"),
+        (urllib_patches(tree=tree), f"patches `{URLLIB_PACKAGE}`"),
+    ]
+    if not module.is_support:
+        only_support = f"which only {SUPPORT_MODULE} may"
+        checks += [
+            (subprocess_imports(tree=tree), f"imports `{SUBPROCESS_MODULE}`, {only_support}"),
+            (
+                lines_naming(root=tree, identifier=PRODUCT_WRAPPER_LOADER),
+                f"names `{PRODUCT_WRAPPER_LOADER}`, {only_support}",
+            ),
+            (
+                lines_naming(root=tree, identifier=PRODUCT_WRAPPER_PATH),
+                f"names `{PRODUCT_WRAPPER_PATH}`, {only_support}",
+            ),
+            (constants_matching(tree=tree, pattern=TARGETING_ARGUMENT), "gives `--path owner=` or `--path repo=`"),
+            (
+                constants_matching(tree=tree, pattern=REPOSITORY_LIFECYCLE),
+                f"creates or deletes a repository, {only_support}",
+            ),
+        ]
+    return [problem for lines, text in checks for problem in located(module=module, lines=lines, problem=text)]
+
+
 def test_the_forge_job_runs_beside_verify() -> None:
     workflow = read_workflow()
     triggers = workflow.get(KEY_ON)
@@ -481,3 +799,12 @@ def test_the_default_configuration_collects_no_forge_test() -> None:
     assert NO_TESTS_COLLECTED in output, f"the collection does not say `{NO_TESTS_COLLECTED}`:\n{output}"
     errors = [marker for marker in COLLECTION_ERROR_MARKERS if marker in output]
     assert not errors, f"the collection reports {errors}:\n{output}"
+
+
+def test_the_forge_tests_reach_only_the_ephemeral_repository() -> None:
+    modules = read_forge_modules()
+    supports = [module for module in modules if module.is_support]
+    assert len(supports) == 1, f"{FORGE_SUITE} holds no {SUPPORT_MODULE}; its files are {[m.name for m in modules]}"
+    problems = product_wrapper_problems(module=supports[0])
+    problems += [problem for module in modules for problem in module_problems(module=module)]
+    assert not problems, "the forge suite reaches past its ephemeral repository:\n" + "\n".join(problems)
