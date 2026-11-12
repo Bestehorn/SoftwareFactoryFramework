@@ -1,27 +1,17 @@
-# Review — design iteration 02 (delta, consolidated)
+# Review — design iteration 03 (delta, consolidated) — APPROVED
 
-Lanes on the revision of commit 170b4ba: spec-review-agent CLEAN; standards-reviewer CLEAN; devops-iac-reviewer CLEAN;
-security-reviewer CLEAN; best-practice-reviewer CLEAN; test-architect NOT-CLEAN (0 A, 1 B), NOT-READY (33 OK, GAP
-AC-4.3 and AC-8.1). Every iteration-01 A/B is resolved (each lane's iteration-02 file says so per id).
+Lanes on the revision of commit d818df2: spec-review-agent CLEAN; test-architect CLEAN, TEST-READY (35 of 35 OK, no
+GAP); standards-reviewer CLEAN; best-practice-reviewer CLEAN; security-reviewer CLEAN; devops-iac-reviewer CLEAN.
 
-Combined A+B: 1. Nothing rejected.
+Combined A+B: 0 against the current artefacts, and test-architect reports every criterion and unchanged-behaviour
+clause covered: the readiness gate holds. The design is approved at iteration 03 of the tier-M cap of 4.
 
-## A/B (apply)
+## C/D (applied in one author pass, no further panel round — restate, clarify, tighten, remove)
 
-| Id | Lane | Defect | Fix |
-|---|---|---|---|
-| B1 | test-architect B1 | AC-4.3's oracle misses an in-process call: a forge module calling `product_wrapper().main(argv=...)` runs the wrapper without `-X sff_test_marker` | L, by `ast`: outside its definition `PRODUCT_WRAPPER` is named only in `SubprocessWrapperRunner` and `product_wrapper`; only `ephemeral.py` names `product_wrapper`; no file of `test/forge/` reads an attribute `main` (as the lane file proposes) |
-
-## C/D (apply in the same pass — restate, clarify, tighten, remove)
-
-- test-architect C1: AC-6.1's example adds a linked worktree that holds its own file (it is preferred); C2: L requires the fixture to pass its own `worker_id` parameter to `refuse_distributed_run`; D1: AC-7.3's `ast` check names `.py` files.
-- standards C1 = spec-review D2: `owner.rpartition(USERINFO_SEPARATOR)[2]`, as `_without_userinfo` does.
-- standards C2 = devops D1: the Residuals line on an interrupted local run says "Nothing in this change removes …", and that inside a session the scoped temp (`tmp/os-temp`) is emptied by `reap_agent_temp.py --scoped-temp`.
-- standards C3 = best-practice C1: D8's Windows owner-only claim holds on CPython builds with the CVE-2024-4030 fix (3.12.4 and later, the 2024 security releases); say so in one sentence.
-- standards D1: the D10 `ephemeral.py` row — the `product_wrapper()` clause in parentheses, scoped to the two constants.
-- security C1: Rollback: the secret and the token stay only while the suite is to return; otherwise the operator deletes `SFF_TEST_TOKEN` and revokes the token.
-- spec-review D1: the AC-6.2 mapping row cites D9 step 2.
-
-## Residuals
-
-Unchanged from iteration 01 (design.md `## Residuals`).
+- D8 Writing (spec-review C1, standards C1, security C1, best-practice C1 and D1, devops D2): the Windows protection
+  holds on CPython 3.9.20, 3.10.15, 3.11.10, 3.12.4 and later (3.13 and later carry it); the `0o700` directory is
+  open to "only the current user and administrators" (docs.python.org `os.mkdir`).
+- Residuals (spec-review D1, standards C2, best-practice D2, devops D1): `/close-session`'s
+  `reap_agent_temp.py --scoped-temp tmp/os-temp --apply` empties the scoped temp directory.
+- AC-4.3 (test-architect C1): "names `product_wrapper` (as a name, an attribute or an imported alias, here and
+  below)".

@@ -320,10 +320,10 @@ Alternatives: a template stub (a placeholder file the suite must refuse, AC-6.2,
   (`Path.write_bytes`), file mode `0o600`, and `credentials/` is appended to the clone's `.git/info/exclude`, so no
   commit of the pull-request test can hold it. `0o600` is owner-only on POSIX; on Windows, where one "can only set the
   file's read-only flag" (docs.python.org `os.chmod`), the protection is the `tempfile.mkdtemp` workspace's (D9),
-  owner-only on a CPython with the CVE-2024-4030 fix, 3.12.4 and later and the 2024 security releases of 3.9 to 3.11
-  ("os.mkdir() on Windows now accepts mode of 0o700 to restrict the new directory to the current user", python.org
-  3.9.20 release notes). The token is a local of `provision` only; no object the tests receive holds it, and nothing
-  logs or prints it.
+  open to "only the current user and administrators" (docs.python.org `os.mkdir`) on a CPython with the
+  CVE-2024-4030 fix: 3.9.20, 3.10.15, 3.11.10, 3.12.4 and later (3.13 and later carry it; python.org 3.9.20 release
+  notes: "os.mkdir() on Windows now accepts mode of 0o700 to restrict the new directory to the current user"). The
+  token is a local of `provision` only; no object the tests receive holds it, and nothing logs or prints it.
 - **CI** (`write_test_credential(*, token: str, checkout: Path) -> None`): an empty `token` raises `ForgeSetupError`
   saying that the secret `SFF_TEST_TOKEN` is unavailable to this run, writing nothing; otherwise it writes
   `checkout/credentials/github-sff-testing-pat.txt`. `write_credential.py` `main` calls it with the value of
@@ -470,10 +470,11 @@ every toolchain file (`config/toolchain.json` and what it lists).
 - **AC-4.3** — Example, S `test_every_wrapper_invocation_carries_the_marker`: `SubprocessWrapperRunner`'s argv starts
   `sys.executable, "-X", TEST_MARKER_OPTION, <PRODUCT_WRAPPER>` and `subprocess.run` receives no `env`; L
   `test_the_forge_tests_reach_only_the_ephemeral_repository`, by `ast` of the `.py` files of `test/forge/`: only
-  `ephemeral.py` imports `subprocess` or names `product_wrapper`, `PRODUCT_WRAPPER` is named, outside its definition,
-  only in `SubprocessWrapperRunner` and `product_wrapper`, and no file reads an attribute `main`. W's
-  subprocess example runs in a directory other than the repository. W `test_without_the_marker_every_origin_is_served`:
-  without the option the same origin is served (exit 0, the request recorded).
+  `ephemeral.py` imports `subprocess` or names `product_wrapper` (as a name, an attribute or an imported alias, here
+  and below), `PRODUCT_WRAPPER` is named, outside its definition, only in `SubprocessWrapperRunner` and
+  `product_wrapper`, and no file reads an attribute `main`. W's subprocess example runs in a directory other than the
+  repository. W `test_without_the_marker_every_origin_is_served`: without the option the same origin is served (exit
+  0, the request recorded).
 - **AC-5.1** — Structural, L `test_the_forge_job_runs_beside_verify`: `ci.yml` has a `forge` job with no `needs:`,
   `verify` names no `forge`, `on:` holds exactly `push` (`branches: [main]`), `pull_request` and `workflow_dispatch`,
   and the forge job's last step is `python
@@ -622,5 +623,6 @@ B = `test_instruction_corpus_budget.py`. In `test/forge/`: F:<module> = `forge_<
 - A `403` names no permission: the wrapper prints no `X-Accepted-GitHub-Permissions` header.
 - The token's expiry and rotation are named nowhere; an expired token fails every forge job.
 - Nothing in this change removes the workspace an interrupted local run leaves in the temporary directory; in a
-  session, whose temporary directory is the scoped `tmp/os-temp`, `reap_agent_temp.py --scoped-temp` empties it.
+  session, whose temporary directory is the scoped `tmp/os-temp`, `/close-session`'s
+  `reap_agent_temp.py --scoped-temp tmp/os-temp --apply` empties it.
 - `project-specific.md` and the map's "Two halves" call `.github/workflows/` promotion-only (D5: `ci.yml` is not).
