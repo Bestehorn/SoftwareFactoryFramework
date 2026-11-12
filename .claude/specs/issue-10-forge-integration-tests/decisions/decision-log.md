@@ -39,3 +39,19 @@
 **Alternatives considered:** a second fixture returning the module (D1 names one fixture); `import ephemeral` by name (a second copy beside the by-path one).
 **Evidence:** design.md D1, D10; task 3.1's `_ephemeral()` loader registers `forge_ephemeral`.
 **Artifacts touched:** test/forge/conftest.py, test/forge/forge_*.py (wave 4)
+
+## DL-006 — 2026-11-12T20:05:00Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** CI run 43295116103: 7 failures across 1 job (`forge`; `report` follows it) → 1 root cause, the test token lacks the permissions D6 marks "to grant"; no code change, the run waits on the operator's grant.
+**Driver:** every failure is `HTTP 403 "Resource not accessible by personal access token"` on `POST /issues`, `POST /labels`, `GET`/`POST /pulls`, `GET /actions/runs`, `GET /secret-scanning/alerts`, `GET /dependabot/secrets`; the fixture created, pushed to and deleted its repository; all five `verify` legs green. <!-- pragma: allowlist secret -->
+**Alternatives considered:** weakening the slice tests to accept the 403 (forbidden by `tests-must-not-fail.md`; the permissions are a documented prerequisite).
+**Evidence:** evidence/regress/ci-43295116103-12d8df7.txt.
+**Artifacts touched:** evidence/regress/ci-43295116103-12d8df7.txt
+
+## DL-007 — 2026-11-12T21:00:00Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's REFUTED AC-1.1 AC-1.4 AC-3.1 AC-4.1 as test gaps and rework tests only: W gains a mid-name `sff-test-` origin (1b); S gains a creation answered `private: false` whose kept record is deleted (3k, 3l), a `remove_tree` whose first removal is refused (3n), and a failed leftover listing that stops the run (3m).
+**Driver:** evidence/verify/refutation-report.md rows 3, 15, 16, 17 — five mutants survived the paired tests; the code under them is as designed.
+**Alternatives considered:** none — a surviving mutant is a missing test, and the production code holds the designed behaviour.
+**Evidence:** evidence/verify/mutant-wave-1.txt (1b), mutant-wave-3.txt (3k, 3l, 3m, 3n); coverage.txt (unexercised lines).
+**Artifacts touched:** src/payload/test/test_github_wrapper_marker.py, test/test_forge_support.py; tasks.md 1.1, 3.1

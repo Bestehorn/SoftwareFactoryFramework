@@ -5,13 +5,15 @@ test/forge``) against github.com. What its support module decides without the fo
 distributed run, the per-command credential helper git authenticates with, where the test credential file is found,
 and the CI step's write of it; the run id and the repository name it gives (D4); the marker on every product-wrapper
 invocation (D10); the teardown guard and the leftover sweep (D9); and the provision around them, its steps in order, the
-test credential's refusals and the token written only to the clone (D3 "The clone", D8, D9). Only local git runs (``git
-init``, ``git worktree add``, ``git credential fill``, ``git remote add``, ``git config``), in checkouts under pytest's
-``tmp_path``; the wrapper runner's ``subprocess.run`` is replaced by a recorder, and the teardown and the sweep are
-given ``RecordingWrapperRunner``, a ``WrapperRunner`` that records each argv and answers it from the test's script. A
-provision is also given ``ScriptedGitRunner``, a ``GitRunner`` that records each argv, hands ``init`` and ``remote`` to
-real local git in the clone and answers the rest (``fetch``, ``checkout``, the seed's reads) from the script without a
-process. No test opens a connection or needs a test credential file (UB-1).
+test credential's refusals, the token written only to the clone, the refusal of a repository created other than private
+and the stop of a run whose listing fails (D3 "The clone", D8, D9), and the workspace removal's retries. Only local git
+runs (``git init``, ``git worktree add``, ``git credential fill``, ``git remote add``, ``git config``), in checkouts
+under pytest's ``tmp_path``; the wrapper runner's ``subprocess.run`` is replaced by a recorder, and the teardown and
+the sweep are given ``RecordingWrapperRunner``, a ``WrapperRunner`` that records each argv and answers it from the
+test's script. A provision is also given ``ScriptedGitRunner``, a ``GitRunner`` that records each argv, hands ``init``
+and ``remote`` to real local git in the clone and answers the rest (``fetch``, ``checkout``, the seed's reads) from the
+script without a process. ``remove_tree`` meets stand-ins for the ``shutil`` and ``time`` of ``ephemeral.py``, which
+refuse a removal and note a pause without waiting. No test opens a connection or needs a test credential file (UB-1).
 
 ``ephemeral.py`` is loaded by path from inside each test body through ``_ephemeral``, never at import and never in a
 fixture, and nothing at this module's level names one of its symbols: this file collects whatever ``ephemeral.py``
@@ -34,6 +36,8 @@ import json
 import logging
 import os
 import re
+import shutil
+import stat
 import subprocess
 import sys
 import uuid
@@ -897,6 +901,11 @@ AUTO_INIT_FIELD = "auto_init=true"
 FIELD_DEFAULT_BRANCH = "default_branch"
 SEED_BRANCH = "trunk"
 EMPTY_LISTING = _Answer(returncode=0, stdout=json.dumps(obj=[]) + LINE_END)
+#: D9 step 4: the product wrapper's answer to a listing GitHub refused (``transport._http_failure``).
+LISTING_FAILURE = _Answer(
+    returncode=WRAPPER_API_FAILURE,
+    stderr=f"ERROR: GitHub API GET https://api.github.com/orgs/{TEST_ORGANIZATION}/repos failed: HTTP 403",
+)
 CREATION_FAILURE = _Answer(
     returncode=WRAPPER_API_FAILURE,
     stderr=f"ERROR: GitHub API POST https://api.github.com/orgs/{TEST_ORGANIZATION}/repos failed: HTTP 422",
@@ -994,14 +1003,14 @@ def _requested_name(*, arguments: Sequence[str]) -> str:
     raise AssertionError(f"the creation names no repository with {RAW_FIELD_OPTION} {NAME_FIELD}<name>: {arguments}")
 
 
-def _created_item(*, name: str) -> Dict[str, Any]:
-    """The repository the creation of ``name`` answers with, as GitHub answers it: private, ``SEED_BRANCH`` its
-    default branch."""
+def _created_item(*, name: str, private: Any = True) -> Dict[str, Any]:
+    """The repository the creation of ``name`` answers with, as GitHub answers it: ``private`` (true unless a test asks
+    otherwise), ``SEED_BRANCH`` its default branch."""
     return {
         FIELD_NAME: name,
         FIELD_FULL_NAME: f"{TEST_ORGANIZATION}/{name}",
         FIELD_OWNER: {FIELD_LOGIN: TEST_ORGANIZATION},
-        FIELD_PRIVATE: True,
+        FIELD_PRIVATE: private,
         FIELD_DEFAULT_BRANCH: SEED_BRANCH,
     }
 
@@ -1036,20 +1045,30 @@ class _ProvisionScript:
     """The forge and the git one provision meets, scripted, noting every invocation and the body's entry in one
     ``timeline``, in order.
 
-    The wrapper answers the listing with no repository, the creation with the repository it names (``_created_item``)
-    or with ``creation`` when one is given, and the deletion with ``deletion``; at each invocation it notes the clone's
-    ``origin``. The git hands ``init`` and ``remote`` to real local git in the clone, which must exist by then, and
-    answers ``fetch`` and ``checkout`` with success, ``rev-parse`` from ``SEED_REVISIONS`` and ``ls-tree -r --name-only
-    HEAD`` with ``seed_tree``, starting no process. Any other invocation fails the test.
+    The wrapper answers the listing with ``listing`` (no repository unless a test asks otherwise), the creation with
+    the repository it names, ``private`` as given (``_created_item``), or with ``creation`` when one is given, and the
+    deletion with ``deletion``; at each invocation it notes the clone's ``origin``. The git hands ``init`` and
+    ``remote`` to real local git in the clone, which must exist by then, and answers ``fetch`` and ``checkout`` with
+    success, ``rev-parse`` from ``SEED_REVISIONS`` and ``ls-tree -r --name-only HEAD`` with ``seed_tree``, starting no
+    process. Any other invocation fails the test.
     """
 
     def __init__(
-        self, *, clone: Path, seed_tree: Sequence[str], creation: Optional[_Answer], deletion: _Answer
+        self,
+        *,
+        clone: Path,
+        seed_tree: Sequence[str],
+        creation: Optional[_Answer],
+        deletion: _Answer,
+        listing: _Answer = EMPTY_LISTING,
+        private: Any = True,
     ) -> None:
         self.clone = clone
         self.seed_tree = tuple(seed_tree)
         self.creation = creation
         self.deletion = deletion
+        self.listing = listing
+        self.private = private
         self.timeline: List[_Event] = []
         #: The repository name the creation asked for, once it was sent.
         self.name: Optional[str] = None
@@ -1060,12 +1079,13 @@ class _ProvisionScript:
             _Event(runner=WRAPPER_RUNNER, arguments=tuple(arguments), origin=_origin_of(clone=self.clone))
         )
         if arguments == list(LISTING_ARGUMENTS):
-            return EMPTY_LISTING
+            return self.listing
         if arguments[:2] == [CALL_SUBCOMMAND, CREATE_OPERATION]:
             self.name = _requested_name(arguments=arguments)
             if self.creation is not None:
                 return self.creation
-            return _Answer(returncode=0, stdout=json.dumps(obj=_created_item(name=self.name), indent=2) + LINE_END)
+            created = _created_item(name=self.name, private=self.private)
+            return _Answer(returncode=0, stdout=json.dumps(obj=created, indent=2) + LINE_END)
         if arguments[:2] == [CALL_SUBCOMMAND, DELETE_OPERATION]:
             return self.deletion
         raise AssertionError(f"the provision sent an invocation the test scripted no answer for: {arguments}")
@@ -1178,6 +1198,8 @@ def _provisioning(
     seed_tree: Sequence[str] = SEED_TREE,
     creation: Optional[_Answer] = None,
     deletion: _Answer = SUCCESS,
+    listing: _Answer = EMPTY_LISTING,
+    private: Any = True,
 ) -> _Provisioning:
     """A scripted provision's tree under ``tmp_path`` and its two doubles, sharing one ``_ProvisionScript``."""
     checkout = tmp_path / CHECKOUT_NAME
@@ -1187,7 +1209,14 @@ def _provisioning(
     sentinel = _write_credential(directory=checkout, name=CLONE_CREDENTIAL_NAME, token=_new_token(label=SENTINEL_LABEL))
     workspace = tmp_path / WORKSPACE_NAME
     workspace.mkdir()
-    script = _ProvisionScript(clone=workspace / CLONE_NAME, seed_tree=seed_tree, creation=creation, deletion=deletion)
+    script = _ProvisionScript(
+        clone=workspace / CLONE_NAME,
+        seed_tree=seed_tree,
+        creation=creation,
+        deletion=deletion,
+        listing=listing,
+        private=private,
+    )
     return _Provisioning(
         root=tmp_path,
         checkout=checkout,
@@ -1393,6 +1422,58 @@ def test_no_creation_no_deletion(tmp_path: Path) -> None:
     assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
 
 
+@pytest.mark.parametrize(
+    argnames="private", argvalues=(pytest.param(False, id="private-false"), pytest.param(None, id="private-null"))
+)
+def test_a_repository_created_other_than_private_is_refused_and_deleted(tmp_path: Path, private: Any) -> None:
+    """AC-1.1, AC-1.4 (D9 steps 5 and 7): a creation answered with ``private`` false or null makes ``provision`` raise
+    ``ForgeSetupError`` before the seed is fetched and without entering the body; the teardown still sends exactly one
+    ``repos/delete`` of the repository the creation answered with, and the workspace no longer exists."""
+    forge = _ephemeral()
+    _require(module=forge, names=PROVISION_SYMBOLS)
+    setup = _provisioning(forge=forge, tmp_path=tmp_path, private=private)
+    entered: List[_Entered] = []
+
+    with pytest.raises(expected_exception=forge.ForgeSetupError):
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+
+    expected_steps = [STEP_INIT, STEP_REMOTE, STEP_LISTING, STEP_CREATION, STEP_DELETION]
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+    name = str(setup.script.name)
+    assert _deletions(setup=setup) == [_deletion(owner=TEST_ORGANIZATION, name=name)], (
+        f"the provision of a repository created with private {private!r} sent the deletions {_deletions(setup=setup)}"
+    )
+    assert entered == [], f"the provision yielded a repository created with private {private!r}"
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+
+
+def test_a_failed_listing_stops_the_run(tmp_path: Path) -> None:
+    """AC-3.1 (D9 step 4): a listing answering exit 1 makes ``sweep_leftovers`` raise ``ForgeCommandError`` after the
+    listing alone; in a provision it raises ``ForgeCommandError`` without entering the body, after the clone's
+    preparation and the listing, with no creation and no deletion sent, and the workspace no longer exists."""
+    forge = _ephemeral()
+    _require(module=forge, names=(*PROVISION_SYMBOLS, "sweep_leftovers"))
+    alone = _recording_runner(forge=forge, script=_answer_every_invocation(answer=LISTING_FAILURE))
+    with pytest.raises(expected_exception=forge.ForgeCommandError):
+        forge.sweep_leftovers(wrapper=alone, now=SWEEP_NOW)
+    assert alone.recorded == [list(LISTING_ARGUMENTS)], f"the sweep whose listing failed sent {alone.recorded}"
+
+    setup = _provisioning(forge=forge, tmp_path=tmp_path, listing=LISTING_FAILURE)
+    entered: List[_Entered] = []
+    with pytest.raises(expected_exception=forge.ForgeCommandError):
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+
+    assert setup.wrapper.recorded == [list(LISTING_ARGUMENTS)], (
+        f"the provision whose listing failed sent {setup.wrapper.recorded}, not the listing alone"
+    )
+    git_commands = [argv[:1] for argv, _ in setup.git.recorded]
+    assert git_commands == [[GIT_INIT], [GIT_REMOTE]], (
+        f"the provision whose listing failed ran git {setup.git.recorded}, not the clone's preparation alone"
+    )
+    assert entered == [], "the provision yielded though its listing failed"
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+
+
 def _bad_credential_text(*, kind: str, placeholder: str) -> Optional[str]:
     """The text of a bad test credential file of ``kind``; ``None`` for a missing one."""
     texts = {
@@ -1513,3 +1594,117 @@ def test_the_token_is_written_only_to_the_clone(tmp_path: Path, caplog: pytest.L
     assert setup.token not in found.representation, "the repr of the yielded EphemeralRepository holds the token"
     assert _holders(setup=setup) == [test_credential], "a file holding the token outlived the provision"
     _assert_sentinel_untouched(setup=setup, content=sentinel_content, opened=opened)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The workspace's removal (D9 step 7)
+# ---------------------------------------------------------------------------------------------------------------------
+
+REMOVAL_SYMBOLS = ("ForgeSuiteError", "REMOVAL_ATTEMPTS", "REMOVAL_PAUSE_SECONDS", "remove_tree")
+#: The module attributes of ``ephemeral.py`` that ``remove_tree`` removes and pauses through.
+SHUTIL_ATTRIBUTE = "shutil"
+TIME_ATTRIBUTE = "time"
+#: A workspace as a provision leaves it: one object file of the clone, which git makes read-only.
+OBJECT_FILE = Path(CLONE_NAME) / GIT_DIRECTORY / "objects" / "5e" / ("ed" * 19)
+OBJECT_CONTENT = b"blob 0\x00"
+
+
+class _RefusingRemoval:
+    """Stands in for the ``shutil`` of ``ephemeral.py``. Its ``rmtree`` notes each path it is given and the entries
+    under it that are read-only then, refuses the first ``refusals`` calls with ``PermissionError``, as Windows refuses
+    a read-only or in-use entry, and hands every later call to the real ``shutil.rmtree``."""
+
+    def __init__(self, *, refusals: int) -> None:
+        self.refusals = refusals
+        self.calls: List[Path] = []
+        self.read_only: List[List[str]] = []
+
+    def rmtree(self, path: Any, **keywords: Any) -> None:
+        tree = Path(path)
+        self.calls.append(tree)
+        self.read_only.append(_read_only_entries(root=tree))
+        if len(self.calls) <= self.refusals:
+            raise PermissionError(f"the test refused the removal of {tree}")
+        shutil.rmtree(path=tree, **keywords)
+
+
+class _NotedPauses:
+    """Stands in for the ``time`` of ``ephemeral.py``: its ``sleep`` notes each pause and returns at once."""
+
+    def __init__(self) -> None:
+        self.pauses: List[float] = []
+
+    def sleep(self, seconds: float) -> None:
+        self.pauses.append(seconds)
+
+
+def _read_only_entries(*, root: Path) -> List[str]:
+    """The entries under ``root`` without the owner's write permission, relative and in forward-slash form, sorted."""
+    return sorted(
+        path.relative_to(root).as_posix() for path in root.rglob(pattern="*") if not path.stat().st_mode & stat.S_IWRITE
+    )
+
+
+def _workspace_with_an_object_file(*, root: Path) -> Path:
+    """``root/workspace`` holding ``OBJECT_FILE``, read-only as git leaves it; returns the workspace."""
+    workspace = root / WORKSPACE_NAME
+    object_file = workspace / OBJECT_FILE
+    object_file.parent.mkdir(parents=True)
+    object_file.write_bytes(data=OBJECT_CONTENT)
+    object_file.chmod(mode=stat.S_IREAD)
+    return workspace
+
+
+def _stand_ins(*, forge: ModuleType, monkeypatch: pytest.MonkeyPatch, refusals: int) -> Tuple[Any, Any]:
+    """Replaces, through ``monkeypatch``, the ``shutil`` of ``forge`` with a ``_RefusingRemoval`` of ``refusals`` and
+    its ``time`` with ``_NotedPauses``; returns both."""
+    removal = _RefusingRemoval(refusals=refusals)
+    pauses = _NotedPauses()
+    monkeypatch.setattr(target=forge, name=SHUTIL_ATTRIBUTE, value=removal)
+    monkeypatch.setattr(target=forge, name=TIME_ATTRIBUTE, value=pauses)
+    return removal, pauses
+
+
+def test_a_refused_removal_is_retried(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """AC-1.4 (D9 step 7): ``remove_tree`` of a workspace whose first removal is refused clears the read-only attribute
+    git gives its object files, pauses ``REMOVAL_PAUSE_SECONDS`` and removes the workspace on its second attempt; a
+    path that no longer exists is done without an attempt."""
+    forge = _ephemeral()
+    _require(module=forge, names=REMOVAL_SYMBOLS)
+    assert forge.REMOVAL_ATTEMPTS > 1, f"REMOVAL_ATTEMPTS is {forge.REMOVAL_ATTEMPTS!r}: a refusal is never retried"
+    workspace = _workspace_with_an_object_file(root=tmp_path)
+    removal, pauses = _stand_ins(forge=forge, monkeypatch=monkeypatch, refusals=1)
+
+    forge.remove_tree(path=workspace)
+
+    assert not workspace.exists(), f"the workspace {workspace} outlived its retried removal"
+    assert removal.calls == [workspace, workspace], f"remove_tree attempted {removal.calls}, not two removals"
+    assert removal.read_only == [[OBJECT_FILE.as_posix()], []], (
+        f"the read-only entries at each attempt were {removal.read_only}: the retry did not clear them"
+    )
+    assert pauses.pauses == [forge.REMOVAL_PAUSE_SECONDS], f"remove_tree paused {pauses.pauses} between the attempts"
+
+    forge.remove_tree(path=workspace)
+    assert removal.calls == [workspace, workspace], f"remove_tree attempted to remove the gone {workspace}"
+
+
+def test_a_removal_refused_every_time_fails_naming_the_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """AC-1.4 (D9 step 7): ``remove_tree`` of a workspace whose every removal is refused makes ``REMOVAL_ATTEMPTS``
+    attempts, ``REMOVAL_PAUSE_SECONDS`` apart, then raises ``ForgeSuiteError`` naming the workspace."""
+    forge = _ephemeral()
+    _require(module=forge, names=REMOVAL_SYMBOLS)
+    attempts = forge.REMOVAL_ATTEMPTS
+    assert attempts > 1, f"REMOVAL_ATTEMPTS is {attempts!r}: a refusal is never retried"
+    workspace = _workspace_with_an_object_file(root=tmp_path)
+    removal, pauses = _stand_ins(forge=forge, monkeypatch=monkeypatch, refusals=attempts)
+
+    with pytest.raises(expected_exception=forge.ForgeSuiteError) as refused:
+        forge.remove_tree(path=workspace)
+
+    message = str(refused.value)
+    assert _names_one_of(message=message, paths=(workspace,)), f"the failure does not name {workspace}: {message}"
+    assert removal.calls == [workspace] * attempts, f"remove_tree attempted {removal.calls}, not {attempts} removals"
+    assert pauses.pauses == [forge.REMOVAL_PAUSE_SECONDS] * (attempts - 1), (
+        f"remove_tree paused {pauses.pauses} between its {attempts} attempts"
+    )
+    assert workspace.exists(), f"the workspace {workspace} is gone though every removal was refused"

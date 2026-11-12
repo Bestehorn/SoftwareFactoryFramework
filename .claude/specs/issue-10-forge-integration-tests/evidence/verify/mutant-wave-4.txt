@@ -1,0 +1,337 @@
+
+######## MUTANT 4a (wave 4): pytest.ini gains -x (fail-fast)
+file: test/forge/pytest.ini; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/test/forge/pytest.ini b/test/forge/pytest.ini
+index 7d6b478..2724e85 100644
+--- a/test/forge/pytest.ini
++++ b/test/forge/pytest.ini
+@@ -1,6 +1,6 @@
+ # The forge suite's configfile: collects test/forge/forge_*.py and streams each creation and deletion to the log.
+ [pytest]
+ python_files = forge_*.py
+-addopts = -p no:cacheprovider
++addopts = -p no:cacheprovider -x
+ log_cli = true
+ log_cli_level = INFO
+warning: in the working copy of 'test/forge/pytest.ini', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+..........F                                                              [100%]
+================================== FAILURES ===================================
+________________ test_nothing_keeps_a_forge_test_from_running _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1282: in test_nothing_keeps_a_forge_test_from_running
+    assert not problems, "something keeps a forge test from running:\n" + "\n".join(problems)
+E   AssertionError: something keeps a forge test from running:
+E     test/forge/pytest.ini holds {'python_files': 'forge_*.py', 'addopts': '-p no:cacheprovider -x', 'log_cli': 'true', 'log_cli_level': 'INFO'}, not exactly {'python_files': 'forge_*.py', 'addopts': '-p no:cacheprovider', 'log_cli': 'true', 'log_cli_level': 'INFO'}
+E   assert not ["test/forge/pytest.ini holds {'python_files': 'forge_*.py', 'addopts': '-p no:cacheprovider -x', 'log_cli': 'true', '... exactly {'python_files': 'forge_*.py', 'addopts': '-p no:cacheprovider', 'log_cli': 'true', 'log_cli_level': 'INFO'}"]
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_nothing_keeps_a_forge_test_from_running
+======================== 1 failed, 10 passed in 5.10s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 4b (wave 4): session fixture no longer refuses a distributed run
+file: test/forge/conftest.py; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/test/forge/conftest.py b/test/forge/conftest.py
+index 3ba8653..1c54021 100644
+--- a/test/forge/conftest.py
++++ b/test/forge/conftest.py
+@@ -71,7 +71,6 @@ def ephemeral_repository(worker_id: str) -> Iterator[Any]:
+     (D1). The workspace is a fresh ``tempfile.mkdtemp`` directory; ``provision`` creates ``<workspace>/clone``, to which
+     both runners are bound, and removes the workspace in its ``finally``.
+     """
+-    EPHEMERAL.refuse_distributed_run(worker_id=worker_id)
+     workspace = Path(tempfile.mkdtemp(prefix=WORKSPACE_PREFIX))
+     clone = workspace / EPHEMERAL.CLONE_DIRECTORY
+     with EPHEMERAL.provision(
+warning: in the working copy of 'test/forge/conftest.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+......F....                                                              [100%]
+================================== FAILURES ===================================
+________________ test_the_session_fixture_wraps_one_provision _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1251: in test_the_session_fixture_wraps_one_provision
+    assert not problems, f"{CONFTEST_NAME} `{SESSION_FIXTURE}`:\n" + "\n".join(problems)
+E   AssertionError: test/forge/conftest.py `ephemeral_repository`:
+E     it does not call `refuse_distributed_run` exactly once, as a statement of its own body
+E   assert not ['it does not call `refuse_distributed_run` exactly once, as a statement of its own body']
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_session_fixture_wraps_one_provision
+======================== 1 failed, 10 passed in 5.06s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 4c (wave 4): yield outside the with provision(...) block
+file: test/forge/conftest.py; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/test/forge/conftest.py b/test/forge/conftest.py
+index 3ba8653..5084fe5 100644
+--- a/test/forge/conftest.py
++++ b/test/forge/conftest.py
+@@ -80,4 +80,5 @@ def ephemeral_repository(worker_id: str) -> Iterator[Any]:
+         wrapper=EPHEMERAL.SubprocessWrapperRunner(directory=clone),
+         git=EPHEMERAL.SubprocessGitRunner(clone=clone),
+     ) as repository:
+-        yield repository
++        pass
++    yield repository
+warning: in the working copy of 'test/forge/conftest.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+......F....                                                              [100%]
+================================== FAILURES ===================================
+________________ test_the_session_fixture_wraps_one_provision _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1251: in test_the_session_fixture_wraps_one_provision
+    assert not problems, f"{CONFTEST_NAME} `{SESSION_FIXTURE}`:\n" + "\n".join(problems)
+E   AssertionError: test/forge/conftest.py `ephemeral_repository`:
+E     its `yield` is not inside the `with provision(...)` block
+E   assert not ['its `yield` is not inside the `with provision(...)` block']
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_session_fixture_wraps_one_provision
+======================== 1 failed, 10 passed in 4.99s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 4d (wave 4): conftest deselects a forge module with collect_ignore
+file: test/forge/conftest.py; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/test/forge/conftest.py b/test/forge/conftest.py
+index 3ba8653..249d6b6 100644
+--- a/test/forge/conftest.py
++++ b/test/forge/conftest.py
+@@ -34,6 +34,7 @@ EPHEMERAL_PATH = Path(__file__).resolve().parent / "ephemeral.py"
+ EPHEMERAL_MODULE = "forge_ephemeral"
+ #: The prefix of the run's workspace directory, created under the temporary directory.
+ WORKSPACE_PREFIX = "sff-forge-suite-"
++collect_ignore = ["forge_ci_security.py"]
+ 
+ 
+ def _load_ephemeral() -> ModuleType:
+warning: in the working copy of 'test/forge/conftest.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+.........FF                                                              [100%]
+================================== FAILURES ===================================
+________________ test_the_forge_path_collects_every_forge_test ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1267: in test_the_forge_path_collects_every_forge_test
+    assert collected == expected, (
+E   AssertionError: the collection of test/forge lists [] beyond the `test_` functions of test/forge/forge_*.py and misses [('forge_ci_security.py', 'test_code_scanning_answers_as_documented'), ('forge_ci_security.py', 'test_dependabot_lists_no_secret'), ('forge_ci_security.py', 'test_no_workflow_has_run'), ('forge_ci_security.py', 'test_secret_scanning_answers_as_documented')]:
+E     forge_collaboration.py::test_issue_and_reaction_records
+E     forge_collaboration.py::test_pulls_search_activity_and_gists_records
+E     forge_fixture.py::test_the_run_owns_a_private_seeded_repository
+E     forge_fixture.py::test_no_leftover_survives_the_sweep
+E     forge_repos_git.py::test_the_repository_record_names_the_seed_branch
+E     forge_repos_git.py::test_the_git_records_read_the_seed_commit
+E     forge_subcommands.py::test_an_issue_round_trip
+E     forge_subcommands.py::test_a_pull_request_round_trip
+E     
+E     8 tests collected in 1.03s
+E     
+E   assert {('forge_coll...branch'), ...} == {('forge_ci_s...ecords'), ...}
+E     
+E     Extra items in the right set:
+E     [0m([33m'[39;49;00m[33mforge_ci_security.py[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtest_secret_scanning_answers_as_documented[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mforge_ci_security.py[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtest_code_scanning_answers_as_documented[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mforge_ci_security.py[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtest_no_workflow_has_run[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________ test_nothing_keeps_a_forge_test_from_running _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1282: in test_nothing_keeps_a_forge_test_from_running
+    assert not problems, "something keeps a forge test from running:\n" + "\n".join(problems)
+E   AssertionError: something keeps a forge test from running:
+E     test/forge/conftest.py:37: defines a pytest hook or names `collect_ignore`
+E   assert not ['test/forge/conftest.py:37: defines a pytest hook or names `collect_ignore`']
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_forge_path_collects_every_forge_test
+FAILED test/test_forge_suite_layout.py::test_nothing_keeps_a_forge_test_from_running
+========================= 2 failed, 9 passed in 5.24s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 4e (wave 4): fixture scope module instead of session
+file: test/forge/conftest.py; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/test/forge/conftest.py b/test/forge/conftest.py
+index 3ba8653..acc3d34 100644
+--- a/test/forge/conftest.py
++++ b/test/forge/conftest.py
+@@ -63,7 +63,7 @@ def _load_ephemeral() -> ModuleType:
+ EPHEMERAL = _load_ephemeral()
+ 
+ 
+-@pytest.fixture(scope="session")
++@pytest.fixture(scope="module")
+ def ephemeral_repository(worker_id: str) -> Iterator[Any]:
+     """The run's ``EphemeralRepository`` (D9), provisioned once for the session and torn down after it.
+ 
+warning: in the working copy of 'test/forge/conftest.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+......F....                                                              [100%]
+================================== FAILURES ===================================
+________________ test_the_session_fixture_wraps_one_provision _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1251: in test_the_session_fixture_wraps_one_provision
+    assert not problems, f"{CONFTEST_NAME} `{SESSION_FIXTURE}`:\n" + "\n".join(problems)
+E   AssertionError: test/forge/conftest.py `ephemeral_repository`:
+E     it is not decorated `pytest.fixture(scope="session")`
+E   assert not ['it is not decorated `pytest.fixture(scope="session")`']
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_session_fixture_wraps_one_provision
+======================== 1 failed, 10 passed in 4.90s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 4f (wave 4): pytest.ini collects only one forge module
+file: test/forge/pytest.ini; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/test/forge/pytest.ini b/test/forge/pytest.ini
+index 7d6b478..772612b 100644
+--- a/test/forge/pytest.ini
++++ b/test/forge/pytest.ini
+@@ -1,6 +1,6 @@
+ # The forge suite's configfile: collects test/forge/forge_*.py and streams each creation and deletion to the log.
+ [pytest]
+-python_files = forge_*.py
++python_files = forge_fixture.py
+ addopts = -p no:cacheprovider
+ log_cli = true
+ log_cli_level = INFO
+warning: in the working copy of 'test/forge/pytest.ini', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+........F.F                                                              [100%]
+================================== FAILURES ===================================
+________________ test_the_forge_path_collects_every_forge_test ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1267: in test_the_forge_path_collects_every_forge_test
+    assert collected == expected, (
+E   AssertionError: the collection of test/forge lists [] beyond the `test_` functions of test/forge/forge_*.py and misses [('forge_ci_security.py', 'test_code_scanning_answers_as_documented'), ('forge_ci_security.py', 'test_dependabot_lists_no_secret'), ('forge_ci_security.py', 'test_no_workflow_has_run'), ('forge_ci_security.py', 'test_secret_scanning_answers_as_documented'), ('forge_collaboration.py', 'test_issue_and_reaction_records'), ('forge_collaboration.py', 'test_pulls_search_activity_and_gists_records'), ('forge_repos_git.py', 'test_the_git_records_read_the_seed_commit'), ('forge_repos_git.py', 'test_the_repository_record_names_the_seed_branch'), ('forge_subcommands.py', 'test_a_pull_request_round_trip'), ('forge_subcommands.py', 'test_an_issue_round_trip')]:
+E     forge_fixture.py::test_the_run_owns_a_private_seeded_repository
+E     forge_fixture.py::test_no_leftover_survives_the_sweep
+E     
+E     2 tests collected in 0.84s
+E     
+E   assert {('forge_fixt..._repository')} == {('forge_ci_s...ecords'), ...}
+E     
+E     Extra items in the right set:
+E     [0m([33m'[39;49;00m[33mforge_subcommands.py[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtest_an_issue_round_trip[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mforge_ci_security.py[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtest_code_scanning_answers_as_documented[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33m'[39;49;00m[33mforge_ci_security.py[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtest_secret_scanning_answers_as_documented[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     [0m([33...
+E     
+E     ...Full output truncated, use '-vv' to show
+________________ test_nothing_keeps_a_forge_test_from_running _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1282: in test_nothing_keeps_a_forge_test_from_running
+    assert not problems, "something keeps a forge test from running:\n" + "\n".join(problems)
+E   AssertionError: something keeps a forge test from running:
+E     test/forge/pytest.ini holds {'python_files': 'forge_fixture.py', 'addopts': '-p no:cacheprovider', 'log_cli': 'true', 'log_cli_level': 'INFO'}, not exactly {'python_files': 'forge_*.py', 'addopts': '-p no:cacheprovider', 'log_cli': 'true', 'log_cli_level': 'INFO'}
+E   assert not ["test/forge/pytest.ini holds {'python_files': 'forge_fixture.py', 'addopts': '-p no:cacheprovider', 'log_cli': 'true'... exactly {'python_files': 'forge_*.py', 'addopts': '-p no:cacheprovider', 'log_cli': 'true', 'log_cli_level': 'INFO'}"]
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_forge_path_collects_every_forge_test
+FAILED test/test_forge_suite_layout.py::test_nothing_keeps_a_forge_test_from_running
+========================= 2 failed, 9 passed in 4.87s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 4g (wave 4): write_credential.main returns 0 on the refusal
+file: test/forge/write_credential.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/write_credential.py b/test/forge/write_credential.py
+index 2f6decb..da77ae3 100644
+--- a/test/forge/write_credential.py
++++ b/test/forge/write_credential.py
+@@ -62,7 +62,7 @@ def main(*, checkout: Path = CHECKOUT) -> int:
+         ephemeral.write_test_credential(token=token, checkout=checkout)
+     except ephemeral.ForgeSetupError as refused:
+         logger.error("%s", refused)
+-        return EXIT_REFUSED
++        return EXIT_WROTE
+     return EXIT_WROTE
+ 
+ 
+warning: in the working copy of 'test/forge/write_credential.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+...........F..........                                                   [100%]
+================================== FAILURES ===================================
+_______________ test_a_missing_secret_fails_the_credential_step _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:394: in test_a_missing_secret_fails_the_credential_step
+    _assert_the_credential_step_judges_the_secret(
+test\test_forge_support.py:417: in _assert_the_credential_step_judges_the_secret
+    assert exit_code == STEP_REFUSED, f"main returned {exit_code!r} with {SECRET_VARIABLE} {state}, not 1"
+E   AssertionError: main returned 0 with SFF_TEST_TOKEN unset, not 1
+E   assert 0 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m forge_write_credential:write_credential.py:64 Wrote no test credential file: the secret SFF_TEST_TOKEN is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_missing_secret_fails_the_credential_step
+======================== 1 failed, 21 passed in 11.55s ========================
+exit=1
+restored byte-identical: True

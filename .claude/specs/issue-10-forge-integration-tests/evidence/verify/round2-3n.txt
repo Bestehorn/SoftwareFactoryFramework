@@ -1,0 +1,59 @@
+######## ROUND 2 MUTANT 3n: remove_tree gives up on the first refused removal (attempt == REMOVAL_ATTEMPTS -> True)
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+pre-run sha256: 1230e062041ca3bfc4452bbe808e2a44ebc78be2e215e78ce27edbf9a330e535
+--- mutation (git diff)
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..36387fd 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -839,7 +839,7 @@ def remove_tree(*, path: Path) -> None:
+             shutil.rmtree(path=path)
+             return
+         except OSError as exc:
+-            if attempt == REMOVAL_ATTEMPTS:
++            if True:
+                 raise ForgeSuiteError(message=f"Could not remove {path} in {REMOVAL_ATTEMPTS} attempts: {exc}") from exc
+             logger.debug("Removing %s was refused (%s); retrying", path, exc)
+         _clear_read_only(root=path)
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [27 items]
+
+........................F.F                                              [100%]
+================================== FAILURES ===================================
+______________________ test_a_refused_removal_is_retried ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1627: in rmtree
+    raise PermissionError(f"the test refused the removal of {tree}")
+E   PermissionError: the test refused the removal of D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2161\popen-gw0\test_a_refused_removal_is_retr0\workspace
+
+The above exception was the direct cause of the following exception:
+test\test_forge_support.py:1678: in test_a_refused_removal_is_retried
+    forge.remove_tree(path=workspace)
+test\forge\ephemeral.py:843: in remove_tree
+    raise ForgeSuiteError(message=f"Could not remove {path} in {REMOVAL_ATTEMPTS} attempts: {exc}") from exc
+E   forge_ephemeral.ForgeSuiteError: Could not remove D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2161\popen-gw0\test_a_refused_removal_is_retr0\workspace in 5 attempts: the test refused the removal of D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2161\popen-gw0\test_a_refused_removal_is_retr0\workspace
+___________ test_a_removal_refused_every_time_fails_naming_the_path ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1706: in test_a_removal_refused_every_time_fails_naming_the_path
+    assert removal.calls == [workspace] * attempts, f"remove_tree attempted {removal.calls}, not {attempts} removals"
+E   AssertionError: remove_tree attempted [WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2161/popen-gw1/test_a_removal_refused_every_t0/workspace')], not 5 removals
+E   assert [WindowsPath(...0/workspace')] == [WindowsPath(...0/workspace')]
+E     
+E     Right contains 4 more items, first extra item: [0mWindowsPath([33m'[39;49;00m[33mD:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2161/popen-gw1/test_a_removal_refused_every_t0/workspace[39;49;00m[33m'[39;49;00m)[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_refused_removal_is_retried - forge_...
+FAILED test/test_forge_support.py::test_a_removal_refused_every_time_fails_naming_the_path
+======================== 2 failed, 25 passed in 13.97s ========================
+exit=1
+post-restore sha256: 1230e062041ca3bfc4452bbe808e2a44ebc78be2e215e78ce27edbf9a330e535
+restored byte-identical: True
+git diff --quiet -- test/forge/ephemeral.py: exit 0 warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it

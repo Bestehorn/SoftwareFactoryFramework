@@ -109,6 +109,21 @@ USERINFO_ORIGIN = Origin(
     shown="example.com/repo",
     withheld=(USERINFO_SENTINEL,),
 )
+#: Origins whose repository name holds ``sff-test-`` after its start, inside the name and at its end: AC-4.1 serves
+#: only a name that STARTS with the prefix, so the guard refuses these as it refuses any other non-ephemeral origin,
+#: and a guard that tests containment rather than the start of the name serves them.
+INNER_PREFIX_ORIGIN = Origin(
+    url=f"{fx.WEB_ORIGIN}/Bestehorn/x-sff-test-y.git",
+    owner="Bestehorn",
+    repo="x-sff-test-y",
+    shown="Bestehorn/x-sff-test-y",
+)
+TRAILING_PREFIX_ORIGIN = Origin(
+    url=f"{fx.WEB_ORIGIN}/o/repo-sff-test-.git",
+    owner="o",
+    repo="repo-sff-test-",
+    shown="o/repo-sff-test-",
+)
 
 #: AC-4.1's subcommands: a record sent through ``call``, two compatibility subcommands and two delivery verbs, one
 #: parsed (``enqueue-pr``) and one handed to the steward unparsed (``wait-landed``).
@@ -122,6 +137,8 @@ REFUSED_ARGV = (
 REFUSED_ORIGINS = (
     pytest.param(PRODUCT_ORIGIN, id="product-origin"),
     pytest.param(USERINFO_ORIGIN, id="userinfo-origin"),
+    pytest.param(INNER_PREFIX_ORIGIN, id="inner-prefix-origin"),
+    pytest.param(TRAILING_PREFIX_ORIGIN, id="trailing-prefix-origin"),
 )
 
 
@@ -250,11 +267,11 @@ def test_the_marker_refuses_an_origin_without_the_prefix(
     capsys: pytest.CaptureFixture[str],
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """AC-4.1 (design D2): while the marker is set and the ``origin`` names no ``sff-test-*`` repository, ``call``, a
-    compatibility subcommand and a delivery verb alike exit 2 (``EXIT_REFUSED``), send no request, run no steward and
-    print nothing. Exactly one log record names the marker and the origin's ``owner/repo`` (an owner group holding
-    userinfo is named after its last ``@``), and no record and nothing on standard error holds the configured token or
-    that userinfo."""
+    """AC-4.1 (design D2): while the marker is set and the ``origin`` names no ``sff-test-*`` repository (a name
+    holding ``sff-test-`` only after its start included), ``call``, a compatibility subcommand and a delivery verb alike
+    exit 2 (``EXIT_REFUSED``), send no request, run no steward and print nothing. Exactly one log record names the
+    marker and the origin's ``owner/repo`` (an owner group holding userinfo is named after its last ``@``), and no
+    record and nothing on standard error holds the configured token or that userinfo."""
     caplog.set_level(level=logging.DEBUG)
     set_marker(monkeypatch=monkeypatch, present=True)
     steward = StewardRecorder()
