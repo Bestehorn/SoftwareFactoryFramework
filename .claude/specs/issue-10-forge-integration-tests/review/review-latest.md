@@ -1,43 +1,27 @@
-# Review — design iteration 01 (consolidated)
+# Review — design iteration 02 (delta, consolidated)
 
-Lanes: spec-review-agent NOT-CLEAN (1 A, 1 B); test-architect NOT-CLEAN (0 A, 4 B), NOT-READY; standards-reviewer
-NOT-CLEAN (0 A, 1 B); devops-iac-reviewer NOT-CLEAN (0 A, 1 B); security-reviewer CLEAN; best-practice-reviewer CLEAN.
+Lanes on the revision of commit 170b4ba: spec-review-agent CLEAN; standards-reviewer CLEAN; devops-iac-reviewer CLEAN;
+security-reviewer CLEAN; best-practice-reviewer CLEAN; test-architect NOT-CLEAN (0 A, 1 B), NOT-READY (33 OK, GAP
+AC-4.3 and AC-8.1). Every iteration-01 A/B is resolved (each lane's iteration-02 file says so per id).
 
-Combined A+B: 8 (1 A, 7 B). Every A/B names its criterion or failure class and carries a proposed edit; none rejected.
+Combined A+B: 1. Nothing rejected.
 
-## A/B (apply all)
+## A/B (apply)
 
 | Id | Lane | Defect | Fix |
 |---|---|---|---|
-| A1 | spec-review A1 | `SubprocessGitRunner` passes `-C <clone>` before `<workspace>/clone` exists | D9 step 3 creates `<clone>` (`Path.mkdir`) before `git init`; D3 wording |
-| B1 | spec-review B1 | D8's main-working-tree lookup contradicts AC-6.1 | restate AC-6.1 (DL-002): the checkout that runs it or, for a linked worktree without one, the repository's main working tree |
-| B2 | devops B1 = spec-review C3 (deduped, B kept) | `test_no_leftover_survives_the_sweep` judges at the test's time | `EphemeralRepository.swept_at` = the sweep's `now`; the test uses it |
-| B3 | standards B1 | `TeardownRefusedError`, `SweepRefusedError` hide their base | `ForgeTeardownRefusedError`, `ForgeSweepRefusedError` everywhere |
-| B4 | test-architect B1 | `refuse_distributed_run` untested | S example: `gw0` refused, `master` passes |
-| B5 | test-architect B2 | nothing pins the session fixture's scope and teardown | L check by `ast` of `test/forge/conftest.py` (scope `session`, yield inside `with provision(...)`) |
-| B6 | test-architect B3 | a fail-fast/selection option in `test/forge/pytest.ini` passes every test | L oracle: the file's exact option set |
-| B7 | test-architect B4 | AC-6.3's "log line" and "test report" untested | `caplog` check over a scripted provision; the `repr` of `EphemeralRepository` holds no token |
+| B1 | test-architect B1 | AC-4.3's oracle misses an in-process call: a forge module calling `product_wrapper().main(argv=...)` runs the wrapper without `-X sff_test_marker` | L, by `ast`: outside its definition `PRODUCT_WRAPPER` is named only in `SubprocessWrapperRunner` and `product_wrapper`; only `ephemeral.py` names `product_wrapper`; no file of `test/forge/` reads an attribute `main` (as the lane file proposes) |
 
 ## C/D (apply in the same pass — restate, clarify, tighten, remove)
 
-- spec-review C1: bind `run_id`/`name` before the `try`, so a refused credential is not masked by `UnboundLocalError`.
-- spec-review C2: the clone's credential file is written as bytes with `\n` (`Path.write_bytes`).
-- spec-review D1, best-practice D1: correct D1's and D3's rejected-alternative reasons as proposed.
-- devops C1: Operability "Leftovers" states what a cancelled CI run or an interrupted local run leaves (the repository for a day; locally the clone and its credential copy in the temp directory).
-- devops C2: `test/forge/pytest.ini` adds `log_cli = true`, `log_cli_level = INFO`, so the create/delete log lines reach the job log (B6's exact option set includes them).
-- devops C3: Rollback says a revert also removes the sweep.
-- standards C1: D5 says why `ci.yml` may be edited (`config/toolchain.json` lists no workflow; `not_installed` `templates/ci/*`); C2: the Overview names the one deviation (the forge job's command is `run_tests.py`, not `run_checks.py`); C3: `EPHEMERAL_REPOSITORY_PREFIX` and `TEST_MARKER_OPTION` read from `product_wrapper()`, not redefined; C4: D1 Alternatives says why not `test/e2e/`; C5: the map row points to `credentials/README.md`; D1: `RepositoryRecord.of(item=...)`.
-- security C1: D2's claim that owner/repo never hold userinfo is false for a crafted origin; the refusal names the owner after its last `@`, and W covers that origin; C2: restate "owner-only file mode" (on Windows the protection is `mkdtemp`'s owner-only ACL); C3: the CI-trust bullet says a same-repository branch or a dispatch runs its own code with the secret; C4: register the helper as `credential.https://github.com.helper` after the empty `credential.helper=` reset.
-- best-practice C3: `git rev-parse --path-format=absolute --git-common-dir`; drop the relative-path handling.
-- test-architect C1–C6: the sweep property's expected set comes from the generated data; state how "starts the wrapper" is checked; state UB-2's read check; setup-failure tests also assert the workspace is removed; the skip check uses `ast`; name the triggers.
+- test-architect C1: AC-6.1's example adds a linked worktree that holds its own file (it is preferred); C2: L requires the fixture to pass its own `worker_id` parameter to `refuse_distributed_run`; D1: AC-7.3's `ast` check names `.py` files.
+- standards C1 = spec-review D2: `owner.rpartition(USERINFO_SEPARATOR)[2]`, as `_without_userinfo` does.
+- standards C2 = devops D1: the Residuals line on an interrupted local run says "Nothing in this change removes …", and that inside a session the scoped temp (`tmp/os-temp`) is emptied by `reap_agent_temp.py --scoped-temp`.
+- standards C3 = best-practice C1: D8's Windows owner-only claim holds on CPython builds with the CVE-2024-4030 fix (3.12.4 and later, the 2024 security releases); say so in one sentence.
+- standards D1: the D10 `ephemeral.py` row — the `product_wrapper()` clause in parentheses, scoped to the two constants.
+- security C1: Rollback: the secret and the token stay only while the suite is to return; otherwise the operator deletes `SFF_TEST_TOKEN` and revokes the token.
+- spec-review D1: the AC-6.2 mapping row cites D9 step 2.
 
-## Residuals (out of the ask, left out)
+## Residuals
 
-best-practice C1 (`if: always()` vs `!cancelled()`, pre-existing), C2 (Node 20 action versions, workflow-wide);
-security: a protected deployment environment for the secret; the existing `@`-in-owner parsing without the marker
-(UB-3); devops: `X-Accepted-GitHub-Permissions` not printed by the wrapper; token expiry; no cleanup of a clone an
-interrupted local run leaves.
-
-## Coverage (test-architect)
-
-30 of 35 OK; GAP: AC-1.1, AC-1.4, AC-5.2, AC-6.3, AC-7.3 — closed by B4–B7.
+Unchanged from iteration 01 (design.md `## Residuals`).
