@@ -1,0 +1,135 @@
+######## ROUND 2 MUTANT 1b: guard lets through a repository whose name CONTAINS sff-test- (startswith -> in)
+file: src/payload/scripts/github_wrapper.py; tests: src/payload/test/test_github_wrapper_marker.py
+pre-run sha256: eae09b319a896532a6dba5827b1cefd250e98e447e3178330d6eb951b553bc54
+--- mutation (git diff)
+diff --git a/src/payload/scripts/github_wrapper.py b/src/payload/scripts/github_wrapper.py
+index 4ae9739..9cf78df 100644
+--- a/src/payload/scripts/github_wrapper.py
++++ b/src/payload/scripts/github_wrapper.py
+@@ -267,7 +267,7 @@ def _refuse_unless_ephemeral(*, owner: str, repo: str) -> None:
+     return at once without the marker. `owner` and `repo` are `_detect_repo`'s groups; the refusal names the owner
+     after its last `@` (the idiom of `_without_userinfo`), because the owner group of an origin whose userinfo ends in
+     `github.com:` holds the rest of that userinfo."""
+-    if not _test_marker_set() or repo.startswith(EPHEMERAL_REPOSITORY_PREFIX):
++    if not _test_marker_set() or EPHEMERAL_REPOSITORY_PREFIX in repo:
+         return
+     shown = owner.rpartition(USERINFO_SEPARATOR)[2]
+     raise GitHubAPIError(
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_marker.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [23 items]
+
+....FFFFF...FF..FF.F...                                                  [100%]
+================================== FAILURES ===================================
+_ test_the_marker_refuses_an_origin_without_the_prefix[call-repos-get-inner-prefix-origin] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "full_name": "Bestehorn/x-sff-test-y",\n  "name": "x-sff-test-y",\n  "private": true\n}\n'; stderr ''; requests ['GET https://api.github.com/repos/Bestehorn/x-sff-test-y']
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[call-repos-get-trailing-prefix-origin] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "full_name": "o/repo-sff-test-",\n  "name": "repo-sff-test-",\n  "private": true\n}\n'; stderr ''; requests ['GET https://api.github.com/repos/o/repo-sff-test-']
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[get-issue-inner-prefix-origin] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "number": 1,\n  "title": "Guarded issue",\n  "state": "open",\n  "body": null,\n  "labels": [],\n  "html_url": "https://github.com/o/r/issues/1"\n}\n'; stderr ''; requests ['GET https://api.github.com/repos/Bestehorn/x-sff-test-y/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[list-runs-inner-prefix-origin] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests ['GET https://api.github.com/repos/Bestehorn/x-sff-test-y/actions/runs?per_page=10']
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[get-issue-trailing-prefix-origin] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "number": 1,\n  "title": "Guarded issue",\n  "state": "open",\n  "body": null,\n  "labels": [],\n  "html_url": "https://github.com/o/r/issues/1"\n}\n'; stderr ''; requests ['GET https://api.github.com/repos/o/repo-sff-test-/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[list-runs-trailing-prefix-origin] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests ['GET https://api.github.com/repos/o/repo-sff-test-/actions/runs?per_page=10']
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\wo...ghp_TFixtureCredential', 'user-agent': 'software-factory-github-wrapper/1.0', 'x-github-api-version': '2022-11-28'}),)).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[enqueue-pr-inner-prefix-origin] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[enqueue-pr-trailing-prefix-origin] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[wait-landed-inner-prefix-origin] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).wrapper
+_ test_the_marker_refuses_an_origin_without_the_prefix[wait-landed-trailing-prefix-origin] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\src\payload\test\test_github_wrapper_marker.py:281: in test_the_marker_refuses_an_origin_without_the_prefix
+    assert run.exit_code == run.wrapper.EXIT_REFUSED, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).exit_code
+E    +  and   2 = <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>.EXIT_REFUSED
+E    +    where <module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'> = Run(wrapper=<module 'github_wrapper_marker_under_test' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py'>, exit_code=0, stdout='', stderr='', requests=()).wrapper
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[call-repos-get-inner-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[call-repos-get-trailing-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[get-issue-inner-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[list-runs-inner-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[get-issue-trailing-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[list-runs-trailing-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[enqueue-pr-inner-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[enqueue-pr-trailing-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[wait-landed-inner-prefix-origin]
+FAILED src/payload/test/test_github_wrapper_marker.py::test_the_marker_refuses_an_origin_without_the_prefix[wait-landed-trailing-prefix-origin]
+======================== 10 failed, 13 passed in 4.16s ========================
+exit=1
+post-restore sha256: eae09b319a896532a6dba5827b1cefd250e98e447e3178330d6eb951b553bc54
+restored byte-identical: True
+git diff --quiet -- src/payload/scripts/github_wrapper.py: exit 0

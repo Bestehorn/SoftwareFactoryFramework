@@ -1,0 +1,138 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+collected 35 items
+
+src\payload\test\test_github_wrapper_marker.py .............             [ 37%]
+test\test_forge_support.py ......................                        [100%]
+
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.2-final-0 _______________
+
+Name                                                                        Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------------------------------------
+src\payload\scripts\ci_outage_mode.py                                          77     77     0%   42-185
+src\payload\scripts\github_api\__init__.py                                      0      0   100%
+src\payload\scripts\github_api\commands\__init__.py                             0      0   100%
+src\payload\scripts\github_api\commands\_common.py                             45     10    78%   65-71, 86, 93-94
+src\payload\scripts\github_api\commands\call.py                               198     68    66%   186-191, 196-197, 202, 208-216, 224-229, 237, 245, 255-260, 268, 280, 290-292, 343, 345, 348, 367-376, 391, 394-396, 406-426, 442, 458-460, 463-467
+src\payload\scripts\github_api\commands\ci.py                                 151     59    61%   113, 118, 123-125, 131, 136, 141, 146-149, 154-161, 166-176, 181-186, 197-223, 229-231, 242-245, 251-261
+src\payload\scripts\github_api\commands\claim.py                              201     86    57%   123, 129-136, 141, 146, 151, 157-161, 166, 176, 186, 196, 202-204, 209-223, 231-241, 254-287, 302-324, 329-333, 338-343, 349-358
+src\payload\scripts\github_api\commands\issues.py                             218     98    55%   117, 122, 127, 132-138, 143, 150-169, 174-179, 184-192, 197-206, 211-223, 228-248, 254-270, 275-280, 285-287, 293-312, 317, 323-337
+src\payload\scripts\github_api\commands\pulls.py                              125     32    74%   117, 122, 127, 133-147, 152-157, 162, 167, 178-200, 209-218, 223-232, 237-242
+src\payload\scripts\github_api\errors.py                                        9      0   100%
+src\payload\scripts\github_api\families\__init__.py                             0      0   100%
+src\payload\scripts\github_api\families\actions.py                              7      0   100%
+src\payload\scripts\github_api\families\activity.py                             7      0   100%
+src\payload\scripts\github_api\families\agent_automations.py                    7      0   100%
+src\payload\scripts\github_api\families\agent_merge.py                          7      0   100%
+src\payload\scripts\github_api\families\agent_tasks.py                          7      0   100%
+src\payload\scripts\github_api\families\agents.py                               7      0   100%
+src\payload\scripts\github_api\families\api_insights.py                         7      0   100%
+src\payload\scripts\github_api\families\apps.py                                 7      0   100%
+src\payload\scripts\github_api\families\billing.py                              7      0   100%
+src\payload\scripts\github_api\families\campaigns.py                            7      0   100%
+src\payload\scripts\github_api\families\checks.py                               7      0   100%
+src\payload\scripts\github_api\families\classroom.py                            7      0   100%
+src\payload\scripts\github_api\families\code_quality.py                         7      0   100%
+src\payload\scripts\github_api\families\code_scanning.py                        7      0   100%
+src\payload\scripts\github_api\families\code_security.py                        9      0   100%
+src\payload\scripts\github_api\families\codes_of_conduct.py                     7      0   100%
+src\payload\scripts\github_api\families\codespaces.py                           7      0   100%
+src\payload\scripts\github_api\families\copilot.py                              7      0   100%
+src\payload\scripts\github_api\families\copilot_spaces.py                       7      0   100%
+src\payload\scripts\github_api\families\credentials.py                          7      0   100%
+src\payload\scripts\github_api\families\dependabot.py                           7      0   100%
+src\payload\scripts\github_api\families\dependency_graph.py                     7      0   100%
+src\payload\scripts\github_api\families\emojis.py                               7      0   100%
+src\payload\scripts\github_api\families\gists.py                                7      0   100%
+src\payload\scripts\github_api\families\git.py                                  7      0   100%
+src\payload\scripts\github_api\families\gitignore.py                            7      0   100%
+src\payload\scripts\github_api\families\hosted_compute.py                       7      0   100%
+src\payload\scripts\github_api\families\interactions.py                         7      0   100%
+src\payload\scripts\github_api\families\issues.py                               7      0   100%
+src\payload\scripts\github_api\families\licenses.py                             7      0   100%
+src\payload\scripts\github_api\families\markdown.py                             7      0   100%
+src\payload\scripts\github_api\families\meta.py                                 7      0   100%
+src\payload\scripts\github_api\families\migrations.py                           7      0   100%
+src\payload\scripts\github_api\families\oidc.py                                 7      0   100%
+src\payload\scripts\github_api\families\orgs.py                                 7      0   100%
+src\payload\scripts\github_api\families\packages.py                             7      0   100%
+src\payload\scripts\github_api\families\private_registries.py                   8      0   100%
+src\payload\scripts\github_api\families\projects.py                             7      0   100%
+src\payload\scripts\github_api\families\pull_request_stacks.py                  7      0   100%
+src\payload\scripts\github_api\families\pulls.py                                7      0   100%
+src\payload\scripts\github_api\families\rate_limit.py                           7      0   100%
+src\payload\scripts\github_api\families\reactions.py                            7      0   100%
+src\payload\scripts\github_api\families\repos.py                                7      0   100%
+src\payload\scripts\github_api\families\search.py                               8      0   100%
+src\payload\scripts\github_api\families\secret_scanning.py                      7      0   100%
+src\payload\scripts\github_api\families\security_advisories.py                  7      0   100%
+src\payload\scripts\github_api\families\teams.py                                7      0   100%
+src\payload\scripts\github_api\families\users.py                                7      0   100%
+src\payload\scripts\github_api\graphql_only.py                                 20     20     0%   27-268
+src\payload\scripts\github_api\registry.py                                    126     36    71%   125, 127, 135-145, 152-155, 165, 181, 196, 202, 212, 215, 237, 252, 274-275, 288-291, 305-317
+src\payload\scripts\github_api\transport.py                                   308    136    56%   133-138, 163-167, 178, 180, 183-186, 197-198, 223-245, 256, 262, 279-282, 287, 292, 299-315, 321-325, 334-337, 342-351, 356-371, 376, 381-394, 429, 449-456, 472-473, 483-486, 497-505, 510-519, 524-531, 536-547, 582, 590-611
+src\payload\scripts\github_wrapper.py                                         164     32    80%   175-189, 203-204, 214, 222, 231-235, 246, 250, 254-255, 334, 336, 357-361, 384, 389-390
+src\payload\scripts\gitlab_api\__init__.py                                      0      0   100%
+src\payload\scripts\gitlab_api\commands\__init__.py                             0      0   100%
+src\payload\scripts\gitlab_api\commands\_common.py                             29     29     0%   26-87
+src\payload\scripts\gitlab_api\commands\branch.py                              18     18     0%   13-49
+src\payload\scripts\gitlab_api\commands\call.py                               277    277     0%   133-782
+src\payload\scripts\gitlab_api\commands\issue.py                              205    205     0%   25-394
+src\payload\scripts\gitlab_api\commands\label.py                               23     23     0%   14-68
+src\payload\scripts\gitlab_api\commands\mr.py                                  43     43     0%   23-117
+src\payload\scripts\gitlab_api\commands\pipeline.py                           128    128     0%   31-292
+src\payload\scripts\gitlab_api\container_registry.py                           39     39     0%   30-131
+src\payload\scripts\gitlab_api\errors.py                                       10     10     0%   9-31
+src\payload\scripts\gitlab_api\families\__init__.py                             0      0   100%
+src\payload\scripts\gitlab_api\families\agent_foundations.py                    8      8     0%   21-89
+src\payload\scripts\gitlab_api\families\ai_clients.py                           6      6     0%   14-41
+src\payload\scripts\gitlab_api\families\ai_coding.py                            7      7     0%   23-808
+src\payload\scripts\gitlab_api\families\analytics.py                            6      6     0%   21-315
+src\payload\scripts\gitlab_api\families\create.py                              18     18     0%   41-1681
+src\payload\scripts\gitlab_api\families\data_access.py                          6      6     0%   17-74
+src\payload\scripts\gitlab_api\families\deploy.py                               7      7     0%   18-49
+src\payload\scripts\gitlab_api\families\developer_experience.py                 6      6     0%   30-209
+src\payload\scripts\gitlab_api\families\facilitated_functionality.py            6      6     0%   18-78
+src\payload\scripts\gitlab_api\families\fulfillment.py                          6      6     0%   21-146
+src\payload\scripts\gitlab_api\families\gitlab_dedicated.py                    10     10     0%   39-1059
+src\payload\scripts\gitlab_api\families\gitlab_delivery.py                      6      6     0%   18-93
+src\payload\scripts\gitlab_api\families\growth.py                               6      6     0%   19-140
+src\payload\scripts\gitlab_api\families\no_stage_assigned.py                    6      6     0%   16-2899
+src\payload\scripts\gitlab_api\families\openapi_only.py                         7      7     0%   39-2557
+src\payload\scripts\gitlab_api\families\orbit.py                                6      6     0%   21-105
+src\payload\scripts\gitlab_api\families\package.py                             13     13     0%   60-1915
+src\payload\scripts\gitlab_api\families\plan.py                                 8      8     0%   36-2314
+src\payload\scripts\gitlab_api\families\runtime.py                              6      6     0%   18-268
+src\payload\scripts\gitlab_api\families\security_factory.py                     6      6     0%   16-67
+src\payload\scripts\gitlab_api\families\security_governance.py                  6      6     0%   12-33
+src\payload\scripts\gitlab_api\families\security_platform.py                    6      6     0%   14-170
+src\payload\scripts\gitlab_api\families\security_risk_management.py             6      6     0%   19-409
+src\payload\scripts\gitlab_api\families\software_supply_chain_security.py       6      6     0%   33-1632
+src\payload\scripts\gitlab_api\families\tenant_scale.py                         6      6     0%   30-1793
+src\payload\scripts\gitlab_api\families\verify.py                               7      7     0%   34-2198
+src\payload\scripts\gitlab_api\graphql_only.py                                 33     33     0%   42-285
+src\payload\scripts\gitlab_api\registry.py                                    398    398     0%   54-949
+src\payload\scripts\gitlab_api\transport.py                                   425    425     0%   38-914
+src\payload\scripts\gitlab_wrapper.py                                         120    120     0%   122-387
+src\payload\scripts\memory_compile.py                                         705    705     0%   70-1153
+src\payload\scripts\merge_steward.py                                         1482   1482     0%   83-2355
+src\payload\scripts\reap_agent_temp.py                                        710    710     0%   130-1205
+src\payload\scripts\run_checks.py                                             226    226     0%   57-584
+src\payload\scripts\run_tests.py                                               82     82     0%   55-251
+src\payload\scripts\suite_semaphore.py                                        234    234     0%   44-398
+test\forge\conftest.py                                                         34     34     0%   20-83
+test\forge\ephemeral.py                                                       422     49    88%   250-251, 253, 319-320, 353, 361-362, 386-387, 426, 429-431, 444, 447, 453-455, 551, 567, 630-631, 662, 731, 756, 768-769, 793, 815-825, 837, 841-846, 876-877
+test\forge\forge_ci_security.py                                                41     41     0%   29-113
+test\forge\forge_collaboration.py                                              71     71     0%   30-149
+test\forge\forge_fixture.py                                                    77     77     0%   26-164
+test\forge\forge_repos_git.py                                                  53     53     0%   17-116
+test\forge\forge_subcommands.py                                               142    142     0%   22-258
+test\forge\write_credential.py                                                 41     13    68%   39-49, 70-71
+---------------------------------------------------------------------------------------------------------
+TOTAL                                                                        8237   6508    21%
+============================= 35 passed in 20.72s =============================
+exit=0

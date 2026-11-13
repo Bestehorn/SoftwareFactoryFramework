@@ -1,0 +1,23 @@
+# tasks: 4.1 4.2 4.3 4.4 4.5 4.6 4.7 4.8 4.9 4.10
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py test/test_forge_suite_layout.py test/test_instruction_corpus_budget.py src/payload/test/test_github_wrapper_marker.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_toolchain_integrity.py test/test_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [745 items]
+
+........................................................................ [  9%]
+........................................................................ [ 19%]
+........................................................................ [ 28%]
+........................................................................ [ 38%]
+........................................................................ [ 48%]
+........................................................................ [ 57%]
+........................................................................ [ 67%]
+........................................................................ [ 77%]
+........................................................................ [ 86%]
+........................................................................ [ 96%]
+.........................                                                [100%]
+======================= 745 passed in 146.87s (0:02:26) =======================
+exit=0

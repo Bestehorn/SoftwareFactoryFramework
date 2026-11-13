@@ -102,3 +102,17 @@ deleted from git; what changes is what a session loads.
 | 2026-11-11 | gitlab_api dedicated | archive imports and import-relation declared, call refuses each | issue-15 DL-002 | closes the imports of the issue-38 DL-005 row | enforced src/payload/test/test_gitlab_api_gitlab_dedicated.py |
 | 2026-11-11 | gitlab_api package | PUT projects/:id/ (container registry visibility) declared; call refuses it | issue-15 DL-002 | closes the issue-43 DL-006 row | enforced src/payload/test/test_gitlab_api_package.py |
 | 2026-11-11 | gitlab_api tenant-scale | tenant-scale#update-a-project keeps the branch-overwriting mirror rows and stays callable | issue-15 change.md Residuals | gating an existing record is outside issue-15's ask | open |
+| 2026-11-12 | forge provision | failed wrapper load before provision's try leaves an empty temp dir | test/forge/ephemeral.py provision; #10 task 4.5 | not observed; reaper clears it | open |
+| 2026-11-12 | forge S4 scope | merge steward and delivery CI not yet tested against a real forge (S4 names them) | #10 design.md Residuals | outside #10's ask | open |
+| 2026-11-12 | forge origin guard | the marker guard judges the repository name only, not the owner | #10 requirements.md Residuals | the token reaches only the test org | open |
+| 2026-11-12 | ci.yml report job | report uses if: always(); GitHub advises !cancelled() for a job that checks out | #10 review best-practice iteration-01 C1 | pre-existing, workflow-wide | open |
+| 2026-11-12 | ci.yml action pins | checkout@v4 and setup-python@v5 declare the deprecated Node 20 runtime | #10 review best-practice iteration-01 C2 | workflow-wide; runners still run them | open |
+| 2026-11-12 | forge CI secret | no protected deployment environment gates SFF_TEST_TOKEN | #10 review security iteration-01 | same-repo authors are trusted; outside the ask | open |
+| 2026-11-12 | github wrapper origin | without the marker an owner holding @ is still accepted | #10 review security iteration-01 | pre-existing; UB-3 keeps it | open |
+| 2026-11-12 | github wrapper 403 | a 403 refusal does not print X-Accepted-GitHub-Permissions | #10 review devops iteration-01 | enhancement; GitHub's message suffices | open |
+| 2026-11-12 | forge token expiry | an expired test token fails every forge job until secret and file are renewed | #10 review devops iteration-01 | operator duty; docs/forge-suite.md | open |
+| 2026-11-12 | forge local interrupt | an interrupted local run leaves its workspace with the clone's token copy in temp | #10 design.md Residuals | reap_agent_temp --scoped-temp --apply clears it | open |
+| 2026-11-12 | forge CI credential | write_test_credential writes the CI file with the default mode | #10 review security verify-01 C1 | hosted runners are single-use VMs | open |
+| 2026-11-12 | forge create answer | a create exiting 0 with an unreadable answer keeps created None; repo left for the sweep | #10 review spec-review verify-01 C1 | not observed | open |
+| 2026-11-12 | forge checks family | the checks family is named, not called: fine-grained tokens cannot call the Checks API | #10 design.md D6 | token-kind limit | open |
+| 2026-11-13 | forge local credential | the main checkout has no credentials/github-sff-testing-pat.txt; only local forge runs need it | #10 comment 6834467302 | operator machine setup; docs/forge-suite.md | open |

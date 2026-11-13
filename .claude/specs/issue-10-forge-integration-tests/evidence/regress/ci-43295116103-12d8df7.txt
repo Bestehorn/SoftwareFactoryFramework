@@ -1,0 +1,315 @@
+# CI run 43295116103 on 12d8df7cf47465aac26c5b3622ea293668b55716 (PR #68)  # pragma: allowlist secret
+{
+  "id": 43295116103,
+  "name": "ci",
+  "node_id": "WFR_kwLOQMptMM8AAAAKFJcLRw",
+  "head_branch": "issue-10-forge-integration-tests",
+  "head_sha": "12d8df7cf47465aac26c5b3622ea293668b55716",  # pragma: allowlist secret
+  "path": ".github/workflows/ci.yml",
+  "display_title": "Integration-test the forge wrapper against ephemeral sff-test-* repositories",
+  "run_number": 119,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "failure",
+  "workflow_id": 412142773,
+  "check_suite_id": 117243365220,
+  "check_suite_node_id": "CS_kwDOQMptMM8AAAAbTD_HZA",
+  "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/43295116103",
+  "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/43295116103",
+  "pull_requests": [
+    {
+      "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/pulls/68",
+      "id": 5284237497,
+      "number": 68,
+      "head": {
+        "ref": "issue-10-forge-integration-tests",
+        "sha": "12d8df7cf47465aac26c5b3622ea293668b55716",  # pragma: allowlist secret
+        "repo": {
+          "id": 1087008048,
+          "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+          "name": "SoftwareFactoryFramework"
+        }
+      },
+      "base": {
+        "ref": "main",
+        "sha": "590e4a9ffdbd1ed0c771979e2b2ddd1237184654",  # pragma: allowlist secret
+        "repo": {
+          "id": 1087008048,
+          "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+          "name": "SoftwareFactoryFramework"
+        }
+      }
+    }
+  ],
+  "created_at": "2026-11-12T19:55:34Z",
+  "updated_at": "2026-11-12T19:58:20Z",
+  "actor": {
+    "login": "Bestehorn",
+    "id": 35574067,
+    "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Bestehorn",
+    "html_url": "https://github.com/Bestehorn",
+    "followers_url": "https://api.github.com/users/Bestehorn/followers",
+    "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+    "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+    "repos_url": "https://api.github.com/users/Bestehorn/repos",
+    "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "run_attempt": 1,
+  "referenced_workflows": [],
+  "run_started_at": "2026-11-12T19:55:34Z",
+  "triggering_actor": {
+    "login": "Bestehorn",
+    "id": 35574067,
+    "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Bestehorn",
+    "html_url": "https://github.com/Bestehorn",
+    "followers_url": "https://api.github.com/users/Bestehorn/followers",
+    "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+    "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+    "repos_url": "https://api.github.com/users/Bestehorn/repos",
+    "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "jobs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/43295116103/jobs",
+  "logs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/43295116103/logs",
+  "check_suite_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/check-suites/117243365220",
+  "artifacts_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/43295116103/artifacts",
+  "cancel_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/43295116103/cancel",
+  "rerun_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/43295116103/rerun",
+  "previous_attempt_url": null,
+  "workflow_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/workflows/412142773",
+  "head_commit": {
+    "id": "12d8df7cf47465aac26c5b3622ea293668b55716",  # pragma: allowlist secret
+    "tree_id": "6762ed593e1ae85ba46daa1ad87beb58c9ded24b",  # pragma: allowlist secret
+    "message": "Add the forge suite's session fixture, configuration and real-forge tests\n\ntest/forge/pytest.ini collects only forge_*.py, so the default run never\ncollects the suite; conftest.py's session fixture provisions one\nephemeral repository per run; write_credential.py is the CI step that\nturns the SFF_TEST_TOKEN secret into the test credential file. The\nforge modules exercise the slices of #17, #27, #31 and #32 against\ngithub.com.\n\nRefs #10",
+    "timestamp": "2026-11-12T19:50:07Z",
+    "author": {
+      "name": "Markus Bestehorn",
+      "email": "markus.bestehorn@googlemail.com"
+    },
+    "committer": {
+      "name": "Markus Bestehorn",
+      "email": "markus.bestehorn@googlemail.com"
+    }
+  },
+  "repository": {
+    "id": 1087008048,
+    "node_id": "R_kgDOQMptMA",
+    "name": "SoftwareFactoryFramework",
+    "full_name": "Bestehorn/SoftwareFactoryFramework",
+    "private": false,
+    "owner": {
+      "login": "Bestehorn",
+      "id": 35574067,
+      "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Bestehorn",
+      "html_url": "https://github.com/Bestehorn",
+      "followers_url": "https://api.github.com/users/Bestehorn/followers",
+      "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+      "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+      "repos_url": "https://api.github.com/users/Bestehorn/repos",
+      "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework",
+    "description": "This project contains prompts that can be used to automate the setup of coding projects using coding assistants, e.g., by setting up versining mechanisms, directory sturctures and similar ",
+    "fork": false,
+    "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+    "forks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/forks",
+    "keys_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/teams",
+    "hooks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/hooks",
+    "issue_events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/events",
+    "assignees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/tags",
+    "blobs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/languages",
+    "stargazers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/stargazers",
+    "contributors_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contributors",
+    "subscribers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscribers",
+    "subscription_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscription",
+    "commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/merges",
+    "archive_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/downloads",
+    "issues_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/deployments"
+  },
+  "head_repository": {
+    "id": 1087008048,
+    "node_id": "R_kgDOQMptMA",
+    "name": "SoftwareFactoryFramework",
+    "full_name": "Bestehorn/SoftwareFactoryFramework",
+    "private": false,
+    "owner": {
+      "login": "Bestehorn",
+      "id": 35574067,
+      "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Bestehorn",
+      "html_url": "https://github.com/Bestehorn",
+      "followers_url": "https://api.github.com/users/Bestehorn/followers",
+      "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+      "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+      "repos_url": "https://api.github.com/users/Bestehorn/repos",
+      "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework",
+    "description": "This project contains prompts that can be used to automate the setup of coding projects using coding assistants, e.g., by setting up versining mechanisms, directory sturctures and similar ",
+    "fork": false,
+    "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+    "forks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/forks",
+    "keys_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/teams",
+    "hooks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/hooks",
+    "issue_events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/events",
+    "assignees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/tags",
+    "blobs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/languages",
+    "stargazers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/stargazers",
+    "contributors_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contributors",
+    "subscribers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscribers",
+    "subscription_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscription",
+    "commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/merges",
+    "archive_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/downloads",
+    "issues_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/deployments"
+  }
+}
+131451224639   completed    success      verify (types)
+131451225000   completed    success      verify (lint)
+131451225130   completed    success      verify (tests)
+131451225173   completed    failure      forge
+131451225385   completed    success      verify (security)
+131452719214   completed    failure      report
+# forge job 131451225173: test lines and summary
+2026-11-12T19:56:03.3014530Z INFO     forge_ephemeral:ephemeral.py:753 Created this run's repository bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e
+2026-11-12T19:56:04.7353587Z test/forge/forge_ci_security.py::test_code_scanning_answers_as_documented PASSED [ 16%]
+2026-11-12T19:56:05.1104291Z test/forge/forge_ci_security.py::test_secret_scanning_answers_as_documented FAILED [ 25%]
+2026-11-12T19:56:06.1134502Z test/forge/forge_collaboration.py::test_issue_and_reaction_records FAILED [ 41%]
+2026-11-12T19:56:06.5537474Z test/forge/forge_collaboration.py::test_pulls_search_activity_and_gists_records FAILED [ 50%]
+2026-11-12T19:56:07.0884460Z test/forge/forge_fixture.py::test_the_run_owns_a_private_seeded_repository PASSED [ 58%]
+2026-11-12T19:56:08.0186354Z test/forge/forge_repos_git.py::test_the_repository_record_names_the_seed_branch PASSED [ 75%]
+2026-11-12T19:56:09.0315048Z test/forge/forge_repos_git.py::test_the_git_records_read_the_seed_commit PASSED [ 83%]
+2026-11-12T19:56:12.4728022Z INFO     forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e
+2026-11-12T19:56:12.4770392Z E     ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/actions/runs" failed: HTTP 403
+2026-11-12T19:56:12.4771469Z E       "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:12.4775132Z E    +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/actions/runs" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:12.4778069Z INFO     forge_ephemeral:ephemeral.py:753 Created this run's repository bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e
+2026-11-12T19:56:12.4783435Z E     ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403
+2026-11-12T19:56:12.4784486Z E       "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:12.4788353Z E    +  where None = <built-in method search of re.Pattern object at 0x738cdd423a00>(string='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository",\n  "status": "403"\n}\n')
+2026-11-12T19:56:12.4794202Z E    +    and   'ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository",\n  "status": "403"\n}\n' = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository",\n  "status": "403"\n}\n').stderr
+2026-11-12T19:56:12.4801697Z E     ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/dependabot/secrets" failed: HTTP 403
+2026-11-12T19:56:12.4802720Z E       "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:12.4805860Z E    +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/dependabot/secrets" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/dependabot/secrets#list-repository-secrets",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:12.4810928Z E   AssertionError: `create-issue --title forge-collaboration-af23fc54ab21446995e6f41b88c071f8` exited 1, not 0: ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/issues" failed: HTTP 403
+2026-11-12T19:56:12.4812464Z E       "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:12.4815550Z E    +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/issues" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/issues/issues#create-an-issue",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:12.4820696Z E   AssertionError: `call pulls/list --query state=all --query head=bestehorn-sff-test:forge-absent-ec1fd04c7bbb41309fbb5c569c7642f4` exited 1, not 0: ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls?state=all&head=bestehorn-sff-test%3Aforge-absent-ec1fd04c7bbb41309fbb5c569c7642f4" failed: HTTP 403
+2026-11-12T19:56:12.4822468Z E       "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.0967764Z E    +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls?state=all&head=bestehorn-sff-test%3Aforge-absent-ec1fd04c7bbb41309fbb5c569c7642f4" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/pulls/pulls#list-pull-requests",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.0974529Z E   AssertionError: `call issues/create-label -f name=forge-label` exited 1, not 0: ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/labels" failed: HTTP 403
+2026-11-12T19:56:13.0975780Z E       "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.0979178Z E    +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/labels" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/issues/labels#create-a-label",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.0984748Z E   AssertionError: `create-pr --head forge-pull-request --base main --title Forge pull-request round trip of run 20261112195559-06227cf0016943b8ab16f2851954e58e --body The pull-request body of the forge run 20261112195559-06227cf0016943b8ab16f2851954e58e.` exited 1, not 0: ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls" failed: HTTP 403
+2026-11-12T19:56:13.0986880Z E       "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.0989725Z E    +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/pulls/pulls#create-a-pull-request",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.0992111Z INFO     forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e
+2026-11-12T19:56:13.0993536Z FAILED test/forge/forge_ci_security.py::test_no_workflow_has_run - AssertionError: actions/list-workflow-runs-for-repo: the product wrapper exited 1
+2026-11-12T19:56:13.0995188Z   ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/actions/runs" failed: HTTP 403
+2026-11-12T19:56:13.0996150Z     "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.0999607Z  +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/actions/runs" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.1001958Z FAILED test/forge/forge_ci_security.py::test_secret_scanning_answers_as_documented - AssertionError: secret-scanning/list-alerts-for-repo answered no `\bHTTP 404\b`: the product wrapper exited 1
+2026-11-12T19:56:13.1003880Z   ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403
+2026-11-12T19:56:13.1004886Z     "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.1008687Z  +  where None = <built-in method search of re.Pattern object at 0x738cdd423a00>(string='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository",\n  "status": "403"\n}\n')
+2026-11-12T19:56:13.1014124Z  +    and   'ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository",\n  "status": "403"\n}\n' = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/secret-scanning/alerts" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/secret-scanning/secret-scanning#list-secret-scanning-alerts-for-a-repository",\n  "status": "403"\n}\n').stderr
+2026-11-12T19:56:13.1017831Z FAILED test/forge/forge_ci_security.py::test_dependabot_lists_no_secret - AssertionError: dependabot/list-repo-secrets: the product wrapper exited 1
+2026-11-12T19:56:13.1019494Z   ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/dependabot/secrets" failed: HTTP 403
+2026-11-12T19:56:13.1020476Z     "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.1023599Z  +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/dependabot/secrets" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/dependabot/secrets#list-repository-secrets",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.1109845Z FAILED test/forge/forge_collaboration.py::test_issue_and_reaction_records - AssertionError: `create-issue --title forge-collaboration-af23fc54ab21446995e6f41b88c071f8` exited 1, not 0: ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/issues" failed: HTTP 403
+2026-11-12T19:56:13.1113039Z     "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.1116973Z  +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/issues" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/issues/issues#create-an-issue",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.1120483Z FAILED test/forge/forge_collaboration.py::test_pulls_search_activity_and_gists_records - AssertionError: `call pulls/list --query state=all --query head=bestehorn-sff-test:forge-absent-ec1fd04c7bbb41309fbb5c569c7642f4` exited 1, not 0: ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls?state=all&head=bestehorn-sff-test%3Aforge-absent-ec1fd04c7bbb41309fbb5c569c7642f4" failed: HTTP 403
+2026-11-12T19:56:13.1122489Z     "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.1125702Z  +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API GET "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls?state=all&head=bestehorn-sff-test%3Aforge-absent-ec1fd04c7bbb41309fbb5c569c7642f4" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/pulls/pulls#list-pull-requests",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.1128548Z FAILED test/forge/forge_subcommands.py::test_an_issue_round_trip - AssertionError: `call issues/create-label -f name=forge-label` exited 1, not 0: ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/labels" failed: HTTP 403
+2026-11-12T19:56:13.1129997Z     "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.1132704Z  +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/labels" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/issues/labels#create-a-label",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.1135726Z FAILED test/forge/forge_subcommands.py::test_a_pull_request_round_trip - AssertionError: `create-pr --head forge-pull-request --base main --title Forge pull-request round trip of run 20261112195559-06227cf0016943b8ab16f2851954e58e --body The pull-request body of the forge run 20261112195559-06227cf0016943b8ab16f2851954e58e.` exited 1, not 0: ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls" failed: HTTP 403
+2026-11-12T19:56:13.1139628Z     "message": "Resource not accessible by personal access token",
+2026-11-12T19:56:13.1144741Z  +  where 1 = Invocation(returncode=1, stdout='', stderr='ERROR: GitHub API POST "https://api.github.com/repos/bestehorn-sff-test/sff-test-20261112195559-06227cf0016943b8ab16f2851954e58e/pulls" failed: HTTP 403\nERROR: Details: {\n  "message": "Resource not accessible by personal access token",\n  "documentation_url": "https://docs.github.com/rest/pulls/pulls#create-a-pull-request",\n  "status": "403"\n}\n').returncode
+2026-11-12T19:56:13.1147139Z ========================= 7 failed, 5 passed in 13.73s =========================

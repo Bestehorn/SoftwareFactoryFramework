@@ -1,0 +1,18 @@
+# Whole-suite verdict, issue #10, PR #68 (verifier capture)
+# Source: evidence/regress/ci-43295116103-12d8df7.txt (the wrapper's get-run JSON and job list for run 43295116103).
+# Not re-fetched: the dispatching orchestrator barred all network access for this verification.
+# Local tree: `git rev-parse HEAD` in .claude/worktrees/issue-10 printed
+12d8df7cf47465aac26c5b3622ea293668b55716
+# Capture: "head_sha": "12d8df7cf47465aac26c5b3622ea293668b55716", "event": "pull_request", "status": "completed",  # pragma: allowlist secret
+# "conclusion": "failure"   -> SHA matches the tree.
+# Jobs (quoted from the capture):
+131451224639   completed    success      verify (types)
+131451225000   completed    success      verify (lint)
+131451225130   completed    success      verify (tests)
+131451225173   completed    failure      forge
+131451225385   completed    success      verify (security)
+131452719214   completed    failure      report
+# forge job summary (quoted): ========================= 7 failed, 5 passed in 13.73s =========================
+# Every forge failure quotes HTTP 403 "Resource not accessible by personal access token" (DL-006); F.1 is
+# out of this verification's scope by the orchestrator's instruction.
+# Verdict for the full suite (verify leg `tests`, the default collection) on 12d8df7: success.

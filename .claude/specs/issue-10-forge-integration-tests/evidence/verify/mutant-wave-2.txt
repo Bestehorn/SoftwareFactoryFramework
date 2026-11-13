@@ -1,0 +1,406 @@
+
+######## MUTANT 2a (wave 2): teardown guard checks only the owner (accepts another name)
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..47da69c 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -515,7 +515,7 @@ def delete_ephemeral(*, wrapper: WrapperRunner, created: Optional[CreatedReposit
+         return
+     own = ephemeral_name(run_id=run_id)
+     target = created.owner + FULL_NAME_SEPARATOR + created.name
+-    if (created.owner, created.name) != (TEST_ORGANIZATION, own):
++    if created.owner != TEST_ORGANIZATION:
+         raise ForgeTeardownRefusedError(
+             message=(
+                 f"The teardown refuses to delete {target}: this run's repository is "
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+......FF..............                                                   [100%]
+================================== FAILURES ===================================
+____ test_the_teardown_refuses_any_other_target[a-name-without-the-prefix] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:767: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge\ephemeral.py:525: in delete_ephemeral
+    invocation = wrapper.run(arguments=_deletion_arguments(owner=created.owner, name=created.name))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:557: in run
+    answer = script(arguments=argv)
+             ^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:574: in _refuse_every_invocation
+    raise AssertionError(f"the product wrapper was invoked where nothing may be sent: {arguments}")
+E   AssertionError: the product wrapper was invoked where nothing may be sent: ['call', 'repos/delete', '--path', 'owner=bestehorn-sff-test', '--path', 'repo=20261112201235-76fcaf603b2a4fda9e35f522f7893b57']
+_________ test_the_teardown_refuses_any_other_target[another-runs-id] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:767: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge\ephemeral.py:525: in delete_ephemeral
+    invocation = wrapper.run(arguments=_deletion_arguments(owner=created.owner, name=created.name))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:557: in run
+    answer = script(arguments=argv)
+             ^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:574: in _refuse_every_invocation
+    raise AssertionError(f"the product wrapper was invoked where nothing may be sent: {arguments}")
+E   AssertionError: the product wrapper was invoked where nothing may be sent: ['call', 'repos/delete', '--path', 'owner=bestehorn-sff-test', '--path', 'repo=sff-test-20261112201235-c8e1d154311247749f4023222fd59265']
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_teardown_refuses_any_other_target[a-name-without-the-prefix]
+FAILED test/test_forge_support.py::test_the_teardown_refuses_any_other_target[another-runs-id]
+======================== 2 failed, 20 passed in 11.76s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 2b (wave 2): sweep age test > becomes >=
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..bb6f51e 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -534,7 +534,7 @@ def is_leftover(*, record: RepositoryRecord, now: datetime) -> bool:
+     return (
+         record.owner == TEST_ORGANIZATION
+         and record.name.startswith(_ephemeral_prefix())
+-        and now - record.created_at > LEFTOVER_AGE
++        and now - record.created_at >= LEFTOVER_AGE
+     )
+ 
+ 
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.........F............                                                   [100%]
+================================== FAILURES ===================================
+___________________ test_the_sweep_boundaries_and_refusals ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:823: in test_the_sweep_boundaries_and_refusals
+    assert not forge.is_leftover(record=forge.RepositoryRecord.of(item=a_day_old), now=SWEEP_NOW), (
+E   AssertionError: a repository exactly a day old is a leftover
+E   assert not True
+E    +  where True = <function is_leftover at 0x0000023D3989C930>(record=RepositoryRecord(owner='bestehorn-sff-test', name='sff-test-a-day-old', created_at=datetime.datetime(2026, 11, 11, 12, 0, tzinfo=datetime.timezone.utc)), now=datetime.datetime(2026, 11, 12, 12, 0, tzinfo=datetime.timezone.utc))
+E    +    where <function is_leftover at 0x0000023D3989C930> = <module 'forge_ephemeral' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\test\\forge\\ephemeral.py'>.is_leftover
+E    +    and   RepositoryRecord(owner='bestehorn-sff-test', name='sff-test-a-day-old', created_at=datetime.datetime(2026, 11, 11, 12, 0, tzinfo=datetime.timezone.utc)) = of(item={'name': 'sff-test-a-day-old', 'full_name': 'bestehorn-sff-test/sff-test-a-day-old', 'owner': {'login': 'bestehorn-sff-test'}, 'private': True, ...})
+E    +      where of = <class 'forge_ephemeral.RepositoryRecord'>.of
+E    +        where <class 'forge_ephemeral.RepositoryRecord'> = <module 'forge_ephemeral' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\test\\forge\\ephemeral.py'>.RepositoryRecord
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_sweep_boundaries_and_refusals - A...
+======================== 1 failed, 21 passed in 11.66s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 2c (wave 2): sweep owner check dropped
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..4606a8f 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -532,7 +532,7 @@ def is_leftover(*, record: RepositoryRecord, now: datetime) -> bool:
+     """D9: whether ``record`` is the test organization's, its name starts with ``EPHEMERAL_REPOSITORY_PREFIX``, and
+     it was created more than ``LEFTOVER_AGE`` before ``now`` (aware UTC); a day old or less is kept."""
+     return (
+-        record.owner == TEST_ORGANIZATION
++        True
+         and record.name.startswith(_ephemeral_prefix())
+         and now - record.created_at > LEFTOVER_AGE
+     )
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+..............FF......                                                   [100%]
+================================== FAILURES ===================================
+________ test_the_sweep_deletes_exactly_the_old_ephemeral_repositories ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:777: in test_the_sweep_deletes_exactly_the_old_ephemeral_repositories
+    @given(listing=LISTINGS, now=SWEEP_MOMENTS)
+                   ^^^
+test\test_forge_support.py:797: in test_the_sweep_deletes_exactly_the_old_ephemeral_repositories
+    assert sorted(runner.recorded[1:]) == expected, (
+E   AssertionError: the sweep at 2024-01-01T00:00:00Z deleted [['call', 'repos/delete', '--path', 'owner=Bestehorn', '--path', 'repo=sff-test-0']], not []
+E   assert [['call', 're...=sff-test-0']] == []
+E     
+E     Left contains one more item: [0m[[33m'[39;49;00m[33mcall[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mrepos/delete[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m--path[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mowner=Bestehorn[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m--path[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mrepo=sff-test-0[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     Use -v to get more diff
+E   Failing test case: test_the_sweep_deletes_exactly_the_old_ephemeral_repositories(
+E       # The test always failed when commented parts were varied together.
+E       listing=[_listed_repository(
+E            in_organization=False,
+E            prefixed=True,
+E            old=True,
+E            other_owner='Bestehorn',  # or any other generated value
+E            suffix='0',  # or any other generated value
+E            unprefixed_name='0',  # or any other generated value
+E            young_age=0,  # or any other generated value
+E            old_age=86401,  # or any other generated value
+E        )],
+E       now=datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),  # or any other generated value
+E   )
+E   Explanation:
+E       These lines were always and only run by failing test cases:
+E           D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\test\test_forge_support.py:798
+E           D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10\test\test_forge_support.py:799
+___________________ test_the_sweep_boundaries_and_refusals ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:854: in test_the_sweep_boundaries_and_refusals
+    forge.delete_leftover(wrapper=runner, record=forge.RepositoryRecord.of(item=no_leftover), now=SWEEP_NOW)
+test\forge\ephemeral.py:587: in delete_leftover
+    invocation = wrapper.run(arguments=_deletion_arguments(owner=record.owner, name=record.name))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:557: in run
+    answer = script(arguments=argv)
+             ^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:574: in _refuse_every_invocation
+    raise AssertionError(f"the product wrapper was invoked where nothing may be sent: {arguments}")
+E   AssertionError: the product wrapper was invoked where nothing may be sent: ['call', 'repos/delete', '--path', 'owner=Bestehorn', '--path', 'repo=sff-test-another-owner']
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_sweep_deletes_exactly_the_old_ephemeral_repositories
+FAILED test/test_forge_support.py::test_the_sweep_boundaries_and_refusals - A...
+======================== 2 failed, 20 passed in 14.83s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 2d (wave 2): delete_leftover no longer refuses a non-leftover
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..a941832 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -576,7 +576,7 @@ def delete_leftover(*, wrapper: WrapperRunner, record: RepositoryRecord, now: da
+     exit 1 with ``HTTP 404`` on standard error counts as deleted (a concurrent run's sweep deleted it first); any other
+     failure raises ``ForgeCommandError``.
+     """
+-    if not is_leftover(record=record, now=now):
++    if False:
+         raise ForgeSweepRefusedError(
+             message=(
+                 f"The sweep refuses to delete {record.full_name}: it is no {TEST_ORGANIZATION} repository named "
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.........F............                                                   [100%]
+================================== FAILURES ===================================
+___________________ test_the_sweep_boundaries_and_refusals ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:854: in test_the_sweep_boundaries_and_refusals
+    forge.delete_leftover(wrapper=runner, record=forge.RepositoryRecord.of(item=no_leftover), now=SWEEP_NOW)
+test\forge\ephemeral.py:587: in delete_leftover
+    invocation = wrapper.run(arguments=_deletion_arguments(owner=record.owner, name=record.name))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:557: in run
+    answer = script(arguments=argv)
+             ^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:574: in _refuse_every_invocation
+    raise AssertionError(f"the product wrapper was invoked where nothing may be sent: {arguments}")
+E   AssertionError: the product wrapper was invoked where nothing may be sent: ['call', 'repos/delete', '--path', 'owner=bestehorn-sff-test', '--path', 'repo=sff-test-a-day-old']
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_sweep_boundaries_and_refusals - A...
+======================== 1 failed, 21 passed in 11.81s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 2e (wave 2): delete_leftover takes any exit 1 as already deleted
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..740489e 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -588,7 +588,7 @@ def delete_leftover(*, wrapper: WrapperRunner, record: RepositoryRecord, now: da
+     if invocation.returncode == WRAPPER_EXIT_OK:
+         logger.info("Deleted the leftover repository %s, created %s", record.full_name, record.created_at.isoformat())
+         return
+-    if invocation.returncode == WRAPPER_API_FAILURE and NOT_FOUND_ANSWER.search(string=invocation.stderr):
++    if invocation.returncode == WRAPPER_API_FAILURE:
+         logger.info("The leftover repository %s was already deleted", record.full_name)
+         return
+     raise _failure(action=f"Deleting the leftover repository {record.full_name}", invocation=invocation)
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.........F............                                                   [100%]
+================================== FAILURES ===================================
+___________________ test_the_sweep_boundaries_and_refusals ____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:841: in test_the_sweep_boundaries_and_refusals
+    with pytest.raises(expected_exception=forge.ForgeCommandError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ForgeCommandError
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_sweep_boundaries_and_refusals - F...
+======================== 1 failed, 21 passed in 11.39s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 2f (wave 2): SubprocessWrapperRunner drops -X sff_test_marker
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..c809ae8 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -406,7 +406,7 @@ class SubprocessWrapperRunner(WrapperRunner):
+ 
+     def run(self, *, arguments: Sequence[str]) -> Invocation:
+         marker = str(product_wrapper().TEST_MARKER_OPTION)
+-        argv = [sys.executable, INTERPRETER_OPTION, marker, str(PRODUCT_WRAPPER), *arguments]
++        argv = [sys.executable, str(PRODUCT_WRAPPER), *arguments]
+         return _invoke(argv=argv, directory=self.directory)
+ 
+ 
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+...F..................                                                   [100%]
+================================== FAILURES ===================================
+______________ test_every_wrapper_invocation_carries_the_marker _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:716: in test_every_wrapper_invocation_carries_the_marker
+    assert argv[:MARKER_ARGV_LENGTH] == [sys.executable, INTERPRETER_OPTION, marker, str(forge.PRODUCT_WRAPPER)], (
+E   AssertionError: the invocation does not start with the interpreter, -X sff_test_marker and the product wrapper: ['D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\\python.exe', 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-10\\src\\payload\\scripts\\github_wrapper.py', 'call', 'repos/get']
+E   assert ['D:\\Code Wo..., 'repos/get'] == ['D:\\Code Wo...b_wrapper.py']
+E     
+E     At index 1 diff: [0m[33m'[39;49;00m[33mD:[39;49;00m[33m\\[39;49;00m[33mCode Workspace[39;49;00m[33m\\[39;49;00m[33mCodingProjectSetupPrompt[39;49;00m[33m\\[39;49;00m[33m.claude[39;49;00m[33m\\[39;49;00m[33mworktrees[39;49;00m[33m\\[39;49;00m[33missue-10[39;49;00m[33m\\[39;49;00m[33msrc[39;49;00m[33m\\[39;49;00m[33mpayload[39;49;00m[33m\\[39;49;00m[33mscripts[39;49;00m[33m\\[39;49;00m[33mgithub_wrapper.py[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33m-X[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_every_wrapper_invocation_carries_the_marker
+======================== 1 failed, 21 passed in 11.70s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 2g (wave 2): run id without its random part
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..944c414 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -471,7 +471,7 @@ def _ephemeral_prefix() -> str:
+ def new_run_id() -> str:
+     """D4: the UTC time as ``%Y%m%d%H%M%S``, ``-``, then a fresh ``uuid4`` hex; digits, lowercase hex and ``-`` only, so
+     the product wrapper's ``GITHUB_REPOSITORY_PATTERN`` reads the repository name it gives back whole."""
+-    return datetime.now(tz=timezone.utc).strftime(RUN_ID_TIME_FORMAT) + RUN_ID_SEPARATOR + uuid.uuid4().hex
++    return datetime.now(tz=timezone.utc).strftime(RUN_ID_TIME_FORMAT) + RUN_ID_SEPARATOR + '0' * 32
+ 
+ 
+ def ephemeral_name(*, run_id: str) -> str:
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+..F...................                                                   [100%]
+================================== FAILURES ===================================
+_______________ test_a_run_id_is_unique_and_names_a_repository ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:666: in test_a_run_id_is_unique_and_names_a_repository
+    assert len(set(run_ids)) == len(run_ids), f"repeated calls gave an id twice: {sorted(run_ids)}"
+E   AssertionError: repeated calls gave an id twice: ['20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000']
+E   assert 1 == 64
+E    +  where 1 = len({'20261112201356-00000000000000000000000000000000'})
+E    +    where {'20261112201356-00000000000000000000000000000000'} = set(['20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356...0000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', ...])
+E    +  and   64 = len(['20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', '20261112201356...0000000000', '20261112201356-00000000000000000000000000000000', '20261112201356-00000000000000000000000000000000', ...])
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_run_id_is_unique_and_names_a_repository
+======================== 1 failed, 21 passed in 11.35s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 2h (wave 2): PRODUCT_WRAPPER named outside SubprocessWrapperRunner and product_wrapper
+file: test/forge/ephemeral.py; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..e3c7a6d 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -525,7 +525,7 @@ def delete_ephemeral(*, wrapper: WrapperRunner, created: Optional[CreatedReposit
+     invocation = wrapper.run(arguments=_deletion_arguments(owner=created.owner, name=created.name))
+     if invocation.returncode != WRAPPER_EXIT_OK:
+         raise _failure(action=f"Deleting this run's repository {target}", invocation=invocation)
+-    logger.info("Deleted this run's repository %s", target)
++    logger.info("Deleted this run's repository %s with %s", target, PRODUCT_WRAPPER)
+ 
+ 
+ def is_leftover(*, record: RepositoryRecord, now: datetime) -> bool:
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+..........F                                                              [100%]
+================================== FAILURES ===================================
+__________ test_the_forge_tests_reach_only_the_ephemeral_repository ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1207: in test_the_forge_tests_reach_only_the_ephemeral_repository
+    assert not problems, "the forge suite reaches past its ephemeral repository:\n" + "\n".join(problems)
+E   AssertionError: the forge suite reaches past its ephemeral repository:
+E     test/forge/ephemeral.py:528: names `PRODUCT_WRAPPER` in delete_ephemeral, not in SubprocessWrapperRunner or product_wrapper
+E   assert not ['test/forge/ephemeral.py:528: names `PRODUCT_WRAPPER` in delete_ephemeral, not in SubprocessWrapperRunner or product_wrapper']
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_forge_tests_reach_only_the_ephemeral_repository
+======================== 1 failed, 10 passed in 5.00s =========================
+exit=1
+restored byte-identical: True

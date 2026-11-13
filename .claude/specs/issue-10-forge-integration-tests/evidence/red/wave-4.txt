@@ -1,0 +1,66 @@
+# tasks: 4.1 4.2 4.3 4.7 4.8 4.9 4.10
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py test/test_forge_suite_layout.py test/test_instruction_corpus_budget.py src/payload/test/test_github_wrapper_marker.py src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_toolchain_integrity.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [689 items]
+
+...............................F........................................ [ 10%]
+........................................................................ [ 20%]
+........................................................................ [ 31%]
+..................................FF.F.................................. [ 41%]
+........................................................................ [ 52%]
+........................................................................ [ 62%]
+........................................................................ [ 73%]
+........................................................................ [ 83%]
+........................................................................ [ 94%]
+.........................................                                [100%]
+================================== FAILURES ===================================
+_______________ test_a_missing_secret_fails_the_credential_step _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:395: in test_a_missing_secret_fails_the_credential_step
+    step=_credential_step(), checkout=tmp_path / "ci step checkout", monkeypatch=monkeypatch, caplog=caplog
+         ^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:223: in _credential_step
+    return _load_by_path(path=WRITE_CREDENTIAL_PATH, name=WRITE_CREDENTIAL_MODULE, description="the CI step's command")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:203: in _load_by_path
+    assert path.is_file(), f"{description} {path.relative_to(ROOT).as_posix()} does not exist"
+E   AssertionError: the CI step's command test/forge/write_credential.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-10/test/forge/write_credential.py').is_file
+________________ test_the_session_fixture_wraps_one_provision _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1246: in test_the_session_fixture_wraps_one_provision
+    assert CONFTEST.is_file(), f"{CONFTEST_NAME}, which defines the session fixture `{SESSION_FIXTURE}`, does not exist"
+E   AssertionError: test/forge/conftest.py, which defines the session fixture `ephemeral_repository`, does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-10/test/forge/conftest.py').is_file
+________________ test_the_forge_path_collects_every_forge_test ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1255: in test_the_forge_path_collects_every_forge_test
+    assert FORGE_CONFIGURATION.is_file(), f"{FORGE_CONFIGURATION_NAME}, the forge suite's configfile, does not exist"
+E   AssertionError: test/forge/pytest.ini, the forge suite's configfile, does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-10/test/forge/pytest.ini').is_file
+________________ test_nothing_keeps_a_forge_test_from_running _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1282: in test_nothing_keeps_a_forge_test_from_running
+    assert not problems, "something keeps a forge test from running:\n" + "\n".join(problems)
+E   AssertionError: something keeps a forge test from running:
+E     test/forge/pytest.ini does not exist
+E     test/forge/conftest.py does not exist
+E   assert not ['test/forge/pytest.ini does not exist', 'test/forge/conftest.py does not exist']
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_missing_secret_fails_the_credential_step
+FAILED test/test_forge_suite_layout.py::test_the_session_fixture_wraps_one_provision
+FAILED test/test_forge_suite_layout.py::test_the_forge_path_collects_every_forge_test
+FAILED test/test_forge_suite_layout.py::test_nothing_keeps_a_forge_test_from_running
+================== 4 failed, 685 passed in 151.75s (0:02:31) ==================
+exit=1

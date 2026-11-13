@@ -1,0 +1,43 @@
+######## ROUND 2 MUTANT 3m: a failed listing silently skips the sweep (raise -> return)
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+pre-run sha256: 1230e062041ca3bfc4452bbe808e2a44ebc78be2e215e78ce27edbf9a330e535
+--- mutation (git diff)
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..b1d267f 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -564,7 +564,7 @@ def sweep_leftovers(*, wrapper: WrapperRunner, now: datetime) -> None:
+         ]
+     )
+     if invocation.returncode != WRAPPER_EXIT_OK:
+-        raise _failure(action=f"Listing the repositories of {TEST_ORGANIZATION}", invocation=invocation)
++        return
+     for record in select_leftovers(records=_listed_records(invocation=invocation), now=now):
+         delete_leftover(wrapper=wrapper, record=record, now=now)
+ 
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [27 items]
+
+..................F........                                              [100%]
+================================== FAILURES ===================================
+_____________________ test_a_failed_listing_stops_the_run _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1457: in test_a_failed_listing_stops_the_run
+    with pytest.raises(expected_exception=forge.ForgeCommandError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ForgeCommandError
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_failed_listing_stops_the_run - Fail...
+======================== 1 failed, 26 passed in 12.83s ========================
+exit=1
+post-restore sha256: 1230e062041ca3bfc4452bbe808e2a44ebc78be2e215e78ce27edbf9a330e535
+restored byte-identical: True
+git diff --quiet -- test/forge/ephemeral.py: exit 0 warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it

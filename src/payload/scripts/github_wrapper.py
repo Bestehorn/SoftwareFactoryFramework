@@ -81,7 +81,9 @@ subcommand is added as a module of `github_api/commands/` that defines `register
 sets each one's `handler` default to a function called as `handler(transport=..., owner=..., repo=..., args=...)`, which
 returns None (exit 0) or an exit code. Every module there whose name does not start with `_` is discovered, so no list
 names them. The delivery verbs stay in this script and delegate to scripts/merge_steward.py. A `GitHubAPIError` exits 1;
-a usage error, a credential refusal, a repository refusal or a refused `call` exits 2.
+a usage error, a credential refusal, a repository refusal or a refused `call` exits 2. While the test marker, the
+interpreter option `-X sff_test_marker`, is set, an origin whose repository name does not start with `sff-test-` is
+refused before any subcommand runs, the delivery verbs and `call` included: nothing is sent, exit 2.
 """
 
 from __future__ import annotations
@@ -117,6 +119,10 @@ GITHUB_REPOSITORY_PATTERN = re.compile(r"github\.com[:/]([^/]+)/([^/.]+)(?:\.git
 #: (`git@github.com:o/r.git`) has no scheme and its authority runs to the first `/`.
 URL_AUTHORITY_PATTERN = re.compile(r"^(?:[A-Za-z][A-Za-z0-9+.-]*://)?([^/?#]*)")
 USERINFO_SEPARATOR = "@"
+#: The test marker: the interpreter option `-X sff_test_marker`, which CPython maps to `True` in `sys._xoptions`. While
+#: it is set, only an origin whose repository name starts with `EPHEMERAL_REPOSITORY_PREFIX` is served.
+TEST_MARKER_OPTION = "sff_test_marker"
+EPHEMERAL_REPOSITORY_PREFIX = "sff-test-"
 
 COMMANDS_PACKAGE = "github_api.commands"
 MODULE_SEPARATOR = "."
@@ -250,6 +256,28 @@ def _detect_repo() -> Tuple[str, str]:
     return match.group(1), match.group(2)
 
 
+def _test_marker_set() -> bool:
+    """Whether this interpreter was started with `-X sff_test_marker`; an interpreter without `sys._xoptions` has no
+    marker."""
+    return TEST_MARKER_OPTION in getattr(sys, "_xoptions", {})
+
+
+def _refuse_unless_ephemeral(*, owner: str, repo: str) -> None:
+    """Raise `GitHubAPIError` when the test marker is set and `repo` does not start with `EPHEMERAL_REPOSITORY_PREFIX`;
+    return at once without the marker. `owner` and `repo` are `_detect_repo`'s groups; the refusal names the owner
+    after its last `@` (the idiom of `_without_userinfo`), because the owner group of an origin whose userinfo ends in
+    `github.com:` holds the rest of that userinfo."""
+    if not _test_marker_set() or repo.startswith(EPHEMERAL_REPOSITORY_PREFIX):
+        return
+    shown = owner.rpartition(USERINFO_SEPARATOR)[2]
+    raise GitHubAPIError(
+        message=(
+            f"The test marker (-X {TEST_MARKER_OPTION}) is set and the origin names {shown}/{repo}, which is not an "
+            f"{EPHEMERAL_REPOSITORY_PREFIX}* repository; nothing was sent"
+        )
+    )
+
+
 def _force_utf8_output() -> None:
     """Reconfigure stdout and stderr to UTF-8, replacing what cannot be encoded, so a character outside the console's
     code page (an issue title's) never aborts a command (the fork's `_force_utf8_output`). A stream without
@@ -338,7 +366,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     """Run one subcommand and return its exit code; `argv` `None` reads `sys.argv[1:]`.
 
     The output streams become UTF-8 before anything is parsed (`_parse`). The token (`_load_token`) and the
-    repository (`_detect_repo`) are then read, a refusal of either logged and exiting 2. A delivery verb returns
+    repository (`_detect_repo`) are then read, a refusal of either logged and exiting 2. While the test marker
+    (`-X sff_test_marker`) is set, an origin that names no `sff-test-*` repository is refused the same way
+    (`_refuse_unless_ephemeral`), before the steward or any handler runs, so nothing is sent. A delivery verb returns
     `steward_delegate`'s code; any other subcommand runs its handler (`_run_command`).
     """
     _force_utf8_output()
@@ -346,6 +376,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         token = _load_token()
         owner, repo = _detect_repo()
+        _refuse_unless_ephemeral(owner=owner, repo=repo)
     except GitHubAPIError as exc:
         logger.error("%s", exc)
         return EXIT_REFUSED

@@ -1,0 +1,20 @@
+# CI run 43305965849 on 9ea89f9649bbab9f7c4becbaaa726a4b9d2d5e99 (PR #68), failed jobs re-run after the token permissions were granted  # pragma: allowlist secret
+# tasks: F.1
+# conclusion: success; jobs forge, verify (lint, types, tests, security), report all success
+# forge job 131815954374:
+run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors test/forge
+INFO     forge_ephemeral:ephemeral.py:753 Created this run's repository bestehorn-sff-test/sff-test-20261113095139-a94f580c0e004b9bbfa22328d26c3550
+PASSED                                                                   [  8%]
+test/forge/forge_ci_security.py::test_code_scanning_answers_as_documented PASSED [ 16%]
+test/forge/forge_ci_security.py::test_secret_scanning_answers_as_documented PASSED [ 25%]
+test/forge/forge_ci_security.py::test_dependabot_lists_no_secret PASSED  [ 33%]
+test/forge/forge_collaboration.py::test_issue_and_reaction_records PASSED [ 41%]
+test/forge/forge_collaboration.py::test_pulls_search_activity_and_gists_records PASSED [ 50%]
+test/forge/forge_fixture.py::test_the_run_owns_a_private_seeded_repository PASSED [ 58%]
+test/forge/forge_fixture.py::test_no_leftover_survives_the_sweep PASSED  [ 66%]
+test/forge/forge_repos_git.py::test_the_repository_record_names_the_seed_branch PASSED [ 75%]
+test/forge/forge_repos_git.py::test_the_git_records_read_the_seed_commit PASSED [ 83%]
+test/forge/forge_subcommands.py::test_an_issue_round_trip PASSED         [ 91%]
+test/forge/forge_subcommands.py::test_a_pull_request_round_trip PASSED   [100%]
+INFO     forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261113095139-a94f580c0e004b9bbfa22328d26c3550
+============================= 12 passed in 27.59s ==============================

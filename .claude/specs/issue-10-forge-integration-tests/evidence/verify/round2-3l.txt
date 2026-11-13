@@ -1,0 +1,56 @@
+######## ROUND 2 MUTANT 3l: a refused creation's kept record is dropped (no teardown deletion)
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+pre-run sha256: 1230e062041ca3bfc4452bbe808e2a44ebc78be2e215e78ce27edbf9a330e535
+--- mutation (git diff)
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..9ee61e5 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -873,7 +873,7 @@ def provision(
+         try:
+             record = create_ephemeral(wrapper=wrapper, name=name)
+         except ForgeSetupError as refused:
+-            created = _kept_record(error=refused)
++            created = None
+             raise
+         created = record
+         seed_sha, seed_tree_sha = fetch_seed(git=git, default_branch=record.default_branch)
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [27 items]
+
+.................FF........                                              [100%]
+================================== FAILURES ===================================
+_ test_a_repository_created_other_than_private_is_refused_and_deleted[private-false] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1441: in test_a_repository_created_other_than_private_is_refused_and_deleted
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+E   AssertionError: the provision ran ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation'], not ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation', 'the deletion']
+E   assert ['git init', ...the creation'] == ['git init', ...the deletion']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mthe deletion[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_ test_a_repository_created_other_than_private_is_refused_and_deleted[private-null] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1441: in test_a_repository_created_other_than_private_is_refused_and_deleted
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+E   AssertionError: the provision ran ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation'], not ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation', 'the deletion']
+E   assert ['git init', ...the creation'] == ['git init', ...the deletion']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mthe deletion[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_repository_created_other_than_private_is_refused_and_deleted[private-false]
+FAILED test/test_forge_support.py::test_a_repository_created_other_than_private_is_refused_and_deleted[private-null]
+======================== 2 failed, 25 passed in 13.82s ========================
+exit=1
+post-restore sha256: 1230e062041ca3bfc4452bbe808e2a44ebc78be2e215e78ce27edbf9a330e535
+restored byte-identical: True
+git diff --quiet -- test/forge/ephemeral.py: exit 0 warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it

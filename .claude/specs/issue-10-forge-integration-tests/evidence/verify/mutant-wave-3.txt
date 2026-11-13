@@ -1,0 +1,681 @@
+
+######## MUTANT 3a (wave 3): token appended to the clone's .git/config
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..3d9219e 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -699,6 +699,7 @@ def prepare_clone(*, clone: Path, token: str, name: str, git: GitRunner) -> None
+     _write_clone_credential(clone=clone, token=token)
+     _exclude_credentials(clone=clone)
+     _run_git(git=git, arguments=[GIT_REMOTE, GIT_REMOTE_ADD, ORIGIN_REMOTE, _origin_url(name=name)])
++    (clone / GIT_METADATA_DIRECTORY / "config").write_bytes(data=(clone / GIT_METADATA_DIRECTORY / "config").read_bytes() + ("# " + token + LINE_END).encode(encoding=TEXT_ENCODING))
+ 
+ 
+ def _field_argument(*, option: str, field: str, value: str) -> List[str]:
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.....................F                                                   [100%]
+================================== FAILURES ===================================
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1501: in test_the_token_is_written_only_to_the_clone
+    assert list(found.holders) == sorted([test_credential, clone_credential]), f"the token was in {found.holders}"
+E   AssertionError: the token was in ('checkout/credentials/github-sff-testing-pat.txt', 'workspace/clone/.git/config', 'workspace/clone/credentials/github-pat.txt')
+E   assert ['checkout/cr...thub-pat.txt'] == ['checkout/cr...thub-pat.txt']
+E     
+E     At index 1 diff: [0m[33m'[39;49;00m[33mworkspace/clone/.git/config[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33mworkspace/clone/credentials/github-pat.txt[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Left contains one more item: [0m[33m'[39;49;00m[33mworkspace/clone/credentials/github-pat.txt[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:270 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2124\popen-gw1\test_the_token_is_written_only0\checkout\credentials\github-sff-testing-pat.txt
+[32mINFO    [0m forge_ephemeral:ephemeral.py:754 Created this run's repository bestehorn-sff-test/sff-test-20261112201440-a82adb1d1fa44e669173d0a979642e4e
+[32mINFO    [0m forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261112201440-a82adb1d1fa44e669173d0a979642e4e
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_token_is_written_only_to_the_clone
+======================== 1 failed, 21 passed in 13.61s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3b (wave 3): token logged at DEBUG
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..185fa02 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -865,6 +865,7 @@ def provision(
+     created: Optional[CreatedRepository] = None
+     try:
+         token = read_test_token(path=find_test_credential(checkout=checkout))
++        logger.debug("The test token is %s", token)
+         prepare_clone(clone=clone, token=token, name=name, git=git)
+         # The generator's frame lives on through the yield; the token does not.
+         del token
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.....................F                                                   [100%]
+================================== FAILURES ===================================
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1512: in test_the_token_is_written_only_to_the_clone
+    assert holding == [] and setup.token not in caplog.text, f"captured log records hold the token: {holding}"
+E   AssertionError: captured log records hold the token: ['forge_ephemeral DEBUG']
+E   assert (['forge_ephemeral DEBUG'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mforge_ephemeral DEBUG[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff)
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:270 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2125\popen-gw1\test_the_token_is_written_only0\checkout\credentials\github-sff-testing-pat.txt
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:868 The test token is test-20a2bc5fcf9f413f8f18ca989bfdfc78
+[32mINFO    [0m forge_ephemeral:ephemeral.py:753 Created this run's repository bestehorn-sff-test/sff-test-20261112201455-a89e69280dc7457c8d0fe6d98d7070c8
+[32mINFO    [0m forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261112201455-a89e69280dc7457c8d0fe6d98d7070c8
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_token_is_written_only_to_the_clone
+======================== 1 failed, 21 passed in 12.90s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3c (wave 3): teardown deletion skipped when the body or a step raises
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..dec72c1 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -889,7 +889,10 @@ def provision(
+             wrapper=wrapper,
+             git=git,
+         )
+-    finally:
++    except BaseException:
++        remove_tree(path=workspace)
++        raise
++    else:
+         try:
+             delete_ephemeral(wrapper=wrapper, created=created, run_id=run_id)
+         finally:
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.............FF.......                                                   [100%]
+================================== FAILURES ===================================
+___________ test_provisioning_runs_in_order[a-workflow-in-the-seed] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1359: in test_provisioning_runs_in_order
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+E   AssertionError: the provision ran ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation', 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads"], not ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation', 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads", 'the deletion']
+E   assert ['git init', ...branch>', ...] == ['git init', ...branch>', ...]
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mthe deletion[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_provisioning_runs_in_order[the-body-raises] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1359: in test_provisioning_runs_in_order
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+E   AssertionError: the provision ran ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation', 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads", 'the body'], not ['git init', "git remote add origin <this run's URL>", 'the listing', 'the creation', 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads", 'the body', 'the deletion']
+E   assert ['git init', ...branch>', ...] == ['git init', ...branch>', ...]
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mthe deletion[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[a-workflow-in-the-seed]
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[the-body-raises]
+======================== 2 failed, 20 passed in 11.25s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3d (wave 3): workspace never removed
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..c9701e5 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -893,4 +893,4 @@ def provision(
+         try:
+             delete_ephemeral(wrapper=wrapper, created=created, run_id=run_id)
+         finally:
+-            remove_tree(path=workspace)
++            pass
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+............FFFFFFFFFF                                                   [100%]
+================================== FAILURES ===================================
+______________ test_provisioning_runs_in_order[the-body-returns] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1369: in test_provisioning_runs_in_order
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw0\test_provisioning_runs_in_orde0\workspace outlived the provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_provisioning_runs_in_orde0/workspace').exists
+E    +      where WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_provisioning_runs_in_orde0/workspace') = _Provisioning(root=WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_provisi...FFBC7F230>, git=<test.test_forge_support._scripted_git_runner.<locals>.ScriptedGitRunner object at 0x0000021FFBC7F380>).workspace
+___________ test_provisioning_runs_in_order[a-workflow-in-the-seed] ___________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1369: in test_provisioning_runs_in_order
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw1\test_provisioning_runs_in_orde0\workspace outlived the provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_provisioning_runs_in_orde0/workspace').exists
+E    +      where WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_provisioning_runs_in_orde0/workspace') = _Provisioning(root=WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_provisi...0132981A0>, git=<test.test_forge_support._scripted_git_runner.<locals>.ScriptedGitRunner object at 0x00000210132982F0>).workspace
+______________ test_provisioning_runs_in_order[the-body-raises] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1369: in test_provisioning_runs_in_order
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw0\test_provisioning_runs_in_orde1\workspace outlived the provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_provisioning_runs_in_orde1/workspace').exists
+E    +      where WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_provisioning_runs_in_orde1/workspace') = _Provisioning(root=WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_provisi...FFBC7FA10>, git=<test.test_forge_support._scripted_git_runner.<locals>.ScriptedGitRunner object at 0x0000021FFBD9C050>).workspace
+_____________ test_provisioning_runs_in_order[the-deletion-fails] _____________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1369: in test_provisioning_runs_in_order
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw1\test_provisioning_runs_in_orde1\workspace outlived the provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_provisioning_runs_in_orde1/workspace').exists
+E    +      where WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_provisioning_runs_in_orde1/workspace') = _Provisioning(root=WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_provisi...01329A7B0>, git=<test.test_forge_support._scripted_git_runner.<locals>.ScriptedGitRunner object at 0x000002101329AE40>).workspace
+________________________ test_no_creation_no_deletion _________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1393: in test_no_creation_no_deletion
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw0\test_no_creation_no_deletion0\workspace outlived the provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_no_creation_no_deletion0/workspace').exists
+E    +      where WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_no_creation_no_deletion0/workspace') = _Provisioning(root=WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_no_crea...FFBD9C440>, git=<test.test_forge_support._scripted_git_runner.<locals>.ScriptedGitRunner object at 0x0000021FFBD9C6E0>).workspace
+________ test_a_bad_test_credential_fails_before_any_request[missing] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1440: in test_a_bad_test_credential_fails_before_any_request
+    assert not workspace.exists(), f"the workspace {workspace} outlived the refused provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw1\test_a_bad_test_credential_fai0\workspace outlived the refused provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_a_bad_test_credential_fai0/workspace').exists
+_________ test_a_bad_test_credential_fails_before_any_request[empty] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1440: in test_a_bad_test_credential_fails_before_any_request
+    assert not workspace.exists(), f"the workspace {workspace} outlived the refused provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw0\test_a_bad_test_credential_fai0\workspace outlived the refused provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_a_bad_test_credential_fai0/workspace').exists
+____ test_a_bad_test_credential_fails_before_any_request[the-placeholder] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1440: in test_a_bad_test_credential_fails_before_any_request
+    assert not workspace.exists(), f"the workspace {workspace} outlived the refused provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw1\test_a_bad_test_credential_fai1\workspace outlived the refused provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw1/test_a_bad_test_credential_fai1/workspace').exists
+_ test_a_bad_test_credential_fails_before_any_request[two-tokens-on-two-lines] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1440: in test_a_bad_test_credential_fails_before_any_request
+    assert not workspace.exists(), f"the workspace {workspace} outlived the refused provision"
+E   AssertionError: the workspace D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw0\test_a_bad_test_credential_fai1\workspace outlived the refused provision
+E   assert not True
+E    +  where True = exists()
+E    +    where exists = WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2127/popen-gw0/test_a_bad_test_credential_fai1/workspace').exists
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1514: in test_the_token_is_written_only_to_the_clone
+    assert _holders(setup=setup) == [test_credential], "a file holding the token outlived the provision"
+E   AssertionError: a file holding the token outlived the provision
+E   assert ['checkout/cr...thub-pat.txt'] == ['checkout/cr...ting-pat.txt']
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mworkspace/clone/credentials/github-pat.txt[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:270 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2127\popen-gw1\test_the_token_is_written_only0\checkout\credentials\github-sff-testing-pat.txt
+[32mINFO    [0m forge_ephemeral:ephemeral.py:753 Created this run's repository bestehorn-sff-test/sff-test-20261112201521-96da32b5c2a740f8a148e5676a204f7c
+[32mINFO    [0m forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261112201521-96da32b5c2a740f8a148e5676a204f7c
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[the-body-returns]
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[a-workflow-in-the-seed]
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[the-body-raises]
+FAILED test/test_forge_support.py::test_provisioning_runs_in_order[the-deletion-fails]
+FAILED test/test_forge_support.py::test_no_creation_no_deletion - AssertionEr...
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[missing]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[empty]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[the-placeholder]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[two-tokens-on-two-lines]
+FAILED test/test_forge_support.py::test_the_token_is_written_only_to_the_clone
+======================= 10 failed, 12 passed in 12.25s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3e (wave 3): read_test_token accepts the placeholder
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..f2a0d7d 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -639,7 +639,7 @@ def read_test_token(*, path: Path) -> str:
+         token: str = product._one_token(data=data, refusal=not_one_token)
+     except product.GitHubAPIError:
+         raise ForgeSetupError(message=not_one_token) from None
+-    if not token or token == product.PLACEHOLDER:
++    if not token:
+         raise ForgeSetupError(
+             message=(
+                 f"The test credential file {path} is empty or still holds the placeholder. Paste the test "
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+...................F..                                                   [100%]
+================================== FAILURES ===================================
+____ test_a_bad_test_credential_fails_before_any_request[the-placeholder] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1431: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as repository:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge\ephemeral.py:868: in provision
+    prepare_clone(clone=clone, token=token, name=name, git=git)
+test\forge\ephemeral.py:698: in prepare_clone
+    _run_git(git=git, arguments=[GIT_INIT])
+test\forge\ephemeral.py:660: in _run_git
+    invocation = git.run(arguments=arguments, authenticated=authenticated)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:1141: in run
+    answer = script(arguments=argv, authenticated=authenticated)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_support.py:1149: in _refuse_every_git_command
+    raise AssertionError(f"git was run where nothing may run: {arguments} (authenticated: {authenticated})")
+E   AssertionError: git was run where nothing may run: ['init'] (authenticated: False)
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[the-placeholder]
+======================== 1 failed, 21 passed in 11.83s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3f (wave 3): clone's .git/info/exclude not written
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..1fbf16e 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -697,7 +697,6 @@ def prepare_clone(*, clone: Path, token: str, name: str, git: GitRunner) -> None
+     clone.mkdir()
+     _run_git(git=git, arguments=[GIT_INIT])
+     _write_clone_credential(clone=clone, token=token)
+-    _exclude_credentials(clone=clone)
+     _run_git(git=git, arguments=[GIT_REMOTE, GIT_REMOTE_ADD, ORIGIN_REMOTE, _origin_url(name=name)])
+ 
+ 
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.....................F                                                   [100%]
+================================== FAILURES ===================================
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1510: in test_the_token_is_written_only_to_the_clone
+    assert EXCLUDED_CREDENTIALS in found.exclude_lines, f"the clone's .git/info/exclude names no {EXCLUDED_CREDENTIALS}"
+E   AssertionError: the clone's .git/info/exclude names no credentials/
+E   assert 'credentials/' in ('# git ls-files --others --exclude-from=.git/info/exclude', "# Lines that start with '#' are comments.", '# For a pro... following would be a good set of', '# exclude patterns (uncomment them if you want to use them):', '# *.[oa]', '# *~')
+E    +  where ('# git ls-files --others --exclude-from=.git/info/exclude', "# Lines that start with '#' are comments.", '# For a pro... following would be a good set of', '# exclude patterns (uncomment them if you want to use them):', '# *.[oa]', '# *~') = _Entered(repository=EphemeralRepository(run_id='20261112201547-6925ff371cc94219ac0c94dc2006c94f', owner='bestehorn-sff...origin/*\n', holders=('checkout/credentials/github-sff-testing-pat.txt', 'workspace/clone/credentials/github-pat.txt')).exclude_lines
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:270 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2129\popen-gw1\test_the_token_is_written_only0\checkout\credentials\github-sff-testing-pat.txt
+[32mINFO    [0m forge_ephemeral:ephemeral.py:752 Created this run's repository bestehorn-sff-test/sff-test-20261112201547-6925ff371cc94219ac0c94dc2006c94f
+[32mINFO    [0m forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261112201547-6925ff371cc94219ac0c94dc2006c94f
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_token_is_written_only_to_the_clone
+======================== 1 failed, 21 passed in 11.88s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3g (wave 3): provision reads the checkout's credentials/github-pat.txt (UB-2)
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..57b7504 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -865,6 +865,7 @@ def provision(
+     created: Optional[CreatedRepository] = None
+     try:
+         token = read_test_token(path=find_test_credential(checkout=checkout))
++        (checkout / CLONE_CREDENTIAL_FILE).read_bytes()
+         prepare_clone(clone=clone, token=token, name=name, git=git)
+         # The generator's frame lives on through the yield; the token does not.
+         del token
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+.....................F                                                   [100%]
+================================== FAILURES ===================================
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1515: in test_the_token_is_written_only_to_the_clone
+    _assert_sentinel_untouched(setup=setup, content=sentinel_content, opened=opened)
+test\test_forge_support.py:1469: in _assert_sentinel_untouched
+    assert sentinel not in opened, f"the provision opened the checkout's {sentinel}"
+E   AssertionError: the provision opened the checkout's D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2130\popen-gw1\test_the_token_is_written_only0\checkout\credentials\github-pat.txt
+E   assert WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2130/popen-gw1/test_the_token_is_written_only0/checkout/credentials/github-pat.txt') not in [WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-2130/popen-gw1/test_the_token_is_written_only...l/Temp/pytest-of-bestem/pytest-2130/popen-gw1/test_the_token_is_written_only0/workspace/clone/.git/info/exclude'), ...]
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:270 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-2130\popen-gw1\test_the_token_is_written_only0\checkout\credentials\github-sff-testing-pat.txt
+[32mINFO    [0m forge_ephemeral:ephemeral.py:753 Created this run's repository bestehorn-sff-test/sff-test-20261112201601-67f84a52ca644d8a945aa0f942f0419e
+[32mINFO    [0m forge_ephemeral:ephemeral.py:528 Deleted this run's repository bestehorn-sff-test/sff-test-20261112201601-67f84a52ca644d8a945aa0f942f0419e
+=========================== short test summary info ===========================
+FAILED test/test_forge_support.py::test_the_token_is_written_only_to_the_clone
+======================== 1 failed, 21 passed in 11.65s ========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3h (wave 3): setup note drops the read access of Dependabot secrets
+file: docs/forge-suite.md; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/docs/forge-suite.md b/docs/forge-suite.md
+index be4e758..6c4efc1 100644
+--- a/docs/forge-suite.md
++++ b/docs/forge-suite.md
+@@ -35,7 +35,7 @@ Generate new token):
+ | Actions | read | listing the repository's workflow runs |
+ | Code scanning alerts | read | listing the code scanning alerts |
+ | Secret scanning alerts | read | listing the secret scanning alerts |
+-| Dependabot secrets | read | listing the repository's Dependabot secrets |
++| Dependabot secrets | none | listing the repository's Dependabot secrets |
+ 
+ Not needed: Workflows (the suite pushes no workflow file), Dependabot alerts (not called) and Checks (GitHub gives
+ fine-grained tokens no access to the Checks API). A permission the token lacks fails the test that needs it with
+warning: in the working copy of 'docs/forge-suite.md', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+...F.......                                                              [100%]
+================================== FAILURES ===================================
+__________________ test_the_setup_note_names_the_credential ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1221: in test_the_setup_note_names_the_credential
+    assert not missing, f"{SETUP_NOTE_NAME} does not name: {missing}"
+E   AssertionError: docs/forge-suite.md does not name: ['the permission Dependabot secrets (read)']
+E   assert not ['the permission Dependabot secrets (read)']
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_setup_note_names_the_credential
+======================== 1 failed, 10 passed in 4.97s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3i (wave 3): map drops the setup note pointer
+file: docs/forLLMConsumption.md; tests: test/test_forge_suite_layout.py test/test_instruction_corpus_budget.py
+--- mutation (git diff)
+diff --git a/docs/forLLMConsumption.md b/docs/forLLMConsumption.md
+index 1df93bf..1b27183 100644
+--- a/docs/forLLMConsumption.md
++++ b/docs/forLLMConsumption.md
+@@ -83,7 +83,7 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
+ - The forge suite `test/forge/`: real-forge integration tests of the product wrapper against ephemeral `sff-test-*`
+   repositories in `bestehorn-sff-test`, never this backlog; its own `pytest.ini` keeps it out of the default
+   collection. Locally: `python scripts/run_tests.py --workers 1 test/forge`, token in
+-  `credentials/github-sff-testing-pat.txt` (setup: `docs/forge-suite.md`). In CI the `forge` job runs beside
++  `credentials/github-sff-testing-pat.txt`. In CI the `forge` job runs beside
+   `verify` with the secret `SFF_TEST_TOKEN`; `report` fails unless it succeeded. <!-- pragma: allowlist secret -->
+ 
+ ## Common commands
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [20 items]
+
+..................F.                                                     [100%]
+================================== FAILURES ===================================
+_____________________ test_the_map_names_the_forge_suite ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1236: in test_the_map_names_the_forge_suite
+    assert not missing, f"{LLM_MAP_NAME} does not name: {missing}"
+E   AssertionError: docs/forLLMConsumption.md does not name: ['the setup note `docs/forge-suite.md`']
+E   assert not ['the setup note `docs/forge-suite.md`']
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_map_names_the_forge_suite - ...
+======================== 1 failed, 19 passed in 5.09s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3j (wave 3): debt line restored
+file: docs/ProjectPlan.md; tests: test/test_forge_suite_layout.py
+--- mutation (git diff)
+diff --git a/docs/ProjectPlan.md b/docs/ProjectPlan.md
+index 7a204ec..590e73e 100644
+--- a/docs/ProjectPlan.md
++++ b/docs/ProjectPlan.md
+@@ -13,4 +13,5 @@
+ 
+ ## TODOs and open issues
+ The live list is the GitHub issue backlog of `Bestehorn/SoftwareFactoryFramework`, read with
+-`python scripts/github_wrapper.py list-issues`. No debt recorded at the self-install remains open.
++`python scripts/github_wrapper.py list-issues`. Known debt recorded at the self-install:
++- the ephemeral-repository forge tests need their dedicated create/delete token.
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_suite_layout.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [11 items]
+
+.....F.....                                                              [100%]
+================================== FAILURES ===================================
+_________________________ test_the_debt_line_is_gone __________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1242: in test_the_debt_line_is_gone
+    assert DEBT_LINE.casefold() not in prose, f"{PROJECT_PLAN_NAME} still lists the known debt `{DEBT_LINE}`"
+E   AssertionError: docs/ProjectPlan.md still lists the known debt `the ephemeral-repository forge tests need their dedicated create/delete token`
+E   assert 'the ephemer...delete token' not in '# project p...elete token.'
+E     
+E     'the ephemeral-repo...create/delete token' is contained here:
+E       nstall: - the ephemeral-repository forge tests need their dedicated create/delete token.
+=========================== short test summary info ===========================
+FAILED test/test_forge_suite_layout.py::test_the_debt_line_is_gone - Assertio...
+======================== 1 failed, 10 passed in 5.30s =========================
+exit=1
+restored byte-identical: True
+
+######## MUTANT 3k (wave 3): COVERAGE PROBE: create_ephemeral accepts a non-private repository
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..8769e35 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -752,7 +752,7 @@ def create_ephemeral(*, wrapper: WrapperRunner, name: str) -> CreatedRepository:
+     created = _created_record(answer=answer, requested=name)
+     logger.info("Created this run's repository %s", created.owner + FULL_NAME_SEPARATOR + created.name)
+     private = answer.get(FIELD_PRIVATE)
+-    if private is not True:
++    if False:
+         raise ForgeSetupError(
+             message=(
+                 f"This run's repository {target} was created with {FIELD_PRIVATE} {private!r}, not private; the "
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+......................                                                   [100%]
+============================= 22 passed in 11.02s =============================
+exit=0
+restored byte-identical: True
+
+######## MUTANT 3l (wave 3): COVERAGE PROBE: a refused creation's kept record is dropped (no teardown deletion)
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..9ee61e5 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -873,7 +873,7 @@ def provision(
+         try:
+             record = create_ephemeral(wrapper=wrapper, name=name)
+         except ForgeSetupError as refused:
+-            created = _kept_record(error=refused)
++            created = None
+             raise
+         created = record
+         seed_sha, seed_tree_sha = fetch_seed(git=git, default_branch=record.default_branch)
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+......................                                                   [100%]
+============================= 22 passed in 11.12s =============================
+exit=0
+restored byte-identical: True
+
+######## MUTANT 3m (wave 3): COVERAGE PROBE: a failed listing silently skips the sweep
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..b1d267f 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -564,7 +564,7 @@ def sweep_leftovers(*, wrapper: WrapperRunner, now: datetime) -> None:
+         ]
+     )
+     if invocation.returncode != WRAPPER_EXIT_OK:
+-        raise _failure(action=f"Listing the repositories of {TEST_ORGANIZATION}", invocation=invocation)
++        return
+     for record in select_leftovers(records=_listed_records(invocation=invocation), now=now):
+         delete_leftover(wrapper=wrapper, record=record, now=now)
+ 
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+......................                                                   [100%]
+============================= 22 passed in 11.59s =============================
+exit=0
+restored byte-identical: True
+
+######## MUTANT 3n (wave 3): COVERAGE PROBE: remove_tree gives up on the first refused removal
+file: test/forge/ephemeral.py; tests: test/test_forge_support.py
+--- mutation (git diff)
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 6ed17b8..36387fd 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -839,7 +839,7 @@ def remove_tree(*, path: Path) -> None:
+             shutil.rmtree(path=path)
+             return
+         except OSError as exc:
+-            if attempt == REMOVAL_ATTEMPTS:
++            if True:
+                 raise ForgeSuiteError(message=f"Could not remove {path} in {REMOVAL_ATTEMPTS} attempts: {exc}") from exc
+             logger.debug("Removing %s was refused (%s); retrying", path, exc)
+         _clear_read_only(root=path)
+warning: in the working copy of 'test/forge/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+--- test run
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-10
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [22 items]
+
+......................                                                   [100%]
+============================= 22 passed in 12.17s =============================
+exit=0
+restored byte-identical: True
