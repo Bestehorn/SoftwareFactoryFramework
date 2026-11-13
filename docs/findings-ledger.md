@@ -115,3 +115,4 @@ deleted from git; what changes is what a session loads.
 | 2026-11-12 | forge CI credential | write_test_credential writes the CI file with the default mode | #10 review security verify-01 C1 | hosted runners are single-use VMs | open |
 | 2026-11-12 | forge create answer | a create exiting 0 with an unreadable answer keeps created None; repo left for the sweep | #10 review spec-review verify-01 C1 | not observed | open |
 | 2026-11-12 | forge checks family | the checks family is named, not called: fine-grained tokens cannot call the Checks API | #10 design.md D6 | token-kind limit | open |
+| 2026-11-13 | forge local credential | the main checkout has no credentials/github-sff-testing-pat.txt; only local forge runs need it | #10 comment 6834467302 | operator machine setup; docs/forge-suite.md | open |
