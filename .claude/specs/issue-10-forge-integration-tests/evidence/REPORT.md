@@ -18,8 +18,8 @@ W = `src/payload/test/test_github_wrapper_marker.py`, S = `test/test_forge_suppo
 | AC-7.1–7.3 (separation) | L default collection collects none; the forge path collects every forge test; nothing skips or deselects; `pytest.ini` exact option set; session fixture shape | red/wave-1, red/wave-4, green/wave-4 | green |
 | AC-9.1–9.3 (docs) | L setup note `docs/forge-suite.md`, map, debt line; B `test_llm_map_within_cap` | red/wave-3, green/wave-3, green/rework-2 | green |
 | UB-1, UB-4 | every W/S/L run needs no network or token; I `test_toolchain_integrity.py` and the C/P/K/V guards in every capture | all green captures | green |
-| AC-1.1, AC-1.3, AC-3.1, AC-8.3 (real forge) | F:fixture (private seeded repository, no leftover), F:repos_git | regress/ci-43295116103-12d8df7 | green on github.com |
-| AC-8.1, AC-8.2, AC-8.4, AC-8.5 (real forge) | F:subcommands, F:ci_security, F:collaboration | regress/ci-43295116103-12d8df7 | pending F.1: HTTP 403, token permissions not yet granted (DL-006) |
+| AC-1.1, AC-1.3, AC-3.1, AC-8.3 (real forge) | F:fixture (private seeded repository, no leftover), F:repos_git | regress/ci-43295116103-12d8df7, regress/ci-43305965849-9ea89f9-rerun | green on github.com |
+| AC-8.1, AC-8.2, AC-8.4, AC-8.5, AC-5.1–5.4 (real forge, F.1) | F:subcommands, F:ci_security, F:collaboration; the `forge` job and `report` | regress/ci-43305965849-9ea89f9-rerun (12 passed) | green on github.com |
 
 ## CI
 
@@ -28,7 +28,10 @@ W = `src/payload/test/test_github_wrapper_marker.py`, S = `test/test_forge_suppo
   - The 7 failures are one root cause: GitHub's missing-permission 403 on calls needing Issues, Pull requests, Actions,
     Secret scanning alerts and Dependabot secrets, which the operator was asked to grant.
   - `report` failed because `forge` failed (AC-5.4).
-- This report ships with the rework push; its run is the batch's second CI run.
+- Run 43305965849 on 9ea89f9 (the rework push): `verify` green; `forge` the same 7 failures (same cause).
+- After the operator granted the permissions, its failed jobs were re-run with no new commit: success, the
+  `forge` job 12 passed (`regress/ci-43305965849-9ea89f9-rerun.txt`), `report` success. CI runs of the batch: two
+  pushes plus one re-run; both reds were the operator prerequisite, not a code defect.
 
 ## Verification
 

@@ -113,7 +113,7 @@ its `design.md` Correctness Properties entry; each IMPL follows the D section it
 
 ## Final
 
-- [ ] F.1 E2E: the forge suite itself, every `test/forge/forge_*.py`, run by the `forge` job of
+- [x] F.1 E2E: the forge suite itself, every `test/forge/forge_*.py`, run by the `forge` job of
   `.github/workflows/ci.yml` on the PR (`python scripts/run_tests.py --workers 1 test/forge`), its verdict read through
   the wrapper's `get-pr-checks` and `get-run`; and locally on this machine once the operator's test credential file
   and token permissions are in place (issue #10 comments 6829284579, 6829880820). Nothing deploys. — Files:
