@@ -1,10 +1,12 @@
-# Decisions behind the factory state model (as of 2026-11-11)
+# Decisions behind the factory state model (revision 2, 2026-11-16)
 
-Four kinds of entry:
+Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
-- **B**: the working baseline. Recommended, not objected to, and open to review.
+- **R**: adopted from the two reviews in revision 2, by the designer; reversible and open to the next review. The
+  finding ids name their source.
+- **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
 
 The discussion that produced them is in
@@ -31,41 +33,82 @@ Where an entry there differs from this file, this file wins.
 | U14 | 2026-11-10 | Questions are welcome only when nothing but the human can answer them; they come in one batch, never drip-fed (the operator rarely returns to sessions) | §12 |
 | U15 | 2026-11-11 | The review set lives in `docs/design/factory-state-model/` on a branch, not merged | this folder |
 | U16 | 2026-11-11 | The operator's and the factory's issues are auto-admitted; every issue, the operator's included, goes through triage, with no pass-through | §6 |
-| U17 | 2026-11-11 | A human approval point exists only as an optional per-project setting, off by default | §12.8 |
+| U17 | 2026-11-11 | A human approval point exists only as an optional per-project setting, off by default | §12.10 |
 | U18 | 2026-11-11 | CLOSE-READY is not code clean-up; anything that changes repository assets needs a PR. CLOSE-READY covers: local temp files, unneeded branches, temporary test and verification infrastructure, new issues found through the deployment, documentation and lessons-learned updates, and a structured summary for the operator | §11 |
 | U19 | 2026-11-11 | Distribution stays file-based, project by project. A plugin is a future option tied to AWSBedrockGateway and needs equivalents for Kiro and other harnesses | §16 |
 | U20 | 2026-11-11 | The Minimum revert tier (cached cloud assemblies plus a restore hook in the deploy script) is required for every AWS project, through the setup and update prompts | §10.6 |
+| U21 | 2026-11-16 | Equal scrutiny: the operator's input gets neither more nor less scrutiny than an agent's; every input is judged on its content. (The operator asked why authorship should matter at all; the design answers in §12.3: only for reserved decisions, and not because the operator is trusted more) | P12, §8.3, §12.3 |
+| U22 | 2026-11-16 | The keynote is a high-level vision, in no way a specification; the design is traced against it as alignment, not compliance | traceability.md |
+| U23 | 2026-11-16 | Adversarial reviews are permanent records: they are committed beside the design they reviewed, not kept local | `docs/reports/factory-state-model-2026-11/reviews/` |
 
 ## M: decided by the designer (reversible)
 
 | Id | Decision | Reason | Design |
 |---|---|---|---|
-| M1 | Cached cloud assemblies live in an S3 bucket in the dev account, with retention at least the `cdk gc` rollback buffer | chess hit the GitHub artifact storage limit; CI artifacts are the fallback for projects without AWS | §10.6 |
-| M2 | The guidance command is named `/get-guidance` | commands name what the agent does; "guidance" also covers approvals and stuck reports | §12.7 |
+| M1 | Cached cloud assemblies live in an S3 bucket in the dev account, with retention at least the `cdk gc` rollback buffer; only the deploy role writes it, and each assembly's SHA-256 is recorded and verified | chess hit the GitHub artifact storage limit; CI artifacts are the fallback for projects without AWS; integrity from B17 | §10.6 |
+| M2 | The guidance command is named `/get-guidance` | commands name what the agent does; "guidance" also covers approvals and stuck reports | §12.9 |
 | M3 | An optional local runtime check per project before the PR, for M/L runtime changes | gap analysis 2.1, within U9 | §9 |
-| M4 | Production alarms are an inflow into START (`Origin: production`) under the filing gate | gap analysis 2.6 | §6 |
-| M5 | Repository-side learnings found at CLOSE-READY go to one rolling learning-batch issue, not a follow-up PR per issue | reconciles U18 with the measured follow-up-PR cost (40 % of chess PRs) | §11 |
+| M4 | Production alarms are an inflow into START (`Origin: production`) under the filing gate | gap analysis 2.6 | §6.1 |
+| M5 | ALL learnings found at CLOSE-READY go to one rolling learning-batch issue (none to machine-local memory); it rotates per PR and is exempt from the empty-backlog count and from its own learning capture | reconciles U18 with the measured follow-up-PR cost (40 % of chess PRs); T-12, C8 | §11 |
+
+## R: adopted from the reviews (revision 2)
+
+| Id | Decision | Findings | Design |
+|---|---|---|---|
+| R1 | Authority is explicit: a role table names who may call each edge and write each record; the steward and the watcher call the transition verb; anything else is data | A1, B3, B13 | §4.5 |
+| R2 | One claim per issue, not per stage; the claim is a git ref acquired and renewed by `git push --force-with-lease` (a server-side compare-and-swap), its SHA is the fencing token, the reaper expires it by its own clock, ONE release verb | A3, B1, C11, C17, C20, C21 | §5 |
+| R3 | The transition verb writes an intent line first and a done line last; the reconciler rolls forward; an issue with no stage label and no audit line is in START; a hand-set label is corrected or recorded as an override | B2, C16 | §4.4 |
+| R4 | Maker ≠ checker is checked on a per-context `actor.agent` and the lane role, not on the session | A2 | §8.1 |
+| R5 | A comment counts as an answer, approval or ask change only from an authorised human; all other comments are data, judged on content (U21) | A4, B5 | §8.3, §12.3 |
+| R6 | Admission is by the issue's author; provenance lines never admit; the admission view shows the verbatim body | B8, C13 | §6.3 |
+| R7 | The ask is the ask hash (title + body without ticks), changed only by an edit or `/amend` from an authorised human, checked in SPEC and IMPLEMENTATION only; answers do not re-open the spec | B5 | §4.3 |
+| R8 | Landings and reverts are derived per PR from trunk's first-parent history (`Steward-PR`, `Reverts-PR` trailers); `merge-steward:` comments are projections | B7, B15 | §10.8 H1, H7 |
+| R9 | A red verdict marks no issue; only Track T's culprit record returns one | B11 | §10.5 |
+| R10 | The watcher never closes; it transitions TEST-READY → CLOSE-READY | B12 | §10.8 H9, §11 |
+| R11 | The steward dispatches a revert PR's CI itself (or exempts it from PR CI), orders reverts first, and the deploy job skips commits containing an attributed culprit until its revert lands | B14, C18 | §10.4 |
+| R12 | Attribution: exactly one step changing the failing resource and none changing its dependency closure is a culprit; several form a suspect set; a defined failure signature; refunds for wrong attributions; the log-reading attributor only ranks inside the suspect set | B16, C15 | §10.4, §13 |
+| R13 | The restore checks its own change set for stateful replacement or deletion and stops into an `env-incident` | B17 | §10.3 |
+| R14 | Environment problems and escalations are open `env-incident` issues per root cause; `delivery-status` stays the closed machine status record | B13 | §12.5 |
+| R15 | Every exit from REWORK-REQUIRED needs a rework analysis (code, requirement or environment), and the test-architect confirms a "code" cause | T-01 | §4.2 |
+| R16 | The worker never transitions with PR CI pending: it sets `ci-pending` and releases; the verifier lane completes the transition when CI has ended. `--allow-pending` only for a re-enqueue whose only unmet clause is pending CI | C1, C2, T-10 | §4.2, §14 |
+| R17 | The acceptance-test freeze is a run: S's tests, fixtures and test configuration over H's code | B19 | §4.2, §9 |
+| R18 | Readiness of the spec PR is the `do-not-merge` label, a draft only where the forge has drafts | B22 | §9 |
+| R19 | A deterministic tier and risk floor that triage may raise but not lower, re-derived at SPEC exit, raise-only | B18, T-19 | §6.4 |
+| R20 | Every verdict carries a required `notVerified` list, carried into the close-out summary | T-06 | §8.1, §11 |
+| R21 | Spend lines per checkpoint and release are the source of the cost budget; budgets are report-only for the first 20 issues per tier, then recalibrated | T-02, C6 | §13 |
+| R22 | One review envelope per round; PR projections off by default; comments paged with an id filter, the cursor in the claim ref; fold by id; edited record comments rejected; a continuation issue at 2,000 comments; a host-wide write token bucket | B10, C4, C5, C21 | §8.2, §15.2 |
+| R23 | The steward re-runs the fold before landing; a downgrade of a blocking finding needs the lane's accept or the arbiter; an arbiter decision is re-checked, and one that overrules a security or legal finding becomes an approval | B6, C22 | §8.5–§8.7 |
+| R24 | The dispatcher has queues per stage, per checker lane, for the verifier (`ci-pending`) and for the answer recorder; `priority:critical` goes first | B3, B4, T-09 | §14 |
+| R25 | Temporary resources are tagged `factory-issue=<repo>#<n>`; close-out queries by tag as well as reading the ledger | B20 | §11 |
+| R26 | Factory mode requires `merge: steward`; `verification: watcher` and `none` are both mapped; `merge: direct` projects keep the session workflow | B21, T-15 | §3.5 |
+| R27 | External security review of PRs (AWS Security Agent) is a project setting, `risk` by default; an optional batched, budget-capped pen test in TEST-READY | T-04 | §7.2 |
+| R28 | The approval setting also covers sensitive PR paths, at IMPLEMENTATION → TEST and REWORK → TEST | T-07 | §12.10 |
+| R29 | A deterministic always-ask list for the question checker (IAM grants, deletions, production, credentials) | C12 | §12.4 |
+| R30 | The triage rule against untrusted content refuses an instruction taken from quoted text, not an agent's defect statement citing logs | T-05 | §6.5 |
+| R31 | The tier-S minimum path, with one combined review pass as today | C7, T-16 | §7.3 |
+| R32 | The stop gates and release vocabulary accept a transition, `needs-input`, `ci-pending` or release as a valid end; the phase-2 renderer comes before the new roles | T-11, T-14 | §16 |
+| R33 | Per-host fine-grained tokens, without the permissions behind irreversible operations | B9 | §15.2 |
 
 ## B: working baseline (recommended, open to review)
 
 | Id | Baseline | Design |
 |---|---|---|
-| B1 | Claims are comments with a worker id and a lease; the earliest unexpired claim wins (server-assigned comment ids); a reaper releases expired leases | §5 |
+| B1 | ~~Claims as comments with leases~~: replaced by R2 | §5 |
 | B2 | Stages are checkpoints, not compulsory hand-offs; one claim may carry a tier-S issue from START to TEST-READY, recording each transition | §3.4 |
-| B3 | One transition verb in the wrappers: compare-and-set, predicate check, additive label swap, an audit line | §4.4 |
+| B3 | One transition verb in the wrappers (revised by R3: guard, intent, side effects, labels, done) | §4.4 |
 | B4 | Stage storage as prefixed labels on both forges, plus a reconciler; native single-select storage later | §4.4 |
-| B5 | The spec lives on the pushed issue branch with a draft PR; a `spec-approved` record pins SHA, ask hash and last human comment | §9 |
-| B6 | Acceptance tests are written at spec time and must fail for the right reason; the implementer may not change them without SPEC re-entry | §9 |
-| B7 | A human edit of the ask after approval sends the issue back to SPEC-REQUIRED (pickup and checkpoint check) | §4.3 |
-| B8 | The `factory-review/v1` record format: SARIF-compatible findings, text-quote anchors, an append-only fold. The canonical log is on the work issue; the JSON sits in a fenced block inside `<details>`; the gate is a `factory/review` commit status; the arbiter is a separate agent | §8 |
-| B9 | The default standards precedence for the arbiter: legal/security > data loss > the ask's criteria and correctness > operability > maintainability > style | §8.4 |
-| B10 | Revert details: while red, cap the batch size instead of pausing landings; ambiguous windows revert every suspect and reland in bisection order; smoke is retried once; reverts get the full train CI (no reduced fast lane) | §10.4 |
-| B11 | The pull order, right to left: REWORK > CLOSE-READY > IMPLEMENTATION-READY > SPEC-REQUIRED > START, then priority | §14 |
+| B5 | The spec lives on the pushed issue branch with a PR (revised by R18: readiness is the `do-not-merge` label); a `spec-approved` record pins SHA and ask hash (revised by R7) | §9 |
+| B6 | Acceptance tests are written at spec time and must fail for the right reason; the implementer may not change them, nor what they depend on, without SPEC re-entry (revised by R17) | §9 |
+| B7 | A human edit of the ask after approval sends the issue back to SPEC-REQUIRED (revised by R7) | §4.3 |
+| B8 | The `factory-review/v1` record format: SARIF-compatible findings, text-quote anchors, an append-only fold; the canonical log on the work issue; JSON in a fenced block inside `<details>`; the arbiter as a separate agent (revised by R4, R20, R22, R23) | §8 |
+| B9 | The default standards precedence for the arbiter: legal/security > data loss > the ask's criteria and correctness > operability > maintainability > style | §8.7 |
+| B10 | Revert details: while red, cap the batch size instead of pausing landings; ambiguous windows revert every suspect and reland in bisection order; smoke retried once; reverts get their train CI (revised by R11) | §10.4 |
+| B11 | The pull order, right to left (revised by R24: `priority:critical` first; lane, verifier and recorder queues) | §14 |
 | B12 | The dispatcher polls the tracker; webhooks cannot reach a workstation | §14 |
-| B13 | The budget values and reset rules of the thresholds report | §13 |
-| B14 | Question discipline: decision inventory up front, question checker, routing by kind, standing permissions as policy, review tasks as one sheet | §12 |
-| B15 | Trust rules: read-only checkers enforced in IAM; no mutating tool for a checker; everything pinned; strict MCP config for headless checkers; no deploy credentials with untrusted content | §15 |
-| B16 | Admission for authors outside the allow-list: read-only triage, then an `admitted` label set by the human | §6 |
+| B13 | The budget values and reset rules of the thresholds report (revised by R21) | §13 |
+| B14 | Question discipline: decision inventory up front, question checker, routing by kind, standing permissions as policy, review tasks as one sheet (extended by R29, R14) | §12 |
+| B15 | Trust rules: read-only checkers enforced in IAM; no mutating tool for a checker; everything pinned; strict MCP config for headless checkers; no deploy credentials with untrusted content | §15.1 |
+| B16 | Admission for authors outside the allow-list: read-only triage, then an `admitted` label set by an authorised human (revised by R6) | §6.3 |
 
 ## O: open or deferred
 
@@ -73,13 +116,16 @@ Where an entry there differs from this file, this file wins.
 |---|---|---|
 | O1 | Packaging the framework, or only its MCP servers, as a pinned plugin | future (U19); tied to the AWSBedrockGateway marketplace; Kiro and other harnesses need equivalents |
 | O2 | Whether CI job environment variables (e.g. a plugin seed directory) are allowed under the no-environment-variables rule | only relevant with O1 |
-| O3 | A reduced check for clean reverts (the "fast lane") | B10 uses the full train CI until data shows the cost |
+| O3 | A reduced check for clean reverts (the "fast lane") | the full train CI until data shows the cost |
 | O4 | Reconciling the Kiro powers' `AWS_PROFILE` in `env` blocks with the setup prompts' ban | before any power is adopted |
 | O5 | Pinning the MCP servers the setup prompts install `@latest`, and narrowing the wildcard allow of the AWS API server | a framework change |
 | O6 | Automated capture of corrections and recurrence counting (gap analysis 2.5) | not designed |
 | O7 | Backlog drift measurement (gap analysis row 11) | not designed |
-| O8 | The details of the production intake, incl. the AWS DevOps Agent (gap analysis 2.6) | inflow only (M4) |
-| O9 | The contract-drift check per consumer project (gap analysis 3.7) | not designed |
-| O10 | A Jira wrapper (gap analysis 3.8) | out of scope of the state model |
-| O11 | Per-agent deny rules by default; Kiro's central MCP and model allowlists (gap analysis 3.2) | not designed |
-| O12 | The dispatcher's host: Kiro Crew, headless CLI on CI runners, or a workstation task | B12 fixes polling only |
+| O8 | The details of the production intake, incl. the AWS DevOps Agent (gap analysis 2.6) | inflow and expedite only (M4, R24) |
+| O9 | The contract-drift check per consumer project (gap analysis 3.7) | not designed; switching projects to `merge: steward` is a precondition (R26) |
+| O10 | A Jira wrapper (gap analysis 3.8) | out of scope; the stage mapping is in §3.6 |
+| O11 | Per-agent deny rules by default; Kiro's central MCP and model allowlists (gap analysis 3.2); worker sandboxing | not designed |
+| O12 | The dispatcher's host (Kiro Crew, headless CLI on CI runners, a workstation task), the command that starts a worker with a role and an issue per client, and the governance it inherits | B12 fixes polling only |
+| O13 | **Which identity the agents post as:** a separate machine account, the shared account with the residual recorded, or a GitHub App plus GitLab bot tokens | §15.2. The operator asked why authorship matters (U21); the answer is §12.3. Waits for the operator |
+| O14 | Verify on `sff-test-*` repositories that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically; otherwise use the `factory-claim/` branch prefix | §5.1 |
+| O15 | An immutable record per issue: a digest of the folded records written to a protected audit ref at close-out | §19 item 4 |
