@@ -40,6 +40,7 @@ Where an entry there differs from this file, this file wins.
 | U21 | 2026-11-16 | Equal scrutiny: the operator's input gets neither more nor less scrutiny than an agent's; every input is judged on its content. (The operator asked why authorship should matter at all; the design answers in §12.3: only for reserved decisions, and not because the operator is trusted more) | P12, §8.3, §12.3 |
 | U22 | 2026-11-16 | The keynote is a high-level vision, in no way a specification; the design is traced against it as alignment, not compliance | traceability.md |
 | U23 | 2026-11-16 | Adversarial reviews are permanent records: they are committed beside the design they reviewed, not kept local | `docs/reports/factory-state-model-2026-11/reviews/` |
+| U24 | 2026-11-16 | The agents keep posting as the operator's account (no machine account, no GitHub App). The residual, that a compromised agent could forge a reserved decision, is accepted, limited by P12, the forge-bound gates and per-host tokens. The shared write budget makes the write reductions binding | §15.2, §4.5, §19 item 3 |
 
 ## M: decided by the designer (reversible)
 
@@ -126,6 +127,6 @@ Where an entry there differs from this file, this file wins.
 | O10 | A Jira wrapper (gap analysis 3.8) | out of scope; the stage mapping is in §3.6 |
 | O11 | Per-agent deny rules by default; Kiro's central MCP and model allowlists (gap analysis 3.2); worker sandboxing | not designed |
 | O12 | The dispatcher's host (Kiro Crew, headless CLI on CI runners, a workstation task), the command that starts a worker with a role and an issue per client, and the governance it inherits | B12 fixes polling only |
-| O13 | **Which identity the agents post as:** a separate machine account, the shared account with the residual recorded, or a GitHub App plus GitLab bot tokens | §15.2. The operator asked why authorship matters (U21); the answer is §12.3. Waits for the operator |
+| O13 | ~~Which identity the agents post as~~ | decided as U24 (2026-11-16): the operator's account |
 | O14 | Verify on `sff-test-*` repositories that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically; otherwise use the `factory-claim/` branch prefix | §5.1 |
 | O15 | An immutable record per issue: a digest of the folded records written to a protected audit ref at close-out | §19 item 4 |

@@ -17,7 +17,8 @@ id (R, M, U, O) refers to [decisions.md](decisions.md).
 - 1 superseded by another fix: T-10;
 - 1 outside the design set: C23.
 
-None is rejected. One finding needs the operator: A4's root cause, which identity the agents post as, is open as O13.
+None is rejected. A4's root cause, which identity the agents post as, went to the operator. They decided to keep their
+own account (U24), so the residual is accepted and recorded in design §15.2.
 
 **Three operator decisions taken while answering** change how some findings are read:
 
@@ -34,17 +35,17 @@ None is rejected. One finding needs the operator: A4's root cause, which identit
 | A1 | A | No actor may change the stage of an issue in TEST-READY | accepted (option 1) | §4.5 authority table; §3.1; §3.4 items 3–4; caller role per edge in §4.2; §18 Authority and Delivery rows (R1) |
 | A2 | A | Maker ≠ checker keyed on the session, so in-session verification never counts | accepted (option 1) | §8.1 `actor.agent` + role; §4.1; §8.4 (R4) |
 | A3 | A | Per-stage claims vs one claim carrying an issue across stages | accepted | §5.1: one claim per issue, the stage informational; §3.4 item 1 (R2) |
-| A4 | A | Any commenter's unmarked comment counts as an answer, approval or ask change | accepted, reframed by U21 | §8.3; §12.3; §4.5 authorised-human role; lock option in §6.3. Residual under the shared account: O13 (R5) |
+| A4 | A | Any commenter's unmarked comment counts as an answer, approval or ask change | accepted, reframed by U21 | §8.3; §12.3; §4.5 authorised-human role; lock option in §6.3. Residual under the shared account accepted: U24 (R5) |
 | B1 | B | The claim protocol has a visibility race, no fencing, an unspecified lease | accepted, different mechanism | §5.1–§5.2: the claim ref is acquired and renewed with `git push --force-with-lease`. That is a server-side compare-and-swap over the git protocol, which also spends no REST write budget, rather than `git/create-ref`. The fencing token is the ref SHA; the lease is judged by the reaper's own clock. Verification on `sff-test-*`: O14 (R2) |
 | B2 | B | The verb is check-then-act, and crash recovery rolls back transitions that took effect | accepted | §4.4: guard named as such; intent first, done last; the reconciler rolls forward; the START rule (R3) |
 | B3 | B | No dispatcher queue for checker lanes | accepted | §14 queue table; §5.3 verify claims (R24) |
 | B4 | B | A direct answer is never read, because `needs-input` issues are not pullable | accepted | §12.7 answer recorder; §14 recorder queue (R24) |
 | B5 | B | The ask-change trigger fires on answers and on the steward's own comments | accepted | §4.3: ask hash only, `/amend`, SPEC and IMPLEMENTATION only; §8.2 machine-comment definition (R7) |
-| B6 | B | The gate counts verdicts whose authorship cannot be proven; the maker side can satisfy it | accepted | §8.5 downgrades; §8.6 the steward re-runs the fold; the status is a projection; the authorship residual is O13 (R23) |
+| B6 | B | The gate counts verdicts whose authorship cannot be proven; the maker side can satisfy it | accepted | §8.5 downgrades; §8.6 the steward re-runs the fold; the status is a projection; the authorship residual is accepted under U24 (R23) |
 | B7 | B | `merge-steward:` lines accepted from any author, so a landing can be forged | accepted, different mechanism | §10.8 H7: landings come from trunk's first-parent trailers (`Steward-PR`), with comments as projections. Author filtering is only a second layer, because a workflow on a worker's own PR branch can also post as `github-actions[bot]` (R8) |
 | B8 | B | Admission keyed on provenance lines anyone can type | accepted | §6.3 admission by author (R6) |
-| B9 | B | One write-scoped token everywhere, no per-worker revocation | accepted (option 1 as baseline) | §15.2 per-host fine-grained tokens without irreversible-operation permissions; option 2 is part of O13 (R33) |
-| B10 | B | The shared account's content-creation limit caps the factory | accepted | §8.2 one envelope per round; claims over git (§5); PR projections off; host-wide token bucket (§15.2); identity options in O13 (R22) |
+| B9 | B | One write-scoped token everywhere, no per-worker revocation | accepted (option 1 as baseline) | §15.2 per-host fine-grained tokens without irreversible-operation permissions; option 2 (a GitHub App) was declined in U24 (R33) |
+| B10 | B | The shared account's content-creation limit caps the factory | accepted | §8.2 one envelope per round; claims over git (§5); PR projections off; host-wide token bucket (§15.2). With the shared account kept (U24) these reductions are binding (R22) |
 | B11 | B | The red verdict blames every landing since the last green deploy | accepted | §10.5; §10.8 H8; §2; §18 Delivery (R9) |
 | B12 | B | The watcher closes verified issues itself, so CLOSE-READY never runs | accepted | §10.8 H9; §2; §11; §18 (R10) |
 | B13 | B | `delivery-status` is closed and body-only, so it cannot carry escalations or be a `blocked-by` target | accepted | §12.5 `env-incident` issues per root cause; §10.4 step 6; §3.2 (R14) |

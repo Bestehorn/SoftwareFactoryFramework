@@ -252,9 +252,9 @@ A write by any other identity, or by a role outside its row, is data: it is neve
 - claims from the claim ref (§5);
 - CI results from the forge's run API.
 
-**Under the current shared account**, worker, checker and answer-recorder writes all come from one login. Their roles are
-then told apart by the marker and the `actor` fields, which proves nothing against a compromised agent. What that
-residual means, and the options to close it, are in §15.2 and decision O13.
+**Under the shared account** (decision U24), worker, checker and answer-recorder writes all come from one login. Their
+roles are then told apart by the marker and the `actor` fields, which proves nothing against a compromised agent. That
+residual is accepted; what limits it is in §15.2.
 
 ---
 
@@ -1104,9 +1104,10 @@ catalogues, a trojanised Claude Code extension on another IDE's marketplace.
 
 ### 15.2 Identity, credentials and the write budget [B9, B10, A4, B6]
 
-**Today** every worker posts as the operator's login, with one token copied to every machine.
+**Decision U24 (2026-11-16): the agents keep posting as the operator's account.** Today one token is copied to every
+machine; the design changes the tokens, not the account.
 
-**Baseline, whatever identity is chosen:**
+**What that requires:**
 
 - **One fine-grained token per host**: scoped to the project repositories, expiring, revocable alone. A leaked laptop
   is then revoked without touching the others.
@@ -1124,14 +1125,23 @@ catalogues, a trojanised Claude Code extension on another IDE's marketplace.
   Revision 1's estimate of about 160 content writes per tier-M issue drops by roughly the number of lanes per round;
   this is not measured.
 
-**Open decision O13: which identity the agents post as.** Under the shared account, a compromised agent could post an
-unmarked comment and pose as the authorised human for a reserved decision (§12.3). P12 limits the damage: the artefact
-that follows still faces every checker, and irreversible operations are gated by the human's own credentials. But the
-decision itself would be forged. The options:
+**The accepted residual.** Under the shared account, a compromised agent could post an unmarked comment and pose as the
+authorised human for a reserved decision (§12.3). What limits it:
 
-- a separate machine account for all agents, which makes the human's comments provable by author and gives the agents
-  their own write budget;
-- the shared account with this residual recorded;
+- **P12:** the artefact that follows still faces every checker;
+- **forge-bound gates:** irreversible operations stay with the human's own credentials, which the per-host tokens lack;
+- **the wrapper:** it marks every agent write, so an unmarked comment from the shared login can only come from outside
+  it.
+
+The decision itself could still be forged. That is recorded, not designed away.
+
+**A second, separate consequence:** the agents and the operator's own UI share one write budget, so the reductions above
+are binding, not optional.
+
+**If this is revisited**, the two alternatives considered were:
+
+- a separate machine account for all agents: the human's comments become provable by author, and the agents get their
+  own write budget;
 - a GitHub App plus GitLab bot tokens: the strongest separation, with check runs and its own rate budget, but more
   setup.
 
@@ -1229,8 +1239,9 @@ project. It is also where close-out summaries (§11) and elapsed-time alarms (§
    repositories (O14).
 2. **The fencing window** (§5.2). An expired holder can still write until its next verb call, so a step must stay short
    enough that L covers it.
-3. **Identity** (§15.2, O13). Under the shared account a compromised agent can forge a reserved decision. P12 and the
-   forge-bound gates limit, but do not remove, that risk.
+3. **Identity** (§15.2, U24). Under the shared account, which the operator chose to keep, a compromised agent can forge
+   a reserved decision. P12, the forge-bound gates and the wrapper's marking limit, but do not remove, that accepted
+   risk.
 4. **Immutability** [T-08]. Audit lines and records are comments the shared account can delete. The fold rejects
    edited records, but nothing stops a deletion. The option is a digest of the folded records written to a protected
    audit ref at close-out (O15).

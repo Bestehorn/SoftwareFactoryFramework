@@ -85,7 +85,7 @@ Find what is wrong, missing or unenforceable. In particular:
    - prompt injection through issue text, comments, review records, logs and MCP servers;
    - credential exposure;
    - the admission rule;
-   - the reserved decisions under the shared account (O13).
+   - the reserved decisions under the shared account, kept by decision U24.
 7. **Cost and scale:**
    - hand-off cost;
    - API rate limits;
