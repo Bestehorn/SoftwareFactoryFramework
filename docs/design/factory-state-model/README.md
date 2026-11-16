@@ -7,6 +7,9 @@ wait; the human is reached only when no agent can resolve something. **Design on
 Revision 1 (11073fe, 2026-11-11) was reviewed twice. Revision 2 answers every finding of both reviews; the reviews
 themselves are kept as permanent records beside it (decision U23).
 
+Revision 2 was re-reviewed by the same two reviewers on 2026-11-16. Their open items (21 partly fixed earlier
+findings, 30 new findings, no A) are not answered yet: they are the input to revision 3.
+
 ## Documents
 
 | File | What it is |
@@ -23,6 +26,8 @@ records, kept as written):
 |---|---|
 | `reviews/adversarial-review-2026-11-11.md` | The adversarial review of revision 1: 53 findings |
 | `reviews/target-review-2026-11-11.md` | The review of revision 1 against the keynote and the gap analysis: 23 findings and a corrected status table |
+| `reviews/adversarial-review-r2-2026-11-16.md` | The adversarial re-review of revision 2 (cec3492): verdicts on the 53 earlier findings (36 verified, 17 partly) and 16 new findings (9 B, 6 C, 1 D) |
+| `reviews/target-review-r2-2026-11-16.md` | The alignment re-review of revision 2 (cec3492): verdicts on the 23 earlier findings (19 verified, 4 partly) and 14 new findings (1 B, 10 C, 3 D) |
 | `revert-and-batching.md` | Fast revert and batched deploys to shared AWS environments: failure taxonomy, techniques, how others batch, the two-track recommendation, hazards in today's code |
 | `review-protocol.md` | The structured maker/checker exchange: standards compared (SARIF, Web Annotation, LSP, Gerrit, A2A …), the `factory-review/v1` schema with examples, transport, multi-way resolution |
 | `checker-landscape.md` | Checker agents and tools per stage, with an inventory of the framework's agents and the gap list |
