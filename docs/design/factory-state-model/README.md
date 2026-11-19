@@ -20,7 +20,8 @@ The design and its reviews so far:
 - Revision 10 (88bce8a) answered those. Its round-10 adversarial review left 2 wording items (1 C, 1 D).
 - Revision 11 (b440fb7) answered those. Its round-11 adversarial review left 1 D item.
 - Revision 12 (50cec91) answered it. Its round-12 adversarial review left 1 D item.
-- Revision 13 answers it; review-response.md Part 0 maps it.
+- Revision 13 (ecdeb68) answered it. Its round-13 reviews report no open item, adversarial and alignment alike.
+  review-response.md Part 0 records the round.
 
 The reviews are kept as permanent records beside the design (decision U23).
 
@@ -62,6 +63,8 @@ records, kept as written):
 | `reviews/target-review-r11-2026-11-20.md` | The alignment confirmation pass on revision 11 (b440fb7): no new finding |
 | `reviews/adversarial-review-r12-2026-11-20.md` | The adversarial round-12 review of revision 12 (50cec91): the earlier item verified, 1 new finding (D) |
 | `reviews/target-review-r12-2026-11-20.md` | The alignment confirmation pass on revision 12 (50cec91): no new finding |
+| `reviews/adversarial-review-r13-2026-11-20.md` | The adversarial round-13 review of revision 13 (ecdeb68): the earlier item verified, no new finding, 0 open |
+| `reviews/target-review-r13-2026-11-20.md` | The alignment confirmation pass on revision 13 (ecdeb68): no new finding, 0 open |
 | `revert-and-batching.md` | Fast revert and batched deploys to shared AWS environments: failure taxonomy, techniques, how others batch, the two-track recommendation, hazards in today's code |
 | `review-protocol.md` | The structured maker/checker exchange: standards compared (SARIF, Web Annotation, LSP, Gerrit, A2A …), the `factory-review/v1` schema with examples, transport, multi-way resolution |
 | `checker-landscape.md` | Checker agents and tools per stage, with an inventory of the framework's agents and the gap list |

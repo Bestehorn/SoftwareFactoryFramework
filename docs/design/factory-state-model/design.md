@@ -26,7 +26,8 @@ History:
   findings (1 C, 1 D) on the same check.
 - **Revision 11** (b440fb7) answered those 2. Its round-11 adversarial review verified both and raised 1 D finding.
 - **Revision 12** (50cec91) answered it. Its round-12 adversarial review verified it and raised 1 D finding.
-- **Revision 13** answers it.
+- **Revision 13** (ecdeb68) answered it. Its round-13 reviews verified it and raised nothing: both reviews report no
+  open item.
 
 All review reports are in
 [`docs/reports/factory-state-model-2026-11/reviews/`](../../reports/factory-state-model-2026-11/reviews/), and

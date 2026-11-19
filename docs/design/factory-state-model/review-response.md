@@ -1,6 +1,14 @@
 # Responses to the reviews (revision 13, 2026-11-20)
 
-Twelve rounds so far:
+**Round 13** (the reviews of revision 13, 2026-11-20) closed the loop: the adversarial review verified the one open
+item and raised nothing
+([adversarial-review-r13-2026-11-20.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r13-2026-11-20.md)),
+and the alignment review raised nothing
+([target-review-r13-2026-11-20.md](../../reports/factory-state-model-2026-11/reviews/target-review-r13-2026-11-20.md)).
+Both report no open item. What stays open is listed as such in decisions.md: the O entries, among them the operator's
+call O16.
+
+Twelve rounds with findings:
 
 - **Round 12** (the reviews of revision 12): answered by revision 13, in Part 0.
 - **Round 11** (the reviews of revision 11): answered by revision 12, in Part 1, kept as written.
