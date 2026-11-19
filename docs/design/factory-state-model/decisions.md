@@ -1,11 +1,12 @@
-# Decisions behind the factory state model (revision 2, 2026-11-16)
+# Decisions behind the factory state model (revision 3, 2026-11-19)
 
 Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
-- **R**: adopted from the two reviews in revision 2, by the designer; reversible and open to the next review. The
-  finding ids name their source.
+- **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3. All are reversible
+  and open to the next review. The finding ids name their source: [aN3] and [tN3] are new findings of the adversarial
+  and the alignment re-review of revision 2.
 - **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
 
@@ -89,6 +90,29 @@ Where an entry there differs from this file, this file wins.
 | R31 | The tier-S minimum path, with one combined review pass as today | C7, T-16 | §7.3 |
 | R32 | The stop gates and release vocabulary accept a transition, `needs-input`, `ci-pending` or release as a valid end; the phase-2 renderer comes before the new roles | T-11, T-14 | §16 |
 | R33 | Per-host fine-grained tokens, without the permissions behind irreversible operations | B9 | §15.2 |
+| R34 | EVERY caller of the transition verb holds the claim ref for the length of its call (`record` claims for the steward, the recorder, `/get-guidance`, the dispatcher). The steward is the only caller of TEST-READY's exits; the watcher records facts. The reconciler touches only issues whose claim is free and whose intent is older than L | aN1, B2 | §4.4, §4.5, §5.3 |
+| R35 | The authority table has Conductor, Arbiter, Question-checker and Dispatcher rows, and complete Steward and Watcher rows; the reconciler only completes or undoes another role's intent; the dispatcher closes `split` parents | aN2, A1, C9 | §4.5 |
+| R36 | The claim ref is permanent: `held` and `free` commits, both keeping the fold cursor; the issue branch and the claim are pushed in one atomic push; renewal only on writing wrapper calls, with no heartbeat; group claims in one atomic push. Supersedes R2's delete-on-release and back-off | aN4, B1, C4, C17, C20 | §5 |
+| R37 | The wrapper marks EVERY agent comment and body write and refuses unmarked ones from agent paths; forge MCP write tools are denied to agents; a human's comment changes state only through explicit forms (`/answer`, `/approve`, `/amend`, `/stage`); hand-set stage labels are reverted, never overrides | aN5, aN13, A4, B4, C16 | §8.2, §8.3, §4.4 |
+| R38 | The ask is the title plus the body above a machine-owned marker; agents write only below it | aN6, B5 | §4.3 |
+| R39 | Queue exclusions for every queue; a `ci-pending` timeout; `env-incident` issues outside every queue, with an owner on the allow-list; the recorder starts only on an explicit form newer than its last run; every steward reject and a PR closed unmerged return the issue | aN3 | §4.2, §12.5, §12.7, §14 |
+| R40 | The revert fact is a `Steward-Reverts` trailer on the steward's own first-parent merge; a GitHub trunk ruleset is required; the steward checks each first-parent push's actor in the activity record | aN7, B7, B15 | §3.5, §10.4, §10.8 |
+| R41 | Setup enables "Allow GitHub Actions to create and approve pull requests"; the steward checks it every tick; a refused revert PR is an immediate `env-incident`; the revert exemption and ordering require the steward's identity AND an exact `git revert -m 1` of a steward merge | aN8, B14 | §3.5, §10.4 |
+| R42 | Every stage exit that closes a stage needs a verdict from a separately started checker; in-session lane records are as trustworthy as the maker's session; tier S's spec pass stays in-session as a recorded trade-off | aN9, A2, B6 | §8.5 |
+| R43 | Deploy facts are read from the run API, pinned to the deploy workflow's path, event, trunk ref and environment; `verdict --conclusion` is replaced; issue records count only when they name a pinned run | aN10 | §4.2, §4.5, §10.8 H13 |
+| R44 | `eligibility` waits while an issue the PR references carries `hold` | aN11 | §3.2 |
+| R45 | The Minimum revert tier also requires the stateful replacement/deletion detector and a migration ledger; the cache digest sits in the S3 object's metadata | aN14, B17 | §10.3, §10.6 |
+| R46 | An edited record comment puts the issue on `tamper` instead of being skipped | aN15, C21 | §8.2 |
+| R47 | Whether an arbiter decision overrules a legal or security finding is computed from the records | C22 | §8.7 |
+| R48 | The close-out reads no logs and may delete only resources tagged with its issue; a separately started, read-only log-scan lane scans the deploy window | tN1, T-13 | §7.2, §11 |
+| R49 | The spend line carries `model=`, `writes=` and `step-seconds=`, and every role that runs an agent context writes it | tN3, B10 | §13 |
+| R50 | Only the cost, bounce and claim counters are report-only for the first 20 issues per tier; the review caps stay enforced | tN4 | §13 |
+| R51 | An "environment" rework cause is confirmed by the steward's infra classifier or the attributor; the issue stays in REWORK-REQUIRED, `blocked-by` the incident, and is re-checked when it closes | tN10 | §4.2 |
+| R52 | Decision A2 is reversed, and `check-handoff` superseded, only once the dispatcher runs on a host | tN11 | §14, §16, §18 |
+| R53 | A START issue filed by a factory login with `Origin: production` is pulled before everything else | T-09 | §6.1, §14 |
+| R54 | A docs-drift checker and tools in IMPLEMENTATION-READY when a change touches a documented interface | tN7 | §7.2 |
+| R55 | The pen test is batched and not a release gate; exploitable findings enter START as `priority:critical` | tN8 | §7.2, traceability C10 |
+| R56 | Under U24 an approval's human authorship is not provable; a project whose auditors need it revisits U24 or uses a forge-native gate only the operator can pass | tN9 | §12.10 |
 
 ## B: working baseline (recommended, open to review)
 
@@ -128,5 +152,5 @@ Where an entry there differs from this file, this file wins.
 | O11 | Per-agent deny rules by default; Kiro's central MCP and model allowlists (gap analysis 3.2); worker sandboxing | not designed |
 | O12 | The dispatcher's host (Kiro Crew, headless CLI on CI runners, a workstation task), the command that starts a worker with a role and an issue per client, and the governance it inherits | B12 fixes polling only |
 | O13 | ~~Which identity the agents post as~~ | decided as U24 (2026-11-16): the operator's account |
-| O14 | Verify on `sff-test-*` repositories that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically; otherwise use the `factory-claim/` branch prefix | §5.1 |
+| O14 | Verify on `sff-test-*` repositories: that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically, otherwise use the `factory-claim/` branch prefix; atomic multi-ref push support on both forges; whether a push to a custom ref starts any workflow; which actor a GitHub ruleset can exempt for a `GITHUB_TOKEN` trunk push | §5.1, §5.5, §3.5 |
 | O15 | An immutable record per issue: a digest of the folded records written to a protected audit ref at close-out | §19 item 4 |

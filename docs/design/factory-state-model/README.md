@@ -1,14 +1,17 @@
-# Factory state model: review set (revision 2, 2026-11-16)
+# Factory state model: review set (revision 3, 2026-11-19)
 
 A design for a backlog-driven software factory: every issue moves through stages; teams of maker and checker agents
 loop in each stage until a deterministic finish line holds; workers on any machine and client pull work and never
 wait; the human is reached only when no agent can resolve something. **Design only: nothing here is implemented.**
 
-Revision 1 (11073fe, 2026-11-11) was reviewed twice. Revision 2 answers every finding of both reviews; the reviews
-themselves are kept as permanent records beside it (decision U23).
+The design and its reviews so far:
 
-Revision 2 was re-reviewed by the same two reviewers on 2026-11-16. Their open items (21 partly fixed earlier
-findings, 30 new findings, no A) are not answered yet: they are the input to revision 3.
+- Revision 1 (11073fe, 2026-11-11) was reviewed twice, and revision 2 (cec3492) answered every finding.
+- Revision 2 was re-reviewed by the same two reviewers on 2026-11-16: 21 earlier findings partly fixed, 30 new ones,
+  no A.
+- Revision 3 answers all of them; review-response.md Part 1 maps each one.
+
+The reviews are kept as permanent records beside the design (decision U23).
 
 ## Documents
 
@@ -17,7 +20,7 @@ findings, 30 new findings, no A) are not answered yet: they are the input to rev
 | [design.md](design.md) | The consolidated design: principles, stages, flags, delivery modes, finish lines, authority, claims, admission and triage, teams, the review-record exchange, the spec hand-off, batched delivery and revert first, close-out, human input, budgets, the dispatcher, tools, trust and identity, what would change |
 | [decisions.md](decisions.md) | Every decision with its source: the operator's (U), the designer's reversible ones (M), those adopted from the reviews (R), the working baseline open to review (B), open items (O) |
 | [traceability.md](traceability.md) | How the design aligns with the keynote's vision (a vision, not a specification: U22) and how it covers the gap analysis, row by row, with the deliberate differences |
-| [review-response.md](review-response.md) | Every finding of both reviews of revision 1, with its disposition and where revision 2 carries it |
+| [review-response.md](review-response.md) | Every finding of every review round, with its disposition and where the design carries it: Part 1 for the re-reviews of revision 2, Part 2 for the reviews of revision 1 |
 
 Appendices, in [`docs/reports/factory-state-model-2026-11/`](../../reports/factory-state-model-2026-11/) (dated
 records, kept as written):
@@ -37,7 +40,8 @@ records, kept as written):
 | `questions-data.md` | How questions to the operator spread over an issue's life, and what the late ones were |
 | `discussion-log.md` | The chronological design discussion up to revision 1; superseded where it differs from `decisions.md` |
 
-The appendix reports describe revision 1 and are not rewritten. Where they differ from design.md, design.md wins.
+The appendix reports and reviews describe the revision they were written for and are not rewritten. Where they differ
+from design.md, design.md wins.
 
 **The two reference documents are NOT in this repository.** The operator gives them to a reviewer directly:
 
@@ -58,8 +62,8 @@ The appendices only where a section cites them (*R: file*).
 ## Review briefs
 
 Each reviewer gets this folder and the appendices, and nothing else from the discussion. A re-review of revision 2
-starts from review-response.md, "What the next review should check", and verifies the dispositions it disputes against
-design.md.
+starts from review-response.md, "What the next review should check (revision 3)", verifies each disposition of its own
+open items in Part 1 against design.md, and reviews what revision 3 added.
 
 ### 1. Adversarial review of the design
 
@@ -85,7 +89,7 @@ Find what is wrong, missing or unenforceable. In particular:
 5. **Revert first:**
    - a failure mode where the restore makes things worse;
    - a wrong attribution that bounces innocent work;
-   - interactions with the hazards H1–H10.
+   - interactions with the hazards H1–H13.
 6. **Security:**
    - prompt injection through issue text, comments, review records, logs and MCP servers;
    - credential exposure;

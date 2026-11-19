@@ -1,4 +1,120 @@
-# Response to the reviews of revision 1 (revision 2, 2026-11-16)
+# Responses to the reviews (revision 3, 2026-11-19)
+
+Two rounds so far:
+
+- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 1.
+- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 2, kept as written.
+
+A decision id (R, M, U, O) refers to [decisions.md](decisions.md); a section (§) to [design.md](design.md).
+
+# Part 1: the re-reviews of revision 2, answered by revision 3
+
+Both re-reviews read revision 2 (cec3492) on 2026-11-16, in the same independent sessions as round 1:
+
+- [adversarial-review-r2-2026-11-16.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r2-2026-11-16.md):
+  36 of 53 verified, 17 partly; 16 new findings (9 B, 6 C, 1 D), ids aN1–aN16;
+- [target-review-r2-2026-11-16.md](../../reports/factory-state-model-2026-11/reviews/target-review-r2-2026-11-16.md):
+  19 of 23 verified, 4 partly; 14 new findings (1 B, 10 C, 3 D), ids tN1–tN14; 2 status rows partly.
+
+**Outcome.** Every open item is accepted, none rejected:
+
+- the 30 new findings;
+- the 21 partly-fixed findings;
+- the reviewers' remarks on verified ones.
+
+Nearly all follow the reviewers' recommended edits. Three choose among their options:
+
+- **aN1:** option 1. Every caller holds the claim; the steward is the only caller of TEST-READY's exits.
+- **aN4:** option 1. A permanent claim ref with `held` and `free` commits.
+- **aN5:** option 1. Mark every agent write, accept explicit forms only, and restate the residual. Under U24 the
+  residual stays; §15.2 states its true size.
+
+## Revision-1 findings judged "partly" in the re-review
+
+| Id | What was left | Revision 3 |
+|---|---|---|
+| A1 | TEST-READY exits for other rejects and closed PRs; rows for conductor, arbiter, question checker; incomplete steward row; the `split` close; the reconciler's forward roll | §4.2 TEST-READY → REWORK-REQUIRED (every reject, closed PR); §4.5 new and completed rows; `split` close by the dispatcher; the reconciler completes or undoes only (R34, R35, R39) |
+| A4 | Unmarked agent notes pass as the authorised human | §8.2 every agent write marked, unmarked ones refused; §8.3 explicit forms only (R37) |
+| B1 | Lease binds cooperating clients only; branch push check-then-act; no renewal mechanism; expiry vs acquire; stale REST writes | §5.1 permanent ref, atomic branch + claim push, renewal on writing calls only; residuals named in §19 items 2 and 3 (R36) |
+| B2 | The reconciler cannot tell a crashed verb from a live one for callers without a claim | every caller holds the claim; the reconciler touches only free-claim issues with intents older than L (§4.4, R34) |
+| B4 | Recorder re-fires; interpretation unchecked | explicit forms only; started only on a form newer than its last run; free text verbatim (§12.7, R37, R39) |
+| B5 | An agent's body edit changes the ask | the ask is above the machine-owned marker; agents write below it (§4.3, R38) |
+| B6 | The conductor posts every lane's records | §8.5 the in-session boundary; a separately started checker per stage exit (R42) |
+| B7 | `Reverts-PR` on a PR-authored commit; trunk unprotected | `Steward-Reverts` on the steward's own merge; trunk ruleset; activity check (§10.8 H1, H7, H12, R40) |
+| B9 | Worker contents write reaches trunk; dispatcher scope not listed | trunk ruleset (§3.5); dispatcher scope in §4.5, §14, §15.2 |
+| B10 | New comment sources missing from the estimate | §15.2 lists them; `writes=` in the spend lines measures them; no estimate is claimed (R49) |
+| B14 | The revert PR cannot be created on a default repository; label keying | setup and per-tick check of the setting; refusal = `env-incident`; keyed on identity + exact revert content (§10.4, R41) |
+| B17 | Detector not in the Minimum tier; migrations invisible to a change set | detector and migration ledger in the Minimum tier; digest in object metadata (§10.3, §10.6, R45) |
+| C4 | Release deletes the cursor | the cursor lives in `held` and `free` commits and survives every release (§5.1, R36) |
+| C9 | No writer for the `split` close; the parent re-triaged | the dispatcher closes it; `split` excluded from every worker queue (§3.2, §4.2, §14) |
+| C16 | An agent's label write becomes an override | hand-set labels are reverted; `/stage` (§4.4, R37) |
+| C17 | Renewal between wrapper calls | renewal only on writing calls; L from measured step times; no heartbeat (§5.1, R36) |
+| C21 | Rejecting edited records fails open; audit lines editable | `tamper` hold (§8.2, R46); §13 says counters come from editable comments; deletion is §19 item 6 |
+| T-09 | The expedite works only after triage | pre-triage pull of production issues filed by a factory login (§6.1, §14, R53) |
+| T-13 | The log scan sits in the worker that deletes AWS resources | read-only log-scan lane; tag-conditioned deletes (§11, R48) |
+| T-15 | No caller of TEST-READY → CLOSE-READY under `verification: none` | the steward calls it in every mode (§3.5, §4.5) |
+| T-16 | "Checking ≠ proving" has no row | traceability A27 |
+
+The reviewers' remarks on verified findings, applied:
+
+- A2: `actor.agent` is self-declared; bounded by §8.5.
+- B3: the lane queues gained exclusions (§14).
+- B13: `env-incident` issues have no stage and are in no queue (§12.5).
+- B15: per-PR reverts from first-parent trailers.
+- C2: a `ci-pending` timeout, and the tier-S table counts the hand-off (§4.2, §7.3).
+- C18: the deploy guard escalates at once (§10.4).
+- C20: group claims are atomic (§5.3).
+- C22: the overrule is computed (§8.7).
+
+## New findings of the adversarial re-review
+
+| Id | Grade | Finding (short) | Revision 3 |
+|---|---|---|---|
+| aN1 | B | Only workers are fenced | every caller holds the claim; the steward alone calls TEST-READY's exits (§4.4, §4.5, §5.3, R34) |
+| aN2 | B | Writers without a row; the reconciler contradicts §4.4 | §4.5 rows completed (R35) |
+| aN3 | B | Flag and queue combinations strand issues or churn | reject and closed-PR returns; `ci-pending` timeout; `env-incident` outside queues; recorder condition; lane exclusions; `split` close (§4.2, §12.5, §12.7, §14, R39) |
+| aN4 | B | The claim ref's lifecycle contradicts itself | permanent ref with `held`/`free` commits; atomic push; renewal on writing calls (§5, R36) |
+| aN5 | B | The U24 residual is reachable without a compromised agent | marking of every agent write; explicit forms; label reversion; §12.3 item 3 and §15.2 state the forge-gate limits and the true residual (R37) |
+| aN7 | B | `Reverts-PR` from PR commits; GitHub trunk unprotected | `Steward-Reverts`; trunk ruleset; activity check (R40) |
+| aN8 | B | Actions may not create PRs by default; deploy guard freezes | setting in setup, checked per tick; refusal = `env-incident`; content-keyed exemption (R41) |
+| aN9 | B | The maker's session posts the checkers' records | §8.5 boundary; separately started checker per stage exit (R42) |
+| aN10 | B | Deploy fact not pinned; shared bot identity | pinned run from the run API; records count only when they name it (R43) |
+| aN6 | C | Body edits under the shared login change the ask | the machine-owned marker (R38) |
+| aN11 | C | `hold` does not stop landing | `eligibility` waits on an issue `hold` (R44) |
+| aN12 | C | Tier-S table contradicts `ci-pending` | §7.3 hand-offs row: one, to the verifier |
+| aN13 | C | The recorder interprets prose | explicit forms; free text verbatim for the next question checker (§12.7) |
+| aN14 | C | The restore guard rests on detectors that are not required | Minimum tier gains the detector and the migration ledger; digest in object metadata (R45) |
+| aN15 | C | Rejecting edited records fails open; audit lines editable | `tamper` (R46); §13 restated |
+| aN16 | D | The diagram omits `env-incident` | §3.3 names it as not a stage |
+
+The re-review's section 3, "checked and not settled here", is applied:
+
+- **O14 extended:** atomic pushes, custom-ref workflow triggers, and the ruleset actor.
+- **The U21 consistency points:** the label override and the recorder's interpretation are both removed.
+- **The write budget:** it is measured rather than estimated.
+
+## New findings of the alignment re-review
+
+| Id | Grade | Finding (short) | Revision 3 |
+|---|---|---|---|
+| tN1 | B | The close-out reads untrusted logs while holding delete credentials | read-only log-scan lane; tag-conditioned deletes; trust rule 5 extended (§11, §15.1, R48) |
+| tN2 | C | Claims by git ref differ from the keynote's comment tip without a reason | traceability A8 and C12 |
+| tN3 | C | The spend line has no model, and lanes may not write it | `model=`; every agent-running role writes spend lines (§4.5, §13, R49) |
+| tN4 | C | "All budgets report-only" suspends the review caps | only cost, bounce and claim counters are report-only (§13, R50); A13 names it |
+| tN5 | C | A4 and A14 still lean on the open dispatcher host | traceability A4, A14 |
+| tN6 | C | "Nobody looked" has no row | traceability A9 rest; §19 item 12 |
+| tN7 | C | No docs-drift check | docs-drift checker in IMPLEMENTATION (§7.2, R54); traceability A28 |
+| tN8 | C | The pen test as a non-gate has no reason | traceability C10 extended (R55) |
+| tN9 | C | Approvals not provable under U24 | §12.10 limit; rows 15, 3.5, A19 name it (R56) |
+| tN10 | C | The "environment" rework class has no checker and no exit | confirmed by the infra classifier; stays `blocked-by` the incident (§4.2, R51) |
+| tN11 | C | A2 reversed unconditionally | conditional on the dispatcher's host (§14, §16, §18, traceability B.4, R52) |
+| tN12 | D | A23 understates | "aligned on reach; differs on the means" |
+| tN13 | D | Slides 29/30 and messaging untraced | traceability A21, A25 |
+| tN14 | D | The claim needs no Jira equivalent | §3.6 restated |
+
+The two status rows judged partly (A10, row 8, both through T-09) follow the pre-triage expedite.
+
+# Part 2: the reviews of revision 1, answered by revision 2
 
 Both reviews read revision 1 (11073fe) on 2026-11-11, each in a session independent of the designer's:
 
@@ -114,7 +230,7 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 | T-22 | D | C3 and C4 give partial reasons | accepted | traceability C3, C4 |
 | T-23 | D | C2 cites one slide | accepted | traceability C2 |
 
-## What the next review should check
+## What round 2 was asked to check (kept as written)
 
 1. Whether the claim ref (§5) holds up: the custom ref namespace, the atomicity of `--force-with-lease` on both forges
    (O14), and the fencing window (§19 item 2).
@@ -122,3 +238,17 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 3. Whether the queues of §14 make every flag combination pullable by someone, with no issue stranded.
 4. Whether U21's equal scrutiny and §12.3's reserved decisions are consistent everywhere `needs-input`, approvals and
    admission appear.
+
+# What the next review should check (revision 3)
+
+1. **Every caller holds the claim.** Whether, for every edge and every role of §4.5, the claim kind and the fence of
+   §4.4 and §5.3 hold. Pay particular attention to the steward as the only caller of TEST-READY's exits.
+2. **The permanent claim ref** (§5.1–§5.4): `held` and `free` commits, the atomic branch + claim push, renewal on
+   writing calls only, expiry, group claims, the continuation issue.
+3. **Marking and explicit forms** (§8.2, §8.3): whether any path still lets an ordinary agent write count as a human's,
+   and whether the residual in §15.2 is now stated at its true size.
+4. **The queue table** (§14): whether every flag combination is pullable by exactly the right role, and nothing churns.
+5. **The new facts:** `Steward-Reverts`, the pinned deploy run, the trunk ruleset with its activity check, and the
+   Actions-may-create-PRs check (§3.5, §4.2, §10.4, §10.8).
+6. **Traceability** after the alignment re-review's corrections: rows A4, A8–A10, A13, A14, A19, A21, A23, A25, A27,
+   A28; rows 2, 8, 9, 12, 15; C10, C12.
