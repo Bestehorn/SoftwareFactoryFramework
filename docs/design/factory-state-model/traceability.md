@@ -1,4 +1,4 @@
-# Traceability: the design against the keynote's vision and the gap analysis (revision 6, 2026-11-19)
+# Traceability: the design against the keynote's vision and the gap analysis (revision 7, 2026-11-19)
 
 Two reference documents:
 
@@ -10,7 +10,7 @@ Neither is in this repository; the operator provides both to a reviewer ([README
 without a document refer to [design.md](design.md). Decision ids (U, M, R, B, O) refer to [decisions.md](decisions.md),
 finding ids to the reviews in
 [`docs/reports/factory-state-model-2026-11/reviews/`](../../reports/factory-state-model-2026-11/reviews/): [T-05] for the
-first alignment review, [tN5], [tM1], [tP1] and [tQ1] for the alignment reviews of rounds 2 to 5.
+first alignment review, [tN5], [tM1], [tP1], [tQ1] and [tR1] for the alignment reviews of rounds 2 to 6.
 
 **How to read this file** (decision U22):
 
@@ -45,7 +45,7 @@ first alignment review, [tN5], [tM1], [tP1] and [tQ1] for the alignment reviews 
 | A11 | Guardrails: no early stop, no guessing, someone else decides, effort matched to the task (10) | predicates and claims (§4, §5); evidence in every record (§8); maker ≠ checker per agent context, with a separately started checker for the exits §8.5 names (§8.1, §8.5); the tier floor (§6.4); the tier-S path (§7.3); the stop gates extended to accept a transition as a valid end (§16) | aligned [T-11, T-19] |
 | A12 | Drift: the reference is the spec, a separate check compares (11) | acceptance tests written at spec time; the test-freeze run (S's tests over H's code); the ask hash above the machine-owned marker (§4.2, §4.3, §9) | aligned |
 | A13 | Cost: every unattended loop gets a budget; credits per user and model (11) | soft and hard budgets per loop; spend lines from every role, with `model=`, as the source (§13, §17) | partly aligned. Rest: the cost, bounce and claim budgets are report-only for the first 20 issues per tier; Kiro's per-user and per-model usage export (gap analysis 3.1 c) [T-02, tN3, tN4] |
-| A14 | Control: central rules every loop and Crew agent follows (11, 14) | the authority table (§4.5); trust rules for tools (§15.1); per-host tokens without the deployment-approval and administration permissions (§15.2); the deploy role's OIDC trust in trunk only (§15.1 rule 5) [tQ4]; the marking gate (§8.2) | partly aligned. Rest: per-agent deny rules by default and Kiro's central MCP and model allow-lists (O11); sandboxing of workers; the governance dispatcher-started workers inherit (O12) [T-17, tN5] |
+| A14 | Control: central rules every loop and Crew agent follows (11, 14) | the authority table (§4.5); trust rules for tools (§15.1); per-host tokens without the deployment-approval and administration permissions (§15.2); the deploy role's OIDC trust in trunk's tip only, which confines the production deploy on the protected tier (§15.1 rule 5) [tQ4, tR1]; the marking gate (§8.2) | partly aligned. Rest: per-agent deny rules by default and Kiro's central MCP and model allow-lists (O11); sandboxing of workers; the governance dispatcher-started workers inherit (O12) [T-17, tN5] |
 | A15 | "Can the agent run the thing?" (12) | optional local runtime check per project, with a Playwright pilot (§9); the gate is the post-deploy smoke (§10) | partly aligned; differs on running before the PR on a shared environment (C4) [T-20] |
 | A16 | Maker ≠ checker (12, 23, 24) | dedicated checkers per stage (§7); per-context identity (§8.1); a separately started checker for the exits §8.5 names, started through its queue (§8.5, §14); the steward re-runs the fold (§8.6); the checked arbiter with a computed overrule (§8.7); every rework classification confirmed by a checker (§4.2); the tier floor (§6.4) | aligned, with the in-session boundary named in §19 item 5 [T-01, T-19, tN10] |
 | A17 | Kiro Crew: many loops, scheduled, unattended (14–16) | one candidate host of the dispatcher (§14) | partly aligned. Rest: host and worker start (O12); per-agent governance (O11); no MCP auto-discovery for checkers (C11) [T-03, T-17] |

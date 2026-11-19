@@ -1,16 +1,41 @@
-# Responses to the reviews (revision 6, 2026-11-19)
+# Responses to the reviews (revision 7, 2026-11-19)
 
-Five rounds so far:
+Six rounds so far:
 
-- **Round 5** (the reviews of revision 5): answered by revision 6, in Part 0.
-- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 1, kept as written.
-- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 2, kept as written.
-- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 3, kept as written.
-- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 4, kept as written.
+- **Round 6** (the reviews of revision 6): answered by revision 7, in Part 0.
+- **Round 5** (the reviews of revision 5): answered by revision 6, in Part 1, kept as written.
+- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 2, kept as written.
+- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 3, kept as written.
+- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 4, kept as written.
+- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 5, kept as written.
 
 A decision id (R, M, U, O) refers to [decisions.md](decisions.md); a section (§) to [design.md](design.md).
 
-# Part 0: the round-5 reviews of revision 5, answered by revision 6
+# Part 0: the round-6 reviews of revision 6, answered by revision 7
+
+Both reviews read revision 6 (8df28db) on 2026-11-19, in the same independent sessions:
+
+- [adversarial-review-r6-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r6-2026-11-19.md):
+  all 11 round-5 items verified; 7 new findings (2 B, 3 C, 2 D), ids aR1–aR7;
+- [target-review-r6-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/target-review-r6-2026-11-19.md):
+  all 4 round-5 items verified; 1 new finding (D), id tR1.
+
+**Outcome.** All 8 findings are accepted, none rejected; each follows the reviewer's recommended edit. The
+adversarial review also notes that O16 has a third option, a plan that has the protected tier; decisions.md O16 now
+lists it.
+
+| Id | Grade | Finding (short) | Revision 7 |
+|---|---|---|---|
+| aR1 | B | The cancelled-pin rule answers supersession with dispatches that supersede again | option 1: a re-verify deploy only when no other pinned run whose commit contains D is pending, running or done (§4.2, R104) |
+| aR2 | B | A single-job re-run skips a tip check in another job; old-template runs stay re-runnable | option 1: the check is the deploy job's first step, from the default branch; the rollout renames the production environment (H15, §18, R105) |
+| aR3 | C | The ref subject, expression-valued environments and reusable workflows reach the role or key | as proposed: on the protected tier the trust names only the environment subject; the check treats expressions and outside reusable workflows conservatively (§3.5, §15.1 rule 5, R106) |
+| aR4 | C | A landing whose push run never appears is not handled | as proposed: a re-verify deploy after the grace period; a disabled deploy or steward workflow is an `env-incident`; §12.6 names disabling (§3.5, §4.2, §12.6, R104) |
+| aR5 | C | Other trunk `push` and `workflow_run` workflows now start on every landing | as proposed: listed in the setup record for the operator to confirm at setup (§3.5, §18, R107) |
+| aR6 | D | The first-attempt rule names only GitHub's endpoint | as proposed: GitLab's `include_retried=true` (§4.2, H13, R108) |
+| aR7 | D | On issue N, a line naming another issue counts | as proposed (§8.3, R108) |
+| tR1 | D | Two phrases lag the per-tier statement | as proposed (§15.2, traceability A14, R108) |
+
+# Part 1: the round-5 reviews of revision 5, answered by revision 6
 
 Both reviews read revision 5 (1fce726) on 2026-11-19, in the same independent sessions:
 
@@ -43,7 +68,7 @@ the residual in every place, is applied.
 | tQ3 | D | §7.2 CLOSE-READY row still states the tag-only bound | as proposed (§7.2, R101) |
 | tQ4 | D | A14 says worker tokens lack the permissions behind irreversible operations | as proposed (traceability A14, R101) |
 
-# Part 1: the round-4 reviews of revision 4, answered by revision 5
+# Part 2: the round-4 reviews of revision 4, answered by revision 5
 
 Both reviews read revision 4 (049a047) on 2026-11-19, in the same independent sessions:
 
@@ -95,7 +120,7 @@ Revision 5 also states, as a consequence of R75, where the production deploy's c
 trusts only trunk's OIDC subject, or on the protected tier a production environment limited to trunk (§12.3 item 3,
 §15.1 rule 5, R90).
 
-# Part 2: the round-3 reviews of revision 3, answered by revision 4
+# Part 3: the round-3 reviews of revision 3, answered by revision 4
 
 Both reviews read revision 3 (5dcc08f) on 2026-11-19, in the same independent sessions:
 
@@ -130,7 +155,7 @@ variation: for aM5, both options are combined (see below).
 | tM3 | D | The "requirement" rework class has no confirmer | the spec checkers confirm it when re-approving (§4.2, R74) |
 | tM4 | D | The role count does not match | 16 roles listed, 80 % (§16); traceability 3.4 |
 
-# Part 3: the re-reviews of revision 2, answered by revision 3
+# Part 4: the re-reviews of revision 2, answered by revision 3
 
 Both re-reviews read revision 2 (cec3492) on 2026-11-16, in the same independent sessions as round 1:
 
@@ -237,7 +262,7 @@ The re-review's section 3, "checked and not settled here", is applied:
 
 The two status rows judged partly (A10, row 8, both through T-09) follow the pre-triage expedite.
 
-# Part 4: the reviews of revision 1, answered by revision 2
+# Part 5: the reviews of revision 1, answered by revision 2
 
 Both reviews read revision 1 (11073fe) on 2026-11-11, each in a session independent of the designer's:
 
@@ -362,9 +387,16 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 4. Whether U21's equal scrutiny and §12.3's reserved decisions are consistent everywhere `needs-input`, approvals and
    admission appear.
 
-# What the next review should check (revision 6)
+# What the next review should check (revision 7)
 
-1. The round-5 items in Part 0, each against revision 6's design.md.
+1. The round-6 items in Part 0, each against revision 7's design.md.
+2. Whether revision 7's changes leave a neighbouring path open: the re-verify rule against supersession, the tip check
+   as the deploy job's first step and the environment rename, the trust's subject per tier, and the setup record of
+   workflows a landing starts.
+
+# What round 6 was asked to check (revision 6, kept as written)
+
+1. The round-5 items in Part 1, each against revision 6's design.md.
 2. Whether revision 6's changes leave a neighbouring path open:
    - the tip-only deploy (H15), the landing's push run as the pinned deploy, and re-verify dispatches;
    - the classified train-push refusals (H14);

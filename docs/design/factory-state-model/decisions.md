@@ -1,13 +1,14 @@
-# Decisions behind the factory state model (revision 6, 2026-11-19)
+# Decisions behind the factory state model (revision 7, 2026-11-19)
 
 Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
 - **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3, R57–R74 in revision 4,
-  R75–R91 in revision 5, R92–R103 in revision 6. All are reversible and open to the next review. The finding ids name
-  their source: [aN3] and [tN3] are round-2 findings, [aM3] and [tM1] round-3, [aP3] and [tP1] round-4, [aQ3] and
-  [tQ1] round-5 findings, of the adversarial and the alignment review. An entry a later one replaces is struck through
+  R75–R91 in revision 5, R92–R103 in revision 6, R104–R108 in revision 7. All are reversible and open to the next
+  review. The finding ids name their source: [aN3] and [tN3] are round-2 findings, [aM3] and [tM1] round-3, [aP3] and
+  [tP1] round-4, [aQ3] and [tQ1] round-5, [aR3] and [tR1] round-6 findings, of the adversarial and the alignment
+  review. An entry a later one replaces is struck through
   and names its replacement.
 - **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
@@ -162,6 +163,11 @@ Where an entry there differs from this file, this file wins.
 | R101 | The guidance issue is locked to collaborators, and a block is corrected by a new block, never edited; stale wording fixed in §2, §5.3, §7.2 and traceability A14 | aQ10, aQ11, tQ3, tQ4 | §2, §5.3, §7.2, §12.9 |
 | R102 | The dispatcher holds a read-only AWS role for alarm states and Security Agent findings; a source record is confirmed once, when triage sets `priority:critical` | tQ1 | §3.2, §4.5, §14, §15.2 |
 | R103 | The approval setting's recommended sensitive paths include the privileged automation of §3.5; traceability A19 names §19 item 14 | tQ2 | §12.10 |
+| R104 | A cancelled or deleted pinned run leads to a re-verify deploy only when no other pinned run whose commit contains it is pending, running or done; a landing whose push run does not appear within the grace period gets one too; a disabled deploy or steward workflow is an `env-incident` | aR1, aR4 | §3.5, §4.2, §12.6 |
+| R105 | The tip check is the deploy job's first step, run from the default branch, before the deployed commit is checked out; the rollout renames the production environment so that no run of the old workflow can assume the role | aR2 | §10.8 H15, §18 |
+| R106 | On the protected tier the deploy role trusts only the production environment's subject, never the ref subject; the environment check treats expression-valued names as every environment and outside reusable workflows as naming one unless reviewed | aR3 | §3.5, §15.1 rule 5 |
+| R107 | Setup and update list every workflow a landing starts (trunk or train `push`, `workflow_run`) in the setup record | aR5 | §3.5, §18 |
+| R108 | The first-attempt rule on GitLab lists jobs with `include_retried=true`; on issue N a form line counts only when it names no issue or `#N`; the dispatcher's credentials sentence and A14 restated | aR6, aR7, tR1 | §4.2, §8.3, §10.8 H13, §15.2 |
 
 ## B: working baseline (recommended, open to review)
 
@@ -203,4 +209,4 @@ Where an entry there differs from this file, this file wins.
 | O13 | ~~Which identity the agents post as~~ | decided as U24 (2026-11-16): the operator's account |
 | O14 | Verify on `sff-test-*` repositories: that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically, otherwise use the `factory-claim/` branch prefix; atomic multi-ref push support on both forges; whether a push to a custom ref starts any workflow; whether a deploy key can push workflow-file changes; whether the activity record tells a deploy-key push from a push made with the token of the account that added the key (that rulesets accept deploy keys as a bypass, all of them at once, is documented: R96) | §5.1, §5.5, §3.5, §10.8 H14 |
 | O15 | An immutable record per issue: a digest of the folded records written to a protected audit ref at close-out | §19 item 6 |
-| O16 | Whether factory mode on the detected tier may deploy to production at all, given that a worker's trunk push runs its code with the deploy role there; the alternative is non-production environments only on that tier | the operator's call (R93); §15.2 item 5 |
+| O16 | Whether factory mode on the detected tier may deploy to production at all, given that a worker's trunk push runs its code with the deploy role there; the alternatives are non-production environments only on that tier, or a plan that has the protected tier | the operator's call (R93); §15.2 item 5 |

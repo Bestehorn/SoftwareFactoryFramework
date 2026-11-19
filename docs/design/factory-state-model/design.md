@@ -1,4 +1,4 @@
-# Factory state model: design (revision 6, 2026-11-19)
+# Factory state model: design (revision 7, 2026-11-19)
 
 Status: design only. Nothing described here is implemented unless §2 says it exists today.
 
@@ -14,7 +14,9 @@ History:
 - **Revision 5** (1fce726) answered the 21 items left open. Where a round-4 finding showed that a mechanism rested on
   a forge feature the plan does not offer, it replaced the mechanism with a simpler one and stated the residual. Its
   round-5 reviews verified all 21 and raised 15 new findings, one of grade A (aQ1).
-- **Revision 6** answers those 15.
+- **Revision 6** (8df28db) answered those 15. Its round-6 reviews verified all 15 and raised 8 new findings, none of
+  grade A.
+- **Revision 7** answers those 8.
 
 All review reports are in
 [`docs/reports/factory-state-model-2026-11/reviews/`](../../reports/factory-state-model-2026-11/reviews/), and
@@ -24,7 +26,8 @@ All review reports are in
 - [aN3] and [tN3] are round-2 findings;
 - [aM3] and [tM1] are round-3 findings, of the adversarial and the alignment review;
 - [aP3] and [tP1] are round-4 findings;
-- [aQ3] and [tQ1] are round-5 findings.
+- [aQ3] and [tQ1] are round-5 findings;
+- [aR3] and [tR1] are round-6 findings.
 
 Companion documents:
 
@@ -195,7 +198,7 @@ update determine the tier with the operator's own token and record it in `config
 
 | Tier | Where | What guards trunk |
 |---|---|---|
-| **Protected** | GitHub public repositories, or private ones on Pro, Team or Enterprise Cloud, which have rulesets, environments and deployment branches (GitHub Docs, "About rulesets" and "Managing environments for deployment", seen 2026-11-19); GitLab with fine-grained worker tokens (GitLab 19.2 or later) | **Prevention:** a trunk ruleset or protected branch lets exactly ONE credential push trunk: the steward's trunk credential. On GitHub that is a deploy key, held as a secret of an environment whose deployment branches are limited to the default branch, so no run on any other ref can read it. A ruleset's deploy-key bypass covers EVERY deploy key of the repository, so setup and update check that the steward's key is the only write deploy key; listing keys needs the operator's token [aQ5]. The environment admits every default-branch workflow that names it, including those started by `pull_request_target`, `issue_comment` or `workflow_run`. So the steward refuses to land, and checks trunk on every tick for, any workflow other than its own that names its environment, or other than the deploy workflow that names the production environment; a hit on trunk is an `env-incident` [aQ5]. On GitLab it is the steward bot's token, as a protected, masked and hidden CI variable, and the worker tokens hold no permission to read variables or change protection. **Plus detection**, below |
+| **Protected** | GitHub public repositories, or private ones on Pro, Team or Enterprise Cloud, which have rulesets, environments and deployment branches (GitHub Docs, "About rulesets" and "Managing environments for deployment", seen 2026-11-19); GitLab with fine-grained worker tokens (GitLab 19.2 or later) | **Prevention:** a trunk ruleset or protected branch lets exactly ONE credential push trunk: the steward's trunk credential. On GitHub that is a deploy key, held as a secret of an environment whose deployment branches are limited to the default branch, so no run on any other ref can read it. A ruleset's deploy-key bypass covers EVERY deploy key of the repository, so setup and update check that the steward's key is the only write deploy key; listing keys needs the operator's token [aQ5]. The environment admits every default-branch workflow that names it, including those started by `pull_request_target`, `issue_comment` or `workflow_run`. So the steward refuses to land, and checks trunk on every tick for, any workflow other than its own that names its environment, or other than the deploy workflow that names the production environment; a hit on trunk is an `env-incident` [aQ5]. The check treats an expression-valued `environment` as naming every environment, and a call to a reusable workflow outside the repository as naming one unless the setup record lists that workflow as reviewed [aR3]. On GitLab it is the steward bot's token, as a protected, masked and hidden CI variable, and the worker tokens hold no permission to read variables or change protection. **Plus detection**, below |
 | **Detected** | everything else, notably private repositories on GitHub Free, personal or organisation, where rulesets and environments are not available (the chess organisation is on Free, and its ruleset settings say so, operator, 2026-10-26), and GitLab before 19.2, where a worker's `api` scope is full access | **Detection only**, below. Any worker token can push trunk. The steward's deploy key is a repository secret, which a branch workflow can read. The design says so (§15.2) |
 
 **What this does not need.** Worker tokens keep the permissions ordinary work needs, including changing workflow files
@@ -210,6 +213,11 @@ and dispatching workflows:
   landing's deploy, so the steward stops dispatching one (§10.4 step 3), and the deploy template's header rule "the two
   triggers never both fire" becomes "the steward's push starts the deploy" (§18). For trains, setup checks that the
   project's CI `push` triggers exclude `steward/train-*`, so the train CI the steward dispatches stays the only run.
+  Every other workflow whose `push` or `workflow_run` trigger matches trunk or `steward/train-*` now starts on each
+  landing too (a release, a docs deploy, a scan, a second deploy chain); setup and update list them all in the setup
+  record, for the operator to confirm when running setup [aR5].
+- A worker token can disable a workflow. A disabled deploy or steward workflow is an `env-incident`, which the steward
+  checks every tick [aR4].
 
 **Detection, on every tier, by the steward on every tick:** every first-parent commit on trunk must be a steward merge
 whose push the activity record attributes to the steward's credential:
@@ -273,7 +281,7 @@ from a cached folded state (§8.2) [aP3].
 | SPEC-REQUIRED → IMPLEMENTATION-READY (worker for tier S; for M and L, the separately started spec checker) | spec + acceptance tests committed at SHA S on the pushed issue branch; the acceptance tests fail for the right reason at S; every acceptance criterion is referenced by ≥ 1 test (traceability script); all required spec checkers report on S with 0 open blocking findings; **for M and L, one of them is a separately started spec checker** (§8.5) [aN9]; no open blocking question; the approval setting, if on, is satisfied for the spec (§12.10); tier and tags re-derived from the spec's declared footprint, raise only (§6.4). **Side effect** written by the verb: `spec-approved {sha: S, ask_hash}` [C14] |
 | IMPLEMENTATION-READY → TEST-READY (the verifier lane; for a re-enqueue, the worker) | a PR from the branch with `Refs #N`, base = trunk, `do-not-merge` removed (and not a draft where the forge has drafts) [B22]; **S's acceptance tests, run with S's fixtures and test configuration over H's code, pass** [B19]; any change since S to the acceptance tests, the fixtures or configuration they depend on needs a newer `spec-approved`; PR CI green on head H; **the adversarial verifier, started separately at `ci-pending`**, and every required implementation checker report on H with 0 open blocking findings; the approval setting, if on, is satisfied for the PR's changed paths [T-07]; the evidence report is present; `check-pr` exits 0. **The worker never transitions with CI pending:** it sets `ci-pending` and releases. The verifier lane completes the transition when the run ends. When no CI result exists after the `ci-pending` timeout (default 3 × the project's median PR CI duration, at least 1 h), the verifier refuses with "no CI result", clears `ci-pending`, and the issue is back in the implementation queue [aN3]. `enqueue --allow-pending` remains only for a re-enqueue after a rebase that changes no file, when pending CI is the sole unmet clause [C1] |
 | IMPLEMENTATION-READY or REWORK-REQUIRED → SPEC-REQUIRED, the re-spec edge (worker at pickup; the answer recorder on a human form) [aM6] | the ask hash differs from `spec-approved`'s (an authorised human edited above the marker, or an `/amend` was executed), OR an authorised human's `/stage spec-required` names the issue. The record names which. (A REWORK-REQUIRED exit chosen by the team itself goes through the rework analysis below). **Side effects** [aP8]: clear `ci-pending`, `checker-requested`, `review-open` and `review-verify`; put `do-not-merge` on the issue's open PR, or close it; record what was done |
-| TEST-READY → CLOSE-READY (steward) | **every PR of the issue is in state `landed` or `relanded`, or is named in a rework record as replaced by a later PR of the issue** [B15, aN7, aP1]. A PR's state is the last of its first-parent facts: `Steward-PR` (landed), `Steward-Reverts` (reverted), `Steward-Relands` (relanded) (§10.4 step 3). And a **pinned deploy verdict of outcome `green`** on a commit D that contains every landed or relanded merge [aN10, aM3, aP10]. The pinned verdict has four outcomes, read from the jobs API: `green` (the deploy and smoke jobs concluded `success` and no restore step ran); `red`; `restored`; `skipped or refused`. Only `green` counts here. The pinned run is either the trunk `push` run that the steward's landing push started, with D its `head_sha`, or a deploy the steward dispatched itself to re-verify, identified by the run id the dispatch returned (`return_run_details: true` under API version `2022-11-28`; always returned from `2026-03-10`) [aP15, aQ3]. Any other run, a worker's dispatch included, is data. The verdict reads the pinned run's FIRST attempt (`/attempts/1/jobs`), and later attempts are data; a pinned run that was cancelled or deleted counts as `skipped or refused`, and the steward then dispatches a new deploy of trunk's tip [aQ7]. Every `(post-deploy)` item ticked. Under `verification: none`: §3.5 |
+| TEST-READY → CLOSE-READY (steward) | **every PR of the issue is in state `landed` or `relanded`, or is named in a rework record as replaced by a later PR of the issue** [B15, aN7, aP1]. A PR's state is the last of its first-parent facts: `Steward-PR` (landed), `Steward-Reverts` (reverted), `Steward-Relands` (relanded) (§10.4 step 3). And a **pinned deploy verdict of outcome `green`** on a commit D that contains every landed or relanded merge [aN10, aM3, aP10]. The pinned verdict has four outcomes, read from the jobs API: `green` (the deploy and smoke jobs concluded `success` and no restore step ran); `red`; `restored`; `skipped or refused`. Only `green` counts here. The pinned run is either the trunk `push` run that the steward's landing push started, with D its `head_sha`, or a deploy the steward dispatched itself to re-verify, identified by the run id the dispatch returned (`return_run_details: true` under API version `2022-11-28`; always returned from `2026-03-10`) [aP15, aQ3]. Any other run, a worker's dispatch included, is data. The verdict reads the pinned run's FIRST attempt (GitHub: `/attempts/1/jobs`; GitLab: the pipeline's jobs listed with `include_retried=true`, each job's earliest attempt), and later attempts are data [aQ7, aR6]. A pinned run that was cancelled or deleted counts as `skipped or refused`. Supersession cancels pending deploys as a matter of course, so the steward dispatches a new deploy of trunk's tip only when no other pinned run whose commit contains D is pending, running or done; so does a landing whose push run has not appeared within the dispatch grace period [aR1, aR4]. Every `(post-deploy)` item ticked. Under `verification: none`: §3.5 |
 | TEST-READY → REWORK-REQUIRED (steward) | one of: a train record naming this PR the culprit, a conflict, or PR-CI red; Track T's culprit record (§10.4); a blocking finding on the queued PR (`review-open` dequeues it); **the steward rejected the PR for any other reason** (base not trunk, draft, closing keyword, dependency closed unlanded); **the PR was closed unmerged** [aN3]; **a revert of this PR landed outside Track T** (a `Steward-Reverts` fact for a revert the steward did not open, §10.4 step 3) [aM2]; **or an authorised human's `/stage` request** for this issue, which the steward applies after dequeuing the issue's PRs (§8.3) [aM6, aP8]. The record names the cause. Every tick re-derives the exits of every TEST-READY and CLOSE-READY issue from these durable facts, so a return refused by a held claim is applied at the next tick [aM8] |
 | CLOSE-READY → REWORK-REQUIRED (steward) | a `Steward-Reverts` fact landed for one of the issue's PRs after the issue entered CLOSE-READY [aP1] |
 | closed → REWORK-REQUIRED (steward; reopens the issue) | a `Steward-Reverts` fact landed for one of the closed issue's PRs [aP1] |
@@ -744,8 +752,8 @@ form, whether or not the issue has `needs-input` (§12.7, §14) [aM6]:
 
 - the cited comment exists, is unedited, is unmarked, and has an author on the allow-list;
 - the comment is on issue N itself or on the project's guidance issue;
-- the line the record applies is an explicit form for issue N: on issue N any form line, on the guidance issue a line
-  that names `#N` first;
+- the line the record applies is an explicit form for issue N: on issue N a form line that names no issue or names
+  `#N`, on the guidance issue a line that names `#N` first [aR7];
 - the record's form and value equal that line's.
 
 No agent path can produce such a comment through the wrapper: `/get-guidance` prints the lines, and the human posts
@@ -1076,7 +1084,7 @@ gives about 2.5 h red, against about 44 h after the cause was known [C19]. That 
   lets only the steward's deploy key push trunk; elsewhere the per-tick check detects every other push.
 - **H13. The verdict trusts an argument** [aN10, aM3]: `verdict --conclusion` is replaced by the steward reading the
   pinned deploy verdict: the pinned run's first attempt, and its deploy and smoke job conclusions from the jobs API
-  (§4.2) [aQ7].
+  (GitLab: `include_retried=true`) (§4.2) [aQ7, aR6].
 - **H14. A queued PR that the steward cannot push stalls every train** [aP5]. `Git.run` raises on the train push. A
   `GITHUB_TOKEN` may not push a change to a workflow file, so a queued PR touching `.github/workflows/` would fail
   every tick. The fix has two parts:
@@ -1094,7 +1102,13 @@ gives about 2.5 h red, against about 44 h after the cause was known [C19]. That 
   an older trunk commit, and run it with the production role. The fix:
   - the deploy takes no commit input;
   - its job deploys only when its commit is trunk's tip, read when the job starts; otherwise it concludes `skipped or
-    refused` (§10.3). That also covers a re-run or a queued run of an older commit;
+    refused` (§10.3). That also covers a queued run of an older commit;
+  - the check is the deploy job's FIRST step, run from a checkout of the default branch (the steward's copy), before the
+    job checks out the commit to deploy and before any step that uses the role. A re-run of only the deploy job
+    therefore runs it again; a check in a separate job would be skipped, because a single-job re-run reuses the other
+    jobs' results (GitHub Docs, "Re-running workflows and jobs") [aR2];
+  - runs of the old workflow file stay re-runnable for 30 days. So the rollout gives the production environment a new
+    name, and the role's trust names only the new environment's subject: no run of the old file can assume it [aR2];
   - the restore of §10.3 needs no input, because it takes the last green assembly from the cache.
 
 Not fixable by a faster revert: a failed rollback, an irreversible migration, a replaced stateful resource. These need
@@ -1289,7 +1303,8 @@ Examples:
 - "agents may change IAM in the shared dev account".
 
 They are asked once per project and recorded as a decision record or steering line, never per issue again. Worker
-tokens can dispatch, re-run and cancel workflow runs, so who may do that to a deploy is such a policy; the pinned
+tokens can dispatch, re-run, cancel, disable and enable workflows and their runs, so who may do that to a deploy is such
+a policy [aR4]; the pinned
 verdict does not depend on it, because it reads the pinned run's first attempt (§4.2) [aQ7].
 
 ### 12.7 Recording answers [B4, aN3, aN13]
@@ -1527,10 +1542,11 @@ catalogues, a trojanised Claude Code extension on another IDE's marketplace.
    credentials. It holds AWS write credentials only when they are bounded to its own issue's temporary resources, action
    by action: tag-conditioned where the action supports it, scoped by the resource-name prefix otherwise, not granted
    at all where neither is possible (§11) [tM1, tP3].
-   **Deploys run only in CI, from trunk**: the deploy role's trust policy names only the trunk's OIDC subject
-   (`repo:<owner>/<repo>:ref:refs/heads/<trunk>`), or on the protected tier the subject of a production environment
-   whose deployment branches are limited to trunk (`repo:<owner>/<repo>:environment:<name>`; GitHub Docs, "OpenID
-   Connect reference", seen 2026-11-19). The commit it deploys is trunk's tip when the job starts: the deploy takes no
+   **Deploys run only in CI, from trunk**: on the protected tier the deploy role's trust policy names ONLY the
+   subject of a production environment whose deployment branches are limited to trunk
+   (`repo:<owner>/<repo>:environment:<name>`), never the ref subject, which every trunk job without an environment
+   carries [aR3]. On the detected tier, which has no environments, it names the trunk's ref subject
+   (`repo:<owner>/<repo>:ref:refs/heads/<trunk>`) (GitHub Docs, "OpenID Connect reference", seen 2026-11-19). The commit it deploys is trunk's tip when the job starts: the deploy takes no
    commit input, and a re-run or queued run of an older commit concludes `skipped or refused` (H15) [aQ1]. A workflow a
    worker writes on its branch cannot assume the role, on either tier. On the protected tier that confines the
    production deploy to reviewed trunk code; on the detected tier it does not, because a worker can push trunk itself
@@ -1547,8 +1563,8 @@ machine; the design changes the tokens, not the account.
 
 - **One fine-grained token per host**: scoped to the project repositories, expiring, revocable alone. A leaked laptop
   is then revoked without touching the others.
-- The dispatcher's token: contents write (claim refs) and issues write (repairs), nothing more; plus a read-only AWS
-  role for alarm states and Security Agent findings (§14) [tQ1].
+- The dispatcher's credentials: a token with contents write (claim refs) and issues write (repairs), and a read-only
+  AWS role for alarm states and Security Agent findings (§14) [tQ1]; nothing more [tR1].
 - The worker tokens LACK the permissions behind approving a protected deployment and administering the repository.
   Those stay with the operator's own token (§12.3 item 3).
 - The worker tokens keep the permissions ordinary work needs, including "Workflows" and "Actions: write" [aP4, tP1].
@@ -1687,13 +1703,13 @@ human.
 | Spec hand-off | `spec-approved` record, the ask marker and hash, `/amend`, acceptance tests at spec time, the test-freeze run | the orchestrator's FIX splits into SPEC and IMPLEMENTATION teams | the spec phases, the review panel, the tiers |
 | Review exchange | `factory-review/v1` records with `actor.agent` and `notVerified`; a validation and fold script; one envelope per round; separately started checkers for the exits §8.5 names; the arbiter with a computed overrule; `tamper` and the re-fold | the review lanes emit records instead of prose files | the review contract's materiality rules |
 | Checkers | IaC gate, OSV-Scanner, diff coverage, spec lint, logic-bug reviewer, threat-model lane, triage checker, duplicate-confirmer, docs-drift checker, log-scan lane, retro checker, re-fold checker, answer recorder; the `checker-requested` queue that starts the separately started checkers; optional external security review and pen test | housekeeping and doc-reviewer split into maker and checker | the existing lanes |
-| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; the four deploy outcomes, of which only `green` counts (§10.3); Track T attribution; steward-opened revert PRs that declare `Reverts: PR #<k>`; `Steward-Reverts` trailers for every revert confirmed by content, whoever opened it, and `Steward-Relands` for relands; re-verify deploys dispatched with `return_run_details`; the deploy guard, which deploys only trunk's tip (H15); the per-tick activity check of trunk pushes; the per-tick check that no other workflow names the steward's or the production environment; per-tick re-derivation of the TEST-READY and CLOSE-READY exits, with the CLOSE-READY/closed → REWORK-REQUIRED edges; classified train-push refusals (H14) | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); the pinned deploy verdict from the landing's push run or a re-verify dispatch, first attempt only, through the jobs API (H13); the deploy template: no `sha` input, and its header rule "the steward's push starts the deploy" (§3.5); every `eligibility` reject, a closed PR, a revert outside Track T and a `/stage` request return the issue; `eligibility` waits on an issue `hold`; the steward pushes trains and trunk with its deploy key | trains, ancestry verification, `delivery-status` as a status record |
+| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; the four deploy outcomes, of which only `green` counts (§10.3); Track T attribution; steward-opened revert PRs that declare `Reverts: PR #<k>`; `Steward-Reverts` trailers for every revert confirmed by content, whoever opened it, and `Steward-Relands` for relands; re-verify deploys dispatched with `return_run_details`; the deploy guard, which deploys only trunk's tip, as the deploy job's first step from the default branch (H15); a re-verify deploy when a pinned run was cancelled with nothing newer behind it, or a landing's push run never appeared; the per-tick activity check of trunk pushes; the per-tick check that no other workflow names the steward's or the production environment, expression-valued names and outside reusable workflows included; the per-tick check that the deploy and steward workflows are enabled; per-tick re-derivation of the TEST-READY and CLOSE-READY exits, with the CLOSE-READY/closed → REWORK-REQUIRED edges; classified train-push refusals (H14) | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); the pinned deploy verdict from the landing's push run or a re-verify dispatch, first attempt only, through the jobs API (H13); the deploy template: no `sha` input, and its header rule "the steward's push starts the deploy" (§3.5); every `eligibility` reject, a closed PR, a revert outside Track T and a `/stage` request return the issue; `eligibility` waits on an issue `hold`; the steward pushes trains and trunk with its deploy key | trains, ancestry verification, `delivery-status` as a status record |
 | Wrapper and git hooks | marking of every agent comment and body write, and a gate on unmarked ones; the gate on human-owned flag labels in any form, payload label lists included; the explicit-form parser (several forms per comment, and guidance-issue lines that name their issue); the fold's check of cited forms; the folded state with `since` for orientation only, re-folded for every decision; the cursor and folded state in the claim ref; renewal on every wrapper call, from the commit hook, and from `run_tests.py` and `suite_semaphore.py run` while they run; the `pre-push` fence on issue branches; the continuation issue; the write token bucket; the write counter | `call` gates the issue-comment, issue-update and label operations; the GitLab fold orders by note id | the forge API packages |
 | Human input | `/get-guidance`, which prints one block of form lines; the project's guidance issue; the answer recorder executing every explicit form (answers, approvals, `/amend`, `/stage`, `/admit`, `/hold`, `/unhold`, `/priority`, `/clear-tamper`), the re-spec edge, `admitted {ask_hash}`, the question checker with its always-ask list, the decision inventory, standing-permission records, `env-incident` issues outside every worker queue | `continuous-work.md` escalation text | the five-line question shape |
 | Gates and harness | a headless verdict line | the stop gates and the release vocabulary accept a transition, `needs-input`, `ci-pending` or a release as a valid end, once the dispatcher runs [T-11]; `proportionality.md`'s tier-S path and review caps are unchanged [C7, tN4] | the remaining gates |
 | Scheduling | the dispatcher with its queues and exclusions | decision A2 reversed, and `check-handoff` superseded, only once the dispatcher runs on a host [tN11] | — |
 | Clients | the phase-2 renderer first [T-14] | — | — |
-| Setup | the Minimum revert tier required for AWS projects; the protection tier, determined and recorded in `config/delivery.json`; on the protected tier the GitHub trunk ruleset with the steward's deploy key as its one bypass, the key in an environment limited to the default branch and the repository's only write deploy key, or the GitLab steward token as a protected, masked and hidden variable; the Actions-may-create-PRs setting; CI `push` triggers that exclude `steward/train-*`; all checked with the operator's token; the guidance issue, locked to collaborators; the deploy role's OIDC trust in trunk only; the dispatcher's read-only AWS role for alarm states and Security Agent findings [tQ1]; pinned MCP servers; strict MCP config for checkers; per-host fine-grained tokens without the deployment-approval and administration permissions; AWS permissions for temporary resources bounded per action, by tag or by name prefix [tM1, tP3] | both setup prompts and the update prompt | — |
+| Setup | the Minimum revert tier required for AWS projects; the protection tier, determined and recorded in `config/delivery.json`; on the protected tier the GitHub trunk ruleset with the steward's deploy key as its one bypass, the key in an environment limited to the default branch and the repository's only write deploy key, or the GitLab steward token as a protected, masked and hidden variable; the Actions-may-create-PRs setting; CI `push` triggers that exclude `steward/train-*`, and the list of every workflow a landing starts, in the setup record; all checked with the operator's token; at rollout, a renamed production environment, so that no run of the old deploy workflow can assume the role (H15); the guidance issue, locked to collaborators; the deploy role's OIDC trust in trunk only; the dispatcher's read-only AWS role for alarm states and Security Agent findings [tQ1]; pinned MCP servers; strict MCP config for checkers; per-host fine-grained tokens without the deployment-approval and administration permissions; AWS permissions for temporary resources bounded per action, by tag or by name prefix [tM1, tP3] | both setup prompts and the update prompt | — |
 
 **Small defects found on the way**, to fix when the framework is changed:
 
