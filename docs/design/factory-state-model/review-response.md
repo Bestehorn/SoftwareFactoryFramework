@@ -1,22 +1,38 @@
-# Responses to the reviews (revision 12, 2026-11-20)
+# Responses to the reviews (revision 13, 2026-11-20)
 
-Eleven rounds so far:
+Twelve rounds so far:
 
-- **Round 11** (the reviews of revision 11): answered by revision 12, in Part 0.
-- **Round 10** (the reviews of revision 10): answered by revision 11, in Part 1, kept as written.
-- **Round 9** (the reviews of revision 9): answered by revision 10, in Part 2, kept as written.
-- **Round 8** (the reviews of revision 8): answered by revision 9, in Part 3, kept as written.
-- **Round 7** (the reviews of revision 7): answered by revision 8, in Part 4, kept as written.
-- **Round 6** (the reviews of revision 6): answered by revision 7, in Part 5, kept as written.
-- **Round 5** (the reviews of revision 5): answered by revision 6, in Part 6, kept as written.
-- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 7, kept as written.
-- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 8, kept as written.
-- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 9, kept as written.
-- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 10, kept as written.
+- **Round 12** (the reviews of revision 12): answered by revision 13, in Part 0.
+- **Round 11** (the reviews of revision 11): answered by revision 12, in Part 1, kept as written.
+- **Round 10** (the reviews of revision 10): answered by revision 11, in Part 2, kept as written.
+- **Round 9** (the reviews of revision 9): answered by revision 10, in Part 3, kept as written.
+- **Round 8** (the reviews of revision 8): answered by revision 9, in Part 4, kept as written.
+- **Round 7** (the reviews of revision 7): answered by revision 8, in Part 5, kept as written.
+- **Round 6** (the reviews of revision 6): answered by revision 7, in Part 6, kept as written.
+- **Round 5** (the reviews of revision 5): answered by revision 6, in Part 7, kept as written.
+- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 8, kept as written.
+- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 9, kept as written.
+- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 10, kept as written.
+- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 11, kept as written.
 
 A decision id (R, M, U, O) refers to [decisions.md](decisions.md); a section (§) to [design.md](design.md).
 
-# Part 0: the round-11 reviews of revision 11, answered by revision 12
+# Part 0: the round-12 reviews of revision 12, answered by revision 13
+
+Both reviews read revision 12 (50cec91) on 2026-11-20, in the same independent sessions:
+
+- [adversarial-review-r12-2026-11-20.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r12-2026-11-20.md):
+  the round-11 item verified; 1 new finding (D), id aX1;
+- [target-review-r12-2026-11-20.md](../../reports/factory-state-model-2026-11/reviews/target-review-r12-2026-11-20.md):
+  a confirmation pass; no new finding; 0 open.
+
+**Outcome.** The finding is accepted and follows the reviewer's proposed edit.
+
+| Id | Grade | Finding (short) | Revision 13 |
+|---|---|---|---|
+| aX1 | D | The rebuild listing is given only for GitHub | as proposed: GitLab's `GET /projects/:id/pipeline_schedules/:pipeline_schedule_id/pipelines` (§3.5, R118) |
+
+# Part 1: the round-11 reviews of revision 11, answered by revision 12
 
 Both reviews read revision 11 (b440fb7) on 2026-11-20, in the same independent sessions:
 
@@ -31,7 +47,7 @@ Both reviews read revision 11 (b440fb7) on 2026-11-20, in the same independent s
 |---|---|---|---|
 | aW1 | D | The bound needs its own run listing, and recomputing it every poll draws on the shared limit | as proposed: a cached gap history, rebuilt after a restart from one `event=schedule` listing, recomputed when a new scheduled run appears (§3.5, §18, R117) |
 
-# Part 1: the round-10 reviews of revision 10, answered by revision 11
+# Part 2: the round-10 reviews of revision 10, answered by revision 11
 
 Both reviews read revision 10 (88bce8a) on 2026-11-19, in the same independent sessions:
 
@@ -47,7 +63,7 @@ Both reviews read revision 10 (88bce8a) on 2026-11-19, in the same independent s
 | aV1 | C | The bound is undefined at first setup, and the steward's own outages inflate it | as proposed: the 99th percentile over 14 days without this check's incidents, capped at 4 × the interval, the cap until 14 days exist, recomputed every poll (§3.5, §18, R116) |
 | aV2 | D | "Does not count" has two readings | as proposed: cancelled runs are skipped (GitLab: `canceled`, `skipped`) (§3.5, R116) |
 
-# Part 2: the round-9 reviews of revision 9, answered by revision 10
+# Part 3: the round-9 reviews of revision 9, answered by revision 10
 
 Both reviews read revision 9 (775d436) on 2026-11-19, in the same independent sessions:
 
@@ -64,7 +80,7 @@ Both reviews read revision 9 (775d436) on 2026-11-19, in the same independent se
 | aU2 | D | The liveness check is stated for GitHub only | as proposed: GitLab's pipeline schedule endpoint and a read scope (§3.5, §4.5, §14, §15.2, R115) |
 | aU3 | D | A fixed bound of three intervals meets the schedule's measured drops | as proposed: the bound from the steward's own run history, and two consecutive polls (§3.5, R115) |
 
-# Part 3: the round-8 reviews of revision 8, answered by revision 9
+# Part 4: the round-8 reviews of revision 8, answered by revision 9
 
 Both reviews read revision 8 (66c8a50) on 2026-11-19, in the same independent sessions:
 
@@ -83,7 +99,7 @@ write on every tick. The run API also shows a workflow GitHub disabled for inact
 | aT1 | C | The dispatcher's check reads a last tick nothing records | option 2: the workflow's `state` and latest run from the run API; the scheduled tick runs whether or not anything lands (§3.5, §4.5, §14, §15.2, §18, R113) |
 | aT2 | D | Environment secrets cannot be copied | as proposed (H15, R114) |
 
-# Part 4: the round-7 reviews of revision 7, answered by revision 8
+# Part 5: the round-7 reviews of revision 7, answered by revision 8
 
 Both reviews read revision 7 (b236e58) on 2026-11-19, in the same independent sessions:
 
@@ -103,7 +119,7 @@ needs no Actions permission beyond the credentials §15.2 lists.
 | aS3 | D | GitHub has no environment rename; the rename helps only on the protected tier | as proposed, and the detected tier's 30-day window added to §15.2 item 5 (H15, §15.2, §18, R111) |
 | aS4 | D | Setup should run the environment check before the first tick | as proposed (§3.5, §18, R112) |
 
-# Part 5: the round-6 reviews of revision 6, answered by revision 7
+# Part 6: the round-6 reviews of revision 6, answered by revision 7
 
 Both reviews read revision 6 (8df28db) on 2026-11-19, in the same independent sessions:
 
@@ -127,7 +143,7 @@ lists it.
 | aR7 | D | On issue N, a line naming another issue counts | as proposed (§8.3, R108) |
 | tR1 | D | Two phrases lag the per-tier statement | as proposed (§15.2, traceability A14, R108) |
 
-# Part 6: the round-5 reviews of revision 5, answered by revision 6
+# Part 7: the round-5 reviews of revision 5, answered by revision 6
 
 Both reviews read revision 5 (1fce726) on 2026-11-19, in the same independent sessions:
 
@@ -160,7 +176,7 @@ the residual in every place, is applied.
 | tQ3 | D | §7.2 CLOSE-READY row still states the tag-only bound | as proposed (§7.2, R101) |
 | tQ4 | D | A14 says worker tokens lack the permissions behind irreversible operations | as proposed (traceability A14, R101) |
 
-# Part 7: the round-4 reviews of revision 4, answered by revision 5
+# Part 8: the round-4 reviews of revision 4, answered by revision 5
 
 Both reviews read revision 4 (049a047) on 2026-11-19, in the same independent sessions:
 
@@ -212,7 +228,7 @@ Revision 5 also states, as a consequence of R75, where the production deploy's c
 trusts only trunk's OIDC subject, or on the protected tier a production environment limited to trunk (§12.3 item 3,
 §15.1 rule 5, R90).
 
-# Part 8: the round-3 reviews of revision 3, answered by revision 4
+# Part 9: the round-3 reviews of revision 3, answered by revision 4
 
 Both reviews read revision 3 (5dcc08f) on 2026-11-19, in the same independent sessions:
 
@@ -247,7 +263,7 @@ variation: for aM5, both options are combined (see below).
 | tM3 | D | The "requirement" rework class has no confirmer | the spec checkers confirm it when re-approving (§4.2, R74) |
 | tM4 | D | The role count does not match | 16 roles listed, 80 % (§16); traceability 3.4 |
 
-# Part 9: the re-reviews of revision 2, answered by revision 3
+# Part 10: the re-reviews of revision 2, answered by revision 3
 
 Both re-reviews read revision 2 (cec3492) on 2026-11-16, in the same independent sessions as round 1:
 
@@ -354,7 +370,7 @@ The re-review's section 3, "checked and not settled here", is applied:
 
 The two status rows judged partly (A10, row 8, both through T-09) follow the pre-triage expedite.
 
-# Part 10: the reviews of revision 1, answered by revision 2
+# Part 11: the reviews of revision 1, answered by revision 2
 
 Both reviews read revision 1 (11073fe) on 2026-11-11, each in a session independent of the designer's:
 
@@ -479,9 +495,13 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 4. Whether U21's equal scrutiny and §12.3's reserved decisions are consistent everywhere `needs-input`, approvals and
    admission appear.
 
-# What the next review should check (revision 12)
+# What the next review should check (revision 13)
 
-1. The round-11 item in Part 0, against revision 12's design.md.
+1. The round-12 item in Part 0, against revision 13's design.md.
+
+# What round 12 was asked to check (revision 12, kept as written)
+
+1. The round-11 item in Part 1, against revision 12's design.md.
 
 # What round 11 was asked to check (revision 11, kept as written)
 

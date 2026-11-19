@@ -1,4 +1,4 @@
-# Factory state model: design (revision 12, 2026-11-20)
+# Factory state model: design (revision 13, 2026-11-20)
 
 Status: design only. Nothing described here is implemented unless §2 says it exists today.
 
@@ -25,7 +25,8 @@ History:
 - **Revision 10** (88bce8a) answered those 3. Its round-10 adversarial review verified all 3 and raised 2 wording
   findings (1 C, 1 D) on the same check.
 - **Revision 11** (b440fb7) answered those 2. Its round-11 adversarial review verified both and raised 1 D finding.
-- **Revision 12** answers it.
+- **Revision 12** (50cec91) answered it. Its round-12 adversarial review verified it and raised 1 D finding.
+- **Revision 13** answers it.
 
 All review reports are in
 [`docs/reports/factory-state-model-2026-11/reviews/`](../../reports/factory-state-model-2026-11/reviews/), and
@@ -41,7 +42,8 @@ All review reports are in
 - [aT1] is a round-8 finding;
 - [aU1] is a round-9 finding;
 - [aV1] is a round-10 finding;
-- [aW1] is a round-11 finding.
+- [aW1] is a round-11 finding;
+- [aX1] is a round-12 finding.
 
 Companion documents:
 
@@ -245,7 +247,8 @@ and dispatching workflows:
       14 days, leaving out gaps inside an `env-incident` of this check, and capped at 4 × the schedule interval; until
       14 days of history exist it is the cap. The dispatcher keeps the gap history from the scheduled runs it has
       seen, a cache rebuilt after a restart from one listing (`GET …/actions/workflows/{id}/runs?event=schedule` with
-      `created` set to the last 14 days), and recomputes the bound when a new scheduled run appears. Each poll then
+      `created` set to the last 14 days; GitLab:
+      `GET /projects/:id/pipeline_schedules/:pipeline_schedule_id/pipelines`) [aX1], and recomputes the bound when a new scheduled run appears. Each poll then
       costs one short request against the operator's shared hourly limit [aU3, aV1, aW1]. The schedule runs whether or not anything lands, so a quiet period passes. The
       incident opens only when two consecutive polls see the same fault [aU3];
     - the `env-incident` names what it saw: the workflow or schedule disabled (by hand; by GitHub after 60 days without
