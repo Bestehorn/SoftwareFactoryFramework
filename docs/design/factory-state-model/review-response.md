@@ -1,19 +1,37 @@
-# Responses to the reviews (revision 9, 2026-11-19)
+# Responses to the reviews (revision 10, 2026-11-19)
 
-Eight rounds so far:
+Nine rounds so far:
 
-- **Round 8** (the reviews of revision 8): answered by revision 9, in Part 0.
-- **Round 7** (the reviews of revision 7): answered by revision 8, in Part 1, kept as written.
-- **Round 6** (the reviews of revision 6): answered by revision 7, in Part 2, kept as written.
-- **Round 5** (the reviews of revision 5): answered by revision 6, in Part 3, kept as written.
-- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 4, kept as written.
-- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 5, kept as written.
-- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 6, kept as written.
-- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 7, kept as written.
+- **Round 9** (the reviews of revision 9): answered by revision 10, in Part 0.
+- **Round 8** (the reviews of revision 8): answered by revision 9, in Part 1, kept as written.
+- **Round 7** (the reviews of revision 7): answered by revision 8, in Part 2, kept as written.
+- **Round 6** (the reviews of revision 6): answered by revision 7, in Part 3, kept as written.
+- **Round 5** (the reviews of revision 5): answered by revision 6, in Part 4, kept as written.
+- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 5, kept as written.
+- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 6, kept as written.
+- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 7, kept as written.
+- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 8, kept as written.
 
 A decision id (R, M, U, O) refers to [decisions.md](decisions.md); a section (§) to [design.md](design.md).
 
-# Part 0: the round-8 reviews of revision 8, answered by revision 9
+# Part 0: the round-9 reviews of revision 9, answered by revision 10
+
+Both reviews read revision 9 (775d436) on 2026-11-19, in the same independent sessions:
+
+- [adversarial-review-r9-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r9-2026-11-19.md):
+  both round-8 items verified; 3 new findings (1 C, 2 D), ids aU1–aU3;
+- [target-review-r9-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/target-review-r9-2026-11-19.md):
+  a confirmation pass; no new finding; 0 open.
+
+**Outcome.** All 3 findings are accepted; each follows the reviewer's proposed edit.
+
+| Id | Grade | Finding (short) | Revision 10 |
+|---|---|---|---|
+| aU1 | C | A steward whose every tick fails passes the liveness check | as proposed: the last three completed runs all `failure` or `timed_out` open the incident; `cancelled` does not count (§3.5, R115) |
+| aU2 | D | The liveness check is stated for GitHub only | as proposed: GitLab's pipeline schedule endpoint and a read scope (§3.5, §4.5, §14, §15.2, R115) |
+| aU3 | D | A fixed bound of three intervals meets the schedule's measured drops | as proposed: the bound from the steward's own run history, and two consecutive polls (§3.5, R115) |
+
+# Part 1: the round-8 reviews of revision 8, answered by revision 9
 
 Both reviews read revision 8 (66c8a50) on 2026-11-19, in the same independent sessions:
 
@@ -32,7 +50,7 @@ write on every tick. The run API also shows a workflow GitHub disabled for inact
 | aT1 | C | The dispatcher's check reads a last tick nothing records | option 2: the workflow's `state` and latest run from the run API; the scheduled tick runs whether or not anything lands (§3.5, §4.5, §14, §15.2, §18, R113) |
 | aT2 | D | Environment secrets cannot be copied | as proposed (H15, R114) |
 
-# Part 1: the round-7 reviews of revision 7, answered by revision 8
+# Part 2: the round-7 reviews of revision 7, answered by revision 8
 
 Both reviews read revision 7 (b236e58) on 2026-11-19, in the same independent sessions:
 
@@ -52,7 +70,7 @@ needs no Actions permission beyond the credentials §15.2 lists.
 | aS3 | D | GitHub has no environment rename; the rename helps only on the protected tier | as proposed, and the detected tier's 30-day window added to §15.2 item 5 (H15, §15.2, §18, R111) |
 | aS4 | D | Setup should run the environment check before the first tick | as proposed (§3.5, §18, R112) |
 
-# Part 2: the round-6 reviews of revision 6, answered by revision 7
+# Part 3: the round-6 reviews of revision 6, answered by revision 7
 
 Both reviews read revision 6 (8df28db) on 2026-11-19, in the same independent sessions:
 
@@ -76,7 +94,7 @@ lists it.
 | aR7 | D | On issue N, a line naming another issue counts | as proposed (§8.3, R108) |
 | tR1 | D | Two phrases lag the per-tier statement | as proposed (§15.2, traceability A14, R108) |
 
-# Part 3: the round-5 reviews of revision 5, answered by revision 6
+# Part 4: the round-5 reviews of revision 5, answered by revision 6
 
 Both reviews read revision 5 (1fce726) on 2026-11-19, in the same independent sessions:
 
@@ -109,7 +127,7 @@ the residual in every place, is applied.
 | tQ3 | D | §7.2 CLOSE-READY row still states the tag-only bound | as proposed (§7.2, R101) |
 | tQ4 | D | A14 says worker tokens lack the permissions behind irreversible operations | as proposed (traceability A14, R101) |
 
-# Part 4: the round-4 reviews of revision 4, answered by revision 5
+# Part 5: the round-4 reviews of revision 4, answered by revision 5
 
 Both reviews read revision 4 (049a047) on 2026-11-19, in the same independent sessions:
 
@@ -161,7 +179,7 @@ Revision 5 also states, as a consequence of R75, where the production deploy's c
 trusts only trunk's OIDC subject, or on the protected tier a production environment limited to trunk (§12.3 item 3,
 §15.1 rule 5, R90).
 
-# Part 5: the round-3 reviews of revision 3, answered by revision 4
+# Part 6: the round-3 reviews of revision 3, answered by revision 4
 
 Both reviews read revision 3 (5dcc08f) on 2026-11-19, in the same independent sessions:
 
@@ -196,7 +214,7 @@ variation: for aM5, both options are combined (see below).
 | tM3 | D | The "requirement" rework class has no confirmer | the spec checkers confirm it when re-approving (§4.2, R74) |
 | tM4 | D | The role count does not match | 16 roles listed, 80 % (§16); traceability 3.4 |
 
-# Part 6: the re-reviews of revision 2, answered by revision 3
+# Part 7: the re-reviews of revision 2, answered by revision 3
 
 Both re-reviews read revision 2 (cec3492) on 2026-11-16, in the same independent sessions as round 1:
 
@@ -303,7 +321,7 @@ The re-review's section 3, "checked and not settled here", is applied:
 
 The two status rows judged partly (A10, row 8, both through T-09) follow the pre-triage expedite.
 
-# Part 7: the reviews of revision 1, answered by revision 2
+# Part 8: the reviews of revision 1, answered by revision 2
 
 Both reviews read revision 1 (11073fe) on 2026-11-11, each in a session independent of the designer's:
 
@@ -428,9 +446,14 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 4. Whether U21's equal scrutiny and §12.3's reserved decisions are consistent everywhere `needs-input`, approvals and
    admission appear.
 
-# What the next review should check (revision 9)
+# What the next review should check (revision 10)
 
-1. The round-8 items in Part 0, each against revision 9's design.md.
+1. The round-9 items in Part 0, each against revision 10's design.md.
+2. Whether the revised liveness check (§3.5) leaves a neighbouring path open.
+
+# What round 9 was asked to check (revision 9, kept as written)
+
+1. The round-8 items in Part 1, each against revision 9's design.md.
 2. Whether the dispatcher's liveness check (§3.5) and its added "Actions: read" leave a neighbouring path open.
 
 # What round 8 was asked to check (revision 8, kept as written)

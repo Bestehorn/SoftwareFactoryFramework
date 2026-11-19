@@ -1,14 +1,14 @@
-# Decisions behind the factory state model (revision 9, 2026-11-19)
+# Decisions behind the factory state model (revision 10, 2026-11-19)
 
 Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
 - **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3, R57–R74 in revision 4,
-  R75–R91 in revision 5, R92–R103 in revision 6, R104–R108 in revision 7, R109–R112 in revision 8, R113–R114 in revision 9. All are reversible and open to the next
+  R75–R91 in revision 5, R92–R103 in revision 6, R104–R108 in revision 7, R109–R112 in revision 8, R113–R114 in revision 9, R115 in revision 10. All are reversible and open to the next
   review. The finding ids name their source: [aN3] and [tN3] are round-2 findings, [aM3] and [tM1] round-3, [aP3] and
-  [tP1] round-4, [aQ3] and [tQ1] round-5, [aR3] and [tR1] round-6, [aS3] round-7, [aT1] round-8 findings, of the
-  adversarial and the alignment review. An entry a later one replaces is struck through
+  [tP1] round-4, [aQ3] and [tQ1] round-5, [aR3] and [tR1] round-6, [aS3] round-7, [aT1] round-8, [aU1] round-9 findings,
+  of the adversarial and the alignment review. An entry a later one replaces is struck through
   and names its replacement.
 - **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
@@ -174,6 +174,7 @@ Where an entry there differs from this file, this file wins.
 | R112 | Setup and update run the environment-name check and list each hit before factory mode starts | aS4 | §3.5, §18 |
 | R113 | The dispatcher checks the steward's liveness through the run API ("Actions: read"): the workflow active, its latest run within three schedule intervals; the status record stays the watcher's alone. Revises R109 | aT1 | §3.5, §4.5, §14, §15.2, §18 |
 | R114 | The rollout copies the old environment's policy and variables, and the operator re-enters each secret from its source | aT2 | §10.8 H15 |
+| R115 | The liveness check also fires when the steward's last three completed runs all failed or timed out; GitLab reads the pipeline schedule; the bound is the longest gap in the steward's own run history, and two consecutive polls must see the fault | aU1, aU2, aU3 | §3.5, §4.5, §14, §15.2, §18 |
 
 ## B: working baseline (recommended, open to review)
 
