@@ -1,14 +1,14 @@
-# Decisions behind the factory state model (revision 7, 2026-11-19)
+# Decisions behind the factory state model (revision 8, 2026-11-19)
 
 Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
 - **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3, R57–R74 in revision 4,
-  R75–R91 in revision 5, R92–R103 in revision 6, R104–R108 in revision 7. All are reversible and open to the next
+  R75–R91 in revision 5, R92–R103 in revision 6, R104–R108 in revision 7, R109–R112 in revision 8. All are reversible and open to the next
   review. The finding ids name their source: [aN3] and [tN3] are round-2 findings, [aM3] and [tM1] round-3, [aP3] and
-  [tP1] round-4, [aQ3] and [tQ1] round-5, [aR3] and [tR1] round-6 findings, of the adversarial and the alignment
-  review. An entry a later one replaces is struck through
+  [tP1] round-4, [aQ3] and [tQ1] round-5, [aR3] and [tR1] round-6, [aS3] round-7 findings, of the adversarial and the
+  alignment review. An entry a later one replaces is struck through
   and names its replacement.
 - **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
@@ -168,6 +168,10 @@ Where an entry there differs from this file, this file wins.
 | R106 | On the protected tier the deploy role trusts only the production environment's subject, never the ref subject; the environment check treats expression-valued names as every environment and outside reusable workflows as naming one unless reviewed | aR3 | §3.5, §15.1 rule 5 |
 | R107 | Setup and update list every workflow a landing starts (trunk or train `push`, `workflow_run`) in the setup record | aR5 | §3.5, §18 |
 | R108 | The first-attempt rule on GitLab lists jobs with `include_retried=true`; on issue N a form line counts only when it names no issue or `#N`; the dispatcher's credentials sentence and A14 restated | aR6, aR7, tR1 | §4.2, §8.3, §10.8 H13, §15.2 |
+| R109 | The steward checks that the deploy workflow is enabled; the dispatcher checks that the steward's last tick is within three schedule intervals and otherwise opens an `env-incident`; until the dispatcher runs, `enqueue` reports a refused tick dispatch | aS1 | §3.5, §18 |
+| R110 | On the detected tier the deploy job names no environment and the role trusts only the ref subject; setup refuses an environment subject there | aS2 | §15.1 rule 5, §18 |
+| R111 | The rollout creates a new production environment, copies the old one's policy, secrets and variables, points the trust at it and deletes the old one; on the detected tier old-file runs stay re-runnable for 30 days, stated in §15.2 item 5 | aS3 | §10.8 H15, §15.2, §18 |
+| R112 | Setup and update run the environment-name check and list each hit before factory mode starts | aS4 | §3.5, §18 |
 
 ## B: working baseline (recommended, open to review)
 
