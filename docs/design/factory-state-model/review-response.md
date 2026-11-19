@@ -1,15 +1,49 @@
-# Responses to the reviews (revision 5, 2026-11-19)
+# Responses to the reviews (revision 6, 2026-11-19)
 
-Four rounds so far:
+Five rounds so far:
 
-- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 0.
-- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 1, kept as written.
-- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 2, kept as written.
-- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 3, kept as written.
+- **Round 5** (the reviews of revision 5): answered by revision 6, in Part 0.
+- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 1, kept as written.
+- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 2, kept as written.
+- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 3, kept as written.
+- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 4, kept as written.
 
 A decision id (R, M, U, O) refers to [decisions.md](decisions.md); a section (§) to [design.md](design.md).
 
-# Part 0: the round-4 reviews of revision 4, answered by revision 5
+# Part 0: the round-5 reviews of revision 5, answered by revision 6
+
+Both reviews read revision 5 (1fce726) on 2026-11-19, in the same independent sessions:
+
+- [adversarial-review-r5-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r5-2026-11-19.md):
+  all 16 round-4 items verified; 11 new findings (1 A, 3 B, 5 C, 2 D), ids aQ1–aQ11;
+- [target-review-r5-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/target-review-r5-2026-11-19.md):
+  all 5 round-4 items verified; 4 new findings (2 C, 2 D), ids tQ1–tQ4.
+
+**Outcome.** All 15 findings are accepted, none rejected; each follows the reviewer's recommended edit. The one A
+(aQ1) is a defect of today's deploy template and steward that revision 5's choice to keep "Actions: write" on worker
+tokens made reachable: the fix is that the deploy deploys only trunk's tip (H15). aQ2's second option, refusing a
+production environment on the detected tier, is the operator's call and is recorded as O16; the first option, stating
+the residual in every place, is applied.
+
+| Id | Grade | Finding (short) | Revision 6 |
+|---|---|---|---|
+| aQ1 | A | A worker token deploys any commit reachable from trunk with the production role | option 1: no `sha` input; the deploy job deploys only trunk's tip, read at job start, and concludes `skipped or refused` otherwise, which also covers re-runs; the restore needs no input (§10.4 step 4, H15, §15.1 rule 5, R92) |
+| aQ2 | B | On the detected tier a worker's trunk push runs its code with the production role | option 1: the tier stated in §12.3 item 3, §15.1 rule 5, §15.2 (bullet, items 3 and 5) and §19 item 4; option 2 recorded as O16 for the operator (R93) |
+| aQ3 | B | A deploy-key push starts workflows: every landing deploys twice | option 1: the landing's deploy is the trunk push run, pinned by `head_sha`; the steward dispatches only re-verify deploys; setup checks CI push triggers exclude `steward/train-*` (§3.5, §4.2, §10.4 step 3, §18, R94) |
+| aQ4 | B | The fold does not bind a cited form to its issue or value | as proposed: three more conditions (§8.3, R95) |
+| aQ5 | C | "Exactly one credential" rests on two unchecked invariants | as proposed: the only write deploy key, checked by setup and update; the steward refuses and checks other workflows that name its environment, and the production one too (§3.5, §19 item 1, R96) |
+| aQ6 | C | The activity record may show the operator for both kinds of push | as proposed: O14 asks the exact question; §3.5 and §15.2 item 5 state what detection catches on the detected tier either way (R97) |
+| aQ7 | C | "Actions: write" cancels, re-runs and deletes the pinned run | as proposed: the first attempt; a cancelled or deleted pinned run is `skipped or refused` and the tip is redeployed; §12.6 names the permission (§4.2, H13, §12.6, R98) |
+| aQ8 | C | A refusal no PR caused drops every queued PR | as proposed: refusals classified; only a content refusal drops a PR (H14, R99) |
+| aQ9 | C | Tool renewal is a heartbeat | as proposed: only while the parent process lives, capped at 2 × L (§5.1, R100) |
+| aQ10 | D | Wording left from earlier revisions | §2 row, §5.3, §7.2 restated (R101) |
+| aQ11 | D | The guidance issue's own handling | locked to collaborators; corrected by a new block, never edited (§12.9, R101) |
+| tQ1 | C | The dispatcher must re-read AWS records, but holds only forge credentials | as proposed: a read-only AWS role for alarm states and Security Agent findings; confirmed once, at labelling (§3.2, §4.5, §14, §15.2, §18, R102) |
+| tQ2 | C | The bank caveat's row omits that agents may change the automation that guards them | as proposed: A19's rest; the privileged automation in §12.10's recommended sensitive paths (R103) |
+| tQ3 | D | §7.2 CLOSE-READY row still states the tag-only bound | as proposed (§7.2, R101) |
+| tQ4 | D | A14 says worker tokens lack the permissions behind irreversible operations | as proposed (traceability A14, R101) |
+
+# Part 1: the round-4 reviews of revision 4, answered by revision 5
 
 Both reviews read revision 4 (049a047) on 2026-11-19, in the same independent sessions:
 
@@ -61,7 +95,7 @@ Revision 5 also states, as a consequence of R75, where the production deploy's c
 trusts only trunk's OIDC subject, or on the protected tier a production environment limited to trunk (§12.3 item 3,
 §15.1 rule 5, R90).
 
-# Part 1: the round-3 reviews of revision 3, answered by revision 4
+# Part 2: the round-3 reviews of revision 3, answered by revision 4
 
 Both reviews read revision 3 (5dcc08f) on 2026-11-19, in the same independent sessions:
 
@@ -96,7 +130,7 @@ variation: for aM5, both options are combined (see below).
 | tM3 | D | The "requirement" rework class has no confirmer | the spec checkers confirm it when re-approving (§4.2, R74) |
 | tM4 | D | The role count does not match | 16 roles listed, 80 % (§16); traceability 3.4 |
 
-# Part 2: the re-reviews of revision 2, answered by revision 3
+# Part 3: the re-reviews of revision 2, answered by revision 3
 
 Both re-reviews read revision 2 (cec3492) on 2026-11-16, in the same independent sessions as round 1:
 
@@ -203,7 +237,7 @@ The re-review's section 3, "checked and not settled here", is applied:
 
 The two status rows judged partly (A10, row 8, both through T-09) follow the pre-triage expedite.
 
-# Part 3: the reviews of revision 1, answered by revision 2
+# Part 4: the reviews of revision 1, answered by revision 2
 
 Both reviews read revision 1 (11073fe) on 2026-11-11, each in a session independent of the designer's:
 
@@ -328,9 +362,19 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 4. Whether U21's equal scrutiny and §12.3's reserved decisions are consistent everywhere `needs-input`, approvals and
    admission appear.
 
-# What the next review should check (revision 5)
+# What the next review should check (revision 6)
 
-1. The round-4 items in Part 0, each against revision 5's design.md.
+1. The round-5 items in Part 0, each against revision 6's design.md.
+2. Whether revision 6's changes leave a neighbouring path open:
+   - the tip-only deploy (H15), the landing's push run as the pinned deploy, and re-verify dispatches;
+   - the classified train-push refusals (H14);
+   - the fold's binding of a form to its issue (§8.3);
+   - the environment checks and the only-write-deploy-key check (§3.5);
+   - the per-tier statements of the production guard (§12.3, §15.1, §15.2, §19 item 4).
+
+# What round 5 was asked to check (revision 5, kept as written)
+
+1. The round-4 items in Part 1, each against revision 5's design.md.
 2. Whether revision 5's simplifications leave a neighbouring path open:
    - the protection tiers: the deploy key as the ruleset's one bypass and its environment, the GitLab tier, the
      per-tick detection, and whether §15.2 states the detected tier at its true size;

@@ -1,13 +1,14 @@
-# Decisions behind the factory state model (revision 5, 2026-11-19)
+# Decisions behind the factory state model (revision 6, 2026-11-19)
 
 Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
 - **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3, R57–R74 in revision 4,
-  R75–R91 in revision 5. All are reversible and open to the next review. The finding ids name their source: [aN3] and
-  [tN3] are round-2 findings, [aM3] and [tM1] round-3 findings, [aP3] and [tP1] round-4 findings, of the adversarial
-  and the alignment review. An entry a later one replaces is struck through and names its replacement.
+  R75–R91 in revision 5, R92–R103 in revision 6. All are reversible and open to the next review. The finding ids name
+  their source: [aN3] and [tN3] are round-2 findings, [aM3] and [tM1] round-3, [aP3] and [tP1] round-4, [aQ3] and
+  [tQ1] round-5 findings, of the adversarial and the alignment review. An entry a later one replaces is struck through
+  and names its replacement.
 - **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
 
@@ -149,6 +150,18 @@ Where an entry there differs from this file, this file wins.
 | R89 | The AWS bound is per action: tag-conditioned where the action supports it, scoped by the resource-name prefix otherwise (S3 object put and delete), not granted to an agent session where neither is possible | tP3 | §11, §15.1 rule 5, §18 |
 | R90 | Deploys run only in CI from trunk: the deploy role's trust policy names trunk's OIDC subject, or on the protected tier a production environment limited to trunk; irreversible operations are guarded by credentials no agent session holds | tP1, aP4 (consequences of R75) | §12.3, §15.1 rule 5, §15.2 |
 | R91 | The human sets priority with `/priority`; the standing-permission example names the steward; B16 names `/admit` | tP5 | §12.6, §14 |
+| R92 | The deploy takes no commit input and deploys only trunk's tip, read when the job starts; a re-run or a queued run of an older commit concludes `skipped or refused`; the restore needs no input | aQ1 | §10.4 step 4, §10.8 H15, §15.1 rule 5 |
+| R93 | On the detected tier nothing guards the production deploy against a worker: a worker's trunk push runs its code with the deploy role. §12.3, §15.1, §15.2 and §19 say so per tier; whether factory mode there may deploy to production is O16 | aQ2 | §12.3, §15.1, §15.2 item 5, §19 item 4 |
+| R94 | The landing's deploy is the trunk `push` run that the steward's deploy-key push starts, pinned by `head_sha`; the steward dispatches only re-verify deploys; setup checks that CI `push` triggers exclude `steward/train-*` | aQ3 | §3.5, §4.2, §10.4 step 3, §18 |
+| R95 | The fold binds a cited form to its issue: the comment is on the issue or the guidance issue, the line is a form for that issue, and the record's form and value equal the line's | aQ4 | §8.3 |
+| R96 | Setup and update check that the steward's key is the only write deploy key; the steward refuses to land, and checks trunk every tick for, a workflow other than its own that names its environment, or other than the deploy workflow that names the production environment | aQ5 | §3.5 |
+| R97 | On the detected tier detection catches only a push that does not imitate the steward; whether the activity record tells a deploy-key push from its adder's token is part of O14 | aQ6 | §3.5, §15.2 item 5 |
+| R98 | The pinned verdict reads the pinned run's first attempt; a cancelled or deleted pinned run counts as `skipped or refused`, and the steward redeploys trunk's tip; dispatching, re-running and cancelling deploys is a standing permission | aQ7 | §4.2, §10.8 H13, §12.6 |
+| R99 | Train-push refusals are classified: a content refusal drops the newest PR of the first refused train; an authentication, permission, transport or unnamed refusal is an `env-incident`, and that tick lands nothing | aQ8 | §10.8 H14 |
+| R100 | Tool renewal from `run_tests.py` and `suite_semaphore.py run` runs only while their parent process lives, up to 2 × L | aQ9 | §5.1 |
+| R101 | The guidance issue is locked to collaborators, and a block is corrected by a new block, never edited; stale wording fixed in §2, §5.3, §7.2 and traceability A14 | aQ10, aQ11, tQ3, tQ4 | §2, §5.3, §7.2, §12.9 |
+| R102 | The dispatcher holds a read-only AWS role for alarm states and Security Agent findings; a source record is confirmed once, when triage sets `priority:critical` | tQ1 | §3.2, §4.5, §14, §15.2 |
+| R103 | The approval setting's recommended sensitive paths include the privileged automation of §3.5; traceability A19 names §19 item 14 | tQ2 | §12.10 |
 
 ## B: working baseline (recommended, open to review)
 
@@ -188,5 +201,6 @@ Where an entry there differs from this file, this file wins.
 | O11 | Per-agent deny rules by default; Kiro's central MCP and model allowlists (gap analysis 3.2); worker sandboxing | not designed |
 | O12 | The dispatcher's host (Kiro Crew, headless CLI on CI runners, a workstation task), the command that starts a worker with a role and an issue per client, and the governance it inherits | B12 fixes polling only |
 | O13 | ~~Which identity the agents post as~~ | decided as U24 (2026-11-16): the operator's account |
-| O14 | Verify on `sff-test-*` repositories: that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically, otherwise use the `factory-claim/` branch prefix; atomic multi-ref push support on both forges; whether a push to a custom ref starts any workflow; whether a GitHub ruleset accepts a deploy key as its one bypass actor; whether a deploy key can push workflow-file changes; how the activity record names a deploy-key push | §5.1, §5.5, §3.5, §10.8 H14 |
+| O14 | Verify on `sff-test-*` repositories: that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically, otherwise use the `factory-claim/` branch prefix; atomic multi-ref push support on both forges; whether a push to a custom ref starts any workflow; whether a deploy key can push workflow-file changes; whether the activity record tells a deploy-key push from a push made with the token of the account that added the key (that rulesets accept deploy keys as a bypass, all of them at once, is documented: R96) | §5.1, §5.5, §3.5, §10.8 H14 |
 | O15 | An immutable record per issue: a digest of the folded records written to a protected audit ref at close-out | §19 item 6 |
+| O16 | Whether factory mode on the detected tier may deploy to production at all, given that a worker's trunk push runs its code with the deploy role there; the alternative is non-production environments only on that tier | the operator's call (R93); §15.2 item 5 |
