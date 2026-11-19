@@ -1,4 +1,4 @@
-# Traceability: the design against the keynote's vision and the gap analysis (revision 11, 2026-11-19)
+# Traceability: the design against the keynote's vision and the gap analysis (revision 12, 2026-11-20)
 
 Two reference documents:
 
