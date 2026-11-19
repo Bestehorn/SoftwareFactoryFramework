@@ -1,14 +1,67 @@
-# Responses to the reviews (revision 4, 2026-11-19)
+# Responses to the reviews (revision 5, 2026-11-19)
 
-Three rounds so far:
+Four rounds so far:
 
-- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 0.
-- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 1, kept as written.
-- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 2, kept as written.
+- **Round 4** (the reviews of revision 4): answered by revision 5, in Part 0.
+- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 1, kept as written.
+- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 2, kept as written.
+- **Round 1** (the reviews of revision 1): answered by revision 2, in Part 3, kept as written.
 
 A decision id (R, M, U, O) refers to [decisions.md](decisions.md); a section (§) to [design.md](design.md).
 
-# Part 0: the round-3 reviews of revision 3, answered by revision 4
+# Part 0: the round-4 reviews of revision 4, answered by revision 5
+
+Both reviews read revision 4 (049a047) on 2026-11-19, in the same independent sessions:
+
+- [adversarial-review-r4-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r4-2026-11-19.md):
+  15 of 16 round-3 items verified, aM5 partly; 15 new findings (6 B, 8 C, 1 D), ids aP1–aP15; 16 open;
+- [target-review-r4-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/target-review-r4-2026-11-19.md):
+  all 4 round-3 items verified; 5 new findings (1 B, 3 C, 1 D), ids tP1–tP5; 5 open.
+
+**Outcome.** All 21 open items are accepted, none rejected. Several mechanisms of revision 4 rested on forge features
+that some plans lack, and each patch had opened a neighbouring path. Revision 5 therefore simplifies where the reviews
+offered or implied a simpler option, and states the residual instead of adding another layer:
+
+- **R57 is replaced by protection tiers** (aP4, aP5, aP6, aP12, tP1; R75). Worker tokens keep "Workflows" and
+  "Actions: write", so the steward's wake-ups work as today and a workflow-file change lands through the queue, with
+  no human-only step. On the protected tier the trunk ruleset's one bypass is the steward's deploy key, held by an
+  environment limited to the default branch. On the detected tier (GitHub Free private repositories, GitLab before
+  19.2) only the per-tick detection guards trunk, and §15.2 says so.
+- **`/get-guidance` posts nothing** (aM5, tP2; R78): it prints one block of form lines, which the human posts on the
+  project's guidance issue. The mark, its hook and the Kiro difference are gone.
+
+A fact corrected on the way: GitHub Pro private repositories do have rulesets and environments (GitHub Docs, "About
+rulesets", "Managing environments for deployment"), so only GitHub Free is in the detected tier.
+
+| Id | Grade | Finding (short) | Revision 5 |
+|---|---|---|---|
+| aM5 (rest) | B | The `/get-guidance` mark is session-scoped; §15.2 says "or otherwise" | option 2: `/get-guidance` prints the lines on every client, and the human posts them on the guidance issue; only unmarked forms count; "or otherwise" removed (§8.3, §12.3, §12.7, §12.9, §15.2, §16, R78) |
+| aP1 | B | No reland fact; a revert of a revert reads as a revert; no CLOSE-READY return | option 1: a PR's state is the last of `Steward-PR`, `Steward-Reverts`, `Steward-Relands`; landed, relanded or replaced; CLOSE-READY → REWORK-REQUIRED and closed → REWORK-REQUIRED; CLOSE-READY → closed re-checks (§4.2, §4.5, §10.4, §10.5, H1, R79) |
+| aP2 | B | A verdict carries no proof it came from the separately started checker | option 2: the lane calls its exit itself under its `verify` claim; §4.5 lists the exits (§4.2, §4.5, §8.5, R81) |
+| aP3 | B | The folded state is maker-written and trusted by every reader | option 1: orientation only; predicates, separately started checkers and the steward re-fold from the first record (§5.1, §8.2, §8.5, §8.6, R82) |
+| aP4 | B | R57 cuts both steward wake-ups | R57 replaced: worker tokens keep "Actions: write", so both wake-ups stay (§3.5, R75) |
+| aP5 | B | A workflow-file change has no landing path; a queued one fails every tick | the steward pushes trains and trunk with its deploy key, the ruleset's one bypass; a refused train push drops that PR with `queue-failed` (§3.5, H14, R75, R77) |
+| aP6 | B | On GitLab the worker tokens can read the steward's token | option 1: the variable masked and hidden; fine-grained worker tokens from 19.2 (protected tier); before 19.2 the detected tier, not closed (§3.5, §15.2, R75) |
+| aP7 | C | The content key matches legitimate later changes | declared and confirmed: `Reverts: PR #<k>` or GitHub's revert body, confirmed by content; otherwise a candidate that reopens nothing (§10.4 step 3, R80) |
+| aP8 | C | The re-spec edge and `/stage` leave flags and PRs behind | as proposed (§4.2, §4.3, §8.3, R83) |
+| aP9 | C | `/amend` text is not part of the ask | as proposed (§4.3, R84) |
+| aP10 | C | A skipped or refused deploy must not count as red | as proposed: four outcomes (§10.3, §10.4 step 5, R85) |
+| aP11 | C | Gaps in the label gate | as proposed: every form of label write; a source record for `priority:critical` (§3.2, §6.1, §8.2, §15.2, R86) |
+| aP12 | C | What a write-token workflow runs is worker-changeable | changes to privileged automation are risk-tagged `iam-iac`; on the protected tier no `GITHUB_TOKEN` workflow can push trunk, so other default-branch workflows are no exemption; the landed-privilege residual is §19 item 14 (§3.5, §4.5, R75, R76) |
+| aP13 | C | Renewal from the commit hook and long local runs | as proposed (§5.1, R87) |
+| aP14 | C | The continuation writes the stage before the claim exists | as proposed (§5.4, R88) |
+| aP15 | D | `return_run_details` depends on the API version | as proposed (§4.2, §10.4, R85) |
+| tP1 | B | Every workflow-file change needs the operator's token: a human-only step | the alternative, simplified: workflow-file changes land through the queue with the steward's deploy key; P6 and C1 hold again (§3.5, traceability C1, R75) |
+| tP2 | C | Kiro has a prompt-submit hook | moot: `/get-guidance` posts nothing on any client, so neither client needs the hook (§12.9, §16, traceability 3.4, R78) |
+| tP3 | C | S3 object deletion cannot be tag-conditioned | as proposed: the bound per action, name-prefix scope where tags cannot condition (§11, §15.1 rule 5, §18, R89) |
+| tP4 | C | The label gate refuses the `priority:critical` C10 promises | a source record instead of a provenance line: the finding id, re-read by the dispatcher (§3.2, §7.2, traceability C10, R86) |
+| tP5 | D | Three stale sentences | as proposed (§12.6, §14, decisions B16, R91) |
+
+Revision 5 also states, as a consequence of R75, where the production deploy's credential lives: the deploy role
+trusts only trunk's OIDC subject, or on the protected tier a production environment limited to trunk (§12.3 item 3,
+§15.1 rule 5, R90).
+
+# Part 1: the round-3 reviews of revision 3, answered by revision 4
 
 Both reviews read revision 3 (5dcc08f) on 2026-11-19, in the same independent sessions:
 
@@ -43,7 +96,7 @@ variation: for aM5, both options are combined (see below).
 | tM3 | D | The "requirement" rework class has no confirmer | the spec checkers confirm it when re-approving (§4.2, R74) |
 | tM4 | D | The role count does not match | 16 roles listed, 80 % (§16); traceability 3.4 |
 
-# Part 1: the re-reviews of revision 2, answered by revision 3
+# Part 2: the re-reviews of revision 2, answered by revision 3
 
 Both re-reviews read revision 2 (cec3492) on 2026-11-16, in the same independent sessions as round 1:
 
@@ -150,7 +203,7 @@ The re-review's section 3, "checked and not settled here", is applied:
 
 The two status rows judged partly (A10, row 8, both through T-09) follow the pre-triage expedite.
 
-# Part 2: the reviews of revision 1, answered by revision 2
+# Part 3: the reviews of revision 1, answered by revision 2
 
 Both reviews read revision 1 (11073fe) on 2026-11-11, each in a session independent of the designer's:
 
@@ -275,9 +328,21 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 4. Whether U21's equal scrutiny and §12.3's reserved decisions are consistent everywhere `needs-input`, approvals and
    admission appear.
 
-# What the next review should check (revision 4)
+# What the next review should check (revision 5)
 
-1. The round-3 items in Part 0, each against revision 4's design.md.
+1. The round-4 items in Part 0, each against revision 5's design.md.
+2. Whether revision 5's simplifications leave a neighbouring path open:
+   - the protection tiers: the deploy key as the ruleset's one bypass and its environment, the GitLab tier, the
+     per-tick detection, and whether §15.2 states the detected tier at its true size;
+   - workflow-file changes through the queue, and privileged automation as `iam-iac` (§19 item 14);
+   - `/get-guidance` printing, the guidance issue, and the recorder applying its lines;
+   - the reland fact, declared reverts, and the CLOSE-READY and closed returns;
+   - the checkers calling their own exits, and the re-fold for every decision;
+   - the deploy role's OIDC trust (§15.1 rule 5) and the per-action AWS bound (§11).
+
+# What round 4 was asked to check (revision 4, kept as written)
+
+1. The round-3 items in Part 1, each against revision 4's design.md.
 2. Whether the new paths revision 4 opened leave a neighbouring path open, as round 3 found for revision 3:
    - the `checker-requested` queue;
    - the forms the recorder now executes, and the re-spec edge;

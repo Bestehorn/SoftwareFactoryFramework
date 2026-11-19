@@ -1,12 +1,13 @@
-# Decisions behind the factory state model (revision 4, 2026-11-19)
+# Decisions behind the factory state model (revision 5, 2026-11-19)
 
 Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
-- **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3, R57–R74 in revision 4.
-  All are reversible and open to the next review. The finding ids name their source: [aN3] and [tN3] are round-2
-  findings, [aM3] and [tM1] round-3 findings, of the adversarial and the alignment review.
+- **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3, R57–R74 in revision 4,
+  R75–R91 in revision 5. All are reversible and open to the next review. The finding ids name their source: [aN3] and
+  [tN3] are round-2 findings, [aM3] and [tM1] round-3 findings, [aP3] and [tP1] round-4 findings, of the adversarial
+  and the alignment review. An entry a later one replaces is struck through and names its replacement.
 - **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
 
@@ -111,26 +112,43 @@ Where an entry there differs from this file, this file wins.
 | R52 | Decision A2 is reversed, and `check-handoff` superseded, only once the dispatcher runs on a host | tN11 | §14, §16, §18 |
 | R53 | A START issue filed by a factory login with `Origin: production` is pulled before everything else | T-09 | §6.1, §14 |
 | R54 | A docs-drift checker and tools in IMPLEMENTATION-READY when a change touches a documented interface | tN7 | §7.2 |
-| R55 | The pen test is batched and not a release gate; exploitable findings enter START as `priority:critical` | tN8 | §7.2, traceability C10 |
+| R55 | The pen test is batched and not a release gate; exploitable findings enter START as `priority:critical` (revised by R86: set by triage on the finding's source record) | tN8 | §7.2, traceability C10 |
 | R56 | Under U24 an approval's human authorship is not provable; a project whose auditors need it revisits U24 or uses a forge-native gate only the operator can pass | tN9 | §12.10 |
-| R57 | No worker-writable path to a write token: worker tokens lack "Workflows" and "Actions: write"; write-token workflows run only on the default branch; branch code runs with `contents: read`; workflow-file changes land with the operator's token; the GitLab steward token is a protected variable. The ruleset then exempts GitHub Actions, and the activity check reads "pushed by GitHub Actions" | aN7 | §3.5, §10.8 H7, §15.2 |
+| R57 | ~~No worker-writable path to a write token: worker tokens lack "Workflows" and "Actions: write"; write-token workflows run only on the default branch; branch code runs with `contents: read`; workflow-file changes land with the operator's token; the GitLab steward token is a protected variable. The ruleset then exempts GitHub Actions, and the activity check reads "pushed by GitHub Actions"~~: replaced by R75 | aN7 | §3.5 |
 | R58 | The separately started checkers are started through a `checker-requested:<lane>` flag and its queue row; §8.5 names which exits need one, including the START exits, and records the exits without one as trade-offs | aM1 | §3.2, §4.1, §8.5, §14 |
-| R59 | The revert fact is keyed on content: any landed exact revert of a steward merge gets a `Steward-Reverts` trailer, and returns (or reopens) the reverted PR's issue; only the CI exemption and the ordering stay keyed on the steward's identity | aM2 | §4.2, §10.4 |
-| R60 | The pinned deploy verdict is the run the steward dispatched (`return_run_details`, `dispatched run <id> for <sha>`) or a trunk push run's `head_sha`, with the deploy and smoke jobs green and no restore step; a restored or skipped deploy concludes `failure` | aM3 | §4.2, §10.3, §10.4 |
-| R61 | Human-owned flags (`hold`, `priority`, `admitted`, clearing `tamper`) change only through explicit forms; the wrapper refuses agents' label writes of them; the dispatcher reverts unbacked ones | aM4 | §3.2, §4.4, §8.2 |
-| R62 | A form counts only when an authorised human posted it, or when an interactive `/get-guidance` session posted it; the `/get-guidance` mark is accepted only in a session the human started the command in (Claude Code: a `UserPromptSubmit` hook); Kiro prints the form lines for the human; the fold re-checks every cited form | aM5 | §8.3, §12.3, §12.7, §12.9 |
+| R59 | The revert fact is keyed on content: any landed exact revert of a steward merge gets a `Steward-Reverts` trailer, and returns (or reopens) the reverted PR's issue; only the CI exemption and the ordering stay keyed on the steward's identity (revised by R79, R80: relands, and declared reverts confirmed by content) | aM2 | §4.2, §10.4 |
+| R60 | The pinned deploy verdict is the run the steward dispatched (`return_run_details`, `dispatched run <id> for <sha>`) or a trunk push run's `head_sha`, with the deploy and smoke jobs green and no restore step; a restored or skipped deploy concludes `failure` (revised by R85: four outcomes) | aM3 | §4.2, §10.3, §10.4 |
+| R61 | Human-owned flags (`hold`, `priority`, `admitted`, clearing `tamper`) change only through explicit forms; the wrapper refuses agents' label writes of them; the dispatcher reverts unbacked ones (revised by R86: every form of label write) | aM4 | §3.2, §4.4, §8.2 |
+| R62 | ~~A form counts only when an authorised human posted it, or when an interactive `/get-guidance` session posted it; the `/get-guidance` mark is accepted only in a session the human started the command in (Claude Code: a `UserPromptSubmit` hook); Kiro prints the form lines for the human~~: replaced by R78. The fold's re-check of every cited form stays | aM5 | §8.3 |
 | R63 | The answer recorder executes every explicit form, with or without `needs-input`; the re-spec edge IMPLEMENTATION-READY / REWORK-REQUIRED → SPEC-REQUIRED exists; `/stage` on TEST-READY is a steward request; `/amend` from TEST-READY on is refused | aM6 | §4.2, §4.3, §8.3, §12.7 |
 | R64 | Admission names the ask (`admitted {ask_hash}`); a changed ask drops an outsider's issue back to read-only triage | aM7 | §4.3, §6.3 |
 | R65 | Every steward tick re-derives both TEST-READY exits for every TEST-READY issue from durable facts | aM8 | §4.2, §14 |
-| R66 | The claim commits carry the folded state at the cursor; a new holder reads it and fetches comments `since` the last fold | aM9 | §5.1, §8.2 |
-| R67 | Renewal on every wrapper call and from the commit hook, as a ref-only push; a checkpoint is at least every commit; L capped at 90 minutes | aM10 | §5.1 |
+| R66 | The claim commits carry the folded state at the cursor; a new holder reads it and fetches comments `since` the last fold (revised by R82: for orientation only) | aM9 | §5.1, §8.2 |
+| R67 | Renewal on every wrapper call and from the commit hook, as a ref-only push; a checkpoint is at least every commit; L capped at 90 minutes (revised by R87) | aM10 | §5.1 |
 | R68 | The `pre-push` hook refuses an issue-branch push that is not the atomic push with the claim lease | aM11 | §5.1 |
-| R69 | The continuation writes the new issue's stage and `continued from` line first, then the atomic push, then closes the old issue administratively; the reconciler finishes a half-done one | aM12 | §5.4 |
+| R69 | The continuation writes the new issue's stage and `continued from` line first, then the atomic push, then closes the old issue administratively; the reconciler finishes a half-done one (revised by R88: the atomic push comes first) | aM12 | §5.4 |
 | R70 | Every queue row requires "no claim"; a re-fold checker queue for `tamper`; `env-incident` issues are in no worker queue but the recorder executes forms on them | aM13 | §14 |
 | R71 | The Actions-may-create-PRs setting and the ruleset are checked by setup and update with the operator's token; the steward checks per tick only what its token can read | aM14 | §3.5, §10.8 H11 |
 | R72 | The watcher writes facts and `env-incident` issues only (`issues: write`); the steward applies the `blocked-by` an incident causes, under a `record` claim | aM15 | §4.5 |
-| R73 | Trust rule 5 is a bound: a session that reads untrusted content never holds deploy credentials, and holds AWS write credentials only tag-conditioned to its issue's temporary resources; every team that makes them creates and deletes only under that tag | tM1 | §11, §15.1, §18 |
+| R73 | Trust rule 5 is a bound: a session that reads untrusted content never holds deploy credentials, and holds AWS write credentials only tag-conditioned to its issue's temporary resources; every team that makes them creates and deletes only under that tag (revised by R89: per action) | tM1 | §11, §15.1, §18 |
 | R74 | A "requirement" rework cause is confirmed by the spec checkers when they re-approve the amended criteria | tM3 | §4.2 |
+| R75 | Trunk protection comes in two tiers by forge plan, recorded by setup. Protected (GitHub public, or private on Pro, Team or Enterprise Cloud; GitLab 19.2+ with fine-grained worker tokens): a ruleset whose one bypass is the steward's deploy key, held by an environment limited to the default branch (GitLab: the steward token as a protected, masked and hidden variable). Detected (GitHub Free private; GitLab before 19.2): detection only. On every tier the steward checks each trunk push's actor per tick. Worker tokens keep "Workflows" and "Actions: write"; workflow-file changes land through the queue; the steward pushes trains and trunk with its deploy key. Supersedes R57 | aN7, aP4, aP5, aP6, aP12, tP1 | §3.5, §4.5, §10.8 H7 H12, §15.2 |
+| R76 | Changes to privileged automation (workflow files, the steward's and the deploy pipeline's scripts and local actions, `templates/ci/`) are risk-tagged `iam-iac`; that they run with privilege once landed is a stated weakness | aP12 | §3.5, §19 item 14 |
+| R77 | A refused train push drops that PR with `queue-failed` instead of failing the tick | aP5 | §10.8 H14 |
+| R78 | `/get-guidance` posts nothing: it prints one block of form lines, each naming its issue, which the human posts on the project's guidance issue; only unmarked forms from an authorised human count; no mark, no hook, the same on every client. Supersedes R62 | aM5, tP2 | §8.3, §12.3, §12.7, §12.9, §16 |
+| R79 | A PR's state is the last of its `Steward-PR`, `Steward-Reverts` and `Steward-Relands` facts; TEST-READY → CLOSE-READY needs every PR landed, relanded or replaced; a revert fact returns the issue from TEST-READY, CLOSE-READY or closed; CLOSE-READY → closed re-checks that no revert has landed | aP1 | §4.2, §4.5, §10.4, §10.5, §10.8 H1 |
+| R80 | A revert fact needs a declaration (`Reverts: PR #<k>`, or GitHub's revert body) that the content confirms; an undeclared exact inverse, or a declaration the content does not confirm, is a candidate on the old PR, which reopens nothing; a `Steward-Reverts` merge's inverse is a reland | aP7, aP1 | §10.4 step 3 |
+| R81 | A separately started checker calls its exit itself, under its `verify` claim; §4.5 lists the exits | aP2 | §4.2, §4.5, §8.5 |
+| R82 | The folded state in the claim commits is for orientation only: every predicate evaluation, every separately started checker and the steward re-fold from the first record | aP3 | §5.1, §8.2, §8.5, §8.6 |
+| R83 | The re-spec edge clears `ci-pending`, `checker-requested` and `review-open`/`review-verify`, and sets `do-not-merge` on the PR or closes it; a `/stage` request on TEST-READY dequeues first; the ask check also runs in REWORK-REQUIRED | aP8 | §4.2, §4.3, §8.3 |
+| R84 | The ask is the title, the body above the marker and the text of every executed `/amend`, in comment order; its hash covers all three | aP9 | §4.3 |
+| R85 | The pinned deploy verdict has four outcomes (`green`, `red`, `restored`, `skipped or refused`); only `green` counts for CLOSE-READY, and Track T and `red-since` read only `red` and `restored`; the run id comes from the dispatch response (`return_run_details` under API version 2022-11-28, always from 2026-03-10) | aP10, aP15 | §4.2, §10.3, §10.4 |
+| R86 | The label gate covers every form of label write, payload label lists included; triage sets `priority:critical` only with a source record the dispatcher re-reads (an alarm ARN in alarm state, or an exploitable AWS Security Agent finding id) | aP11, tP4 | §3.2, §6.1, §7.2 |
+| R87 | The commit hook renews best-effort in the background and never fails the commit; `run_tests.py` and `suite_semaphore.py run` renew while they run or wait | aP13 | §5.1 |
+| R88 | The continuation pushes the claims first (the new issue's held, the old one's free, atomically), then writes the stage and the `continued from` line, then closes the old issue. Supersedes R69's order | aP14 | §5.4 |
+| R89 | The AWS bound is per action: tag-conditioned where the action supports it, scoped by the resource-name prefix otherwise (S3 object put and delete), not granted to an agent session where neither is possible | tP3 | §11, §15.1 rule 5, §18 |
+| R90 | Deploys run only in CI from trunk: the deploy role's trust policy names trunk's OIDC subject, or on the protected tier a production environment limited to trunk; irreversible operations are guarded by credentials no agent session holds | tP1, aP4 (consequences of R75) | §12.3, §15.1 rule 5, §15.2 |
+| R91 | The human sets priority with `/priority`; the standing-permission example names the steward; B16 names `/admit` | tP5 | §12.6, §14 |
 
 ## B: working baseline (recommended, open to review)
 
@@ -151,7 +169,7 @@ Where an entry there differs from this file, this file wins.
 | B13 | The budget values and reset rules of the thresholds report (revised by R21) | §13 |
 | B14 | Question discipline: decision inventory up front, question checker, routing by kind, standing permissions as policy, review tasks as one sheet (extended by R29, R14) | §12 |
 | B15 | Trust rules: read-only checkers enforced in IAM; no mutating tool for a checker; everything pinned; strict MCP config for headless checkers; no deploy credentials with untrusted content | §15.1 |
-| B16 | Admission for authors outside the allow-list: read-only triage, then an `admitted` label set by an authorised human (revised by R6) | §6.3 |
+| B16 | Admission for authors outside the allow-list: read-only triage, then an `admitted` label set by an authorised human (revised by R6, R61, R64: `/admit`, recorded with the ask hash) | §6.3 |
 
 ## O: open or deferred
 
@@ -170,5 +188,5 @@ Where an entry there differs from this file, this file wins.
 | O11 | Per-agent deny rules by default; Kiro's central MCP and model allowlists (gap analysis 3.2); worker sandboxing | not designed |
 | O12 | The dispatcher's host (Kiro Crew, headless CLI on CI runners, a workstation task), the command that starts a worker with a role and an issue per client, and the governance it inherits | B12 fixes polling only |
 | O13 | ~~Which identity the agents post as~~ | decided as U24 (2026-11-16): the operator's account |
-| O14 | Verify on `sff-test-*` repositories: that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically, otherwise use the `factory-claim/` branch prefix; atomic multi-ref push support on both forges; whether a push to a custom ref starts any workflow; which actor a GitHub ruleset can exempt for a `GITHUB_TOKEN` trunk push | §5.1, §5.5, §3.5 |
-| O15 | An immutable record per issue: a digest of the folded records written to a protected audit ref at close-out | §19 item 4 |
+| O14 | Verify on `sff-test-*` repositories: that GitHub and GitLab accept pushes to `refs/factory/claims/*` and refuse a lease mismatch atomically, otherwise use the `factory-claim/` branch prefix; atomic multi-ref push support on both forges; whether a push to a custom ref starts any workflow; whether a GitHub ruleset accepts a deploy key as its one bypass actor; whether a deploy key can push workflow-file changes; how the activity record names a deploy-key push | §5.1, §5.5, §3.5, §10.8 H14 |
+| O15 | An immutable record per issue: a digest of the folded records written to a protected audit ref at close-out | §19 item 6 |
