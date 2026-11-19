@@ -1,4 +1,4 @@
-# Factory state model: design (revision 8, 2026-11-19)
+# Factory state model: design (revision 9, 2026-11-19)
 
 Status: design only. Nothing described here is implemented unless §2 says it exists today.
 
@@ -18,7 +18,9 @@ History:
   grade A.
 - **Revision 7** (b236e58) answered those 8. Its round-7 reviews verified all 8; the alignment review raised no new
   finding, the adversarial review 4, none of grade A or B.
-- **Revision 8** answers those 4.
+- **Revision 8** (66c8a50) answered those 4. Its round-8 reviews verified all 4; the alignment review again raised
+  nothing, the adversarial review 2 findings (1 C, 1 D).
+- **Revision 9** answers those 2.
 
 All review reports are in
 [`docs/reports/factory-state-model-2026-11/reviews/`](../../reports/factory-state-model-2026-11/reviews/), and
@@ -30,7 +32,8 @@ All review reports are in
 - [aP3] and [tP1] are round-4 findings;
 - [aQ3] and [tQ1] are round-5 findings;
 - [aR3] and [tR1] are round-6 findings;
-- [aS3] is a round-7 finding.
+- [aS3] is a round-7 finding;
+- [aT1] is a round-8 finding.
 
 Companion documents:
 
@@ -221,10 +224,13 @@ and dispatching workflows:
   record, for the operator to confirm when running setup [aR5].
 - A worker token can disable a workflow, and a disabled workflow is not triggered at all [aR4, aS1]:
   - the steward checks every tick that the deploy workflow is enabled; a disabled one is an `env-incident`;
-  - the steward cannot notice its own workflow being disabled, so the dispatcher (§14) checks on every poll that the
-    steward's last tick, the time of its `delivery-status` record, is within three schedule intervals. Otherwise it
-    opens an `env-incident` that names the likely causes: the workflow disabled, or ticks failing. Until the dispatcher
-    runs (O12), `enqueue` reports a refused tick dispatch to the session that enqueued.
+  - the steward cannot notice its own workflow being disabled, so the dispatcher (§14) checks it on every poll through
+    the run API, with "Actions: read": the workflow's `state` is `active`, and its latest run started within three
+    schedule intervals. The schedule runs whether or not anything lands, so a quiet period passes. Otherwise it opens
+    an `env-incident` naming what it saw: the workflow disabled (by hand, or by GitHub after 60 days without activity
+    in a public repository: GitHub Docs, "Events that trigger workflows", `schedule`), or no recent run [aS1, aT1]. The status record is not used for this: only the watcher
+    writes it, and only after a deploy. Until the dispatcher runs (O12), `enqueue` reports a refused tick dispatch to
+    the session that enqueued.
 
 **Detection, on every tier, by the steward on every tick:** every first-parent commit on trunk must be a steward merge
 whose push the activity record attributes to the steward's credential:
@@ -367,7 +373,7 @@ forges, with exclusivity enforced by the verb. Native single-select storage is a
 | **Question checker** | the same login; a fresh context | none (it writes through the claim holder) | none | a question verdict (pass / answered, with the answer) per question (§12.4) |
 | **Steward** | the steward's CI identity (GitHub: the workflow's `GITHUB_TOKEN` for PRs and comments, and its deploy key for train refs and trunk (an environment secret on the protected tier, a repository secret on the detected tier); GitLab: the steward bot's token, a protected, masked and hidden variable) | `record`, per issue it writes | TEST-READY → CLOSE-READY (from the pinned deploy verdict, or at landing under `verification: none`); TEST-READY → REWORK-REQUIRED, incl. a human's `/stage` request; CLOSE-READY → REWORK-REQUIRED and closed → REWORK-REQUIRED on a revert fact [aP1]; reland moves within TEST-READY; the release verb | trunk (fast-forward to a train), train refs, revert and reland PRs, `Steward-*` trailers (incl. `Steward-Reverts` and `Steward-Relands`), `merge-steward:` lines, `dispatched run` records, culprit / `red-since` / refund records, `env-incident` issues, and the `blocked-by` on the issues an incident affects, including incidents the watcher opened [aM15] |
 | **Watcher** (the deploy pipeline's verdict job) | the deploy pipeline's CI identity: `contents: read`, `issues: write` [aM15] | none | none | verification facts naming the pinned run; `delivery-status`; `env-incident` issues. It sets no flag on a factory issue: the steward applies the `blocked-by` an incident causes at its next tick, under a `record` claim |
-| **Dispatcher** (reconciler, reaper, queue keeper) | the dispatcher's token: contents write (claim refs), issues write (repairs, the `split` close, `blocked-by` clearing); a read-only AWS role for alarm states and Security Agent findings (§14) [tQ1] | `record` | the `split` close; repairs of §4.4; claim expiry (§5.2); no forward edge of another role | repair, reversion and expiry lines; `blocked-by` releases |
+| **Dispatcher** (reconciler, reaper, queue keeper) | the dispatcher's token: contents write (claim refs), issues write (repairs, the `split` close, `blocked-by` clearing), actions read (the steward's liveness, §3.5) [aT1]; a read-only AWS role for alarm states and Security Agent findings (§14) [tQ1] | `record` | the `split` close; repairs of §4.4; claim expiry (§5.2); no forward edge of another role | repair, reversion and expiry lines; `blocked-by` releases |
 | **Answer recorder** (headless) | acting for an authorised human, whose login and comment id the record names | `record` | the re-spec edge on an `/amend` or `/stage spec-required` (§4.2); nothing on TEST-READY, where it posts a steward request record instead [aM6] | `factory: answer` records; clearing `needs-input`; the human-owned flags a form sets (§3.2); `admitted {ask_hash}` |
 | **`/get-guidance`** (interactive, in the human's session) | the operator's login | none | none | nothing on the tracker: it collects, asks, and prints the form lines for the human to post (§12.9) [aM5] |
 | **Authorised human** | a login on the project's human allow-list (the operator; named collaborators) | — | through explicit forms only (§8.3) | reserved decisions (§12.3) are valid only from this role |
@@ -1115,8 +1121,9 @@ gives about 2.5 h red, against about 44 h after the cause was known [C19]. That 
     therefore runs it again; a check in a separate job would be skipped, because a single-job re-run reuses the other
     jobs' results (GitHub Docs, "Re-running workflows and jobs") [aR2];
   - runs of the old workflow file stay re-runnable for 30 days. GitHub has no environment rename, so the rollout
-    creates a new production environment with the old one's deployment-branch policy, secrets and variables, points
-    the role's trust at the new environment's subject, and deletes the old environment. On the protected tier no run
+    creates a new production environment, copies the old one's deployment-branch policy and variables, has the
+    operator re-enter each secret from its source (the API returns no secret values), points the role's trust at the
+    new environment's subject, and deletes the old environment [aT2]. On the protected tier no run
     of the old file can then assume the role [aR2, aS3]. On the detected tier, which has no environments, old-file runs
     stay re-runnable under the ref-subject trust for those 30 days, part of that tier's stated residual (§15.2 item 5);
   - the restore of §10.3 needs no input, because it takes the last green assembly from the cache.
@@ -1516,7 +1523,8 @@ digest, and the recorder executes forms on them.
 
   For each client, the design still needs the command that starts a worker with a role and an issue, and the
   governance it inherits: the same rules, hooks and tool allow-lists as an interactive session [T-17]. Its token scope:
-  contents write (claim refs) and issues write (repairs, the `split` close, `blocked-by` releases) [B9]. For the
+  contents write (claim refs), issues write (repairs, the `split` close, `blocked-by` releases) [B9], and actions read
+  for the steward's liveness check (§3.5) [aT1]. For the
   source-record check of `priority:critical` (§3.2) it also holds a read-only AWS role that can read only alarm states
   and AWS Security Agent findings in the project's accounts, held by the dispatcher's host alone [tQ1].
 
@@ -1576,8 +1584,9 @@ machine; the design changes the tokens, not the account.
 
 - **One fine-grained token per host**: scoped to the project repositories, expiring, revocable alone. A leaked laptop
   is then revoked without touching the others.
-- The dispatcher's credentials: a token with contents write (claim refs) and issues write (repairs), and a read-only
-  AWS role for alarm states and Security Agent findings (§14) [tQ1]; nothing more [tR1].
+- The dispatcher's credentials: a token with contents write (claim refs), issues write (repairs) and actions read (the
+  steward's liveness) [aT1], and a read-only AWS role for alarm states and Security Agent findings (§14) [tQ1]; nothing
+  more [tR1].
 - The worker tokens LACK the permissions behind approving a protected deployment and administering the repository.
   Those stay with the operator's own token (§12.3 item 3).
 - The worker tokens keep the permissions ordinary work needs, including "Workflows" and "Actions: write" [aP4, tP1].
@@ -1717,7 +1726,7 @@ human.
 | Spec hand-off | `spec-approved` record, the ask marker and hash, `/amend`, acceptance tests at spec time, the test-freeze run | the orchestrator's FIX splits into SPEC and IMPLEMENTATION teams | the spec phases, the review panel, the tiers |
 | Review exchange | `factory-review/v1` records with `actor.agent` and `notVerified`; a validation and fold script; one envelope per round; separately started checkers for the exits §8.5 names; the arbiter with a computed overrule; `tamper` and the re-fold | the review lanes emit records instead of prose files | the review contract's materiality rules |
 | Checkers | IaC gate, OSV-Scanner, diff coverage, spec lint, logic-bug reviewer, threat-model lane, triage checker, duplicate-confirmer, docs-drift checker, log-scan lane, retro checker, re-fold checker, answer recorder; the `checker-requested` queue that starts the separately started checkers; optional external security review and pen test | housekeeping and doc-reviewer split into maker and checker | the existing lanes |
-| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; the four deploy outcomes, of which only `green` counts (§10.3); Track T attribution; steward-opened revert PRs that declare `Reverts: PR #<k>`; `Steward-Reverts` trailers for every revert confirmed by content, whoever opened it, and `Steward-Relands` for relands; re-verify deploys dispatched with `return_run_details`; the deploy guard, which deploys only trunk's tip, as the deploy job's first step from the default branch (H15); a re-verify deploy when a pinned run was cancelled with nothing newer behind it, or a landing's push run never appeared; the per-tick activity check of trunk pushes; the per-tick check that no other workflow names the steward's or the production environment, expression-valued names and outside reusable workflows included; the per-tick check that the deploy workflow is enabled, and the dispatcher's check that the steward's last tick is recent [aS1]; per-tick re-derivation of the TEST-READY and CLOSE-READY exits, with the CLOSE-READY/closed → REWORK-REQUIRED edges; classified train-push refusals (H14) | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); the pinned deploy verdict from the landing's push run or a re-verify dispatch, first attempt only, through the jobs API (H13); the deploy template: no `sha` input, and its header rule "the steward's push starts the deploy" (§3.5); every `eligibility` reject, a closed PR, a revert outside Track T and a `/stage` request return the issue; `eligibility` waits on an issue `hold`; the steward pushes trains and trunk with its deploy key | trains, ancestry verification, `delivery-status` as a status record |
+| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; the four deploy outcomes, of which only `green` counts (§10.3); Track T attribution; steward-opened revert PRs that declare `Reverts: PR #<k>`; `Steward-Reverts` trailers for every revert confirmed by content, whoever opened it, and `Steward-Relands` for relands; re-verify deploys dispatched with `return_run_details`; the deploy guard, which deploys only trunk's tip, as the deploy job's first step from the default branch (H15); a re-verify deploy when a pinned run was cancelled with nothing newer behind it, or a landing's push run never appeared; the per-tick activity check of trunk pushes; the per-tick check that no other workflow names the steward's or the production environment, expression-valued names and outside reusable workflows included; the per-tick check that the deploy workflow is enabled, and the dispatcher's check, through the run API, that the steward workflow is active and ran recently [aS1, aT1]; per-tick re-derivation of the TEST-READY and CLOSE-READY exits, with the CLOSE-READY/closed → REWORK-REQUIRED edges; classified train-push refusals (H14) | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); the pinned deploy verdict from the landing's push run or a re-verify dispatch, first attempt only, through the jobs API (H13); the deploy template: no `sha` input, and its header rule "the steward's push starts the deploy" (§3.5); every `eligibility` reject, a closed PR, a revert outside Track T and a `/stage` request return the issue; `eligibility` waits on an issue `hold`; the steward pushes trains and trunk with its deploy key | trains, ancestry verification, `delivery-status` as a status record |
 | Wrapper and git hooks | marking of every agent comment and body write, and a gate on unmarked ones; the gate on human-owned flag labels in any form, payload label lists included; the explicit-form parser (several forms per comment, and guidance-issue lines that name their issue); the fold's check of cited forms; the folded state with `since` for orientation only, re-folded for every decision; the cursor and folded state in the claim ref; renewal on every wrapper call, from the commit hook, and from `run_tests.py` and `suite_semaphore.py run` while they run; the `pre-push` fence on issue branches; the continuation issue; the write token bucket; the write counter | `call` gates the issue-comment, issue-update and label operations; the GitLab fold orders by note id | the forge API packages |
 | Human input | `/get-guidance`, which prints one block of form lines; the project's guidance issue; the answer recorder executing every explicit form (answers, approvals, `/amend`, `/stage`, `/admit`, `/hold`, `/unhold`, `/priority`, `/clear-tamper`), the re-spec edge, `admitted {ask_hash}`, the question checker with its always-ask list, the decision inventory, standing-permission records, `env-incident` issues outside every worker queue | `continuous-work.md` escalation text | the five-line question shape |
 | Gates and harness | a headless verdict line | the stop gates and the release vocabulary accept a transition, `needs-input`, `ci-pending` or a release as a valid end, once the dispatcher runs [T-11]; `proportionality.md`'s tier-S path and review caps are unchanged [C7, tN4] | the remaining gates |
