@@ -1,4 +1,4 @@
-# Traceability: the design against the keynote's vision and the gap analysis (revision 3, 2026-11-19)
+# Traceability: the design against the keynote's vision and the gap analysis (revision 4, 2026-11-19)
 
 Two reference documents:
 
@@ -25,7 +25,8 @@ first alignment review, [tN5] for the alignment re-review.
   - **partial:** some of it, and the rest is named;
   - **deviation:** a deliberate choice, with its reason in section C;
   - **not designed:** open, and listed in design §19.
-- Revision 3 applies every status correction of the alignment re-review and adds the rows it found missing.
+- Revision 3 applied every status correction of the round-2 alignment review and added the rows it found missing.
+  Revision 4 applies round 3's: A28 and 3.4 [tM2, tM4].
 
 ## A. Alignment with the keynote's vision
 
@@ -41,12 +42,12 @@ first alignment review, [tN5] for the alignment re-review.
 | A8 | Workers coordinate on the backlog and in issue comments; a worker "says so in a comment" (7) | coordination through the backlog: stages, flags, structured `factory-review/v1` records in comments (§8), no free-text negotiation. The claim itself is a server-enforced ref, which a comment only mirrors (§5) | aligned on coordinating through the backlog; differs on the claim medium (C12) [tN2] |
 | A9 | The biggest loop: the empty backlog (8) | the dispatcher's queues guarantee a role for all pullable work (§14); budgets end every loop (§13) | partly aligned. Rest: the dispatcher's host (O12); an empty backlog starts no search, with no scheduled log scan (A6) and no drift measurement (row 11) [T-03, tN6] |
 | A10 | Security Agent on the verify step and on every PR, a pen test before release; DevOps Agent in production, every incident a new issue (9) | optional external security review of PRs (risk-tagged by default); an optional batched pen test whose findings enter START (§7.2); the `Origin: production` inflow, pulled before triage when a factory login filed it (§6.1, §14) | partly aligned. Differs on "every PR" by default and on the pen test as a release gate (C10). Rest: the production intake's details (O8), a system-level threat model [T-04, T-09, tN8] |
-| A11 | Guardrails: no early stop, no guessing, someone else decides, effort matched to the task (10) | predicates and claims (§4, §5); evidence in every record (§8); maker ≠ checker per agent context, with a separately started checker per stage exit (§8.1, §8.5); the tier floor (§6.4); the tier-S path (§7.3); the stop gates extended to accept a transition as a valid end (§16) | aligned [T-11, T-19] |
+| A11 | Guardrails: no early stop, no guessing, someone else decides, effort matched to the task (10) | predicates and claims (§4, §5); evidence in every record (§8); maker ≠ checker per agent context, with a separately started checker for the exits §8.5 names (§8.1, §8.5); the tier floor (§6.4); the tier-S path (§7.3); the stop gates extended to accept a transition as a valid end (§16) | aligned [T-11, T-19] |
 | A12 | Drift: the reference is the spec, a separate check compares (11) | acceptance tests written at spec time; the test-freeze run (S's tests over H's code); the ask hash above the machine-owned marker (§4.2, §4.3, §9) | aligned |
 | A13 | Cost: every unattended loop gets a budget; credits per user and model (11) | soft and hard budgets per loop; spend lines from every role, with `model=`, as the source (§13, §17) | partly aligned. Rest: the cost, bounce and claim budgets are report-only for the first 20 issues per tier; Kiro's per-user and per-model usage export (gap analysis 3.1 c) [T-02, tN3, tN4] |
 | A14 | Control: central rules every loop and Crew agent follows (11, 14) | the authority table (§4.5); trust rules for tools (§15.1); per-host tokens without the permissions behind irreversible operations (§15.2); the marking gate (§8.2) | partly aligned. Rest: per-agent deny rules by default and Kiro's central MCP and model allow-lists (O11); sandboxing of workers; the governance dispatcher-started workers inherit (O12) [T-17, tN5] |
 | A15 | "Can the agent run the thing?" (12) | optional local runtime check per project, with a Playwright pilot (§9); the gate is the post-deploy smoke (§10) | partly aligned; differs on running before the PR on a shared environment (C4) [T-20] |
-| A16 | Maker ≠ checker (12, 23, 24) | dedicated checkers per stage (§7); per-context identity (§8.1); a separately started checker per stage exit (§8.5); the steward re-runs the fold (§8.6); the checked arbiter with a computed overrule (§8.7); every rework classification confirmed by a checker (§4.2); the tier floor (§6.4) | aligned, with the in-session boundary named in §19 item 5 [T-01, T-19, tN10] |
+| A16 | Maker ≠ checker (12, 23, 24) | dedicated checkers per stage (§7); per-context identity (§8.1); a separately started checker for the exits §8.5 names, started through its queue (§8.5, §14); the steward re-runs the fold (§8.6); the checked arbiter with a computed overrule (§8.7); every rework classification confirmed by a checker (§4.2); the tier floor (§6.4) | aligned, with the in-session boundary named in §19 item 5 [T-01, T-19, tN10] |
 | A17 | Kiro Crew: many loops, scheduled, unattended (14–16) | one candidate host of the dispatcher (§14) | partly aligned. Rest: host and worker start (O12); per-agent governance (O11); no MCP auto-discovery for checkers (C11) [T-03, T-17] |
 | A18 | The demo: agents report what they did NOT verify (16, 27) | a required `notVerified` list in every verdict, carried into the close-out summary (§8.1, §11); "named, not run" for skipped tests (§7.4) | aligned [T-06] |
 | A19 | Caveats: verification is still your job; comprehension debt; a bank is not a startup (18) | transition audit lines and records (§4.4, §8), not immutable (§19 item 6); the structured close-out summary (§11); admission and read-only checkers (§6.3, §15) | partly aligned. Comprehension debt and "a bank is not a startup" rely on the optional approval setting, off by default (C1), and under U24 an approval's human authorship is not provable (§12.10, §19 item 4) [T-18, tN9] |
@@ -58,7 +59,7 @@ first alignment review, [tN5] for the alignment re-review.
 | A25 | Crew's controls: sandbox, approval modes, audit log, MCP auto-discovery, webhooks, messaging (15) | audit lines (§4.4); read-only checkers and pinned servers (§15.1); polling (§14) | partly aligned. Differs on auto-discovery (C11) and webhooks (C9). Rest: worker sandboxing; messaging, since the human is reached by pull only (the digest, `/get-guidance`) [T-17, tN13] |
 | A26 | Governance declared per agent, reviewable like code (16, notes) | — | not covered: per-agent deny rules (O11) [T-17] |
 | A27 | Checking is not the same as proving; think first about how you would prove it works (23, notes) | the verifier's deliberate break (§7.4); verify-to-disprove in every checker and the logic-bug lane (§7.4, §7.2); mutation testing (§7.2) | partly aligned. Rest: mutation testing runs only for tier L and risk tags; no proof beyond tests [T-16] |
-| A28 | Documentation checked line by line against the source; no drift, a stale URL caught (16, 27) | the docs-drift checker and tools in IMPLEMENTATION-READY when a change touches a documented interface (§7.2) | aligned [tN7] |
+| A28 | Documentation checked line by line against the source; no drift, a stale URL caught (16, 27) | the docs-drift checker and tools in IMPLEMENTATION-READY when a change touches a documented interface (§7.2) | partly aligned. Rest: drift in documentation that no change touches is found only when a change touches it (§19 item 12) [tN7, tM2] |
 
 ## B. Coverage of the gap analysis
 
@@ -90,7 +91,7 @@ first alignment review, [tN5] for the alignment re-review.
 | 3.1 Cost: (a) tokens per run and issue, (b) tier budgets that ask once, (c) Kiro's OpenTelemetry usage export | (a) the spend lines from every role, with model (§13); (b) soft limits act automatically, hard limits ask once, report-only for the first 20 issues per tier (§13); (c) not designed | partial [T-02, tN3, tN4] |
 | 3.2 Control: deny rules per agent by default; a governance profile for Kiro | trust rules and the authority table (§15.1, §4.5) | partial (O11) |
 | 3.3 Who starts the loops | the dispatcher (§14) | partial: host and worker start open (O12) [T-03] |
-| 3.4 Kiro parity | client-neutral enforcement (P9, §16); about 15 new roles, so the phase-2 renderer is a precondition (§16) | partial [T-14] |
+| 3.4 Kiro parity | client-neutral enforcement (P9, §16); 16 new roles, so the phase-2 renderer is a precondition (§16) | partial [T-14, tM4] |
 | 3.5 Human validation | as row 15 | designed as configurable; default off = C1; under U24 not provable by author [T-07, tN9] |
 | 3.6 Measuring the factory | §17 | designed |
 | 3.7 The update loop to consumer projects | — | not designed. Precondition: a factory project runs `merge: steward` with the forge setup of §3.5, so projects in `merge: direct` (e.g. AWSBedrockGateway) must switch, which is the gap analysis's rank 9 [T-15] |

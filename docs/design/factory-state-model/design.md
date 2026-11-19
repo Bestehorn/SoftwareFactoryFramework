@@ -1,20 +1,23 @@
-# Factory state model: design (revision 3, 2026-11-19)
+# Factory state model: design (revision 4, 2026-11-19)
 
 Status: design only. Nothing described here is implemented unless §2 says it exists today.
 
 History:
 
 - **Revision 1** (11073fe) was reviewed twice (76 findings).
-- **Revision 2** (cec3492) answered them. Its two re-reviews (44ca82c) verified 55 of the 76, judged 21 only partly
-  fixed, and raised 30 new findings, none of grade A.
-- **Revision 3** answers all of those: the 21 partly-fixed findings and the 30 new ones.
+- **Revision 2** (cec3492) answered them. Its two re-reviews verified 55 of the 76, judged 21 only partly fixed, and
+  raised 30 new findings, none of grade A.
+- **Revision 3** (5dcc08f) answered those. Its round-3 reviews verified every item but one (aN7, partly) and raised 19
+  new findings, none of grade A.
+- **Revision 4** answers the 20 items left open.
 
-All four review reports are in
+All review reports are in
 [`docs/reports/factory-state-model-2026-11/reviews/`](../../reports/factory-state-model-2026-11/reviews/), and
 [review-response.md](review-response.md) maps every finding to its disposition. Finding ids appear in brackets:
 
 - [A1] and [T-05] are first-round findings;
-- [aN3] and [tN3] are new findings of the adversarial and the alignment re-review.
+- [aN3] and [tN3] are round-2 findings;
+- [aM3] and [tM1] are round-3 findings, of the adversarial and the alignment review.
 
 Companion documents:
 
@@ -35,8 +38,8 @@ Words used throughout:
 - **role**: what an actor may write (§4.5).
 - **identity**: the forge login a write comes from.
 - **reserved decision**: a decision the design leaves to an authorised human (§12.3).
-- **explicit form**: a one-line command in a comment (`/answer`, `/amend`, `/stage`, `/approve`), the only way a
-  human's comment changes state (§8.3).
+- **explicit form**: a one-line command in a comment (`/answer`, `/approve`, `/amend`, `/stage`, `/admit`, `/hold`,
+  `/unhold`, `/priority`, `/clear-tamper`), the only way a human changes state (§8.3).
 
 ---
 
@@ -51,7 +54,7 @@ anyone, with the human as the rare exception.
 | P1 | The backlog is the only interface | The tracker and git hold everything another worker needs; machine-local run state is a cache, never the source of truth |
 | P2 | Workers never wait | Every wait has an owner that is not a worker: a human answer (`needs-input`), the PR's own CI (`ci-pending`, picked up by the verifier lane), merge (the steward), deploy and smoke (the deploy pipeline). The worker releases and pulls other work |
 | P3 | Any number of workers, any machine, any client | Exclusion comes from a server-enforced claim, a git ref compare-and-swap, held by every caller of the verb (§5) |
-| P4 | Maker ≠ checker | Enforced per agent context and role (§8.1). Every stage exit that closes a stage needs at least one verdict from a separately started checker, whose bytes the maker's session does not post (§8.5) [aN9] |
+| P4 | Maker ≠ checker | Enforced per agent context and role (§8.1). Every stage exit §8.5 names needs at least one verdict from a separately started checker, whose bytes the maker's session does not post; the exits without one are recorded trade-offs (§8.5, §19) [aN9, aM1] |
 | P5 | Every stage has a deterministically checkable finish line; the team loops until it holds | A script, the transition verb, evaluates it from tracker + git + CI state (§4) |
 | P6 | The human is the last-resort conflict resolver | No human-only stage or gate. Questions only when no agent can answer them, in ONE batch, never drip-fed (§12). An optional per-project approval setting exists, off by default |
 | P7 | Shared environments; batched delivery; revert first | One CI or deploy run covers many issues. A failed deploy or smoke is restored first, then attributed (§10) |
@@ -126,16 +129,21 @@ verified) are machine lines and trunk trailers, not stages.
 |---|---|---|---|
 | `needs-input` | at least one BLOCKING question or approval is open (decision U1). The stage does not change; the claim is released | any team, after the question checker (§12.4) | the answer recorder or `/get-guidance`, when an explicit `/answer` or `/approve` from an authorised human exists for every blocking question (§12.7) |
 | `blocked-by #N` | cannot proceed until #N reaches a named stage or closes. Native dependency where the forge offers it free (GitHub issue dependencies); otherwise a machine line `factory: blocked-by #N until <stage>` (GitLab blocking links are Premium) [C10] | triage, spec, the steward, the watcher (§4.5) | the dispatcher, when #N gets there. A target closed administratively releases the block with a comment; a cycle is a triage error, reported on the issue |
-| `hold` | the human paused it. Every actor stops at its next verb call, and the steward does not land a PR that references a held issue [aN11] | an authorised human | an authorised human |
+| `hold` | the human paused it. Every actor stops at its next verb call, and the steward does not land a PR that references a held issue [aN11] | an authorised human's `/hold`, applied by the answer recorder [aM4] | an authorised human's `/unhold`, applied by the recorder |
 | `claimed` | a query filter projected from the claim ref (§5); never authoritative | the claim verb | the release verb |
 | `ci-pending` | the PR's own CI is running on head H; the worker has released | implementation worker | the verifier lane, when the run ends or its timeout passes (§4.2) |
 | `review-open` / `review-verify` | blocking findings wait for the maker / resolutions wait for a checker lane; `review-verify` also queues the issue for that lane (§14) | the record writer | the claim holder, after the fold shows nothing pending |
+| `checker-requested:<lane>` | the maker's in-session work for a stage exit is done, and the exit's separately started checker (§8.5) is due; queues the issue for that lane (§14) [aM1] | the maker, with its release | that lane, with its verdict |
 | `split` | a parent whose work moved to child issues; `blocked-by` every child; excluded from every worker queue [C9] | triage | the dispatcher closes it administratively when every child is closed (§4.5) |
 | tier `S`/`M`/`L` + risk tags (`auth`, `money`, `data-migration`, `iam-iac`) | select the team, the checkers and the budgets | triage, at or above a deterministic floor (§6.4) | raise only; lowering needs a checker's verdict [B18] |
-| `priority:<level>`; `priority:critical` expedites (§14) | product priority | an authorised human; triage for production incidents | an authorised human |
-| `admitted` | admission of an issue whose author is not on the allow-list (§6.3) | an authorised human | — |
+| `priority:<level>`; `priority:critical` expedites (§14) | product priority | an authorised human's `/priority <level>`, applied by the recorder; triage may set `priority:critical` only on an `Origin: production` issue a factory login filed [aM4] | an authorised human's `/priority` |
+| `admitted` | admission of an issue whose author is not on the allow-list; the projection of an `admitted {ask_hash}` record (§6.3) [aM7] | an authorised human's `/admit`, applied by the recorder | — (a changed ask drops it, §6.3) |
 | `env-incident` | marks an issue that IS an environment incident; such an issue has no stage and is in no worker queue (§12.5) | the steward, the watcher, any team | its owner, by closing it |
-| `tamper` | a record comment of this issue was edited after posting; the issue is held until a checker re-folds it (§8.2) [aN15] | the fold | an authorised human, after the re-fold |
+| `tamper` | a record comment of this issue was edited after posting; the issue is held until the re-fold checker re-folds it (§8.2, §14) [aN15, aM13] | the fold | an authorised human's `/clear-tamper` after the re-fold, applied by the recorder |
+
+**Human-owned flags** (`hold`, `priority:*` except triage's production case, `admitted`, clearing `tamper`) change only
+through explicit forms. The wrapper refuses an agent's add or remove of those labels, and the dispatcher reverts such a
+label that no form backs, as it does for stage labels (§4.4) [aM4].
 
 ### 3.3 Diagram
 
@@ -174,15 +182,32 @@ The model assumes the merge steward. Per `config/delivery.json`:
 | `merge: steward` + `verification: none` | every PR landed and not reverted, and the trunk CI of a commit containing them is green. The steward applies it at its next tick after the landing [T-15] |
 | `merge: direct` (this repository today) | not a factory project. It keeps the session workflow of `clients/common/docs/delivery.md` until it switches (gap-analysis rank 9) |
 
-**Forge setup required in factory mode**, written by the setup and update prompts and checked by the steward on every
-tick. A failed check opens an `env-incident`:
+**Forge setup required in factory mode**, written by the setup and update prompts and checked by them with the
+operator's own token [aM14]:
 
 - **GitHub:**
-  - a trunk ruleset that blocks updates by anyone but the steward;
+  - a trunk ruleset that blocks updates by anyone but GitHub Actions (the steward's `GITHUB_TOKEN`);
   - "Allow GitHub Actions to create and approve pull requests" switched on (`can_approve_pull_request_reviews`, read
-    from `GET /repos/{owner}/{repo}/actions/permissions/workflow`).
-- **GitLab:** trunk protected, with only the steward's bot user allowed to push. The delivery template already asks
-  for this.
+    from `GET /repos/{owner}/{repo}/actions/permissions/workflow`, which needs the Administration permission the
+    steward's token lacks).
+- **GitLab:** trunk protected, with only the steward's bot user allowed to push. The steward's token is a protected,
+  masked CI variable, so pipelines on unprotected branches never receive it. The delivery template already asks for
+  the protection.
+- **Both: no worker-writable path to a write token** [aN7]. Exempting GitHub Actions in the ruleset is safe only if no
+  workflow a worker can change obtains a write token. So:
+  - the worker tokens lack the "Workflows" permission, so no worker push adds or changes a file under
+    `.github/workflows/`;
+  - the worker tokens lack "Actions: write", so no worker dispatches a workflow, including the steward's, on its own
+    branch, where the steward's script could have been changed;
+  - every factory workflow that holds a write token runs only on the default branch, through a job-level ref guard;
+  - every workflow that runs branch code declares `contents: read`;
+  - a change to a workflow file is landed with the operator's own token, as a reserved decision.
+
+**What the steward checks on every tick, with its own token** [aM14]:
+
+- that each first-parent trunk push was made by GitHub Actions (the activity record, §10.8 H7);
+- at revert time, that it could create the revert PR. A refusal is an immediate `env-incident` naming the setting
+  (§10.4 step 3).
 
 Which actor a GitHub ruleset can exempt for a `GITHUB_TOKEN` push is to be verified (O14).
 
@@ -201,7 +226,7 @@ Jira backend needs equivalents for those. The Jira wrapper itself is out of scop
 > A transition's predicate is evaluated by a script from tracker + git + CI state only. Its checker part is always the
 > same sentence: **every checker the stage requires (by tier and risk tags) has posted a verdict on the artefact's
 > CURRENT commit, from a context with that checker's role other than the maker's (§8.1), and no blocking finding is
-> open. At least one of those verdicts comes from a separately started checker (§8.5).**
+> open. Where §8.5 names a separately started checker for the exit, one of those verdicts comes from it.**
 
 Judgement happens inside the checkers. The predicate only counts their structured verdicts (§8). A verdict on an older
 commit does not count, so a new commit by the maker re-opens the check as a delta review. Before landing, the steward
@@ -216,9 +241,10 @@ re-evaluates the fold itself and ignores any status a maker could have set (§8.
 | START → split (worker) | every child exists at START and references the parent; the parent carries `split` and is `blocked-by` every child |
 | SPEC-REQUIRED → IMPLEMENTATION-READY (worker) | spec + acceptance tests committed at SHA S on the pushed issue branch; the acceptance tests fail for the right reason at S; every acceptance criterion is referenced by ≥ 1 test (traceability script); all required spec checkers report on S with 0 open blocking findings; **for M and L, one of them is a separately started spec checker** (§8.5) [aN9]; no open blocking question; the approval setting, if on, is satisfied for the spec (§12.10); tier and tags re-derived from the spec's declared footprint, raise only (§6.4). **Side effect** written by the verb: `spec-approved {sha: S, ask_hash}` [C14] |
 | IMPLEMENTATION-READY → TEST-READY (the verifier lane; for a re-enqueue, the worker) | a PR from the branch with `Refs #N`, base = trunk, `do-not-merge` removed (and not a draft where the forge has drafts) [B22]; **S's acceptance tests, run with S's fixtures and test configuration over H's code, pass** [B19]; any change since S to the acceptance tests, the fixtures or configuration they depend on needs a newer `spec-approved`; PR CI green on head H; **the adversarial verifier, started separately at `ci-pending`**, and every required implementation checker report on H with 0 open blocking findings; the approval setting, if on, is satisfied for the PR's changed paths [T-07]; the evidence report is present; `check-pr` exits 0. **The worker never transitions with CI pending:** it sets `ci-pending` and releases. The verifier lane completes the transition when the run ends. When no CI result exists after the `ci-pending` timeout (default 3 × the project's median PR CI duration, at least 1 h), the verifier refuses with "no CI result", clears `ci-pending`, and the issue is back in the implementation queue [aN3]. `enqueue --allow-pending` remains only for a re-enqueue after a rebase that changes no file, when pending CI is the sole unmet clause [C1] |
-| TEST-READY → CLOSE-READY (steward) | for EVERY PR the issue queued: a landing on trunk's first-parent history (a steward merge whose `Steward-PR` trailer names it) that no later first-parent `Steward-Reverts` trailer for that PR supersedes [B15, aN7]; a deploy + smoke run that is **pinned** (the deploy workflow's path on trunk, event `push` or the steward's `workflow_dispatch` on the trunk ref, the named environment, conclusion `success`, read from the run API) and ran on a commit D that contains every such landing [aN10]; every `(post-deploy)` item ticked. Under `verification: none`: §3.5 |
-| TEST-READY → REWORK-REQUIRED (steward) | one of: a train record naming this PR the culprit, a conflict, or PR-CI red; Track T's culprit record (§10.4); a blocking finding on the queued PR (`review-open` dequeues it); **the steward rejected the PR for any other reason** (base not trunk, draft, closing keyword, dependency closed unlanded); **or the PR was closed unmerged** [aN3]. The record names the cause |
-| REWORK-REQUIRED → any exit (worker) | a **rework-analysis record** classifies the cause as code, requirement or environment, with evidence, and a checker other than the maker confirms it [T-01, tN10]: the test-architect confirms "code" (the acceptance tests still express the ask); the steward's infra classifier (§10.4 step 1) or the failure attributor confirms "environment". Then: **→ TEST-READY**: the IMPLEMENTATION-READY → TEST-READY predicate on the new head, plus a resolution record answering the cause; **→ IMPLEMENTATION-READY / SPEC-REQUIRED**: a requirement cause amends the acceptance criteria before code is touched, and the target stage's predicates apply from scratch. **An environment cause leaves no exit:** the issue stays in REWORK-REQUIRED, `blocked-by` the `env-incident` (§12.5). When the incident closes, the failing check is re-run; green returns the issue to TEST-READY through the resolution record, and §13's refund applies |
+| IMPLEMENTATION-READY or REWORK-REQUIRED → SPEC-REQUIRED, the re-spec edge (worker at pickup; the answer recorder on a human form) [aM6] | the ask hash differs from `spec-approved`'s (an authorised human edited above the marker), OR an authorised human's `/amend` or `/stage spec-required` names the issue. The record names which. (A REWORK-REQUIRED exit chosen by the team itself goes through the rework analysis below) |
+| TEST-READY → CLOSE-READY (steward) | for EVERY PR the issue queued: a landing on trunk's first-parent history (a steward merge whose `Steward-PR` trailer names it) that no later first-parent `Steward-Reverts` trailer for that PR supersedes [B15, aN7]; a **pinned deploy verdict** on a commit D that contains every such landing [aN10, aM3]: (a) for a dispatched deploy, the run id the steward recorded when it dispatched with `return_run_details`, and D is the commit it dispatched for; for a trunk `push` run, D is the run's `head_sha`; (b) read from the jobs API, the deploy job and the smoke job each concluded `success` and no restore step ran (a skipped or restored deploy makes the run conclude `failure` explicitly, §10.3); every `(post-deploy)` item ticked. Under `verification: none`: §3.5 |
+| TEST-READY → REWORK-REQUIRED (steward) | one of: a train record naming this PR the culprit, a conflict, or PR-CI red; Track T's culprit record (§10.4); a blocking finding on the queued PR (`review-open` dequeues it); **the steward rejected the PR for any other reason** (base not trunk, draft, closing keyword, dependency closed unlanded); **the PR was closed unmerged** [aN3]; **a revert of this PR landed outside Track T** (a `Steward-Reverts` trailer the steward wrote for a revert it did not open, §10.4 step 3) [aM2]; **or an authorised human's `/stage` request** for this issue (§8.3) [aM6]. The record names the cause. Every tick re-derives both TEST-READY exits for every TEST-READY issue from these durable facts, so a return refused by a held claim is applied at the next tick [aM8]. An issue already closed when a revert of its PR lands is reopened into REWORK-REQUIRED |
+| REWORK-REQUIRED → any exit (worker) | a **rework-analysis record** classifies the cause as code, requirement or environment, with evidence, and a checker other than the maker confirms it [T-01, tN10, tM3]: the test-architect confirms "code" (the acceptance tests still express the ask); the spec checkers confirm "requirement" when they re-approve the amended criteria (tier S: the combined pass, §8.5); the steward's infra classifier (§10.4 step 1) or the failure attributor confirms "environment". Then: **→ TEST-READY**: the IMPLEMENTATION-READY → TEST-READY predicate on the new head, plus a resolution record answering the cause; **→ IMPLEMENTATION-READY / SPEC-REQUIRED**: a requirement cause amends the acceptance criteria before code is touched, and the target stage's predicates apply from scratch. **An environment cause leaves no exit:** the issue stays in REWORK-REQUIRED, `blocked-by` the `env-incident` (§12.5). When the incident closes, the failing check is re-run; green returns the issue to TEST-READY through the resolution record, and §13's refund applies |
 | CLOSE-READY → closed (worker) | the close-out record (§11): the temporary-resource ledger AND a query by the `factory-issue` tag are both empty [B20]; every item of the **laundry list** has a disposition. The laundry list is the spec's residuals, the findings-ledger rows written during the issue, the lanes' `notVerified` entries, the log-scan lane's findings and the close-out's own observations [D4, T-06]. The structured summary is posted; the checklist is complete; no open PR references the issue; the remote branch is gone |
 | `split` parent → closed (dispatcher) | every child is closed [aN2, C9] |
 
@@ -229,9 +255,16 @@ re-evaluates the fold itself and ignores any status a maker could have set (§8.
     maintained by agents -->`), without checklist tick states. The verb compares its hash with `spec-approved`.
   - Agents write only below the marker: discovered checklist items, notes. The wrapper refuses an agent's edit above
     it.
-  - An authorised human changes the ask by editing above the marker, or with `/amend <text>`. Either sends the issue
-    back to SPEC-REQUIRED, where the spec checkers re-approve quickly if the change is immaterial.
-  - Answers, notes and machine comments never change the ask. From TEST-READY on, a change of mind is a new issue.
+  - An authorised human changes the ask by editing above the marker, or with `/amend <text>` [aM6]:
+    - in START and SPEC-REQUIRED, the change simply becomes the ask;
+    - in IMPLEMENTATION-READY and REWORK-REQUIRED, the re-spec edge of §4.2 takes the issue back to SPEC-REQUIRED,
+      where the spec checkers re-approve quickly if the change is immaterial. A worker that finds the mismatch at
+      pickup calls that edge itself; an `/amend` is applied by the answer recorder;
+    - from TEST-READY on, `/amend` is refused with "file a new issue": the code is already in the queue or on trunk.
+  - Answers, notes and machine comments never change the ask.
+- **An outsider's issue still says what was admitted** [aM7]. For an issue whose author is not on the allow-list,
+  every pickup compares the current ask hash with the `admitted {ask_hash}` record. A mismatch drops the issue back
+  to read-only triage with a new admission view (§6.3).
 - **The spec base is current enough.** If the spec's declared footprint changed on trunk since S, the spec checkers do a
   delta review against the new trunk first. This replaces a WIP cap (decision U8).
 - **No `hold`, no open `blocked-by`, no `needs-input`, no `tamper`.**
@@ -262,8 +295,8 @@ steward, the answer recorder, `/get-guidance` and the dispatcher take a short `r
 - An issue with zero or two stage labels is repaired from its last `done` line.
 - **A stage label that disagrees with the last `done` line is reverted**, and the reversion is recorded. A hand-set
   label is never taken as an override, whoever set it: under the shared account an agent's label write and a human's
-  look the same. A human changes a stage with `/stage <to> because <reason>`, which the verb evaluates like any other
-  call (P12).
+  look the same. A human changes a stage with `/stage <to> because <reason>` (§8.3), which the verb evaluates like any
+  other call (P12). The same reversion applies to a human-owned flag that no explicit form backs (§3.2) [aM4].
 
 These audit lines are the trail an auditor reads and the metrics source (§17). They are comments, so not immutable
 (§19).
@@ -282,10 +315,10 @@ forges, with exclusivity enforced by the verb. Native single-select storage is a
 | **Conductor** (in the maker's session) | the same login | the maker's `make` claim | none | the round envelope, assembled verbatim from the lanes' parts (§8.4); trusted only as far as the maker's session (§8.5) |
 | **Arbiter** | the same login; a fresh context | none (it writes through the claim holder) | none | `decision` records on a conflict set (§8.7) |
 | **Question checker** | the same login; a fresh context | none (it writes through the claim holder) | none | a question verdict (pass / answered, with the answer) per question (§12.4) |
-| **Steward** | the steward's CI identity (GitHub: the workflow's `GITHUB_TOKEN`; GitLab: the `STEWARD_TOKEN` user) | `record`, per issue it writes | TEST-READY → CLOSE-READY (from the watcher's pinned fact, or at landing under `verification: none`); TEST-READY → REWORK-REQUIRED; reland moves within TEST-READY; the release verb | trunk (fast-forward to a train), train refs, revert PRs, `Steward-*` trailers, `merge-steward:` lines, culprit / `red-since` / refund records, `env-incident` issues and the `blocked-by` they cause |
-| **Watcher** (the deploy pipeline's verdict job) | the deploy pipeline's CI identity, `contents: read` | none | none | verification facts naming the pinned run; `delivery-status`; `env-incident` issues and the `blocked-by` they cause |
+| **Steward** | the steward's CI identity (GitHub: the workflow's `GITHUB_TOKEN`, on the default branch only; GitLab: the `STEWARD_TOKEN` user, a protected variable) | `record`, per issue it writes | TEST-READY → CLOSE-READY (from the pinned deploy verdict, or at landing under `verification: none`); TEST-READY → REWORK-REQUIRED, incl. a human's `/stage` request; reland moves within TEST-READY; the release verb | trunk (fast-forward to a train), train refs, revert PRs, `Steward-*` trailers, `merge-steward:` lines, `dispatched run` records, culprit / `red-since` / refund records, `env-incident` issues, and the `blocked-by` on the issues an incident affects, including incidents the watcher opened [aM15] |
+| **Watcher** (the deploy pipeline's verdict job) | the deploy pipeline's CI identity: `contents: read`, `issues: write` [aM15] | none | none | verification facts naming the pinned run; `delivery-status`; `env-incident` issues. It sets no flag on a factory issue: the steward applies the `blocked-by` an incident causes at its next tick, under a `record` claim |
 | **Dispatcher** (reconciler, reaper, queue keeper) | the dispatcher's token: contents write (claim refs), issues write (repairs, the `split` close, `blocked-by` clearing) | `record` | the `split` close; repairs of §4.4; claim expiry (§5.2); no forward edge of another role | repair, reversion and expiry lines; `blocked-by` releases |
-| **Answer recorder** (headless) and **`/get-guidance`** (interactive) | acting for an authorised human, whose login and comment id the record names | `record` | the transition an explicit answer implies | `factory: answer` records; clearing `needs-input` |
+| **Answer recorder** (headless) and **`/get-guidance`** (interactive) | acting for an authorised human, whose login and comment id the record names | `record` | the re-spec edge on an `/amend` or `/stage spec-required` (§4.2); nothing on TEST-READY, where it posts a steward request record instead [aM6] | `factory: answer` records; clearing `needs-input`; the human-owned flags a form sets (§3.2); `admitted {ask_hash}` |
 | **Authorised human** | a login on the project's human allow-list (the operator; named collaborators) | — | through explicit forms only (§8.3) | reserved decisions (§12.3) are valid only from this role |
 
 Every role that runs an agent context may append spend lines (§13) [tN3]. A write by any other identity, or by a role
@@ -293,15 +326,15 @@ outside its row, is data: it is never counted by a predicate.
 
 **Facts are taken from where they cannot be forged by a comment:**
 
-- landings and reverts from trunk's first-parent history, whose commits only the steward writes. A trunk ruleset
-  enforces that (§3.5), and an independent check confirms each first-parent push was made by the steward's actor
-  (§10.8 H7);
+- landings and reverts from trunk's first-parent history, whose commits only the steward writes. The trunk ruleset
+  and the absence of any worker-writable path to a write token enforce that (§3.5), and an independent check confirms
+  each first-parent push was made by GitHub Actions (§10.8 H7) [aN7];
 - claims from the claim ref (§5);
 - CI and deploy results from the forge's run API, pinned to workflow path, event, ref and environment (§4.2) [aN10].
 
 The watcher's and the steward's issue records count only when they name a run that matches the pin. On GitHub the
-steward and the watcher both post as `github-actions[bot]`, which a workflow on a PR branch can also do; the pin is
-what makes their records checkable.
+steward and the watcher both post as `github-actions[bot]`, which a workflow on a PR branch can also do. The pin, and
+the fact that such a workflow holds only `contents: read` (§3.5), make their records checkable.
 
 **Under the shared account** (decision U24), worker, checker, conductor and recorder writes all come from one login.
 Their roles are told apart by the marker and the `actor` fields, which proves nothing against a compromised agent. That
@@ -322,6 +355,11 @@ branch filter and falls under branch rulesets, so the custom namespace is prefer
     agent), the stage (informational) and the fold cursor;
   - or a `free` commit, which records the fold cursor and the last holder.
 
+  Both carry a tree with the **folded state at the cursor**: open findings, verdicts per SHA, pending questions, and
+  the time of the last fold. The release verb writes it [aM9]. A new holder reads that state, then fetches only the
+  comments updated since the last fold's time (`since`), which returns new and edited comments alike. It neither
+  re-folds from the first record nor full-scans for `tamper`.
+
   "No claim" in a queue (§14) means: the ref is absent or its tip is `free`.
 - **Acquire.** Push a `held` child of the observed tip with `git push --force-with-lease=<ref>:<observed tip>`, or with
   an empty expectation when the ref does not exist yet. The receiving side checks the ref's old value atomically, so a
@@ -331,11 +369,17 @@ branch filter and falls under branch rulesets, so the custom namespace is prefer
 - **Branch pushes are fenced atomically.** The worker pushes the issue branch and a renewal commit of its claim ref
   together, in ONE `git push --atomic`, with the lease on the claim ref. A branch update therefore lands only while the
   caller holds the claim.
+  - The `pre-push` hook refuses any push of an issue branch that is not that atomic push with the lease, so a plain
+    `git push` by an expired holder is refused locally too [aM11].
   - REST writes (comments, labels) are fenced only by the check before each call. That window is one call long (§19).
-- **Renew** by pushing a child `held` commit with a lease on the current token. The wrapper renews on every wrapper call
-  that writes, and only then [C17, aN4]. There is no heartbeat process, so a hung worker stops renewing and expires.
-  The lease duration L must exceed the longest step between two wrapper calls; it is set from the step durations the
-  spend lines record (§13), with a default of 60 minutes.
+- **Renew** by pushing a child `held` commit with a lease on the current token, as a ref-only
+  `git push --force-with-lease`, which spends no REST write [aM10]:
+  - the wrapper renews on EVERY wrapper call, reading or writing;
+  - the commit hook renews on every commit, so a **checkpoint** is at least every commit.
+
+  There is no heartbeat process, so a hung worker stops renewing and expires. The lease duration L is set from the step
+  durations the spend lines record (§13): default 60 minutes, capped at 90. A measured step longer than L is reported in
+  the digest as a defect of that step, to be split [C17, aN4, aM10].
 - **Release** with the ONE release verb [C11]:
   - push a `free` child, keeping the cursor, with a lease on the token;
   - remove the `claimed` projection;
@@ -372,11 +416,15 @@ branch filter and falls under branch rulesets, so the custom namespace is prefer
 
 - The release verb replaces `release-issue`'s whole-set label write with additive removes. A label added by someone
   else between a read and a write is then never lost.
-- **Continuation issue** (§8.2):
-  - when an issue reaches the comment cap, the verb creates the continuation issue;
-  - then, in one atomic push, it creates the new issue's claim ref (held, with the cursor) and moves the old ref to
-    `free` with the line `continued in #<m>`;
-  - the new issue inherits the stage.
+- **Continuation issue** (§8.2) [aM12]:
+  1. when an issue reaches the comment cap, the verb creates the continuation issue;
+  2. on it, it writes the inherited stage label and the line `factory: continued from #<n>`;
+  3. in one atomic push, it creates the new issue's claim ref (held, with the cursor and folded state) and moves the
+     old ref to `free` with the line `continued in #<m>`;
+  4. it closes the old issue administratively ("continued in #m"), so no queue pulls it again.
+
+  The reconciler finishes or undoes a half-done continuation from those lines. A new issue that carries
+  `continued from` is therefore never taken for a fresh START issue.
 
 ### 5.5 Atomic-push support
 
@@ -432,11 +480,15 @@ to AWS.
 - **Auto-admitted** iff the issue's AUTHOR is on the project's allow-list: the operator's login and the factory's
   login(s). Provenance lines describe an admitted issue; they never admit one, because anyone can type them.
 - **Everything else** (other collaborators, bots, integrations, external reporters on a public repository) is triaged
-  in a **read-only mode** and waits for an `admitted` label set by an authorised human:
+  in a **read-only mode** and waits for an authorised human's `/admit`:
   - no write tools, no AWS credentials, no forge write except the triage record;
   - the issue text is data;
   - the admission view shows the verbatim body, fenced, next to the triage paraphrase, because a paraphrase of injected
     text can read harmless.
+- **Admission names the ask** [aM7]. The answer recorder turns `/admit` into an `admitted {ask_hash}` record, with
+  the label as its projection. An issue author can edit their own title and body at any time, so every pickup compares
+  the current ask hash with the admitted one (§4.3). A mismatch drops the issue back to read-only triage, with a new
+  admission view.
 - **On public repositories**, locking factory issues to collaborators is a cheap extra layer. With or without it, a
   comment from a non-allow-listed author is data (§8.3).
 
@@ -475,7 +527,7 @@ claim ──► maker produces or updates the artefact at SHA X
   │            ▼
   │   deterministic tools on X (cheap; SARIF out) ──► findings
   │   LLM checkers on X, in parallel, in fresh contexts, given the tool output filtered to the diff ──► findings
-  │   at least one separately started checker per stage exit (§8.5)
+  │   a separately started checker where §8.5 names one for the exit
   │            │
   │   predicate(X)? ── yes ──► transition verb ──► release, or continue to the next stage (§3.4)
   │            │ no
@@ -490,7 +542,7 @@ claim ──► maker produces or updates the artefact at SHA X
 
 | Stage | Makers | Deterministic checkers (first) | LLM and external checkers (gated by tier and risk) |
 |---|---|---|---|
-| START | triage worker | duplicate retrieval (forge search + lexical or embedding similarity over open and recently closed issues); the tier and risk floor (§6.4); template lint | **duplicate-confirmer** (mandatory before any close); **triage checker** (M, L) |
+| START | triage worker | duplicate retrieval (forge search + lexical or embedding similarity over open and recently closed issues); the tier and risk floor (§6.4); template lint | **duplicate-confirmer** (mandatory before any close); **triage checker** (M, L); both separately started through `checker-requested` (§8.5) |
 | SPEC-REQUIRED | spec-author (+ spec-researcher); acceptance-test author; threat-model maker (L or risk tags: the awslabs threat-modeling MCP server, pinned to a commit) | AC → test traceability; red for the right reason; EARS/INCOSE spec lint (new); byte caps; threat-model schema check | test-architect; security-reviewer (one-line CLEAN unless a trust boundary is touched); **threat-model checker** (new; STRIDE + OWASP ASVS 5.0; L or risk tags); devops-iac-reviewer (IaC); standards / best-practice (M+); for M and L, **one of these runs as a separately started spec checker** (§8.5) [aN9]; optional AWS Security Agent design review (L + `auth`/`money`, budget-capped) |
 | IMPLEMENTATION-READY | spec-implementer (waves), ci-workflow-agent, code-merge-reviewer | ruff, mypy, bandit, secret scan, tests; **diff coverage on changed lines** (new); **OSV-Scanner** (new); **IaC gate: cdk-nag + cfn-lint + Checkov or cfn-guard + `cdk diff --security-only`** (new); import/architecture contracts; mutation testing on changed functions (L or risk tags); **dead and unnecessary code on the diff** (vulture or Skylos `--diff`, knip); IAM Policy Autopilot (actions the code needs vs the CDK grants); **docs-drift tools** (lychee, markdownlint) when the change touches a documented interface [tN7] | the adversarial-verifier, always **started separately at `ci-pending`**; **logic-bug reviewer** (new, M+: find → verify-to-disprove → rank); standards (M+); security and devops lanes by risk tag; unnecessary-code reviewer (M+); **docs-drift checker** (the checker half of `doc-reviewer-agent`: documentation checked against the code) when the change touches a documented interface [tN7]; optional **external security review of the PR** (AWS Security Agent diff scan; project setting `external_security_review`: `risk` by default, `all` for every PR, or `off`) [T-04] |
 | TEST-READY | merge steward, deploy pipeline | train CI; pre-flight (§10.3); **stateful replacement/deletion detector** on the change set (new); smoke/E2E | failure attributor for smoke failures: it uses CloudWatch and CloudTrail MCP read-only, ranks only inside the suspect set, and treats logs as data [C15]. Optional batch release readiness (AWS DevOps Agent) for batches with `iam-iac`. Optional **penetration test** of the shared stage environment (AWS Security Agent): budget-capped, batched per project setting (e.g. weekly, or per batch containing `auth`/`money`). Its findings enter START as issues, exploitable ones as `priority:critical`, and do not hold a release (traceability C10) [T-04, tN8] |
@@ -600,9 +652,9 @@ the conductor's session, so their independence is bounded as §8.5 says.
    - **An edited record comment** (`updated_at` ≠ `created_at`) is not skipped silently. The fold puts the issue on
      `tamper`, a hold, and writes a tamper record naming the comment. A checker re-folds the issue from the unedited
      records, and an authorised human clears the flag.
-   - **Reading:** pages are fetched and filtered client-side by id, because GitHub's list endpoint takes only `since`
-     (an updated time). The last folded id is the cursor in the claim ref's commits, which survives every release
-     (§5.1), so a new holder never full-scans.
+   - **Reading:** a new holder starts from the folded state and the last fold's time in the claim ref's commits, which
+     survive every release (§5.1). It fetches comments with `since` = that time, which returns new and edited comments
+     alike, so it neither re-folds from the first record nor misses an edit [aM9].
    - **Placement:** records go on the issue whose holder must act. Cross-issue feedback from #A about #B's work is posted
      on #B, with a pointer on #A.
    - **Comment cap:** GitHub disables comments on an issue past 2,500. At 2,000 comments the verb continues the issue in
@@ -618,20 +670,29 @@ the conductor's session, so their independence is bounded as §8.5 says.
 - every `factory:` and `merge-steward:` line.
 
 A gate refuses an unmarked comment or body write from an agent path, and forge MCP write tools are denied to agents.
-An unmarked comment from the shared login can then only come from outside the wrapper: the operator's own UI, or a
-bypass (§15.2).
+The wrapper also refuses an agent's add or remove of a human-owned flag label (§3.2) [aM4]. An unmarked comment from
+the shared login can then only come from outside the wrapper: the operator's own UI, or a bypass (§15.2).
 
 ### 8.3 Human input: explicit forms only [A4, aN5, aN13, P12]
 
-A human's comment changes state only through an **explicit form**, on one line, from an **authorised human** (§4.5), in
-an unmarked comment:
+A human's comment changes state only through an **explicit form**, one per line, from an **authorised human** (§4.5), in
+an unmarked comment. One comment may carry several form lines, e.g. a batch of answers [aM5]. The answer recorder
+executes every form, whether or not the issue has `needs-input` (§12.7, §14) [aM6]:
 
 | Form | Effect |
 |---|---|
 | `/answer Q-<n> = <option>` or `/answer Q-<n>: <text>` | answers a question; free text is recorded verbatim, and the next worker's question checker reads it like any input (§12.7) |
 | `/approve <id>` | grants an approval of kind approval (§12.10) |
-| `/amend <text>` | changes the ask (§4.3) |
-| `/stage <to> because <reason>` | requests a transition, which the verb evaluates like any call (§4.4) |
+| `/amend <text>` | changes the ask, per stage as §4.3 says |
+| `/stage spec-required because <reason>` | sends an IMPLEMENTATION-READY or REWORK-REQUIRED issue back through the re-spec edge (§4.2). On a TEST-READY issue the recorder posts a steward request, which the steward applies as TEST-READY → REWORK-REQUIRED at its next tick. Any other target is refused with a record [aM6] |
+| `/admit` | admits an outsider's issue for its current ask (§6.3) |
+| `/hold`, `/unhold` | sets or clears `hold` |
+| `/priority <level>` | sets the priority label |
+| `/clear-tamper` | clears `tamper` after the re-fold (§8.2) |
+
+**The fold checks every form a record cites** [aM5]. It accepts a recorder record only when the cited comment exists,
+is unedited, is an explicit form, and has an author on the allow-list. The comment must also be unmarked, or carry the
+`/get-guidance` mark that only an interactive `/get-guidance` session can produce (§12.9).
 
 Every other comment, from any author including the operator, is data. It is read and judged on its content like any
 input, and may well be a valid bug report or argument, but it never decides a reserved question, never approves, never
@@ -659,16 +720,22 @@ The conductor runs in the maker's session and posts the in-session lanes' bytes.
 
 This holds under any identity model, because one process writes all the bytes.
 
-So **every stage exit that closes a stage needs at least one verdict from a separately started checker**: a session the
-dispatcher starts, which holds a `verify` claim and posts its own records.
+So **the stage exits in the table below need a verdict from a separately started checker**: a session the dispatcher
+starts, which holds a `verify` claim and posts its own records. It is started by the queue row of its trigger (§14): the
+verifier by `ci-pending`; every other one by `checker-requested:<lane>`, which the maker sets as it releases after its
+in-session work [aM1]. The exits marked "none" are recorded trade-offs (§19 item 5).
 
 | Stage exit | Separately started checker |
 |---|---|
-| IMPLEMENTATION-READY → TEST-READY | the adversarial verifier at `ci-pending`, every tier |
+| START → closed | the duplicate-confirmer, every tier: closing destroys work |
+| START → SPEC-REQUIRED, tiers M and L | the triage checker |
+| START → SPEC-REQUIRED, tier S; START → split | none: the deterministic tier floor and duplicate retrieval check them |
 | SPEC-REQUIRED → IMPLEMENTATION-READY, tiers M and L | one spec checker, by default the test-architect |
-| SPEC-REQUIRED → IMPLEMENTATION-READY, tier S | none: the combined spec pass stays in-session, which is a recorded trade-off (§19). The code's independent check is the verifier |
-| REWORK-REQUIRED exits | the verifier on the new head (via IMPLEMENTATION-READY → TEST-READY's predicate) |
-| CLOSE-READY → closed | the log-scan lane |
+| SPEC-REQUIRED → IMPLEMENTATION-READY, tier S | none: the combined spec pass stays in-session. The code's independent check is the verifier |
+| IMPLEMENTATION-READY → TEST-READY | the adversarial verifier at `ci-pending`, every tier |
+| REWORK-REQUIRED → TEST-READY | the verifier on the new head, through IMPLEMENTATION-READY → TEST-READY's predicate [aM15]. The other REWORK exits lead to stages whose own exits have their checkers |
+| CLOSE-READY → closed, where the project provides a read-only log query | the log-scan lane |
+| CLOSE-READY → closed, otherwise, and for tier S | none: the close-out's deterministic checks (the ledger and the tag query) decide |
 
 **Downgrades.** A downgrade of a blocking finding to non-blocking needs the raising lane's `accept` or an arbiter
 decision. A finding raised by a separately started lane can be downgraded only by that lane's own record or by the
@@ -778,6 +845,10 @@ Chess's 50 red hours (2026-10-31 to 11-02) were mostly VBT: CloudFormation had r
    3. otherwise it redeploys only the stacks whose template changed, consumers before producers, with
       `cdk deploy --app <cached assembly> <stack> --exclusively`;
    4. it runs the smoke again.
+
+   **A restored run concludes `failure` explicitly**, whatever the restore's own outcome, and records `<env> serving
+   <sha> (restored)` (H3). So does a deploy the guard of §10.4 step 4 skipped. Neither can ever count as a green deploy
+   verdict (§4.2) [aM3].
 5. **Last-good also red?**
    - If the restore's change set held no stateful change, the cause is infra, drift or a flake, and nobody is blamed
      (the "passes without" test, for free).
@@ -817,9 +888,17 @@ synthesis.
    - The CI exemption and the revert-first ordering in `plan()` apply only to a PR that the steward's identity opened
      AND whose head is exactly `git revert -m 1` of a first-parent steward merge. A label alone never qualifies, so a
      worker cannot jump the queue by labelling its own PR.
-   - When the steward lands a revert PR, it writes `Steward-Reverts: PR #<n> <merge sha>` into its own first-parent
-     merge commit. That trailer, never a trailer on a PR's commits, is the revert fact (H1).
+   - **The revert fact is keyed on content, not on who opened the PR** [aM2]. When the steward lands ANY PR whose net
+     diff is exactly the inverse of a first-parent steward merge's first-parent diff, it writes
+     `Steward-Reverts: PR #<n> <merge sha>` into its own first-parent merge commit. That covers the operator's revert
+     button and a worker's revert as well as the steward's own. That trailer, never a trailer on a PR's commits, is the
+     revert fact (H1).
+     - A revert the steward did not open returns the reverted PR's issue through TEST-READY → REWORK-REQUIRED
+       (§4.2), or reopens it into REWORK-REQUIRED if it was already closed.
+     - A partial revert is an ordinary change, not a revert fact (§19 item 13).
    - Landings never pause; while red, a batch is capped small (the revert plus at most k PRs).
+   - **Deploys the steward starts** are dispatched with `return_run_details`. The steward records
+     `dispatched run <id> for <sha>`, which the pinned deploy verdict reads (§4.2) [aM3].
 4. **Deploy guard while the revert is pending** [C18]: the deploy job skips trunk commits that contain an attributed
    culprit without its revert. The environment stays on the restored version instead of being broken and restored again
    by every deploy. If the revert PR cannot be created, the `env-incident` of step 3 names the cause at once.
@@ -893,11 +972,17 @@ gives about 2.5 h red, against about 44 h after the cause was known [C19]. That 
 - **H7. Forged machine lines and forged trunk history** [B7, aN7].
   - **Today:** any commenter can post `merge-steward: landed <sha>`, and the code ignores the author.
   - **Fix, first part:** landings come from trunk history; comments are projections.
-  - **Fix, second part, trunk itself:**
+  - **Fix, second part, trunk itself** [aN7]:
     - **the trunk ruleset (H12)** stops a worker token from pushing trunk;
+    - **no worker-writable path to a write token** (§3.5). The ruleset exempts GitHub Actions, which is safe only
+      because:
+      - worker tokens can neither add or change a workflow file nor dispatch a workflow;
+      - every write-token workflow runs only on the default branch;
+      - branch code runs with `contents: read`;
     - **an independent check** confirms each first-parent landing: the steward verifies, from the repository activity
       record (`GET /repos/{owner}/{repo}/activity`, filtered by the trunk ref and push activity), that the push was made
-      by the steward's actor. GitLab: the push events of the protected trunk.
+      by GitHub Actions. Given the previous point, that can only be the steward. GitLab: the push events of the
+      protected trunk.
   - Parsing machine lines only from the steward's identity is a third layer: a workflow on a worker's own PR branch can
     also post as `github-actions[bot]`.
 - **H8. Blame-all red verdict:** removed (§10.5) [B11].
@@ -905,11 +990,13 @@ gives about 2.5 h red, against about 44 h after the cause was known [C19]. That 
   fact naming the pinned run; the steward's next tick applies TEST-READY → CLOSE-READY; the close-out team closes.
 - **H10. Steward-opened PRs get no PR CI on GitHub** [B14]: the dispatch, the CI exemption and the ordering of §10.4 step
   3.
-- **H11. Actions may not create PRs on a new personal GitHub repository** [aN8]: setup enables the setting; the steward
-  checks it every tick (§3.5).
+- **H11. Actions may not create PRs on a new personal GitHub repository** [aN8, aM14]: setup and update enable and
+  check the setting with the operator's token. The steward detects a refusal at revert time and opens an `env-incident`
+  at once (§3.5).
 - **H12. GitHub trunk is unprotected** [aN7]: a trunk ruleset is part of factory mode's forge setup (§3.5).
-- **H13. The verdict trusts an argument** [aN10]: `verdict --conclusion` is replaced by the steward reading the pinned
-  deploy run from the run API (§4.2).
+- **H13. The verdict trusts an argument** [aN10, aM3]: `verdict --conclusion` is replaced by the steward reading the
+  pinned deploy verdict: the dispatched run id and commit, and the deploy and smoke job conclusions from the jobs API
+  (§4.2).
 
 Not fixable by a faster revert: a failed rollback, an irreversible migration, a replaced stateful resource. These need
 the prevention checks, the restore guard and an owner.
@@ -935,9 +1022,14 @@ TEST-READY. Dead-code and unnecessary-code checks therefore run in the implement
    resource: kind, id, environment, created-by). CLOSE-READY removes what the ledger names AND what a query by the tag
    finds. The exit predicate requires both to be empty.
 
-   **The close-out worker's AWS role may delete only resources carrying its issue's tag**, through tag-conditioned IAM,
-   and the worker reads no logs. Deletion credentials and untrusted log text never meet in one session (§15.1 rule 5)
-   [tN1].
+   **Every team that creates temporary AWS resources, and the close-out that removes them, holds only tag-conditioned
+   credentials** [tN1, tM1]:
+   - create only with the issue's `factory-issue` tag (`aws:RequestTag`);
+   - delete only resources carrying it (`aws:ResourceTag`).
+
+   The close-out reads no logs directly. It still reads issue text and the log-scan lane's finding excerpts, so
+   untrusted text and AWS write credentials meet only under credentials scoped to the issue's own tagged resources
+   (§15.1 rule 5).
 
    Chess #1130 is the motivating case: it left 1,000 staged uploads, which nobody recorded, and they later blocked other
    issues' deploy checks.
@@ -1018,7 +1110,8 @@ It matters there for a reason that has nothing to do with trusting the operator 
 1. **Maker ≠ checker for decisions.** A decision is reserved because no agent may make it. If an agent's comment could
    answer it, the agent that escalated the question would answer its own escalation. The design's own rule says it may
    not. This is why only explicit forms count (§8.3), and why the wrapper marks every agent write (§8.2): an ordinary
-   agent note can never pass as an answer.
+   agent note can never pass as an answer. A form counts only when an authorised human posted it, or when an
+   interactive `/get-guidance` session posted it from the human's own answer (§12.9) [aM5].
 2. **Outsiders.** On a public repository any signed-in user can comment. Their text is data, never a decision on the
    project's behalf (§8.3).
 3. **Irreversible operations** (a production deploy, a deletion, an IAM grant). Under U24 the only forge-side gate is a
@@ -1083,17 +1176,20 @@ They are asked once per project and recorded as a decision record or steering li
 
 ### 12.7 Recording answers [B4, aN3, aN13]
 
-Only explicit forms count (§8.3). An answer reaches the issue two ways:
+Only explicit forms count (§8.3). A form reaches the issue two ways:
 
-- **Directly on the issue.** The dispatcher lists `needs-input` issues that have an explicit `/answer` or `/approve`
+- **Directly on the issue.** The dispatcher lists issues, with or without `needs-input`, that have an explicit form
   from an authorised human newer than the recorder's last run on that issue, and starts the **answer recorder**, a
-  headless role.
-  - The recorder holds a `record` claim. It copies each form into a `factory: answer Q-<n> = <option or text> (by
-    <login>, comment <id>)` record, writes `factory: recorded through comment <id>`, and clears `needs-input` when no
-    blocking question is left.
+  headless role [aM6].
+  - The recorder holds a `record` claim and executes each form as §8.3's table says:
+    - an answer becomes a `factory: answer Q-<n> = <option or text> (by <login>, comment <id>)` record;
+    - an `/amend` or `/stage` takes the re-spec edge, or becomes a steward request on TEST-READY;
+    - a flag form sets or clears its flag.
+  - It writes `factory: recorded through comment <id>`, and clears `needs-input` when no blocking question is left.
   - It interprets nothing: free text is recorded verbatim, and the next worker's question checker reads it like any
     input.
   - A comment that is not an explicit form never starts it, and a partial answer starts it once, not on every poll.
+  - The fold re-checks every form a record cites (§8.3), so a recorder record counts only when its comment does.
 - **Through `/get-guidance`**, interactively (§12.9).
 
 ### 12.8 A human review task is one sheet
@@ -1112,9 +1208,16 @@ Run by the human when there is time; the same prompt on Kiro.
    4. non-blocking assumptions the human may override.
 2. **Dedupe** the same decision across issues.
 3. **Ask** one item, or a small batch, at a time.
-4. **Record** each answer, holding a `record` claim per issue. It posts the answer as an explicit form quoting the
-   human's words, marked as posted through `/get-guidance` by the human's login. Under U24 this is as provable as any
-   agent write (§15.2).
+4. **Record** each answer, holding a `record` claim per issue [aM5]:
+   - it posts the answers of one issue as one comment of explicit form lines, quoting the human's words, with the
+     `/get-guidance` mark;
+   - the wrapper accepts that mark only in a session in which the human typed `/get-guidance`. In Claude Code a
+     `UserPromptSubmit` hook records that, and an agent cannot type a user prompt;
+   - where no such hook exists (Kiro today), the command instead prints the form lines, and the human posts them on
+     each issue;
+   - the digest lists every answer posted through `/get-guidance`.
+
+   Under U24 the human authorship of such a comment is still not provable by the forge (§15.2).
 5. **Transition** only when the answer clearly sends the issue to another stage, through the verb; otherwise the next
    worker in the stage reads the answer.
 6. **Generalise:** offer to turn a general answer into a decision record or steering line, so it is not asked again.
@@ -1233,18 +1336,20 @@ session keeps its PR until it lands, as today.
 
 | Queue | Pullable when | Role started |
 |---|---|---|
-| one per worker stage (START, SPEC-REQUIRED, IMPLEMENTATION-READY, REWORK-REQUIRED, CLOSE-READY) | no claim (absent or `free`, §5.1); none of `hold`, `needs-input`, open `blocked-by`, `ci-pending`, `review-verify`, `split`, `env-incident`, `tamper` | the stage's maker team |
-| one per checker lane | `review-verify` with a resolution waiting for that lane; none of `hold`, `needs-input`, open `blocked-by`, `tamper` | that lane, with a verify claim (§5.3) |
-| verifier | `ci-pending`, and the PR's CI run has ended OR the `ci-pending` timeout has passed; none of `hold`, `needs-input`, open `blocked-by`, `tamper` | the adversarial verifier, which completes or refuses IMPLEMENTATION-READY → TEST-READY (§4.2) |
-| answer recorder | `needs-input` with an explicit form from an authorised human newer than the recorder's last run on that issue | the answer recorder (§12.7) |
+| one per worker stage (START, SPEC-REQUIRED, IMPLEMENTATION-READY, REWORK-REQUIRED, CLOSE-READY) | no claim (absent or `free`, §5.1); none of `hold`, `needs-input`, open `blocked-by`, `ci-pending`, `review-verify`, `checker-requested`, `split`, `env-incident`, `tamper` | the stage's maker team |
+| one per checker lane | no claim; `review-verify` with a resolution waiting for that lane, OR `checker-requested:<lane>` [aM1]; none of `hold`, `needs-input`, open `blocked-by`, `tamper` | that lane, with a verify claim (§5.3) |
+| verifier | no claim; `ci-pending`, and the PR's CI run has ended OR the `ci-pending` timeout has passed; none of `hold`, `needs-input`, open `blocked-by`, `tamper` | the adversarial verifier, which completes or refuses IMPLEMENTATION-READY → TEST-READY (§4.2) |
+| re-fold checker | no claim; `tamper` without a re-fold record since it was set [aM13] | a checker that re-folds the issue from its unedited records and posts the result, for the human's `/clear-tamper` |
+| answer recorder | no claim; an explicit form from an authorised human newer than the recorder's last run on that issue, on any issue including `env-incident` ones [aM6, aM13] | the answer recorder (§12.7) |
 
-TEST-READY has no worker queue: the steward drives it on every tick. `env-incident` issues are in no queue; they reach
-their owner through `/get-guidance` and the digest.
+Every row requires "no claim", so a lane or the recorder is never started while a worker still holds the issue [aM13]. TEST-READY has no worker queue: the steward re-derives both its exits for every TEST-READY issue on every
+tick (§4.2) [aM8]. `env-incident` issues are in no worker queue; they reach their owner through `/get-guidance` and the
+digest, and the recorder executes forms on them.
 
 - **Pull order:**
   1. a START issue authored by a factory login with `Origin: production` (§6.1), and anything with
      `priority:critical`, whatever its stage [T-09];
-  2. then right to left: REWORK-REQUIRED, the lane and verifier queues, CLOSE-READY, IMPLEMENTATION-READY,
+  2. then right to left: REWORK-REQUIRED, the lane, verifier and re-fold queues, CLOSE-READY, IMPLEMENTATION-READY,
      SPEC-REQUIRED, START;
   3. then priority within a queue.
 
@@ -1290,8 +1395,9 @@ catalogues, a trojanised Claude Code extension on another IDE's marketplace.
 3. Pin every server, scanner, action, plugin and power, never `@latest`. Bump pins by reviewed PR.
 4. Headless checkers run with `--strict-mcp-config` (Kiro: `includeMcpJson: false`), so a PR cannot add an MCP server to
    its own checker through `.mcp.json`. This deliberately gives up MCP auto-discovery (traceability C11).
-5. No deploy or deletion credentials in a session that reads untrusted content: logs, issue text, web pages. The
-   close-out is split accordingly (§11).
+5. **A session that reads untrusted content** (logs, issue text, web pages, finding excerpts) never holds deploy
+   credentials. It holds AWS write credentials only when they are tag-conditioned to its own issue's temporary resources
+   (`factory-issue=<repo>#<n>`, §11) [tM1]. Deploys run only in CI.
 6. An "untrusted input" line in every checker prompt.
 7. Forge MCP write tools are denied to agents; all forge writes go through the wrapper, which marks them (§8.2).
 
@@ -1308,7 +1414,10 @@ machine; the design changes the tokens, not the account.
 - The worker tokens LACK the permissions behind irreversible operations, such as approving a protected deployment or
   administering the repository. Those stay with the operator's own token. Under one account that is the only
   forge-side gate (§12.3 item 3).
-- **The wrapper marks every agent write** (§8.2), and a gate refuses unmarked writes from agent paths.
+- The worker tokens also lack "Workflows" and "Actions: write", so no worker can create a workflow that obtains a
+  write token, or dispatch one (§3.5) [aN7].
+- **The wrapper marks every agent write** (§8.2). A gate refuses unmarked writes from agent paths, and agents' writes
+  of human-owned flag labels [aM4].
 - **The write budget:** GitHub limits content-creating requests to 80 per minute and 500 per hour per account, shared by
   every worker, every project and the operator's own UI. GitLab's note limit is higher, 300 per minute per user. Under
   U24 the reductions are binding:
@@ -1323,8 +1432,10 @@ machine; the design changes the tokens, not the account.
 
 **The accepted residual, stated at its true size.** Under the shared account:
 
-1. an agent that bypasses the wrapper (a direct API call, a browser session) can post an explicit form as the operator.
-   It can thereby answer a reserved question, approve, amend or request a stage;
+1. an agent that bypasses the wrapper (a direct API call, a browser session) can post an explicit form as the operator,
+   or write a human-owned flag label. It can thereby answer a reserved question, approve, amend, admit, unhold or
+   request a stage. Inside the wrapper this is refused, and the `/get-guidance` mark is accepted only in a session the
+   human started the command in (§12.9) [aM4, aM5];
 2. any contents-write token can force-push or delete claim refs (§5.1);
 3. the forge-side gate for irreversible operations is a permission difference between tokens of one account, and on
    some plans no forge mechanism adds to it (§12.3);
@@ -1333,10 +1444,14 @@ machine; the design changes the tokens, not the account.
 **What limits it:**
 
 - P12: whatever the forged decision leads to still faces every checker and every predicate.
-- The marking gate means a cooperating agent can no longer impersonate the operator by accident: an ordinary note
-  never counts.
-- The trunk ruleset and the pinned run facts (§3.5, §4.5) close the delivery side, which does not rely on comment
-  authorship.
+- The marking and label gates mean that an agent working through the wrapper can no longer impersonate the operator,
+  by accident or otherwise: an ordinary note never counts, and a human-owned flag cannot be written.
+- The delivery side does not rely on comment authorship. It is closed against worker tokens and worker-written
+  workflows by:
+  - the trunk ruleset;
+  - the absence of any worker-writable path to a write token;
+  - landings and reverts read from trunk trailers;
+  - the pinned deploy verdict (§3.5, §4.2, §4.5).
 - Per-host tokens make a leak revocable.
 
 The decision itself can still be forged by an agent that leaves the wrapper. That is recorded, not designed away.
@@ -1367,17 +1482,17 @@ The decision itself can still be forged by an agent that leaves the wrapper. Tha
 
   The release vocabulary of `clients/claude/docs/run-identity.md` and the gates must accept that. Headless workers end
   with a machine-readable verdict line in place of the interactive SESSION verdict.
-- **The phase-2 renderer is a precondition** [T-14]. The design adds about 15 agent roles that do not exist yet:
+- **The phase-2 renderer is a precondition** [T-14, tM4]. The design adds 16 agent roles that do not exist yet:
   - triage worker, triage checker, duplicate-confirmer;
   - acceptance-test author;
   - threat-model maker and checker;
-  - logic-bug reviewer, unnecessary-code reviewer, docs-drift checker;
+  - logic-bug reviewer, unnecessary-code reviewer;
   - failure attributor, log-scan lane;
-  - close-out worker, retro checker;
+  - close-out worker, retro checker, re-fold checker;
   - question checker, answer recorder, arbiter.
 
-  There is also the split of two agents into maker and checker. Kept by hand as Claude and Kiro twins, that grows the
-  twin set by about 75 %. The renderer (`docs/reports/directory-restructure-proposal-2026-11-07.md`) generates both
+  There is also the split of two agents into maker and checker; the docs-drift checker is the checker half of
+  `doc-reviewer-agent`. Kept by hand as Claude and Kiro twins, the 16 new roles grow the 20-agent twin set by 80 %. The renderer (`docs/reports/directory-restructure-proposal-2026-11-07.md`) generates both
   clients from one source and comes first.
 - **Distribution stays file-based** per project (decision U19). A plugin is a future option: it would be tied to the
   AWSBedrockGateway project, which hosts the `bedrock-gateway` plugin marketplace and the managed-MCP configuration of
@@ -1422,15 +1537,15 @@ human.
 | Claims | the permanent claim ref with `held`/`free` commits, fencing token, cursor and lease; atomic branch + claim pushes; `record`, `verify` and group claims; the reaper; ONE release verb | `start-issue`/`release-issue` become the ref protocol; the `mkdir` lock stays a same-clone optimisation | — |
 | Authority | the role table (§4.5) with conductor, arbiter, question checker and dispatcher rows; human and machine allow-lists per project | every writer calls the verb under a claim instead of writing labels | — |
 | Spec hand-off | `spec-approved` record, the ask marker and hash, `/amend`, acceptance tests at spec time, the test-freeze run | the orchestrator's FIX splits into SPEC and IMPLEMENTATION teams | the spec phases, the review panel, the tiers |
-| Review exchange | `factory-review/v1` records with `actor.agent` and `notVerified`; a validation and fold script; one envelope per round; separately started checkers per stage exit; the arbiter with a computed overrule; `tamper` | the review lanes emit records instead of prose files | the review contract's materiality rules |
-| Checkers | IaC gate, OSV-Scanner, diff coverage, spec lint, logic-bug reviewer, threat-model lane, triage checker, duplicate-confirmer, docs-drift checker, log-scan lane, retro checker, answer recorder; optional external security review and pen test | housekeeping and doc-reviewer split into maker and checker | the existing lanes |
-| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; Track T attribution; steward-opened revert PRs keyed on content; `Steward-Reverts` trailers; the deploy guard; the per-tick forge-setup check; the activity check of trunk pushes | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); `verdict` reads the pinned run (H13); every `eligibility` reject and a closed PR return the issue; `eligibility` waits on an issue `hold` | trains, ancestry verification, `delivery-status` as a status record |
-| Wrapper | marking of every agent comment and body write, and a gate on unmarked ones; the explicit-form parser; comment paging with an id filter; the cursor in the claim ref; the continuation issue; the write token bucket; the write counter | `call` gates the issue-comment and issue-update operations; the GitLab fold orders by note id | the forge API packages |
-| Human input | `/get-guidance`, the answer recorder, explicit forms, the question checker with its always-ask list, the decision inventory, standing-permission records, `env-incident` issues outside every queue | `continuous-work.md` escalation text | the five-line question shape |
+| Review exchange | `factory-review/v1` records with `actor.agent` and `notVerified`; a validation and fold script; one envelope per round; separately started checkers for the exits §8.5 names; the arbiter with a computed overrule; `tamper` and the re-fold | the review lanes emit records instead of prose files | the review contract's materiality rules |
+| Checkers | IaC gate, OSV-Scanner, diff coverage, spec lint, logic-bug reviewer, threat-model lane, triage checker, duplicate-confirmer, docs-drift checker, log-scan lane, retro checker, re-fold checker, answer recorder; the `checker-requested` queue that starts the separately started checkers; optional external security review and pen test | housekeeping and doc-reviewer split into maker and checker | the existing lanes |
+| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; a restored or skipped deploy concludes `failure`; Track T attribution; steward-opened revert PRs; `Steward-Reverts` trailers for every exact revert, whoever opened it; deploys dispatched with `return_run_details`; the deploy guard; the per-tick activity check of trunk pushes; per-tick re-derivation of both TEST-READY exits | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); the pinned deploy verdict from the dispatched run and the jobs API (H13); every `eligibility` reject, a closed PR, a revert outside Track T and a `/stage` request return the issue; `eligibility` waits on an issue `hold`; every write-token workflow runs only on the default branch | trains, ancestry verification, `delivery-status` as a status record |
+| Wrapper and git hooks | marking of every agent comment and body write, and a gate on unmarked ones; the gate on human-owned flag labels; the `/get-guidance` mark gate with its `UserPromptSubmit` hook; the explicit-form parser (several forms per comment); the fold's check of cited forms; reading from the folded state with `since`; the cursor and folded state in the claim ref; renewal on every wrapper call and from the commit hook; the `pre-push` fence on issue branches; the continuation issue; the write token bucket; the write counter | `call` gates the issue-comment, issue-update and label operations; the GitLab fold orders by note id | the forge API packages |
+| Human input | `/get-guidance`, the answer recorder executing every explicit form (answers, approvals, `/amend`, `/stage`, `/admit`, `/hold`, `/unhold`, `/priority`, `/clear-tamper`), the re-spec edge, `admitted {ask_hash}`, the question checker with its always-ask list, the decision inventory, standing-permission records, `env-incident` issues outside every worker queue | `continuous-work.md` escalation text | the five-line question shape |
 | Gates and harness | a headless verdict line | the stop gates and the release vocabulary accept a transition, `needs-input`, `ci-pending` or a release as a valid end, once the dispatcher runs [T-11]; `proportionality.md`'s tier-S path and review caps are unchanged [C7, tN4] | the remaining gates |
 | Scheduling | the dispatcher with its queues and exclusions | decision A2 reversed, and `check-handoff` superseded, only once the dispatcher runs on a host [tN11] | — |
 | Clients | the phase-2 renderer first [T-14] | — | — |
-| Setup | the Minimum revert tier required for AWS projects; the GitHub trunk ruleset and the Actions-may-create-PRs setting; pinned MCP servers; strict MCP config for checkers; per-host fine-grained tokens; tag-conditioned delete permissions for the close-out | both setup prompts and the update prompt | — |
+| Setup | the Minimum revert tier required for AWS projects; the GitHub trunk ruleset and the Actions-may-create-PRs setting, both checked with the operator's token; the GitLab steward token as a protected variable; pinned MCP servers; strict MCP config for checkers; per-host fine-grained tokens without Workflows, Actions-write and administration permissions; tag-conditioned create and delete permissions for every team that makes temporary resources [tM1] | both setup prompts and the update prompt | — |
 
 **Small defects found on the way**, to fix when the framework is changed:
 
@@ -1451,16 +1566,21 @@ human.
    - which actor a GitHub ruleset can exempt for a `GITHUB_TOKEN` trunk push.
 
    The branch-prefix fallback exists, but it starts `on: push` workflows.
-2. **The fencing window** (§5.1). Branch pushes are fenced atomically; REST writes (comments, labels) only by a check
-   before each call, so an expired holder can make one more REST write. A step must stay short enough that L covers it.
+2. **The fencing window** (§5.1). Branch pushes are fenced atomically, and the `pre-push` hook refuses any other push of
+   an issue branch. REST writes (comments, labels) are fenced only by a check before each call, so an expired holder can
+   make one more REST write. A step must stay short enough that L covers it, and L is capped at 90 minutes.
 3. **The lease binds cooperating clients only** (§5.1). Any contents-write token can force-push or delete a claim ref.
-4. **Identity** (§15.2, U24). The residual at its true size: an agent that leaves the wrapper can post an explicit form
-   as the operator. Approvals and reserved decisions are not provable by author, and the forge-side gate for
+4. **Identity** (§15.2, U24). The residual at its true size: an agent that leaves the wrapper can post an explicit form,
+   or write a human-owned flag label, as the operator. Approvals and reserved decisions are not provable by author, and the forge-side gate for
    irreversible operations is a token-permission difference within one account. P12, the marking gate, the trunk ruleset,
    the pinned facts and per-host tokens limit, but do not remove, that accepted risk.
-5. **The in-session boundary** (§8.5). In-session lane records are as trustworthy as the maker's session. Every stage
-   exit has a separately started checker, except tier S's spec, whose combined pass stays in-session to keep a one-line
-   fix small. Its code is still checked by the separately started verifier.
+5. **The in-session boundary** (§8.5). In-session lane records are as trustworthy as the maker's session. The exits
+   without a separately started checker are recorded trade-offs:
+   - tier S's START → SPEC-REQUIRED and START → split (the deterministic floor and duplicate retrieval decide);
+   - tier S's spec (its combined pass stays in-session to keep a one-line fix small; its code is still checked by the
+     separately started verifier);
+   - CLOSE-READY → closed for tier S and where a project has no read-only log query (the deterministic close-out checks
+     decide).
 6. **Immutability** [T-08]. Audit lines and records are comments the shared account can edit or delete. An edit trips
    `tamper`; a deletion goes unnoticed. The option is a digest of the folded records written to a protected audit ref at
    close-out (O15).
@@ -1476,7 +1596,7 @@ human.
 12. **Not designed here:**
     - automated capture of corrections and recurrence counting (gap-analysis 2.5);
     - backlog drift measurement (gap-analysis row 11);
-    - a search that runs when the backlog is empty;
+    - a search that runs when the backlog is empty, including for drift in documentation no change touches;
     - the Jira wrapper (gap-analysis 3.8);
     - the details of the production intake (gap-analysis 2.6);
     - the contract-drift check per project (gap-analysis 3.7);
@@ -1485,3 +1605,5 @@ human.
     - the dispatcher's host and worker start (O12).
 
     [traceability.md](traceability.md) lists them.
+13. **Partial reverts** (§10.4 step 3) [aM2]. Only an exact revert of a steward merge is a revert fact. A change that
+    undoes part of a landed PR is an ordinary change, so the reverted PR's issue stays closed or verified.

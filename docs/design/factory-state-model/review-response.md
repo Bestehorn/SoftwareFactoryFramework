@@ -1,11 +1,47 @@
-# Responses to the reviews (revision 3, 2026-11-19)
+# Responses to the reviews (revision 4, 2026-11-19)
 
-Two rounds so far:
+Three rounds so far:
 
-- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 1.
+- **Round 3** (the reviews of revision 3): answered by revision 4, in Part 0.
+- **Round 2** (the re-reviews of revision 2): answered by revision 3, in Part 1, kept as written.
 - **Round 1** (the reviews of revision 1): answered by revision 2, in Part 2, kept as written.
 
 A decision id (R, M, U, O) refers to [decisions.md](decisions.md); a section (§) to [design.md](design.md).
+
+# Part 0: the round-3 reviews of revision 3, answered by revision 4
+
+Both reviews read revision 3 (5dcc08f) on 2026-11-19, in the same independent sessions:
+
+- [adversarial-review-r3-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/adversarial-review-r3-2026-11-19.md):
+  43 of 44 round-2 items verified, aN7 partly; 15 new findings (7 B, 7 C, 1 D), ids aM1–aM15; 16 open;
+- [target-review-r3-2026-11-19.md](../../reports/factory-state-model-2026-11/reviews/target-review-r3-2026-11-19.md):
+  all 20 round-2 items verified; 4 new findings (1 B, 1 C, 2 D), ids tM1–tM4; 4 open.
+
+**Outcome.** All 20 open items are accepted, none rejected. Each follows the reviewer's recommended edit, with one
+variation: for aM5, both options are combined (see below).
+
+| Id | Grade | Finding (short) | Revision 4 |
+|---|---|---|---|
+| aN7 (rest) | B | Trunk reachable through a workflow a worker writes | worker tokens lack Workflows and Actions-write; write-token workflows on the default branch only; branch code `contents: read`; GitLab protected variable; activity check "pushed by GitHub Actions" (§3.5, §10.8 H7, §15.2, R57) |
+| aM1 | B | Nothing starts the separately started checkers; §4.1 names exits §8.5 does not cover | `checker-requested:<lane>` and its queue row; §8.5 table covers the START exits and records the trade-offs; §4.1 and P4 say "where §8.5 names one" (R58) |
+| aM2 | B | A revert the steward did not open is never a revert fact | `Steward-Reverts` for every exact revert, keyed on content; the reverted PR's issue returns or is reopened; partial reverts in §19 item 13 (R59) |
+| aM3 | B | The pinned run's conclusion and commit are not the deploy verdict | the dispatched run id and sha, or a push run's `head_sha`; deploy and smoke job conclusions from the jobs API; restored and skipped deploys conclude `failure` (§4.2, §10.3, §10.4, R60) |
+| aM4 | B | Human-owned flags are plain label writes | forms `/admit`, `/hold`, `/unhold`, `/priority`, `/clear-tamper`; the wrapper refuses agents' label writes of them; the dispatcher reverts unbacked ones (§3.2, §4.4, §8.2, R61) |
+| aM5 | B | An agent can post a counted answer through the `/get-guidance` mark | both options combined: the mark is accepted only in a session the human started `/get-guidance` in (a `UserPromptSubmit` hook); Kiro prints the form lines instead; the fold re-checks every cited form; several forms per comment allowed (§8.3, §12.9, R62) |
+| aM6 | B | `/amend`, `/stage` and an edit above the marker have no executor or edge | the recorder executes every form; the re-spec edge; `/stage` on TEST-READY as a steward request; `/amend` refused from TEST-READY on (§4.2, §4.3, §8.3, §12.7, R63) |
+| aM7 | B | An admitted outsider can rewrite the issue | `admitted {ask_hash}`; a mismatch drops the issue to read-only triage (§4.3, §6.3, R64) |
+| aM8 | C | A backed-off steward can lose a TEST-READY return | every tick re-derives both exits from durable facts (§4.2, §14, R65) |
+| aM9 | C | The cursor alone cannot resume a fold | the folded state in the claim commits; `since` the last fold (§5.1, §8.2, R66) |
+| aM10 | C | Renewal cadence undefined | every wrapper call and the commit hook, ref-only; checkpoint = every commit; L capped (§5.1, R67) |
+| aM11 | C | A plain push is unfenced | the `pre-push` fence (§5.1, §19 item 2, R68) |
+| aM12 | C | The continuation leaves the old issue pullable or orphans the new one | stage and `continued from` first, then the push, then the old issue closed; reconciler recovery (§5.4, R69) |
+| aM13 | C | Queue gaps: no "no claim", `env-incident` wording, no `tamper` re-fold queue | every row requires "no claim"; the re-fold checker row; `/clear-tamper`; "no worker queue" (§14, R70) |
+| aM14 | C | The steward's token cannot read the Actions setting | checked by setup and update with the operator's token; the steward detects the refusal at revert time (§3.5, H11, R71) |
+| aM15 | D | Watcher row wording; REWORK row wording | watcher `issues: write`, no flag writes; the steward applies `blocked-by`; §8.5 row restated (§4.5, §8.5, R72) |
+| tM1 | B | Trust rule 5 is absolute, but sessions break it | rule 5 restated as a bound; tag-conditioned create and delete for every team; §11 wording (§11, §15.1, §18, R73) |
+| tM2 | C | A28 overstates | A28 partly aligned, rest named; §19 item 12 |
+| tM3 | D | The "requirement" rework class has no confirmer | the spec checkers confirm it when re-approving (§4.2, R74) |
+| tM4 | D | The role count does not match | 16 roles listed, 80 % (§16); traceability 3.4 |
 
 # Part 1: the re-reviews of revision 2, answered by revision 3
 
@@ -239,7 +275,19 @@ own account (U24), so the residual is accepted and recorded in design §15.2.
 4. Whether U21's equal scrutiny and §12.3's reserved decisions are consistent everywhere `needs-input`, approvals and
    admission appear.
 
-# What the next review should check (revision 3)
+# What the next review should check (revision 4)
+
+1. The round-3 items in Part 0, each against revision 4's design.md.
+2. Whether the new paths revision 4 opened leave a neighbouring path open, as round 3 found for revision 3:
+   - the `checker-requested` queue;
+   - the forms the recorder now executes, and the re-spec edge;
+   - the `/get-guidance` mark gate;
+   - content-keyed revert facts;
+   - the dispatched-run pin;
+   - the label gate;
+   - the no-write-token-path rule.
+
+# What round 3 was asked to check (revision 3, kept as written)
 
 1. **Every caller holds the claim.** Whether, for every edge and every role of §4.5, the claim kind and the fence of
    §4.4 and §5.3 hold. Pay particular attention to the steward as the only caller of TEST-READY's exits.

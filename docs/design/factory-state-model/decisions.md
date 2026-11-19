@@ -1,12 +1,12 @@
-# Decisions behind the factory state model (revision 3, 2026-11-19)
+# Decisions behind the factory state model (revision 4, 2026-11-19)
 
 Five kinds of entry:
 
 - **U**: decided by the operator in the design discussion.
 - **M**: decided by the designer because it is reversible.
-- **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3. All are reversible
-  and open to the next review. The finding ids name their source: [aN3] and [tN3] are new findings of the adversarial
-  and the alignment re-review of revision 2.
+- **R**: adopted from the reviews by the designer: R1–R33 in revision 2, R34–R56 in revision 3, R57–R74 in revision 4.
+  All are reversible and open to the next review. The finding ids name their source: [aN3] and [tN3] are round-2
+  findings, [aM3] and [tM1] round-3 findings, of the adversarial and the alignment review.
 - **B**: the working baseline. Recommended, not objected to, open to review; revised where an R entry says so.
 - **O**: open, or deferred to a later change.
 
@@ -113,6 +113,24 @@ Where an entry there differs from this file, this file wins.
 | R54 | A docs-drift checker and tools in IMPLEMENTATION-READY when a change touches a documented interface | tN7 | §7.2 |
 | R55 | The pen test is batched and not a release gate; exploitable findings enter START as `priority:critical` | tN8 | §7.2, traceability C10 |
 | R56 | Under U24 an approval's human authorship is not provable; a project whose auditors need it revisits U24 or uses a forge-native gate only the operator can pass | tN9 | §12.10 |
+| R57 | No worker-writable path to a write token: worker tokens lack "Workflows" and "Actions: write"; write-token workflows run only on the default branch; branch code runs with `contents: read`; workflow-file changes land with the operator's token; the GitLab steward token is a protected variable. The ruleset then exempts GitHub Actions, and the activity check reads "pushed by GitHub Actions" | aN7 | §3.5, §10.8 H7, §15.2 |
+| R58 | The separately started checkers are started through a `checker-requested:<lane>` flag and its queue row; §8.5 names which exits need one, including the START exits, and records the exits without one as trade-offs | aM1 | §3.2, §4.1, §8.5, §14 |
+| R59 | The revert fact is keyed on content: any landed exact revert of a steward merge gets a `Steward-Reverts` trailer, and returns (or reopens) the reverted PR's issue; only the CI exemption and the ordering stay keyed on the steward's identity | aM2 | §4.2, §10.4 |
+| R60 | The pinned deploy verdict is the run the steward dispatched (`return_run_details`, `dispatched run <id> for <sha>`) or a trunk push run's `head_sha`, with the deploy and smoke jobs green and no restore step; a restored or skipped deploy concludes `failure` | aM3 | §4.2, §10.3, §10.4 |
+| R61 | Human-owned flags (`hold`, `priority`, `admitted`, clearing `tamper`) change only through explicit forms; the wrapper refuses agents' label writes of them; the dispatcher reverts unbacked ones | aM4 | §3.2, §4.4, §8.2 |
+| R62 | A form counts only when an authorised human posted it, or when an interactive `/get-guidance` session posted it; the `/get-guidance` mark is accepted only in a session the human started the command in (Claude Code: a `UserPromptSubmit` hook); Kiro prints the form lines for the human; the fold re-checks every cited form | aM5 | §8.3, §12.3, §12.7, §12.9 |
+| R63 | The answer recorder executes every explicit form, with or without `needs-input`; the re-spec edge IMPLEMENTATION-READY / REWORK-REQUIRED → SPEC-REQUIRED exists; `/stage` on TEST-READY is a steward request; `/amend` from TEST-READY on is refused | aM6 | §4.2, §4.3, §8.3, §12.7 |
+| R64 | Admission names the ask (`admitted {ask_hash}`); a changed ask drops an outsider's issue back to read-only triage | aM7 | §4.3, §6.3 |
+| R65 | Every steward tick re-derives both TEST-READY exits for every TEST-READY issue from durable facts | aM8 | §4.2, §14 |
+| R66 | The claim commits carry the folded state at the cursor; a new holder reads it and fetches comments `since` the last fold | aM9 | §5.1, §8.2 |
+| R67 | Renewal on every wrapper call and from the commit hook, as a ref-only push; a checkpoint is at least every commit; L capped at 90 minutes | aM10 | §5.1 |
+| R68 | The `pre-push` hook refuses an issue-branch push that is not the atomic push with the claim lease | aM11 | §5.1 |
+| R69 | The continuation writes the new issue's stage and `continued from` line first, then the atomic push, then closes the old issue administratively; the reconciler finishes a half-done one | aM12 | §5.4 |
+| R70 | Every queue row requires "no claim"; a re-fold checker queue for `tamper`; `env-incident` issues are in no worker queue but the recorder executes forms on them | aM13 | §14 |
+| R71 | The Actions-may-create-PRs setting and the ruleset are checked by setup and update with the operator's token; the steward checks per tick only what its token can read | aM14 | §3.5, §10.8 H11 |
+| R72 | The watcher writes facts and `env-incident` issues only (`issues: write`); the steward applies the `blocked-by` an incident causes, under a `record` claim | aM15 | §4.5 |
+| R73 | Trust rule 5 is a bound: a session that reads untrusted content never holds deploy credentials, and holds AWS write credentials only tag-conditioned to its issue's temporary resources; every team that makes them creates and deletes only under that tag | tM1 | §11, §15.1, §18 |
+| R74 | A "requirement" rework cause is confirmed by the spec checkers when they re-approve the amended criteria | tM3 | §4.2 |
 
 ## B: working baseline (recommended, open to review)
 
