@@ -1,4 +1,4 @@
-# Factory state model: review set (revision 10, 2026-11-19)
+# Factory state model: review set (revision 11, 2026-11-19)
 
 A design for a backlog-driven software factory: every issue moves through stages; teams of maker and checker agents
 loop in each stage until a deterministic finish line holds; workers on any machine and client pull work and never
@@ -17,7 +17,8 @@ The design and its reviews so far:
 - Revision 7 (b236e58) answered those. Its round-7 reviews left 4 items open (2 C, 2 D); the alignment review had none.
 - Revision 8 (66c8a50) answered those. Its round-8 reviews left 2 items open (1 C, 1 D); the alignment review had none.
 - Revision 9 (775d436) answered those. Its round-9 reviews left 3 items open (1 C, 2 D); the alignment review had none.
-- Revision 10 answers those; review-response.md Part 0 maps each one.
+- Revision 10 (88bce8a) answered those. Its round-10 adversarial review left 2 wording items (1 C, 1 D).
+- Revision 11 answers those; review-response.md Part 0 maps each one.
 
 The reviews are kept as permanent records beside the design (decision U23).
 
@@ -28,7 +29,7 @@ The reviews are kept as permanent records beside the design (decision U23).
 | [design.md](design.md) | The consolidated design: principles, stages, flags, delivery modes, finish lines, authority, claims, admission and triage, teams, the review-record exchange, the spec hand-off, batched delivery and revert first, close-out, human input, budgets, the dispatcher, tools, trust and identity, what would change |
 | [decisions.md](decisions.md) | Every decision with its source: the operator's (U), the designer's reversible ones (M), those adopted from the reviews (R), the working baseline open to review (B), open items (O) |
 | [traceability.md](traceability.md) | How the design aligns with the keynote's vision (a vision, not a specification: U22) and how it covers the gap analysis, row by row, with the deliberate differences |
-| [review-response.md](review-response.md) | Every finding of every review round, with its disposition and where the design carries it: Part 0 for round 9, Parts 1 to 8 for rounds 8 to 1 |
+| [review-response.md](review-response.md) | Every finding of every review round, with its disposition and where the design carries it: Part 0 for round 10, Parts 1 to 9 for rounds 9 to 1 |
 
 Appendices, in [`docs/reports/factory-state-model-2026-11/`](../../reports/factory-state-model-2026-11/) (dated
 records, kept as written):
@@ -53,6 +54,8 @@ records, kept as written):
 | `reviews/target-review-r8-2026-11-19.md` | The alignment confirmation pass on revision 8 (66c8a50): no new finding |
 | `reviews/adversarial-review-r9-2026-11-19.md` | The adversarial round-9 review of revision 9 (775d436): both earlier items verified, 3 new findings (1 C, 2 D) |
 | `reviews/target-review-r9-2026-11-19.md` | The alignment confirmation pass on revision 9 (775d436): no new finding |
+| `reviews/adversarial-review-r10-2026-11-19.md` | The adversarial round-10 review of revision 10 (88bce8a): all 3 earlier items verified, 2 new findings (1 C, 1 D) |
+| `reviews/target-review-r10-2026-11-19.md` | The alignment confirmation pass on revision 10 (88bce8a): no new finding |
 | `revert-and-batching.md` | Fast revert and batched deploys to shared AWS environments: failure taxonomy, techniques, how others batch, the two-track recommendation, hazards in today's code |
 | `review-protocol.md` | The structured maker/checker exchange: standards compared (SARIF, Web Annotation, LSP, Gerrit, A2A …), the `factory-review/v1` schema with examples, transport, multi-way resolution |
 | `checker-landscape.md` | Checker agents and tools per stage, with an inventory of the framework's agents and the gap list |
@@ -84,8 +87,8 @@ The appendices only where a section cites them (*R: file*).
 ## Review briefs
 
 Each reviewer gets this folder and the appendices, and nothing else from the discussion. A re-review starts from
-review-response.md, "What the next review should check (revision 10)", verifies each disposition of its own open items
-in Part 0 against design.md, and reviews what revision 10 changed.
+review-response.md, "What the next review should check (revision 11)", verifies each disposition of its own open items
+in Part 0 against design.md, and reviews what revision 11 changed.
 
 ### 1. Adversarial review of the design
 

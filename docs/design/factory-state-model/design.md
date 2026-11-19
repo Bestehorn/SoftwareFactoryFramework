@@ -1,4 +1,4 @@
-# Factory state model: design (revision 10, 2026-11-19)
+# Factory state model: design (revision 11, 2026-11-19)
 
 Status: design only. Nothing described here is implemented unless §2 says it exists today.
 
@@ -22,7 +22,9 @@ History:
   nothing, the adversarial review 2 findings (1 C, 1 D).
 - **Revision 9** (775d436) answered those 2. Its round-9 reviews verified both; the alignment review raised nothing,
   the adversarial review 3 findings (1 C, 2 D) on the steward's liveness check.
-- **Revision 10** answers those 3.
+- **Revision 10** (88bce8a) answered those 3. Its round-10 adversarial review verified all 3 and raised 2 wording
+  findings (1 C, 1 D) on the same check.
+- **Revision 11** answers those 2.
 
 All review reports are in
 [`docs/reports/factory-state-model-2026-11/reviews/`](../../reports/factory-state-model-2026-11/reviews/), and
@@ -36,7 +38,8 @@ All review reports are in
 - [aR3] and [tR1] are round-6 findings;
 - [aS3] is a round-7 finding;
 - [aT1] is a round-8 finding;
-- [aU1] is a round-9 finding.
+- [aU1] is a round-9 finding;
+- [aV1] is a round-10 finding.
 
 Companion documents:
 
@@ -230,15 +233,17 @@ and dispatching workflows:
   - the steward cannot notice its own workflow being disabled, or report a crash that happens before its own error
     handling, so the dispatcher (§14) checks it on every poll, with a read permission on its token [aS1, aT1, aU2]:
     - GitHub, through the run API ("Actions: read"): the workflow's `state` is `active`; its latest run started within
-      the bound; and of its last three completed runs, not all concluded `failure` or `timed_out` (a superseded tick
-      concludes `cancelled` and does not count) [aU1];
+      the bound; and of its last three completed runs that did not conclude `cancelled` (a superseded tick), not all
+      concluded `failure` or `timed_out` [aU1, aV2];
     - GitLab: the steward's pipeline schedule is active and its last pipeline started within the bound
-      (`GET /projects/:id/pipeline_schedules/:pipeline_schedule_id`); and its last three finished pipelines did not
-      all fail [aU1, aU2];
-    - the bound is the longest gap between scheduled runs in the steward's own run history, recorded by setup and
-      refreshed by update, because the schedule is delayed and dropped routinely (8 of about 86 runs in 43 hours, by
-      the steward template's own measurement). The schedule runs whether or not anything lands, so a quiet period
-      passes. The incident opens only when two consecutive polls see the same fault [aU3];
+      (`GET /projects/:id/pipeline_schedules/:pipeline_schedule_id`); and of its last three finished pipelines that
+      were not `canceled` or `skipped`, not all failed [aU1, aU2, aV2];
+    - the bound allows for the schedule being delayed and dropped routinely (8 of about 86 runs in 43 hours, by the
+      steward template's own measurement). It is the 99th percentile of the gaps between scheduled runs over the last
+      14 days, leaving out gaps inside an `env-incident` of this check, and capped at 4 × the schedule interval; until
+      14 days of history exist it is the cap. The dispatcher recomputes it on every poll from the run listing it
+      already reads [aU3, aV1]. The schedule runs whether or not anything lands, so a quiet period passes. The
+      incident opens only when two consecutive polls see the same fault [aU3];
     - the `env-incident` names what it saw: the workflow or schedule disabled (by hand; by GitHub after 60 days without
       activity in a public repository, GitHub Docs, "Events that trigger workflows", `schedule`; by GitLab when the
       schedule's owner loses access), no run within the bound, or the latest failed run. The status record is not used for this: only the watcher
@@ -1739,7 +1744,7 @@ human.
 | Spec hand-off | `spec-approved` record, the ask marker and hash, `/amend`, acceptance tests at spec time, the test-freeze run | the orchestrator's FIX splits into SPEC and IMPLEMENTATION teams | the spec phases, the review panel, the tiers |
 | Review exchange | `factory-review/v1` records with `actor.agent` and `notVerified`; a validation and fold script; one envelope per round; separately started checkers for the exits §8.5 names; the arbiter with a computed overrule; `tamper` and the re-fold | the review lanes emit records instead of prose files | the review contract's materiality rules |
 | Checkers | IaC gate, OSV-Scanner, diff coverage, spec lint, logic-bug reviewer, threat-model lane, triage checker, duplicate-confirmer, docs-drift checker, log-scan lane, retro checker, re-fold checker, answer recorder; the `checker-requested` queue that starts the separately started checkers; optional external security review and pen test | housekeeping and doc-reviewer split into maker and checker | the existing lanes |
-| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; the four deploy outcomes, of which only `green` counts (§10.3); Track T attribution; steward-opened revert PRs that declare `Reverts: PR #<k>`; `Steward-Reverts` trailers for every revert confirmed by content, whoever opened it, and `Steward-Relands` for relands; re-verify deploys dispatched with `return_run_details`; the deploy guard, which deploys only trunk's tip, as the deploy job's first step from the default branch (H15); a re-verify deploy when a pinned run was cancelled with nothing newer behind it, or a landing's push run never appeared; the per-tick activity check of trunk pushes; the per-tick check that no other workflow names the steward's or the production environment, expression-valued names and outside reusable workflows included; the per-tick check that the deploy workflow is enabled, and the dispatcher's check, through the run API, that the steward workflow is active, ran within its measured bound and is not failing every tick (GitLab: its pipeline schedule) [aS1, aT1, aU1, aU2, aU3]; per-tick re-derivation of the TEST-READY and CLOSE-READY exits, with the CLOSE-READY/closed → REWORK-REQUIRED edges; classified train-push refusals (H14) | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); the pinned deploy verdict from the landing's push run or a re-verify dispatch, first attempt only, through the jobs API (H13); the deploy template: no `sha` input, and its header rule "the steward's push starts the deploy" (§3.5); every `eligibility` reject, a closed PR, a revert outside Track T and a `/stage` request return the issue; `eligibility` waits on an issue `hold`; the steward pushes trains and trunk with its deploy key | trains, ancestry verification, `delivery-status` as a status record |
+| Delivery (`merge_steward.py`, templates) | Track E restore with the restore guard, the migration ledger and object-metadata digests; the four deploy outcomes, of which only `green` counts (§10.3); Track T attribution; steward-opened revert PRs that declare `Reverts: PR #<k>`; `Steward-Reverts` trailers for every revert confirmed by content, whoever opened it, and `Steward-Relands` for relands; re-verify deploys dispatched with `return_run_details`; the deploy guard, which deploys only trunk's tip, as the deploy job's first step from the default branch (H15); a re-verify deploy when a pinned run was cancelled with nothing newer behind it, or a landing's push run never appeared; the per-tick activity check of trunk pushes; the per-tick check that no other workflow names the steward's or the production environment, expression-valued names and outside reusable workflows included; the per-tick check that the deploy workflow is enabled, and the dispatcher's check, through the run API, that the steward workflow is active, ran within its bound (computed on every poll from its run history) and is not failing every tick (GitLab: its pipeline schedule) [aS1, aT1, aU1, aU2, aU3, aV1]; per-tick re-derivation of the TEST-READY and CLOSE-READY exits, with the CLOSE-READY/closed → REWORK-REQUIRED edges; classified train-push refusals (H14) | the red verdict marks no issue (H8); the watcher records facts and the steward transitions (H9); landings and reverts from first-parent trailers (H1, H7); revert PR CI dispatch and ordering (H10); the pinned deploy verdict from the landing's push run or a re-verify dispatch, first attempt only, through the jobs API (H13); the deploy template: no `sha` input, and its header rule "the steward's push starts the deploy" (§3.5); every `eligibility` reject, a closed PR, a revert outside Track T and a `/stage` request return the issue; `eligibility` waits on an issue `hold`; the steward pushes trains and trunk with its deploy key | trains, ancestry verification, `delivery-status` as a status record |
 | Wrapper and git hooks | marking of every agent comment and body write, and a gate on unmarked ones; the gate on human-owned flag labels in any form, payload label lists included; the explicit-form parser (several forms per comment, and guidance-issue lines that name their issue); the fold's check of cited forms; the folded state with `since` for orientation only, re-folded for every decision; the cursor and folded state in the claim ref; renewal on every wrapper call, from the commit hook, and from `run_tests.py` and `suite_semaphore.py run` while they run; the `pre-push` fence on issue branches; the continuation issue; the write token bucket; the write counter | `call` gates the issue-comment, issue-update and label operations; the GitLab fold orders by note id | the forge API packages |
 | Human input | `/get-guidance`, which prints one block of form lines; the project's guidance issue; the answer recorder executing every explicit form (answers, approvals, `/amend`, `/stage`, `/admit`, `/hold`, `/unhold`, `/priority`, `/clear-tamper`), the re-spec edge, `admitted {ask_hash}`, the question checker with its always-ask list, the decision inventory, standing-permission records, `env-incident` issues outside every worker queue | `continuous-work.md` escalation text | the five-line question shape |
 | Gates and harness | a headless verdict line | the stop gates and the release vocabulary accept a transition, `needs-input`, `ci-pending` or a release as a valid end, once the dispatcher runs [T-11]; `proportionality.md`'s tier-S path and review caps are unchanged [C7, tN4] | the remaining gates |
