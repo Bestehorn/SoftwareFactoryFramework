@@ -1648,9 +1648,9 @@ machine; the design changes the tokens, not the account.
    deploy key. The per-tick detection stops the steward landing after the fact; the push, and any trunk workflow it
    starts, has already happened, **including the production deploy, which then runs the worker's code with the deploy
    role** [aQ2]. For 30 days after the rollout, runs of the old deploy workflow also stay re-runnable there (H15)
-   [aS3]. Detection there catches only a push that does not imitate the steward (§3.5) [aQ6]. Whether factory
-   mode on this tier may deploy to production at all is the operator's call (O16). GitLab before 19.2 is in this tier
-   and is not closed by this design.
+   [aS3]. Detection there catches only a push that does not imitate the steward (§3.5) [aQ6]. The operator decided
+   that factory mode on this tier may still deploy to production, with this residual stated (U25, 2026-11-21).
+   GitLab before 19.2 is in this tier and is not closed by this design.
 
 **What limits it:**
 
