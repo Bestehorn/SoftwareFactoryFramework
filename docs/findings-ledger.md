@@ -116,3 +116,5 @@ deleted from git; what changes is what a session loads.
 | 2026-11-12 | forge create answer | a create exiting 0 with an unreadable answer keeps created None; repo left for the sweep | #10 review spec-review verify-01 C1 | not observed | open |
 | 2026-11-12 | forge checks family | the checks family is named, not called: fine-grained tokens cannot call the Checks API | #10 design.md D6 | token-kind limit | open |
 | 2026-11-13 | forge local credential | the main checkout has no credentials/github-sff-testing-pat.txt; only local forge runs need it | #10 comment 6834467302 | operator machine setup; docs/forge-suite.md | open |
+| 2026-11-22 | forge-gitlab rate limit | gitlab.com's proposed Free per-user limit (git included) is not in effect; runs of one service account would share it | issue-11 review devops iter-01 C4 | not yet in effect | open |
+| 2026-11-22 | forge-gitlab git helper | reused SubprocessGitRunner resets helpers only for authenticated commands; an unauthenticated remote one asks the user's helper | issue-11 security iter-01 C3 | no such command | open |

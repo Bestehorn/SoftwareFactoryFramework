@@ -60,9 +60,10 @@ GitLab's asynchronous preparation and mergeability check (D6).
   `test/forge/ephemeral.py` by path. Both run only standard-library imports and constants, so no `sys.path` changes and
   nothing is sent.
 - **Not an exclusion**, as #10 D1: `pyproject.toml` is not edited, and nothing skips, xfails, deselects or hooks.
-- **One project per run.** `--workers 1`, and `ephemeral_project` first calls the reused
-  `refuse_distributed_run(worker_id=..., command=GITLAB_FORGE_COMMAND)`: #10 D1's check against
-  `CONTROLLER_WORKER_ID`, its message naming D1's command.
+- **One project per run.** `--workers 1`, and `ephemeral_project` first calls
+  `refuse_distributed_run(worker_id=worker_id)` of `test/forge_gitlab/ephemeral.py`, which calls the reused one with
+  `worker_id=worker_id, command=GITLAB_FORGE_COMMAND` (L's `passes_own_worker_id` admits one keyword only): #10 D1's
+  check against `CONTROLLER_WORKER_ID`, its message naming D1's command.
 - **Why not `test/forge/`.** `test/test_forge_suite_layout.py` `read_forge_modules` reads every `.py` file under
   `test/forge/` with GitHub-only rules (one `ephemeral.py`, the only module that may import `subprocess`), and
   `run_tests.py ... test/forge` would also run the GitLab tests, in the job holding only the GitHub secret (UB-4).
@@ -186,10 +187,11 @@ which becomes `<path>-deletion_scheduled-<project id>` (gitlab-org/gitlab
   `success` ("Possible values are `success`, `failure`, `cancelled`, or `skipped`"; the job id may be dereferenced:
   "the property name must start with a letter or `_` and contain only alphanumeric characters, `-`, or `_`",
   docs.github.com "Contexts reference").
-- **Concurrency.** The group `ci-${{ github.ref }}` cancels a superseded pull-request run (Operability, Leftovers),
-  never a run on `main`. Runs of different refs proceed together, kept apart by their run ids (D4) and by the sweep
-  sparing a project a day old or less (AC-3.2); when two sweeps delete one leftover, the later's `404` or `400` counts
-  as handled (D9 `delete_leftover`).
+- **Concurrency.** The group `ci-${{ github.ref }}` cancels a superseded running pull-request run (Operability,
+  Leftovers), never a running one on `main`; a pending run that a newer one replaces has not started, so it creates
+  nothing (docs.github.com "Control workflow concurrency"). Runs of different refs proceed together, kept apart by
+  their run ids (D4) and by the sweep sparing a project a day old or less (AC-3.2); when two sweeps delete one
+  leftover, the later's `404` or `400` counts as handled (D9 `delete_leftover`).
 - **The test group** is `TEST_GROUP = "bestehorn-sff-test"` of `test/forge_gitlab/ephemeral.py` (DL-002), the one
   place the suite names it.
 - **The GitHub layout test.** L `test_the_report_judges_the_forge_job`'s expected `needs` becomes `verify`, `forge`
@@ -359,8 +361,8 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
 | `src/payload/test/test_gitlab_wrapper_marker.py` | new: W |
 | `test/forge_gitlab/pytest.ini` | new: D1 |
 | `test/forge_gitlab/conftest.py` | new: loads `ephemeral.py` by path once per process; `ephemeral_project` (D9) |
-| `test/forge/ephemeral.py` | keyword-only parameters, each defaulting to today's GitHub constant: `refuse_distributed_run(command=)`, `credential_helper_arguments(helper_key=, username=, credential_file=)`, `find_test_credential(credential_file=)`, `write_test_credential(credential_file=, secret_name=)`, `SubprocessGitRunner(helper=)` (default `credential_helper_arguments`), `product_wrapper(path=, module_name=)`; every existing call unchanged (UB-4) | <!-- pragma: allowlist secret -->
-| `test/forge_gitlab/ephemeral.py` | new: the reused symbols of `test/forge/ephemeral.py` (Overview), loaded by path, the six parameterised ones called with this module's constants; the constants of D1 to D9, `TEST_GROUP` included; the dataclasses `CreatedProject`, `ProjectRecord`, `EphemeralProject`; `SubprocessWrapperRunner`; `product_wrapper()`; `push_branch`, `wait_until_checked`; the functions of D4, D8 and D9 |
+| `test/forge/ephemeral.py` | keyword-only parameters, each defaulting to today's value: `refuse_distributed_run(command=)`, `credential_helper_arguments(helper_key=, username=, credential_file=)`, `find_test_credential(credential_file=)`, `write_test_credential(credential_file=, secret_name=)`, `SubprocessGitRunner(helper=)` (default `credential_helper_arguments`), `product_wrapper(path=, module_name=)`; the six bodies use them and their docstrings describe them; every existing call unchanged (UB-4); the refusal messages keep #10's words ("test organization", "repository") | <!-- pragma: allowlist secret -->
+| `test/forge_gitlab/ephemeral.py` | new: the reused symbols of `test/forge/ephemeral.py` (Overview), loaded by path, the six parameterised ones called with this module's constants; the constants of D1 to D9, `TEST_GROUP` included; the dataclasses `CreatedProject`, `ProjectRecord`, `EphemeralProject`; `SubprocessWrapperRunner`; `product_wrapper()`; `push_branch`, `wait_until_checked`; `refuse_distributed_run(*, worker_id)` (D1); the functions of D4, D8 and D9 |
 | `test/forge_gitlab/write_credential.py` | new: the CI step's command (D8) |
 | `test/forge_gitlab/forge_fixture.py`, `forge_subcommands.py`, `forge_records.py`, `forge_graphql.py`, `forge_request_forms.py` | new: D6, one module docstring per slice |
 | `test/test_forge_gitlab_support.py`, `test/test_forge_gitlab_layout.py` | new: S, G |
@@ -377,8 +379,9 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
   of a body `print_bytes` wrote ("This code will then be turned back into the same byte when the 'surrogateescape'
   error handler is used when encoding the data", docs.python.org `library/codecs.html` "Error Handlers"). #10's runner
   decodes strictly, and F:request_forms' archive is no UTF-8 text.
-- The git runner is the reused `SubprocessGitRunner(clone=..., helper=...)`, its `helper` D3's call of
-  `credential_helper_arguments`.
+- The git runner is the reused `SubprocessGitRunner(clone=..., helper=...)`, its `helper` a callable that `run` calls
+  as `helper(clone=self.clone)` when `authenticated`: `credential_helper_arguments` with D3's other three keywords
+  bound (`functools.partial`).
 - `product_wrapper()` returns the reused `product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)`
   for `src/payload/scripts/gitlab_wrapper.py` under the key `forge_gitlab_product_wrapper`: loaded on first use, never
   at import, `sys.path` restored afterwards.
@@ -417,8 +420,9 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
 - **AC-1.1** — Integration, F:fixture `test_the_run_owns_a_private_seeded_project`. Example, S
   `test_provisioning_runs_in_order`: one provision records, in order, the listing, the group read, exactly one
   creation holding each of D9 step 6's `-f`/`-F` arguments with the group's id, the fetch and the checkout, every
-  wrapper invocation in the one clone directory. Example, S `test_a_distributed_run_is_refused`. Structural, G
-  `test_the_session_fixture_wraps_one_provision` (L's `session_fixture_problems` on `ephemeral_project`).
+  wrapper invocation in the one clone directory. Example, S `test_a_distributed_run_is_refused`: the refusal of D1's
+  `refuse_distributed_run` names `GITLAB_FORGE_COMMAND`. Structural, G `test_the_session_fixture_wraps_one_provision`
+  (L's `session_fixture_problems` on `ephemeral_project`, which makes D1's one-keyword call).
 - **AC-1.2** — Example, S `test_a_run_id_names_an_ephemeral_project`: ids of repeated calls are pairwise distinct, and
   the product's `_is_ephemeral_project` accepts `ephemeral_full_path`.
 - **AC-1.3** — Integration, F:fixture `test_the_run_owns_a_private_seeded_project`, F:subcommands
@@ -455,9 +459,11 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
   `"sff-test-x"`, `"Bestehorn/x-sff-test-y"` and `"bestehorn-sff-test/sff-test-x/other"`: exit 2, no request recorded,
   `steward_delegate` not called, one log record naming the test marker and the configured project and not the
   configured token; with the marker and no `config/gitlab.json`, exit 1 and no request recorded. Example, W
-  `test_the_interpreter_option_reaches_the_entry_script`: the subprocess, in a `tmp_path` other than the repository,
-  runs `call plan#create-an-issue`, which `call` refuses before any request, so the child sends nothing whichever
-  refusal comes first and only the message tells them apart; it exits 2 and its standard error holds that message.
+  `test_the_interpreter_option_reaches_the_entry_script`: the subprocess, in a `tmp_path` other than the repository
+  holding a `config/gitlab.json` that `_load_config` accepts with `project_id` `"1234"` (`gitlab_wrapper_fixtures`
+  `write_config`), runs `call plan#create-an-issue`, which `call` refuses before any request, so the child sends
+  nothing whichever refusal comes first and only the message tells them apart; it exits 2 and its standard error
+  holds that message.
 - **AC-4.2** — Example, W `test_the_marker_lets_an_ephemeral_project_through`: with `project_id`
   `bestehorn-sff-test/sff-test-x`, `call tenant-scale#retrieve-a-project` sends the same requests, prints the same output
   and exits as the same argv without the marker, and `enqueue-pr 1` reaches the steward recorder once with the same
@@ -491,7 +497,8 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
   `.git/sff-forge-token`; no recorded argv, no record `caplog` captured at `DEBUG`, and no `repr` of the yielded
   `EphemeralProject` holds it. Example, S `test_the_clone_commits_no_credential`: `prepare_clone` with the real git
   runner (local commands only), then `git add -A`: `git ls-files` names neither file. Example, S
-  `test_the_credential_helper_answers_git_with_the_clone_token`, as #10's: it first asserts that the options are
+  `test_the_credential_helper_answers_git_with_the_clone_token`, as #10's, through the `helper` that
+  `test/forge_gitlab/ephemeral.py` gives `SubprocessGitRunner`: it first asserts that the options are
   exactly `-c credential.helper=` then `-c credential.https://gitlab.com.helper=!...` and hold no token, then runs
   `git credential fill` with them and `protocol=https`, `host=gitlab.com`, and checks `username=sff-forge-suite` and
   the file's token without printing the answer. Structural, G `test_the_gitlab_secret_reaches_one_step`.
@@ -534,7 +541,7 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
   `test_without_the_marker_every_project_is_served`.
 - **UB-4** — H passes unedited, and L with D5's one expectation extended and none removed; L
   `test_the_forge_path_collects_every_forge_test` still lists exactly `test/forge/`'s tests; the `forge` job runs them
-  unedited; under `test/forge/` the diff touches only `ephemeral.py`, by D10's defaulted parameters.
+  unedited; under `test/forge/` the diff touches only `ephemeral.py`, as D10's row says.
 - **UB-5** — I passes; the PR diff names no file `config/toolchain.json` lists.
 
 ## Security Considerations
@@ -630,14 +637,6 @@ In `src/payload/test/`: W = `test_gitlab_wrapper_marker.py` (new), C = `test_git
 - The guard does not judge a target the call names itself (Security Considerations).
 - `graphql#Project.workItems` is an experiment since 15.1 (gitlab-org/gitlab `app/graphql/types/project_type.rb`),
   which GitLab may change without notice; a change would fail F:graphql until the record follows it.
-- `report` keeps `if: always()` and the workflow's action pins stay as they are (#10 Residuals).
 - L's map and local-only-sentence checks are also met by the GitLab text, so they no longer prove the GitHub text.
-- Nothing here removes an interrupted local run's workspace; in a session, `/close-session`'s `reap_agent_temp.py
-  --scoped-temp tmp/os-temp --apply` empties it, as for #10.
 - The test token has an expiry date (docs.gitlab.com/user/profile/service_accounts/), after which every `forge-gitlab`
   job fails until it is replaced; the setup note names no rotation.
-- Concurrent runs would share gitlab.com's proposed per-user request limit, not yet in effect and counting git
-  (docs.gitlab.com/user/gitlab_com/rate_limits/), and the per-user deletion limit behind the flag
-  `group_and_project_delete_rate_limit` (gitlab-org/gitlab `lib/api/projects.rb`).
-- A git command run without `authenticated` asks the machine's configured helpers; resetting them on every such
-  command would change #10's shared `SubprocessGitRunner` (UB-4).

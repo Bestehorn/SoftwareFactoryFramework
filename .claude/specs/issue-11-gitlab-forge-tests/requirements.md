@@ -214,10 +214,11 @@ down, so that the suite can be run without reading its code.
   `test/forge/` tests, unedited, run by the `forge` job with the secret `SFF_TEST_TOKEN` and the credential file
   `credentials/github-sff-testing-pat.txt`, and a `report` verdict that fails unless the `forge` job succeeded. Every
   existing call of `test/forge/ephemeral.py` SHALL behave as before: the file SHALL change only by keyword-only
-  parameters that default to its GitHub constants (`design.md` D10), and no other file under `test/forge/` SHALL
-  change. Their tests (`test/test_forge_support.py`, `test/test_forge_suite_layout.py`) SHALL CONTINUE TO pass with no
-  assertion removed or weakened; the one workflow expectation that names `report`'s exact `needs` is extended by the
-  GitLab forge job.
+  parameters that default to today's values (its GitHub constants; `credential_helper_arguments` for
+  `SubprocessGitRunner`), their use in the six bodies and the docstrings that describe them (`design.md` D10), and no
+  other file under `test/forge/` SHALL change. Their tests (`test/test_forge_support.py`,
+  `test/test_forge_suite_layout.py`) SHALL CONTINUE TO pass with no assertion removed or weakened; the one workflow
+  expectation that names `report`'s exact `needs` is extended by the GitLab forge job.
 - UB-5 No toolchain file (`config/toolchain.json` and the files it lists, `scripts/run_tests.py` and
   `scripts/run_checks.py` among them) SHALL be edited by this change, `test/test_toolchain_integrity.py` SHALL CONTINUE
   TO pass, and nothing in this change SHALL depend on a product change reaching the toolchain before a promotion.
