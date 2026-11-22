@@ -1,0 +1,50 @@
+# Decision Log
+
+## DL-001 — 2026-11-22T09:40:00Z — issue-work-orchestrator — phase:CLASSIFY
+
+**Decision:** Tier M: the GitLab twin of #10 (fixture with two guarded deletion paths, product-wrapper origin guard, CI job, real-forge tests), with a design choice in each component.
+**Driver:** issue #11 work item "Real-GitLab integration tests (needs a GitLab equivalent of #10)"; #10 was tier M for the same shape (its DL-001).
+**Alternatives considered:** S (rejected: several components and a new guard interface); L (rejected: no new subsystem, #10's mechanisms are reused).
+**Evidence:** issue #11 body, Work items; `.claude/specs/issue-10-forge-integration-tests/decisions/decision-log.md` DL-001.
+**Artifacts touched:** prompt.md, qa_log.md, prompts.md
+
+## DL-002 — 2026-11-22T09:40:00Z — issue-work-orchestrator — phase:CLASSIFY
+
+**Decision:** The test group's path is the working value `bestehorn-sff-test` on gitlab.com, one constant of the suite, corrected when the operator names the group.
+**Driver:** operator "Use gitlab.com"; the GitHub test organization and the operator's first GitLab group both use `bestehorn-sff-test`; a reversible constant is decided, not asked (`continuous-work.md`).
+**Alternatives considered:** wait for the operator's group path before the spec (idles the run on a one-constant answer).
+**Evidence:** issue #11 comments 7077139116 and 7077150394; `docs/forge-suite.md` (organization `bestehorn-sff-test`).
+**Artifacts touched:** prompt.md Operator facts
+
+## DL-003 — 2026-11-22T09:40:00Z — issue-work-orchestrator — phase:CLASSIFY
+
+**Decision:** gitlab.aws.dev is rejected as the test target; gitlab.com is the operator's choice.
+**Driver:** every request to gitlab.aws.dev, with `PRIVATE-TOKEN`, `Bearer` or git basic auth, returned `302` from `awselb/2.0` to `idp.federate.amazon.com` (from the operator's machine and from an outside network).
+**Alternatives considered:** a GitLab started inside the CI job (no account, slower, Free features only); asking the instance's administrators (blocked on them).
+**Evidence:** issue #11 comment 7077150394 (the four probes); operator answer "Use gitlab.com".
+**Artifacts touched:** prompt.md Operator facts
+
+## DL-004 — 2026-11-22T11:10:00Z — issue-work-orchestrator — phase:DESIGN
+
+**Decision:** The project guard judges the clone config's `project_id` written as the path `<group>/sff-test-<run id>`, refusing any other value under the marker with no request (design.md D2).
+**Driver:** the GitLab wrapper reads no git origin (`gitlab_wrapper.py` `_load_config`, `CONFIG_FILE`); a request-based guard breaks the fake-host tests (`FakeGitLab.serve` raises on an unscripted request).
+**Alternatives considered:** a read of the configured project per invocation; a second `project_path` key.
+**Evidence:** codebase research burst (wrapper map); `commands/call.py` `path_values`, `registry._segment`.
+**Artifacts touched:** design.md D2
+
+## DL-005 — 2026-11-22T11:10:00Z — issue-work-orchestrator — phase:DESIGN
+
+**Decision:** git reads the token from `<clone>/.git/sff-forge-token` through #10's credential helper; AC-6.3 restated before the design review to allow that one clone file.
+**Driver:** the clone's wrapper credential is JSON, which the helper's shell built-ins cannot parse.
+**Alternatives considered:** parsing `config/gitlab.json` in the snippet; a working-tree `credentials/` file in the clone.
+**Evidence:** design.md D3; `test/forge/ephemeral.py` `credential_helper_arguments`.
+**Artifacts touched:** design.md D3, requirements.md AC-6.3
+
+## DL-006 — 2026-11-22T11:10:00Z — issue-work-orchestrator — phase:DESIGN
+
+**Decision:** A separate suite `test/forge_gitlab/` and CI job `forge-gitlab`; the teardown only marks the project (gitlab.com retains it 30 days); the sweep sends nothing for a marked project.
+**Driver:** `test/test_forge_suite_layout.py` applies GitHub-only rules to every file under `test/forge/`; docs.gitlab.com/api/projects "Delete a project": `permanently_remove` "Disabled on GitLab.com and Dedicated".
+**Alternatives considered:** GitLab modules inside `test/forge/`; one job for both forges; a matrix; immediate removal.
+**Evidence:** lifecycle research burst (Q1); design.md D1, D5, D9.
+**Supersedes:** none
+**Artifacts touched:** design.md D1, D5, D9; requirements.md UB-4
