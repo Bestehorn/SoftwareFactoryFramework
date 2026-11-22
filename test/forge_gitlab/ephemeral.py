@@ -4,10 +4,13 @@ The GitLab forge suite (``test/forge_gitlab/``, run by ``python scripts/run_test
 drives the product GitLab wrapper against an ephemeral ``sff-test-*`` project of the test group. This module holds the
 logic that decides without the forge, so the default collection proves it (``test/test_forge_gitlab_support.py``): the
 refusal of a distributed run, naming this suite's command (D1); the per-command git credential helper for gitlab.com,
-``CLONE_GIT_HELPER`` (D3); the project path a run id gives (D4); where the GitLab test credential file is found and how
-the CI step writes it (D8); the teardown guard and the leftover sweep (D9). ``SubprocessWrapperRunner`` is the suite's
-one way out to the product wrapper, with the test marker and the bytes of its answer kept (D10); the teardown and the
-sweep take a ``WrapperRunner``, so a test gives them a double.
+``CLONE_GIT_HELPER`` (D3); the project path a run id gives (D4); where the GitLab test credential file is found, how
+its token is read and how the CI step writes it (D8); the teardown guard and the leftover sweep (D9); and
+``provision``, the context manager around one run's project: it reads the test token, prepares the clone, sweeps,
+reads the test group, creates and seeds the project, and afterwards deletes it and removes the workspace (D3 "The
+clone", D9). ``SubprocessWrapperRunner`` is the suite's one way out to the product wrapper, with the test marker and
+the bytes of its answer kept (D10); the teardown, the sweep and ``provision`` take a ``WrapperRunner``, and
+``provision`` a ``GitRunner`` too, so a test gives them doubles.
 
 What issue #10 settled is reused, not copied (design.md Overview): ``test/forge/ephemeral.py`` is loaded by path under
 its own ``sys.modules`` key ``forge_ephemeral``, with the reuse rule of ``test/forge/conftest.py`` ``_load_ephemeral``,
@@ -28,15 +31,17 @@ from __future__ import annotations
 
 import functools
 import importlib.util
+import json
 import logging
 import re
 import subprocess
 import sys
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Iterable, List, Mapping, Optional, Sequence
+from typing import Any, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +162,70 @@ NOT_FOUND_ANSWER = re.compile(r"\banswered 404\b")
 BAD_REQUEST_ANSWER = re.compile(r"\banswered 400\b")
 #: ``mark_for_deletion_base_service.rb``: "#{resource_name.titleize} has already been marked for deletion".
 ALREADY_MARKED = "has already been marked for deletion"
+
+# D8 "Reading": the test token's encoding, a byte outside it refused, and the final line ends it is read without,
+# ``\r\n`` first; the setup note every refusal of the test credential file points to, #10's.
+TOKEN_ENCODING = "ascii"
+LINE_END = "\n"
+WINDOWS_LINE_END = "\r\n"
+TOKEN_LINE_ENDS = (WINDOWS_LINE_END, LINE_END)
+SETUP_NOTE = _REUSED.SETUP_NOTE
+
+# D3 "The clone", D8 "Writing": the clone under the workspace, its two credential files, the line its
+# ``.git/info/exclude`` gains, the host its ``config/gitlab.json`` names, and its ``origin``.
+CLONE_DIRECTORY = "clone"
+#: The product GitLab wrapper's credential file, relative to the clone: the only ``config/gitlab.json`` the suite
+#: writes (UB-2).
+CLONE_CONFIG_FILE = Path("config") / "gitlab.json"
+GIT_EXCLUDE_FILE = Path(GIT_METADATA_DIRECTORY) / "info" / "exclude"
+#: The line the clone's ``.git/info/exclude`` gains, so no commit of the clone holds its ``config/gitlab.json``.
+EXCLUDED_CONFIG = CLONE_CONFIG_FILE.parent.as_posix() + "/"
+#: Owner-only where the OS honours it; on Windows only the read-only flag follows a mode (docs.python.org ``os.chmod``).
+CLONE_CREDENTIAL_MODE = 0o600
+GITLAB_HOSTNAME = "gitlab.com"
+ORIGIN_REMOTE = "origin"
+#: D3: the test group's project without userinfo, so ``.git/config`` holds no token.
+ORIGIN_URL = "https://" + GITLAB_HOSTNAME + "/{full_path}.git"
+
+# D3 "The clone", D9 steps 3 and 7: the git commands that prepare and seed the clone, and the seed's file that would
+# start a pipeline (GitLab's default CI configuration file, ``ci_config_path`` unset).
+GIT = "git"
+GIT_EXIT_OK = 0
+GIT_INIT = "init"
+GIT_REMOTE = "remote"
+GIT_REMOTE_ADD = "add"
+GIT_FETCH = "fetch"
+GIT_CHECKOUT = "checkout"
+GIT_RESET_BRANCH_OPTION = "-B"
+GIT_TRACK_OPTION = "--track"
+REMOTE_BRANCH_SEPARATOR = "/"
+GIT_REV_PARSE = "rev-parse"
+GIT_LS_TREE = "ls-tree"
+GIT_NAME_ONLY_OPTION = "--name-only"
+HEAD = "HEAD"
+HEAD_TREE = "HEAD^{tree}"
+SEED_REVISION_COUNT = 2
+GITLAB_CI_FILE = ".gitlab-ci.yml"
+
+# D9 steps 5 and 6: the group read (docs.gitlab.com/api/groups/, "Get a single group") and the creation
+# (docs.gitlab.com/api/projects/, "Create a project"), as ``call`` arguments, and the fields of the creation's answer
+# the record is made of; ``details`` of the refusal of a project created other than private keep the record.
+GROUP_READ = "tenant-scale#retrieve-a-group"
+QUERY_OPTION = "--query"
+WITH_PROJECTS_PARAMETER = "with_projects"
+PROJECT_CREATION = "tenant-scale#create-a-project"
+RAW_FIELD_OPTION = "-f"
+TYPED_FIELD_OPTION = "-F"
+FIELD_NAME = "name"
+FIELD_NAMESPACE_ID = "namespace_id"
+FIELD_VISIBILITY = "visibility"
+FIELD_INITIALIZE_WITH_README = "initialize_with_readme"
+FIELD_AUTO_DEVOPS_ENABLED = "auto_devops_enabled"
+FIELD_DEFAULT_BRANCH = "default_branch"
+PRIVATE_VISIBILITY = "private"
+TEXT_TRUE = "true"
+TEXT_FALSE = "false"
+DETAIL_CREATED = "created"
 
 #: D3, D10: the global git options that make one git command authenticate to gitlab.com as ``GIT_USERNAME`` with the
 #: token of the clone's ``CLONE_GIT_TOKEN_FILE``, called as ``CLONE_GIT_HELPER(clone=<clone>)``: #10's
@@ -464,3 +533,342 @@ def delete_leftover(*, wrapper: WrapperRunner, record: ProjectRecord, now: datet
         logger.info("The leftover project %s was already deleted or marked for deletion", record.full_path)
         return
     raise _failure(action=f"Deleting the leftover project {record.full_path}", invocation=invocation)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The test token (D8) and the provision of one run's project (D3 "The clone", D9 steps 1 to 8)
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class EphemeralProject:
+    """The project one run owns, as ``provision`` yields it (D9): the run id; the project's group, path and full path
+    (D4), the full path being the ``project_id`` of the clone's ``config/gitlab.json``; its numeric id and default
+    branch, as its creation answered them; its seed commit and tree; the moment of the run's sweep (aware UTC); the
+    clone; and the two runners bound to the clone. It holds no token, so neither does its ``repr``."""
+
+    run_id: str
+    group: str
+    path: str
+    full_path: str
+    project_id: int
+    default_branch: str
+    seed_sha: str
+    seed_tree_sha: str
+    swept_at: datetime
+    clone: Path
+    wrapper: WrapperRunner
+    git: GitRunner
+
+
+def _credential_refusal(*, path: Path, problem: str) -> ForgeSetupError:
+    """The refusal of the test credential file ``path`` for ``problem``: it names the file and the setup note, never
+    the file's text."""
+    return ForgeSetupError(
+        message=(
+            f"The test credential file {path} {problem}. Paste only the test group's token, on one line, into this "
+            f"file ({SETUP_NOTE})"
+        )
+    )
+
+
+def _without_final_line_end(*, text: str) -> str:
+    """``text`` less one final ``\\r\\n`` or ``\\n``."""
+    for line_end in TOKEN_LINE_ENDS:
+        if text.endswith(line_end):
+            return text[: -len(line_end)]
+    return text
+
+
+def read_test_token(*, path: Path) -> str:
+    """D8 "Reading": the token of the test credential file ``path``, refused as the product GitLab wrapper refuses the
+    ``token`` of its ``config/gitlab.json``.
+
+    The file's bytes are decoded as ASCII and read less one final ``\\r\\n`` or ``\\n``. A file that cannot be read, a
+    byte outside ASCII, an empty text, a text starting with the product's ``PLACEHOLDER_MARKER``, and a text the
+    product's ``_refuse_token_characters`` refuses each raise ``ForgeSetupError`` naming ``path`` and none of its
+    contents, the cause dropped (``from None``). Nothing logs the token.
+    """
+    product = product_wrapper()
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise _credential_refusal(path=path, problem=f"cannot be read ({exc.strerror})") from None
+    try:
+        text = data.decode(encoding=TOKEN_ENCODING)
+    except UnicodeDecodeError:
+        raise _credential_refusal(path=path, problem="holds a byte outside ASCII") from None
+    token = _without_final_line_end(text=text)
+    if not token or token.startswith(str(product.PLACEHOLDER_MARKER)):
+        raise _credential_refusal(path=path, problem="is empty or still holds the placeholder")
+    try:
+        product._refuse_token_characters(token=token)
+    except product.GitLabAPIError:
+        refused = (
+            f"holds a character outside '{product.PRINTABLE_FIRST}' to '{product.PRINTABLE_LAST}' (a space, a second "
+            "line or an invisible character)"
+        )
+        raise _credential_refusal(path=path, problem=refused) from None
+    return token
+
+
+def _origin_url(*, path: str) -> str:
+    """D3's ``origin`` of the test group's project ``path``: no userinfo, so ``.git/config`` holds no token."""
+    return ORIGIN_URL.format(full_path=TEST_GROUP + PROJECT_PATH_SEPARATOR + path)
+
+
+def _run_git(*, git: GitRunner, arguments: Sequence[str], authenticated: bool = False) -> Invocation:
+    """``git`` run with ``arguments``; an exit other than 0 raises ``ForgeCommandError`` with git's standard error."""
+    invocation = git.run(arguments=arguments, authenticated=authenticated)
+    if invocation.returncode != GIT_EXIT_OK:
+        raise ForgeCommandError(
+            message=(
+                f"`{GIT} {' '.join(arguments)}` exited {invocation.returncode} in the clone: "
+                f"{invocation.stderr.strip()}"
+            )
+        )
+    return invocation
+
+
+def _write_owner_only(*, path: Path, data: bytes) -> None:
+    """D8 "Writing": ``path`` created owner-only (``CLONE_CREDENTIAL_MODE``) and then given ``data``; a file already
+    there raises ``FileExistsError``, so none is overwritten."""
+    path.touch(mode=CLONE_CREDENTIAL_MODE, exist_ok=False)
+    path.write_bytes(data=data)
+
+
+def _write_clone_config(*, clone: Path, token: str, path: str) -> None:
+    """D8 "Writing": the clone's ``config/gitlab.json``, ``json.dumps`` of ``hostname`` gitlab.com, ``project_id`` the
+    full path of the test group's project ``path`` and ``token``, keyed by the product's ``FIELD_HOSTNAME``,
+    ``FIELD_PROJECT_ID`` and ``FIELD_TOKEN``."""
+    product = product_wrapper()
+    config = {
+        product.FIELD_HOSTNAME: GITLAB_HOSTNAME,
+        product.FIELD_PROJECT_ID: TEST_GROUP + PROJECT_PATH_SEPARATOR + path,
+        product.FIELD_TOKEN: token,
+    }
+    target = clone / CLONE_CONFIG_FILE
+    target.parent.mkdir()
+    _write_owner_only(path=target, data=json.dumps(obj=config).encode(encoding=TEXT_ENCODING))
+
+
+def _exclude_config(*, clone: Path) -> None:
+    """D8 "Writing": appends ``config/`` to the clone's ``.git/info/exclude``, on a line of its own, so no commit of
+    the clone holds its ``config/gitlab.json``."""
+    exclude = clone / GIT_EXCLUDE_FILE
+    exclude.parent.mkdir(parents=True, exist_ok=True)
+    existing = exclude.read_bytes() if exclude.is_file() else b""
+    line_end = LINE_END.encode(encoding=TEXT_ENCODING)
+    separator = line_end if existing and not existing.endswith(line_end) else b""
+    exclude.write_bytes(data=existing + separator + EXCLUDED_CONFIG.encode(encoding=TEXT_ENCODING) + line_end)
+
+
+def prepare_clone(*, clone: Path, token: str, path: str, git: GitRunner) -> None:
+    """D9 step 3 (D3 "The clone"): creates ``clone`` with ``Path.mkdir`` and runs ``git init`` in it, writes its
+    ``config/gitlab.json`` and its ``.git/sff-forge-token`` (the token and ``\\n``) and the exclude line (D8), then
+    ``git remote add origin`` of the test group's project ``path``. ``git`` is bound to ``clone``; its commands run
+    unauthenticated, and a failure raises ``ForgeCommandError``."""
+    clone.mkdir()
+    _run_git(git=git, arguments=[GIT_INIT])
+    _write_clone_config(clone=clone, token=token, path=path)
+    _write_owner_only(path=clone / CLONE_GIT_TOKEN_FILE, data=(token + LINE_END).encode(encoding=TEXT_ENCODING))
+    _exclude_config(clone=clone)
+    _run_git(git=git, arguments=[GIT_REMOTE, GIT_REMOTE_ADD, ORIGIN_REMOTE, _origin_url(path=path)])
+
+
+def _assignment(*, name: str, value: str) -> str:
+    """A ``call`` parameter's ``<name>=<value>``."""
+    return name + PARAMETER_ASSIGNMENT + value
+
+
+def read_test_group(*, wrapper: WrapperRunner) -> int:
+    """D9 step 5: the numeric id of the test group, ``call tenant-scale#retrieve-a-group --path id=bestehorn-sff-test
+    --query with_projects=false``, which a creation's ``namespace_id`` needs.
+
+    A non-zero exit raises ``ForgeCommandError``; an answer whose ``full_path`` is not ``TEST_GROUP`` or whose ``id`` is
+    no integer raises ``ForgeSetupError``.
+    """
+    invocation = wrapper.run(
+        arguments=[
+            CALL_SUBCOMMAND,
+            GROUP_READ,
+            PATH_OPTION,
+            _assignment(name=ID_PARAMETER, value=TEST_GROUP),
+            QUERY_OPTION,
+            _assignment(name=WITH_PROJECTS_PARAMETER, value=TEXT_FALSE),
+        ]
+    )
+    if invocation.returncode != WRAPPER_EXIT_OK:
+        raise _failure(action=f"Reading the group {TEST_GROUP}", invocation=invocation)
+    answer = invocation.json()
+    fields: Mapping[str, Any] = answer if isinstance(answer, Mapping) else {}
+    group_id = fields.get(FIELD_ID)
+    full_path = fields.get(FIELD_FULL_PATH)
+    numbered = isinstance(group_id, int) and not isinstance(group_id, bool)
+    if full_path != TEST_GROUP or not numbered:
+        raise ForgeSetupError(
+            message=(
+                f"The read of the group {TEST_GROUP} answered the {FIELD_FULL_PATH} {full_path!r} and the {FIELD_ID} "
+                f"{group_id!r}, not {TEST_GROUP} and an integer"
+            )
+        )
+    return int(group_id)
+
+
+def _creation_arguments(*, group_id: int, path: str) -> List[str]:
+    """D9 step 6's ``call tenant-scale#create-a-project -f name=<path> -f path=<path> -F namespace_id=<group id> -f
+    visibility=private -F initialize_with_readme=true -F auto_devops_enabled=false``."""
+    return [
+        CALL_SUBCOMMAND,
+        PROJECT_CREATION,
+        RAW_FIELD_OPTION,
+        _assignment(name=FIELD_NAME, value=path),
+        RAW_FIELD_OPTION,
+        _assignment(name=FIELD_PATH, value=path),
+        TYPED_FIELD_OPTION,
+        _assignment(name=FIELD_NAMESPACE_ID, value=str(group_id)),
+        RAW_FIELD_OPTION,
+        _assignment(name=FIELD_VISIBILITY, value=PRIVATE_VISIBILITY),
+        TYPED_FIELD_OPTION,
+        _assignment(name=FIELD_INITIALIZE_WITH_README, value=TEXT_TRUE),
+        TYPED_FIELD_OPTION,
+        _assignment(name=FIELD_AUTO_DEVOPS_ENABLED, value=TEXT_FALSE),
+    ]
+
+
+def _created_record(*, fields: Mapping[str, Any], requested: str) -> CreatedProject:
+    """The record of a creation's printed answer ``fields``: its ``id`` (a number), ``namespace.full_path``, ``path``
+    and ``default_branch``; an answer without them raises ``ForgeCommandError``."""
+    project_id = fields.get(FIELD_ID)
+    namespace = fields.get(FIELD_NAMESPACE)
+    group = namespace.get(FIELD_FULL_PATH) if isinstance(namespace, Mapping) else None
+    path = fields.get(FIELD_PATH)
+    branch = fields.get(FIELD_DEFAULT_BRANCH)
+    numbered = isinstance(project_id, int) and not isinstance(project_id, bool)
+    if not (numbered and isinstance(group, str) and isinstance(path, str) and isinstance(branch, str)):
+        raise ForgeCommandError(
+            message=(
+                f"The creation of {TEST_GROUP}{PROJECT_PATH_SEPARATOR}{requested} answered no {FIELD_ID} number and no "
+                f"{FIELD_NAMESPACE}.{FIELD_FULL_PATH}, {FIELD_PATH} and {FIELD_DEFAULT_BRANCH} text"
+            )
+        )
+    return CreatedProject(project_id=int(project_id), namespace=group, path=path, default_branch=branch)
+
+
+def create_ephemeral(*, wrapper: WrapperRunner, group_id: int, path: str) -> CreatedProject:
+    """D9 step 6: creates the test group's project ``path``, private, seeded with a ``README.md``, without Auto
+    DevOps.
+
+    A non-zero exit raises ``ForgeCommandError``: nothing was created. The answer's ``id``, ``namespace.full_path``,
+    ``path`` and ``default_branch`` make the record; an answer whose ``visibility`` is not ``private`` raises
+    ``ForgeSetupError`` whose ``details`` keep the record under ``DETAIL_CREATED``, so the teardown still deletes the
+    project.
+    """
+    target = TEST_GROUP + PROJECT_PATH_SEPARATOR + path
+    invocation = wrapper.run(arguments=_creation_arguments(group_id=group_id, path=path))
+    if invocation.returncode != WRAPPER_EXIT_OK:
+        raise _failure(action=f"Creating this run's project {target}", invocation=invocation)
+    answer = invocation.json()
+    fields: Mapping[str, Any] = answer if isinstance(answer, Mapping) else {}
+    created = _created_record(fields=fields, requested=path)
+    logger.info("Created this run's project %s", created.full_path)
+    visibility = fields.get(FIELD_VISIBILITY)
+    if visibility != PRIVATE_VISIBILITY:
+        raise ForgeSetupError(
+            message=(
+                f"This run's project {created.full_path} was created with {FIELD_VISIBILITY} {visibility!r}, not "
+                f"{PRIVATE_VISIBILITY}; the teardown deletes it"
+            ),
+            details={DETAIL_CREATED: created},
+        )
+    return created
+
+
+def _kept_record(*, error: ForgeSuiteError) -> Optional[CreatedProject]:
+    """The record a refused creation kept in its ``details`` (``create_ephemeral``), else ``None``."""
+    kept = (error.details or {}).get(DETAIL_CREATED)
+    return kept if isinstance(kept, CreatedProject) else None
+
+
+def fetch_seed(*, git: GitRunner, default_branch: str) -> Tuple[str, str]:
+    """D9 step 7 (D3 "The clone"): an authenticated ``git fetch origin`` and ``git checkout -B <default branch> --track
+    origin/<default branch>``, then the seed's commit and tree (``git rev-parse HEAD HEAD^{tree}``), answered in that
+    order.
+
+    A seed whose root, ``git ls-tree --name-only HEAD``, holds ``.gitlab-ci.yml`` raises ``ForgeSetupError``; a git
+    failure, or a ``rev-parse`` answering other than two revisions, raises ``ForgeCommandError``.
+    """
+    tracked = ORIGIN_REMOTE + REMOTE_BRANCH_SEPARATOR + default_branch
+    _run_git(git=git, arguments=[GIT_FETCH, ORIGIN_REMOTE], authenticated=True)
+    _run_git(git=git, arguments=[GIT_CHECKOUT, GIT_RESET_BRANCH_OPTION, default_branch, GIT_TRACK_OPTION, tracked])
+    revisions = _run_git(git=git, arguments=[GIT_REV_PARSE, HEAD, HEAD_TREE]).stdout.split()
+    if len(revisions) != SEED_REVISION_COUNT:
+        raise ForgeCommandError(
+            message=(
+                f"`{GIT} {GIT_REV_PARSE} {HEAD} {HEAD_TREE}` answered {len(revisions)} revisions, not "
+                f"{SEED_REVISION_COUNT}"
+            )
+        )
+    root = _run_git(git=git, arguments=[GIT_LS_TREE, GIT_NAME_ONLY_OPTION, HEAD]).stdout.splitlines()
+    if GITLAB_CI_FILE in root:
+        raise ForgeSetupError(
+            message=(
+                f"The seed of this run's project holds {GITLAB_CI_FILE} at its root, whose pipeline a push would run"
+            )
+        )
+    return revisions[0], revisions[1]
+
+
+@contextmanager
+def provision(*, checkout: Path, workspace: Path, wrapper: WrapperRunner, git: GitRunner) -> Iterator[EphemeralProject]:
+    """D9: one run's project around the ``with`` body; ``wrapper`` and ``git`` are bound to ``<workspace>/clone``.
+
+    1. Before the ``try``, the run id, the project's path and full path; nothing is sent. 2. The test token,
+    ``read_test_token`` of ``find_test_credential(checkout=checkout, credential_file=TEST_CREDENTIAL_FILE)``, a local
+    of this function only, deleted once ``prepare_clone`` returns or raises. 3. ``prepare_clone``. 4.
+    ``sweep_leftovers`` at the UTC now, kept as ``swept_at``. 5. ``read_test_group``. 6. ``create_ephemeral``. 7.
+    ``fetch_seed``, then the yield of the ``EphemeralProject``. 8. In the ``finally``, whether a step or the body
+    returned or raised: ``delete_ephemeral`` of step 6's record (``None`` when the creation never succeeded, so nothing
+    is deleted), then, in its own ``finally``, ``remove_tree`` of ``workspace``; a failure of either is raised.
+    """
+    run_id = new_run_id()
+    path = ephemeral_path(run_id=run_id)
+    full_path = ephemeral_full_path(run_id=run_id)
+    clone = workspace / CLONE_DIRECTORY
+    created: Optional[CreatedProject] = None
+    try:
+        token = read_test_token(path=find_test_credential(checkout=checkout, credential_file=TEST_CREDENTIAL_FILE))
+        try:
+            prepare_clone(clone=clone, token=token, path=path, git=git)
+        finally:
+            # The generator's frame lives on through the yield; the token does not.
+            del token
+        swept_at = datetime.now(tz=timezone.utc)
+        sweep_leftovers(wrapper=wrapper, now=swept_at)
+        group_id = read_test_group(wrapper=wrapper)
+        try:
+            record = create_ephemeral(wrapper=wrapper, group_id=group_id, path=path)
+        except ForgeSetupError as refused:
+            created = _kept_record(error=refused)
+            raise
+        created = record
+        seed_sha, seed_tree_sha = fetch_seed(git=git, default_branch=record.default_branch)
+        yield EphemeralProject(
+            run_id=run_id,
+            group=TEST_GROUP,
+            path=path,
+            full_path=full_path,
+            project_id=record.project_id,
+            default_branch=record.default_branch,
+            seed_sha=seed_sha,
+            seed_tree_sha=seed_tree_sha,
+            swept_at=swept_at,
+            clone=clone,
+            wrapper=wrapper,
+            git=git,
+        )
+    finally:
+        try:
+            delete_ephemeral(wrapper=wrapper, created=created, run_id=run_id)
+        finally:
+            remove_tree(path=workspace)

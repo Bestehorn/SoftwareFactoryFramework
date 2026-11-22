@@ -1,0 +1,191 @@
+# tasks: 4.1 4.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_gitlab_support.py test/test_forge_gitlab_layout.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_wrapper_delivery.py test/test_layout.py test/test_gitlab_graphql_contract.py test/test_github_graphql_contract.py test/test_toolchain_manifest.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_forge_support.py test/test_forge_suite_layout.py test/test_toolchain_integrity.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [1331 items]
+
+....................................................................F.F. [  5%]
+....F...F.F.FF.F.F.F..FF.F.F.F.F................................FF...... [ 10%]
+........................................................................ [ 16%]
+........................................................................ [ 21%]
+........................................................................ [ 27%]
+........................................................................ [ 32%]
+........................................................................ [ 37%]
+........................................................................ [ 43%]
+........................................................................ [ 48%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 70%]
+........................................................................ [ 75%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 91%]
+........................................................................ [ 97%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+______________ test_provisioning_runs_in_order[the-body-returns] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1894: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision
+E   assert not ['EphemeralProject', 'provision']
+______________ test_provisioning_runs_in_order[the-body-raises] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1894: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision
+E   assert not ['EphemeralProject', 'provision']
+________ test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1894: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision
+E   assert not ['EphemeralProject', 'provision']
+_____________ test_provisioning_runs_in_order[the-deletion-fails] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1894: in test_provisioning_runs_in_order
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision
+E   assert not ['EphemeralProject', 'provision']
+_ test_a_project_created_other_than_private_is_refused_and_deleted[internal] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1942: in test_a_project_created_other_than_private_is_refused_and_deleted
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision
+E   assert not ['EphemeralProject', 'provision']
+__ test_a_project_created_other_than_private_is_refused_and_deleted[public] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1942: in test_a_project_created_other_than_private_is_refused_and_deleted
+    _require(module=forge, names=PROVISION_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision
+E   assert not ['EphemeralProject', 'provision']
+________________________ test_no_creation_no_deletion _________________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1964: in test_no_creation_no_deletion
+    _require(module=forge, names=NO_CREATION_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision
+E   assert not ['EphemeralProject', 'provision']
+________ test_a_bad_test_credential_fails_before_any_request[missing] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2028: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=READING_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, read_test_token
+E   assert not ['EphemeralProject', 'provision', 'read_test_token']
+_________ test_a_bad_test_credential_fails_before_any_request[empty] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2028: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=READING_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, read_test_token
+E   assert not ['EphemeralProject', 'provision', 'read_test_token']
+____ test_a_bad_test_credential_fails_before_any_request[a-lone-line-end] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2028: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=READING_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, read_test_token
+E   assert not ['EphemeralProject', 'provision', 'read_test_token']
+____ test_a_bad_test_credential_fails_before_any_request[the-placeholder] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2028: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=READING_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, read_test_token
+E   assert not ['EphemeralProject', 'provision', 'read_test_token']
+_ test_a_bad_test_credential_fails_before_any_request[a-token-holding-a-space] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2028: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=READING_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, read_test_token
+E   assert not ['EphemeralProject', 'provision', 'read_test_token']
+_ test_a_bad_test_credential_fails_before_any_request[a-non-ascii-character] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2028: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=READING_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, read_test_token
+E   assert not ['EphemeralProject', 'provision', 'read_test_token']
+_______ test_a_bad_test_credential_fails_before_any_request[two-lines] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2028: in test_a_bad_test_credential_fails_before_any_request
+    _require(module=forge, names=READING_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, read_test_token
+E   assert not ['EphemeralProject', 'provision', 'read_test_token']
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2099: in test_the_token_is_written_only_to_the_clone
+    _require(module=forge, names=WRITTEN_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no EphemeralProject, provision, CLONE_CONFIG_FILE
+E   assert not ['EphemeralProject', 'provision', 'CLONE_CONFIG_FILE']
+____________________ test_the_clone_commits_no_credential _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2150: in test_the_clone_commits_no_credential
+    _require(module=forge, names=CLONE_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: test/forge_gitlab/ephemeral.py defines no CLONE_CONFIG_FILE, prepare_clone
+E   assert not ['CLONE_CONFIG_FILE', 'prepare_clone']
+_______________ test_the_setup_note_names_the_gitlab_credential _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:378: in test_the_setup_note_names_the_gitlab_credential
+    assert openings, (
+E   AssertionError: no heading after the title of docs/forge-suite.md names GitLab; its headings are ['The forge suite and its test credential', 'The test credential file', 'The token', 'The Actions secret', 'Running the suite locally']
+E   assert []
+__________________ test_the_map_names_the_gitlab_forge_suite __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:415: in test_the_map_names_the_gitlab_forge_suite
+    assert not missing, f"{layout.LLM_MAP_NAME} does not name: {missing}"
+E   AssertionError: docs/forLLMConsumption.md does not name: ['the GitLab forge suite `test/forge_gitlab`, beside its command', 'the local command `python scripts/run_tests.py --workers 1 test/forge_gitlab`', 'the test credential file `credentials/gitlab-sff-testing-pat.txt`', 'the CI job `forge-gitlab`']
+E   assert not ['the GitLab forge suite `test/forge_gitlab`, beside its command', 'the local command `python scripts/run_tests.py --w... test/forge_gitlab`', 'the test credential file `credentials/gitlab-sff-testing-pat.txt`', 'the CI job `forge-gitlab`']
+=========================== short test summary info ===========================
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[the-body-returns]
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[the-body-raises]
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed]
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[the-deletion-fails]
+FAILED test/test_forge_gitlab_support.py::test_a_project_created_other_than_private_is_refused_and_deleted[internal]
+FAILED test/test_forge_gitlab_support.py::test_a_project_created_other_than_private_is_refused_and_deleted[public]
+FAILED test/test_forge_gitlab_support.py::test_no_creation_no_deletion - Asse...
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[missing]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[empty]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[a-lone-line-end]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[the-placeholder]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[a-token-holding-a-space]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[a-non-ascii-character]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[two-lines]
+FAILED test/test_forge_gitlab_support.py::test_the_token_is_written_only_to_the_clone
+FAILED test/test_forge_gitlab_support.py::test_the_clone_commits_no_credential
+FAILED test/test_forge_gitlab_layout.py::test_the_setup_note_names_the_gitlab_credential
+FAILED test/test_forge_gitlab_layout.py::test_the_map_names_the_gitlab_forge_suite
+================= 18 failed, 1313 passed in 233.04s (0:03:53) =================
+exit=1

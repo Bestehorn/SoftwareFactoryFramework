@@ -96,20 +96,20 @@ follows the D section it cites.
 
 ## Wave 4 — Provisioning, the setup note and the map
 
-- [ ] 4.1 TEST: S, extended with `ScriptedGitRunner(GitRunner)`: `test_provisioning_runs_in_order`,
+- [x] 4.1 TEST: S, extended with `ScriptedGitRunner(GitRunner)`: `test_provisioning_runs_in_order`,
   `test_a_project_created_other_than_private_is_refused_and_deleted`, `test_no_creation_no_deletion`,
   `test_a_bad_test_credential_fails_before_any_request`, `test_the_token_is_written_only_to_the_clone` (with UB-2's
   sentinel), `test_the_clone_commits_no_credential` — Files: test/test_forge_gitlab_support.py — Validates: AC-1.1,
   AC-1.3, AC-1.4, AC-2.3, AC-6.2, AC-6.3, UB-2
-- [ ] 4.2 TEST: G, the docs read as text: `test_the_setup_note_names_the_gitlab_credential`,
+- [x] 4.2 TEST: G, the docs read as text: `test_the_setup_note_names_the_gitlab_credential`,
   `test_the_map_names_the_gitlab_forge_suite` — Files: test/test_forge_gitlab_layout.py — Validates: AC-9.1, AC-9.2
-- [ ] 4.3 IMPL: `ephemeral.py`, part 3: `EphemeralProject`, `CLONE_CONFIG_FILE`, `read_test_token` (D8);
+- [x] 4.3 IMPL: `ephemeral.py`, part 3: `EphemeralProject`, `CLONE_CONFIG_FILE`, `read_test_token` (D8);
   `prepare_clone`, `read_test_group`, `create_ephemeral`, `fetch_seed` and the context manager `provision` (D9 steps 1
   to 8, D3 "The clone") — Files: test/forge_gitlab/ephemeral.py — Validates: AC-1.1, AC-1.3, AC-1.4, AC-2.3, AC-6.2,
   AC-6.3, UB-2
-- [ ] 4.4 IMPL: the GitLab section of the setup note, the GitHub sections as they are (D7) — Files:
+- [x] 4.4 IMPL: the GitLab section of the setup note, the GitHub sections as they are (D7) — Files:
   docs/forge-suite.md — Validates: AC-9.1
-- [ ] 4.5 IMPL: AC-9.2's names in the map's testing section, under its cap (D10) — Files: docs/forLLMConsumption.md —
+- [x] 4.5 IMPL: AC-9.2's names in the map's testing section, under its cap (D10) — Files: docs/forLLMConsumption.md —
   Validates: AC-9.2
 
 ## Wave 5 — The session fixture, the suite's collection and the real-GitLab tests (D6)

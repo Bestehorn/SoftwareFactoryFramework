@@ -1,4 +1,5 @@
-"""G: the GitLab forge suite's separation and its CI wiring, read from the repository (issue #11, design.md D1, D5).
+"""G: the GitLab forge suite's separation, its CI wiring and its docs, read from the repository (issue #11, design.md
+D1, D5, D7).
 
 The GitLab forge suite (``test/forge_gitlab/``) talks to gitlab.com and runs in its own CI job, ``forge-gitlab``,
 beside ``verify`` and ``forge``; these tests run in the default collection with no network and no test credential
@@ -13,7 +14,11 @@ jobs of ``.github/workflows/ci.yml`` (AC-5.1, AC-5.2, AC-5.4, AC-6.3), and L's `
 ``PRODUCT_WRAPPER`` is named in ``SubprocessWrapperRunner`` and ``product_wrapper`` and nowhere else but its
 definition (D10), and to every module the checks of L's ``module_problems`` with this suite's fake host, project
 argument and project records, so only ``ephemeral.py`` starts the product wrapper or names, creates or deletes a
-project (AC-4.3, AC-8.1, AC-8.7).
+project (AC-4.3, AC-8.1, AC-8.7). They read the docs as text with L's ``read_document``, ``collapse_whitespace``,
+``phrase_pattern`` and ``says_only_local_machines_need_it``: the GitLab section of the setup note
+``docs/forge-suite.md``, from the first heading after its title that names GitLab to the next heading of that level or
+above, so the GitHub sections' names count for nothing (AC-9.1), and the map ``docs/forLLMConsumption.md``, where the
+suite's path counts only outside its local command (AC-9.2).
 
 Run: ``python scripts/run_tests.py test/test_forge_gitlab_layout.py``.
 """
@@ -24,6 +29,7 @@ import ast
 import importlib.util
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -83,6 +89,39 @@ PROJECT_DELETION = "tenant-scale#delete-a-project"
 GITLAB_PROJECT_LIFECYCLE = re.compile(
     r"(?<![\w#/-])(?:" + re.escape(PROJECT_CREATION) + r"|" + re.escape(PROJECT_DELETION) + r")(?![\w-])"
 )
+
+# The GitLab forge suite's setup, read as text from the setup note's GitLab section and from the map (D7; AC-9.1,
+# AC-9.2).
+GITLAB_TEST_CREDENTIAL_FILE = "credentials/gitlab-sff-testing-pat.txt"
+GITLAB_TEST_GROUP = "bestehorn-sff-test"
+GITLAB_HOST = "gitlab.com"
+GITLAB_SERVICE_ACCOUNTS = "Service accounts"
+GITLAB_OWNER_ROLE = "Owner"
+GITLAB_TOKEN_SCOPE = "api"
+# gitlab.com as a host of its own, not the tail of another (`docs.gitlab.com`); a full stop may end its sentence.
+GITLAB_HOST_MENTION = re.compile(r"(?<![\w.-])" + re.escape(GITLAB_HOST) + r"(?![\w-]|\.\w)")
+# The scope `api` as a word of its own: not `read_api`, not `API`, not a path segment (`docs.gitlab.com/api/...`).
+GITLAB_SCOPE_MENTION = re.compile(r"(?<![\w./-])" + re.escape(GITLAB_TOKEN_SCOPE) + r"(?![\w/-]|\.\w)")
+# The GitLab forge job's id as a word of its own, never the suite's directory `test/forge_gitlab`.
+GITLAB_FORGE_JOB_MENTION = re.compile(r"(?<![\w/-])" + re.escape(JOB_FORGE_GITLAB) + r"(?![\w-])")
+GITLAB_LOCAL_ONLY_CLAIM = (
+    "a sentence saying that only a machine that runs the GitLab forge suite locally needs the file"
+)
+# The word that a heading of the setup note's GitLab section holds.
+GITLAB_WORD = re.compile(r"\bGitLab\b")
+# An ATX heading: up to three spaces, one to six `#`, whitespace, its title.
+MARKDOWN_HEADING = re.compile(r"^ {0,3}(?P<marks>#{1,6})[ \t]+(?P<title>\S.*?)[ \t]*$")
+# A line opening or closing a fenced code block, whose `#` lines are no headings.
+MARKDOWN_FENCE = re.compile(r"^ {0,3}(?:`{3,}|~{3,})")
+
+
+@dataclass(frozen=True)
+class MarkdownHeading:
+    """An ATX heading of a Markdown text: the index of its line, its level (its count of ``#``) and its title."""
+
+    line: int
+    level: int
+    title: str
 
 
 def _load_by_path(*, path: Path, name: str, description: str) -> ModuleType:
@@ -190,6 +229,30 @@ def gitlab_module_problems(*, module: Any, layout: ModuleType) -> list[str]:
             ),
         ]
     return [problem for lines, text in checks for problem in layout.located(module=module, lines=lines, problem=text)]
+
+
+def markdown_headings(*, lines: list[str]) -> list[MarkdownHeading]:
+    """The ATX headings of the Markdown ``lines``, in order, outside fenced code blocks."""
+    headings = []
+    fenced = False
+    for index, line in enumerate(lines):
+        if MARKDOWN_FENCE.match(line):
+            fenced = not fenced
+            continue
+        heading = None if fenced else MARKDOWN_HEADING.match(line)
+        if heading is not None:
+            headings.append(
+                MarkdownHeading(line=index, level=len(heading.group("marks")), title=heading.group("title"))
+            )
+    return headings
+
+
+def section_under(*, lines: list[str], headings: list[MarkdownHeading], opening: MarkdownHeading) -> str:
+    """The section ``opening`` heads in ``lines``: its heading's line up to the next heading of its level or above
+    (fewer ``#``), or to the end of ``lines``."""
+    closings = [heading.line for heading in headings if heading.line > opening.line and heading.level <= opening.level]
+    end = closings[0] if closings else len(lines)
+    return "\n".join(lines[opening.line : end])
 
 
 def test_the_gitlab_forge_job_runs_beside_verify() -> None:
@@ -303,3 +366,50 @@ def test_the_gitlab_forge_tests_reach_only_the_ephemeral_project() -> None:
     problems = list(layout.product_wrapper_problems(module=supports[0]))
     problems += [problem for module in modules for problem in gitlab_module_problems(module=module, layout=layout)]
     assert not problems, "the GitLab forge suite reaches past its ephemeral project:\n" + "\n".join(problems)
+
+
+def test_the_setup_note_names_the_gitlab_credential() -> None:
+    layout = _layout()
+    assert layout.SETUP_NOTE.is_file(), f"the test credential's setup note {layout.SETUP_NOTE_NAME} does not exist"
+    lines = layout.read_document(path=layout.SETUP_NOTE).splitlines()
+    headings = markdown_headings(lines=lines)
+    # The title, the first heading, heads the whole note and its GitHub sections, so it is never the GitLab section.
+    openings = [heading for heading in headings[1:] if GITLAB_WORD.search(heading.title)]
+    assert openings, (
+        f"no heading after the title of {layout.SETUP_NOTE_NAME} names GitLab; its headings are "
+        f"{[heading.title for heading in headings]}"
+    )
+    section = section_under(lines=lines, headings=headings, opening=openings[0])
+    prose = layout.collapse_whitespace(text=section)
+    phrases = (GITLAB_TEST_CREDENTIAL_FILE, GITLAB_TEST_GROUP, GITLAB_SECRET_NAME, GITLAB_FORGE_COMMAND)
+    missing = [f"`{phrase}`" for phrase in phrases if phrase not in prose]
+    patterns = (
+        (GITLAB_HOST_MENTION, f"the host `{GITLAB_HOST}`"),
+        (layout.phrase_pattern(phrase=GITLAB_SERVICE_ACCOUNTS), f'the group\'s "{GITLAB_SERVICE_ACCOUNTS}"'),
+        (layout.phrase_pattern(phrase=GITLAB_OWNER_ROLE), f'the role "{GITLAB_OWNER_ROLE}"'),
+        (GITLAB_SCOPE_MENTION, f"the token scope `{GITLAB_TOKEN_SCOPE}`"),
+    )
+    missing += [item for pattern, item in patterns if pattern.search(prose) is None]
+    if not layout.says_only_local_machines_need_it(text=section):
+        missing.append(GITLAB_LOCAL_ONLY_CLAIM)
+    assert not missing, f"the GitLab section `{openings[0].title}` of {layout.SETUP_NOTE_NAME} does not name: {missing}"
+
+
+def test_the_map_names_the_gitlab_forge_suite() -> None:
+    layout = _layout()
+    assert layout.LLM_MAP.is_file(), f"the map {layout.LLM_MAP_NAME} does not exist"
+    prose = layout.collapse_whitespace(text=layout.read_document(path=layout.LLM_MAP))
+    # The local command holds the suite's path, so the path counts only outside it.
+    beside_the_command = prose.replace(GITLAB_FORGE_COMMAND, "")
+    checks = (
+        (
+            GITLAB_FORGE_SUITE in beside_the_command,
+            f"the GitLab forge suite `{GITLAB_FORGE_SUITE}`, beside its command",
+        ),
+        (GITLAB_FORGE_COMMAND in prose, f"the local command `{GITLAB_FORGE_COMMAND}`"),
+        (GITLAB_TEST_CREDENTIAL_FILE in prose, f"the test credential file `{GITLAB_TEST_CREDENTIAL_FILE}`"),
+        (layout.SETUP_NOTE_NAME in prose, f"the setup note `{layout.SETUP_NOTE_NAME}`"),
+        (GITLAB_FORGE_JOB_MENTION.search(prose) is not None, f"the CI job `{JOB_FORGE_GITLAB}`"),
+    )
+    missing = [item for present, item in checks if not present]
+    assert not missing, f"{layout.LLM_MAP_NAME} does not name: {missing}"

@@ -6,12 +6,18 @@ proven here: the refusal of a distributed run, naming that command (D1); the run
 which the product GitLab wrapper's guard accepts (D4, D2); the per-command credential helper git authenticates to
 gitlab.com with, ``CLONE_GIT_HELPER`` (D3, D10); where the GitLab test credential file is found, and the CI step's write
 of it, by ``write_test_credential`` and by ``test/forge_gitlab/write_credential.py`` ``main`` (D8); the marker on every
-product-wrapper invocation and the bytes of its answer (D10); the teardown guard and the leftover sweep (D9). Only local
-git runs (``git init``, ``git commit``, ``git worktree add``, ``git rev-parse``, ``git credential fill``), in checkouts
-under pytest's ``tmp_path``, and every ``git credential fill`` is given ``-c credential.helper=`` first, so no helper a
-configuration file names is asked. The wrapper runner's ``subprocess.run`` is replaced by a recorder, and the teardown
-and the sweep are given ``RecordingWrapperRunner``, a ``WrapperRunner`` that records each argv and answers it from the
-test's script. No test opens a connection or needs a test credential file (UB-1).
+product-wrapper invocation and the bytes of its answer (D10); the teardown guard and the leftover sweep (D9); and the
+provision around them: its steps in order, the refusal of a project created other than private, no deletion without a
+creation, the test credential's refusals, the token written only to the clone, and a clone commit holding neither of
+the clone's credential files (D3 "The clone", D8, D9). Only local git runs (``git init``, ``git commit``, ``git
+worktree add``, ``git rev-parse``, ``git credential fill``, ``git remote add``, ``git config``, ``git add``, ``git
+ls-files``), in checkouts under pytest's ``tmp_path``, and every ``git credential fill`` is given ``-c
+credential.helper=`` first, so no helper a configuration file names is asked. The wrapper runner's ``subprocess.run``
+is replaced by a recorder, and the teardown, the sweep and a provision are given ``RecordingWrapperRunner``, a
+``WrapperRunner`` that records each argv and answers it from the test's script. A provision is also given
+``ScriptedGitRunner``, a ``GitRunner`` that records each argv, hands ``init`` and ``remote`` to real local git in the
+clone and answers the rest (``fetch``, ``checkout``, the seed's reads) from the script without a process. No test opens
+a connection or needs a test credential file (UB-1).
 
 ``ephemeral.py`` is loaded by path from inside each test body through ``_ephemeral``, under the ``sys.modules`` key its
 ``conftest.py`` uses, never at import and never in a fixture, and nothing at this module's level names one of its
@@ -28,15 +34,18 @@ Run: ``python scripts/run_tests.py test/test_forge_gitlab_support.py`` (needs gi
 
 from __future__ import annotations
 
+import builtins
 import importlib.util
+import io
 import json
 import locale
 import logging
+import os
 import re
 import subprocess
 import sys
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from types import ModuleType
@@ -1175,3 +1184,981 @@ def test_the_sweep_boundaries_and_refusals() -> None:
         full_path = str(no_leftover[FIELD_PATH_WITH_NAMESPACE])
         assert full_path in str(refused.value), f"the refusal does not name {full_path}: {refused.value}"
         assert runner.recorded == [], f"the refused deletion of {full_path} sent {runner.recorded}"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Provisioning (D3 "The clone", D8, D9 steps 1 to 8)
+# ---------------------------------------------------------------------------------------------------------------------
+
+# The symbols the provisioning tests need of ``ephemeral.py`` (D8, D9, D10).
+GIT_RUNNER_SYMBOLS = ("GitRunner", "Invocation")
+PROVISION_SYMBOLS = (
+    *RUNNER_SYMBOLS,
+    *GIT_RUNNER_SYMBOLS,
+    "ForgeSetupError",
+    "ForgeCommandError",
+    "EphemeralProject",
+    "provision",
+)
+NO_CREATION_SYMBOLS = (*PROVISION_SYMBOLS, "delete_ephemeral")
+READING_SYMBOLS = (*PROVISION_SYMBOLS, "read_test_token")
+WRITTEN_SYMBOLS = (*PROVISION_SYMBOLS, "CLONE_CONFIG_FILE", "CLONE_GIT_TOKEN_FILE")
+CLONE_SYMBOLS = (
+    "CLONE_CONFIG_FILE",
+    "CLONE_GIT_TOKEN_FILE",
+    "CLONE_GIT_HELPER",
+    "SubprocessGitRunner",
+    "prepare_clone",
+)
+
+# D9: the test's tree. The workspace stands for the session fixture's ``tempfile.mkdtemp`` directory; the clone is
+# ``<workspace>/clone``, and its git files are read where git writes them.
+CHECKOUT_NAME = "checkout"
+WORKSPACE_NAME = "workspace"
+CLONE_NAME = "clone"
+GIT_CONFIG_FILE = Path(GIT_DIRECTORY) / "config"
+GIT_EXCLUDE_FILE = Path(GIT_DIRECTORY) / "info" / "exclude"
+ORIGIN_URL_KEY = "remote.origin.url"
+#: D3: the clone's ``origin``, the test group's project without userinfo, so ``.git/config`` holds no token.
+ORIGIN_URL = "https://gitlab.com/{full_path}.git"
+#: D8, UB-2: the product GitLab wrapper's credential file, relative to a working tree: the clone's, which a provision
+#: writes, and the checkout's, a sentinel no provision opens.
+CLONE_CONFIG_FILE = Path("config") / "gitlab.json"
+#: D8: the line the clone's ``.git/info/exclude`` gains, so no commit of the clone holds its ``config/gitlab.json``.
+EXCLUDED_CONFIG = "config/"
+# AC-1.3, D8: the keys of a ``config/gitlab.json`` (``gitlab_api/transport.py``) and the host the clone's names; the
+# UB-2 sentinel also holds a ``token_type``.
+FIELD_HOSTNAME = "hostname"
+FIELD_PROJECT_ID = "project_id"
+FIELD_TOKEN = "token"
+FIELD_TOKEN_TYPE = "token_type"
+CLONE_CONFIG_KEYS = (FIELD_HOSTNAME, FIELD_PROJECT_ID, FIELD_TOKEN)
+GITLAB_HOSTNAME = "gitlab.com"
+SENTINEL_LABEL = "sentinel"
+SENTINEL_TOKEN_TYPE = "private"
+#: The GitHub forge suite's test credential, beside the GitLab one in every scripted checkout: a provision that reads it
+#: (``find_test_credential`` without this suite's ``credential_file``) writes its token, not the test token.
+DECOY_LABEL = "github-decoy"
+
+# D9 steps 5 and 6: the group read and the creation, and what GitLab answers them with (docs.gitlab.com/api/groups/,
+# "Get a single group"; docs.gitlab.com/api/projects/, "Create a project"). The default branch is not ``main``, so a
+# checkout of a branch the answer did not name is seen.
+GROUP_READ_OPERATION = "tenant-scale#retrieve-a-group"
+QUERY_OPTION = "--query"
+GROUP_READ_ARGUMENTS = (
+    CALL_SUBCOMMAND,
+    GROUP_READ_OPERATION,
+    PATH_OPTION,
+    f"{ID_PARAMETER}{PARAMETER_ASSIGNMENT}{TEST_GROUP}",
+    QUERY_OPTION,
+    "with_projects=false",
+)
+TEST_GROUP_ID = 12345678
+CREATE_OPERATION = "tenant-scale#create-a-project"
+RAW_FIELD_OPTION = "-f"
+TYPED_FIELD_OPTION = "-F"
+NAME_FIELD = "name="
+PATH_FIELD = "path="
+#: D9 step 6: the creation's attributes beside its name and path, as ``(option, attribute)``.
+CREATION_SETTINGS = (
+    (TYPED_FIELD_OPTION, f"namespace_id={TEST_GROUP_ID}"),
+    (RAW_FIELD_OPTION, "visibility=private"),
+    (TYPED_FIELD_OPTION, "initialize_with_readme=true"),
+    (TYPED_FIELD_OPTION, "auto_devops_enabled=false"),
+)
+FIELD_VISIBILITY = "visibility"
+FIELD_DEFAULT_BRANCH = "default_branch"
+PRIVATE_VISIBILITY = "private"
+SEED_BRANCH = "trunk"
+EMPTY_LISTING = _Answer(returncode=0, stdout=json.dumps(obj=[]) + LINE_END)
+GROUP_ANSWER = _Answer(
+    returncode=0,
+    stdout=json.dumps(
+        obj={FIELD_ID: TEST_GROUP_ID, FIELD_NAME: TEST_GROUP, FIELD_PATH: TEST_GROUP, FIELD_FULL_PATH: TEST_GROUP},
+        indent=2,
+    )
+    + LINE_END,
+)
+#: D9 step 6: the product GitLab wrapper's answer to a creation GitLab refused (a taken path, D4).
+CREATION_FAILURE = _Answer(
+    returncode=WRAPPER_API_FAILURE,
+    stderr=(
+        "POST https://gitlab.com/api/v4/projects answered 400: Bad Request"
+        + LINE_END
+        + json.dumps(obj={FIELD_MESSAGE: {FIELD_PATH: ["has already been taken"]}})
+        + LINE_END
+    ),
+)
+DELETION_FAILURE = _api_failure(
+    full_path=f"{TEST_GROUP}/{EPHEMERAL_PREFIX}this-run", status=FORBIDDEN_STATUS, message=FORBIDDEN_MESSAGE
+)
+
+# D3, D9 step 7: the git commands a provision runs, and what the scripted git answers them with.
+GIT_INIT = "init"
+GIT_REMOTE = "remote"
+GIT_FETCH = "fetch"
+GIT_CHECKOUT = "checkout"
+GIT_REV_PARSE = "rev-parse"
+GIT_LS_TREE = "ls-tree"
+ORIGIN_REMOTE = "origin"
+OPTION_PREFIX = "-"
+#: The commands the scripted git hands to real local git in the clone: they write only the clone's ``.git/``.
+LOCAL_GIT_SUBCOMMANDS = (GIT_INIT, GIT_REMOTE)
+REMOTE_ADD = (GIT_REMOTE, "add", ORIGIN_REMOTE)
+FETCH_ARGUMENTS = (GIT_FETCH, ORIGIN_REMOTE)
+CHECKOUT_ARGUMENTS = (GIT_CHECKOUT, "-B", SEED_BRANCH, "--track", f"{ORIGIN_REMOTE}/{SEED_BRANCH}")
+HEAD = "HEAD"
+NAME_ONLY_OPTION = "--name-only"
+#: The options of the seed's listing, ``git ls-tree [-r] --name-only HEAD`` (#10's ``fetch_seed``).
+LS_TREE_OPTIONS = ("-r", NAME_ONLY_OPTION)
+SEED_SHA = "5eed" * 10
+SEED_TREE_SHA = "7ee5" * 10
+#: ``rev-parse``'s answer per revision D9 step 7 asks for.
+SEED_REVISIONS = {HEAD: SEED_SHA, "HEAD^{tree}": SEED_TREE_SHA}
+SEED_FILE = "README.md"
+SEED_TREE = (SEED_FILE,)
+#: AC-1.3: a seed whose root holds GitLab's default CI configuration file, which a push would run.
+GITLAB_CI_SEED_TREE = (SEED_FILE, ".gitlab-ci.yml")
+#: D4: a run id as #10's ``new_run_id`` makes it.
+RUN_ID_PATTERN = re.compile(r"[0-9]{14}-[0-9a-f]{32}")
+
+# AC-1.1: a provision's timeline, as the steps of D9 it shows.
+WRAPPER_RUNNER = "wrapper"
+GIT_RUNNER = "git"
+BODY_RUNNER = "body"
+STEP_INIT = "git init"
+STEP_REMOTE = "git remote add origin <this run's URL>"
+STEP_LISTING = "the listing"
+STEP_GROUP_READ = "the group read"
+STEP_CREATION = "the creation of this run's path in the group, private, seeded, without Auto DevOps"
+STEP_FETCH = "the authenticated git fetch origin"
+STEP_CHECKOUT = "git checkout -B <default branch> --track origin/<default branch>"
+STEP_READ = "the seed's reads"
+STEP_BODY = "the body"
+STEP_DELETION = "the deletion of this run's project"
+CREATED_STEPS = (STEP_INIT, STEP_REMOTE, STEP_LISTING, STEP_GROUP_READ, STEP_CREATION)
+PREPARED_STEPS = (*CREATED_STEPS, STEP_FETCH, STEP_CHECKOUT, STEP_READ)
+
+# AC-6.2: the bad test credential files, one per refusal of D8 "Reading".
+MISSING_CREDENTIAL = "missing"
+EMPTY_CREDENTIAL = "empty"
+LONE_LINE_END_CREDENTIAL = "a-lone-line-end"
+PLACEHOLDER_CREDENTIAL = "the-placeholder"
+SPACE_CREDENTIAL = "a-token-holding-a-space"
+NON_ASCII_CREDENTIAL = "a-non-ascii-character"
+TWO_LINES_CREDENTIAL = "two-lines"
+BAD_CREDENTIAL_KINDS = (
+    MISSING_CREDENTIAL,
+    EMPTY_CREDENTIAL,
+    LONE_LINE_END_CREDENTIAL,
+    PLACEHOLDER_CREDENTIAL,
+    SPACE_CREDENTIAL,
+    NON_ASCII_CREDENTIAL,
+    TWO_LINES_CREDENTIAL,
+)
+#: AC-6.2: a text starting with ``PASTE_``, the product's placeholder marker.
+PLACEHOLDER_TOKEN = "PASTE_TOKEN"
+NON_ASCII_CHARACTER = "é"
+SPACE = " "
+#: D8 "Reading": the final line ends a token is read without.
+ACCEPTED_LINE_ENDS = (WINDOWS_LINE_END, LINE_END)
+
+# UB-2: the calls a read or a write of a file goes through, replaced by a recorder during a provision.
+OPEN_TARGETS: Tuple[Tuple[ModuleType, str], ...] = ((builtins, "open"), (io, "open"), (os, "open"))
+
+
+class _BodyFailure(Exception):
+    """What a test body raises, to show that the teardown runs whatever the body does (AC-1.4)."""
+
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(message)
+        self.details = details
+
+
+@dataclass(frozen=True)
+class _CloneView:
+    """What a wrapper invocation in the clone meets: the ``hostname`` and ``project_id`` of the clone's
+    ``config/gitlab.json``, read into those two values alone, and the ``origin`` its ``.git/config`` names; ``None``
+    where a file is absent or names none."""
+
+    hostname: Any
+    project_id: Any
+    origin: Optional[str]
+
+
+@dataclass(frozen=True)
+class _Event:
+    """One entry of a provision's timeline: a wrapper or git invocation, or the body's entry. At a wrapper invocation,
+    ``view`` is what the clone held then (``_CloneView``)."""
+
+    runner: str
+    arguments: Tuple[str, ...] = ()
+    authenticated: bool = False
+    view: Optional[_CloneView] = None
+
+
+def _origin_url(*, path: str) -> str:
+    """D3's origin URL of the test group's project ``path``."""
+    return ORIGIN_URL.format(full_path=_full_path(namespace=TEST_GROUP, path=path))
+
+
+def _creation_pairs(*, arguments: Sequence[str]) -> List[Tuple[str, str]]:
+    """The ``(option, attribute)`` pairs after a creation's ``call tenant-scale#create-a-project``, sorted; a lone
+    trailing part is a pair with an empty attribute."""
+    rest = [str(part) for part in arguments[2:]]
+    if len(rest) % 2:
+        rest.append("")
+    return sorted(zip(rest[::2], rest[1::2]))
+
+
+def _expected_creation_pairs(*, path: str) -> List[Tuple[str, str]]:
+    """D9 step 6's ``-f name=<path> -f path=<path> -F namespace_id=<group id> -f visibility=private -F
+    initialize_with_readme=true -F auto_devops_enabled=false``, as sorted ``(option, attribute)`` pairs."""
+    return sorted([(RAW_FIELD_OPTION, NAME_FIELD + path), (RAW_FIELD_OPTION, PATH_FIELD + path), *CREATION_SETTINGS])
+
+
+def _is_creation(*, arguments: Sequence[str], path: str) -> bool:
+    """Whether ``arguments`` is D9 step 6's creation of ``path`` in the group, holding exactly its attributes."""
+    return list(arguments[:2]) == [CALL_SUBCOMMAND, CREATE_OPERATION] and _creation_pairs(
+        arguments=arguments
+    ) == _expected_creation_pairs(path=path)
+
+
+def _requested_path(*, arguments: Sequence[str]) -> str:
+    """The project path a creation asks for with ``-f path=<path>``; a creation naming none fails the test."""
+    for option, value in zip(arguments, arguments[1:]):
+        if option == RAW_FIELD_OPTION and value.startswith(PATH_FIELD):
+            return value[len(PATH_FIELD) :]
+    raise AssertionError(f"the creation names no path with {RAW_FIELD_OPTION} {PATH_FIELD}<path>: {arguments}")
+
+
+def _created_item(*, path: str, visibility: str) -> Dict[str, Any]:
+    """The project the creation of ``path`` answers with, as GitLab answers it: ``CREATED_PROJECT_ID``, the test group
+    its namespace, ``visibility`` as given, ``SEED_BRANCH`` its default branch."""
+    return {
+        FIELD_ID: CREATED_PROJECT_ID,
+        FIELD_NAME: path,
+        FIELD_PATH: path,
+        FIELD_PATH_WITH_NAMESPACE: _full_path(namespace=TEST_GROUP, path=path),
+        FIELD_NAMESPACE: {
+            FIELD_ID: TEST_GROUP_ID,
+            FIELD_PATH: TEST_GROUP,
+            FIELD_FULL_PATH: TEST_GROUP,
+            FIELD_KIND: GROUP_KIND,
+        },
+        FIELD_VISIBILITY: visibility,
+        FIELD_DEFAULT_BRANCH: SEED_BRANCH,
+    }
+
+
+def _clone_config(*, clone: Path) -> Dict[str, Any]:
+    """The JSON object of the clone's ``config/gitlab.json``; empty while the file is absent or holds no JSON object.
+    It holds the token: a caller keeps only what it compares, never the mapping."""
+    config = clone / CLONE_CONFIG_FILE
+    if not config.is_file():
+        return {}
+    try:
+        loaded = json.loads(s=config.read_text(encoding=TEXT_ENCODING))
+    except ValueError:
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
+
+
+def _origin_of(*, clone: Path) -> Optional[str]:
+    """The ``origin`` URL the clone's ``.git/config`` names, read by local git from that file alone; ``None`` while the
+    file is absent or names none."""
+    config = clone / GIT_CONFIG_FILE
+    if not config.is_file():
+        return None
+    result = subprocess.run(
+        args=[GIT, "config", "--file", str(config), "--get", ORIGIN_URL_KEY],
+        capture_output=True,
+        text=True,
+        encoding=TEXT_ENCODING,
+        timeout=GIT_TIMEOUT_SECONDS,
+        check=False,
+    )
+    return result.stdout.strip() if result.returncode == GIT_EXIT_OK else None
+
+
+def _clone_view(*, clone: Path) -> _CloneView:
+    """What a wrapper invocation in ``clone`` meets now (``_CloneView``)."""
+    config = _clone_config(clone=clone)
+    return _CloneView(
+        hostname=config.get(FIELD_HOSTNAME), project_id=config.get(FIELD_PROJECT_ID), origin=_origin_of(clone=clone)
+    )
+
+
+def _revisions(*, arguments: Sequence[str]) -> _Answer:
+    """``rev-parse``'s answer: one line per revision asked for, options aside; a revision D9 step 7 does not ask for
+    fails the test."""
+    asked = [argument for argument in arguments[1:] if not argument.startswith(OPTION_PREFIX)]
+    unknown = [revision for revision in asked if revision not in SEED_REVISIONS]
+    assert asked and not unknown, f"the provision asked rev-parse for revisions the test scripted none for: {arguments}"
+    return _Answer(returncode=GIT_EXIT_OK, stdout="".join(SEED_REVISIONS[revision] + LINE_END for revision in asked))
+
+
+def _is_seed_listing(*, arguments: Sequence[str]) -> bool:
+    """Whether ``arguments`` is the seed's listing, ``ls-tree``, ``--name-only`` and at most ``-r``, then ``HEAD``."""
+    options = list(arguments[1:-1])
+    return (
+        list(arguments[:1]) == [GIT_LS_TREE]
+        and list(arguments[-1:]) == [HEAD]
+        and NAME_ONLY_OPTION in options
+        and set(options) <= set(LS_TREE_OPTIONS)
+    )
+
+
+def _local_git_step(*, event: _Event) -> Optional[str]:
+    """The step of an unauthenticated git invocation that names no project: ``git init`` or one of the seed's reads;
+    ``None`` for any other event."""
+    if event.runner != GIT_RUNNER or event.authenticated:
+        return None
+    if event.arguments[:1] == (GIT_INIT,):
+        return STEP_INIT
+    if event.arguments[:1] == (GIT_REV_PARSE,) or _is_seed_listing(arguments=event.arguments):
+        return STEP_READ
+    return None
+
+
+class _ProvisionScript:
+    """The forge and the git one provision meets, scripted, noting every invocation and the body's entry in one
+    ``timeline``, in order.
+
+    The wrapper answers the listing with no project, the group read with the test group and ``TEST_GROUP_ID``, the
+    creation with the project it names, ``visibility`` as given (``_created_item``), or with ``creation`` when one is
+    given, and the deletion with ``deletion``; at each invocation it notes what the clone holds (``_CloneView``). The
+    git hands ``init`` and ``remote`` to real local git in the clone, which must exist by then, and answers ``fetch``
+    and ``checkout`` with success, ``rev-parse`` from ``SEED_REVISIONS`` and the seed's listing with ``seed_tree``,
+    starting no process. Any other invocation fails the test.
+    """
+
+    def __init__(
+        self,
+        *,
+        clone: Path,
+        seed_tree: Sequence[str],
+        creation: Optional[_Answer],
+        deletion: _Answer,
+        visibility: str = PRIVATE_VISIBILITY,
+    ) -> None:
+        self.clone = clone
+        self.seed_tree = tuple(seed_tree)
+        self.creation = creation
+        self.deletion = deletion
+        self.visibility = visibility
+        self.timeline: List[_Event] = []
+        #: The project path the creation asked for, once it was sent.
+        self.path: Optional[str] = None
+
+    def wrapper(self, *, arguments: List[str]) -> _Answer:
+        """The script of the provision's ``RecordingWrapperRunner``."""
+        self.timeline.append(
+            _Event(runner=WRAPPER_RUNNER, arguments=tuple(arguments), view=_clone_view(clone=self.clone))
+        )
+        if arguments == list(LISTING_ARGUMENTS):
+            return EMPTY_LISTING
+        if arguments == list(GROUP_READ_ARGUMENTS):
+            return GROUP_ANSWER
+        if arguments[:2] == [CALL_SUBCOMMAND, CREATE_OPERATION]:
+            self.path = _requested_path(arguments=arguments)
+            if self.creation is not None:
+                return self.creation
+            created = _created_item(path=self.path, visibility=self.visibility)
+            return _Answer(returncode=0, stdout=json.dumps(obj=created, indent=2) + LINE_END)
+        if arguments[:2] == [CALL_SUBCOMMAND, DELETE_OPERATION]:
+            return self.deletion
+        raise AssertionError(f"the provision sent an invocation the test scripted no answer for: {arguments}")
+
+    def git(self, *, arguments: List[str], authenticated: bool) -> _Answer:
+        """The script of the provision's ``ScriptedGitRunner``."""
+        self.timeline.append(_Event(runner=GIT_RUNNER, arguments=tuple(arguments), authenticated=authenticated))
+        subcommand = arguments[0] if arguments else ""
+        if subcommand in LOCAL_GIT_SUBCOMMANDS:
+            assert self.clone.is_dir(), f"`git {' '.join(arguments)}` ran before the clone {self.clone} existed"
+            completed = _git(arguments=arguments, cwd=self.clone)
+            return _Answer(returncode=completed.returncode, stdout=completed.stdout, stderr=completed.stderr)
+        if subcommand in (GIT_FETCH, GIT_CHECKOUT):
+            return SUCCESS
+        if subcommand == GIT_REV_PARSE:
+            return _revisions(arguments=arguments)
+        if _is_seed_listing(arguments=arguments):
+            return _Answer(returncode=GIT_EXIT_OK, stdout="".join(path + LINE_END for path in self.seed_tree))
+        raise AssertionError(f"the provision ran a git command the test scripted no answer for: {arguments}")
+
+    def enter(self) -> None:
+        """Notes the body's entry."""
+        self.timeline.append(_Event(runner=BODY_RUNNER))
+
+    def steps(self) -> List[str]:
+        """The timeline as D9's steps, consecutive seed reads as one; an invocation of no step is named as sent."""
+        steps: List[str] = []
+        for event in self.timeline:
+            step = self._step(event=event)
+            if step != STEP_READ or steps[-1:] != [STEP_READ]:
+                steps.append(step)
+        return steps
+
+    def _step(self, *, event: _Event) -> str:
+        if event.runner == BODY_RUNNER:
+            return STEP_BODY
+        local = _local_git_step(event=event)
+        if local is not None:
+            return local
+        path = self.path or ""
+        if event.runner == WRAPPER_RUNNER and _is_creation(arguments=event.arguments, path=path):
+            return STEP_CREATION
+        steps = {
+            (GIT_RUNNER, (*REMOTE_ADD, _origin_url(path=path)), False): STEP_REMOTE,
+            (WRAPPER_RUNNER, LISTING_ARGUMENTS, False): STEP_LISTING,
+            (WRAPPER_RUNNER, GROUP_READ_ARGUMENTS, False): STEP_GROUP_READ,
+            (GIT_RUNNER, FETCH_ARGUMENTS, True): STEP_FETCH,
+            (GIT_RUNNER, CHECKOUT_ARGUMENTS, False): STEP_CHECKOUT,
+            (WRAPPER_RUNNER, tuple(_deletion(namespace=TEST_GROUP, path=path)), False): STEP_DELETION,
+        }
+        unexpected = (
+            f"an unexpected {event.runner} invocation {list(event.arguments)} (authenticated: {event.authenticated})"
+        )
+        return steps.get((event.runner, event.arguments, event.authenticated), unexpected)
+
+
+def _scripted_git_runner(*, forge: ModuleType, script: Callable[..., _Answer]) -> Any:
+    """A ``ScriptedGitRunner``, the loaded module's ``GitRunner`` double: it records each argv with its
+    ``authenticated`` flag in ``recorded`` and answers it with ``script(arguments=<the argv>, authenticated=<the
+    flag>)`` as an ``Invocation``; it starts a process only where ``script`` does."""
+    _require(module=forge, names=GIT_RUNNER_SYMBOLS)
+    git_runner: Any = forge.GitRunner
+
+    class ScriptedGitRunner(git_runner):
+        """Records each git argv and answers it from the test's script."""
+
+        def __init__(self) -> None:
+            self.recorded: List[Tuple[List[str], bool]] = []
+
+        def run(self, *, arguments: Sequence[str], authenticated: bool = False) -> Any:
+            argv = [str(part) for part in arguments]
+            self.recorded.append((argv, authenticated))
+            answer = script(arguments=argv, authenticated=authenticated)
+            return forge.Invocation(returncode=answer.returncode, stdout=answer.stdout, stderr=answer.stderr)
+
+    return ScriptedGitRunner()
+
+
+def _refuse_every_git_command(*, arguments: List[str], authenticated: bool) -> _Answer:
+    """A script for a git runner that may run nothing: any command fails the test."""
+    raise AssertionError(f"git was run where nothing may run: {arguments} (authenticated: {authenticated})")
+
+
+@dataclass(frozen=True)
+class _Provisioning:
+    """A scripted provision's inputs: under ``root``, a ``git init`` checkout holding the test credential file with
+    ``token``, the GitHub suite's test credential file with another token, and a sentinel ``config/gitlab.json``
+    (UB-2); the workspace; and the two doubles, which note in ``script``'s timeline."""
+
+    root: Path
+    checkout: Path
+    workspace: Path
+    #: Kept out of the ``repr``, so that pytest's introspection of a failed assertion never prints the token.
+    token: str = field(repr=False)
+    test_credential: Path
+    sentinel: Path
+    script: _ProvisionScript
+    wrapper: Any
+    git: Any
+
+    @property
+    def clone(self) -> Path:
+        """D9 step 3's ``<workspace>/clone``."""
+        return self.workspace / CLONE_NAME
+
+
+def _write_sentinel(*, checkout: Path) -> Path:
+    """UB-2: the checkout's own ``config/gitlab.json``, naming another project with another token and a
+    ``token_type``; returns its path."""
+    sentinel = checkout / CLONE_CONFIG_FILE
+    sentinel.parent.mkdir(parents=True)
+    content = {
+        FIELD_HOSTNAME: GITLAB_HOSTNAME,
+        FIELD_PROJECT_ID: _full_path(namespace=OTHER_NAMESPACE, path=UNPREFIXED_PATH),
+        FIELD_TOKEN: _new_token(label=SENTINEL_LABEL),
+        FIELD_TOKEN_TYPE: SENTINEL_TOKEN_TYPE,
+    }
+    sentinel.write_bytes(data=(json.dumps(obj=content, indent=2) + LINE_END).encode(encoding=TEXT_ENCODING))
+    return sentinel
+
+
+def _provisioning(
+    *,
+    forge: ModuleType,
+    tmp_path: Path,
+    seed_tree: Sequence[str] = SEED_TREE,
+    creation: Optional[_Answer] = None,
+    deletion: _Answer = DELETION_ACCEPTED,
+    visibility: str = PRIVATE_VISIBILITY,
+) -> _Provisioning:
+    """A scripted provision's tree under ``tmp_path`` and its two doubles, sharing one ``_ProvisionScript``."""
+    checkout = tmp_path / CHECKOUT_NAME
+    _init_checkout(path=checkout)
+    token = _new_token(label="test")
+    test_credential = _write_credential(directory=checkout, name=TEST_CREDENTIAL_NAME, token=token)
+    _write_credential(directory=checkout, name=GITHUB_TEST_CREDENTIAL_NAME, token=_new_token(label=DECOY_LABEL))
+    sentinel = _write_sentinel(checkout=checkout)
+    workspace = tmp_path / WORKSPACE_NAME
+    workspace.mkdir()
+    script = _ProvisionScript(
+        clone=workspace / CLONE_NAME,
+        seed_tree=seed_tree,
+        creation=creation,
+        deletion=deletion,
+        visibility=visibility,
+    )
+    return _Provisioning(
+        root=tmp_path,
+        checkout=checkout,
+        workspace=workspace,
+        token=token,
+        test_credential=test_credential,
+        sentinel=sentinel,
+        script=script,
+        wrapper=_recording_runner(forge=forge, script=script.wrapper),
+        git=_scripted_git_runner(forge=forge, script=script.git),
+    )
+
+
+@dataclass(frozen=True)
+class _Entered:
+    """What a provision's body found on entry: the yielded project, the moment, whether the clone exists, the keys of
+    the clone's ``config/gitlab.json`` and its ``hostname`` and ``project_id``, the lines of its ``.git/info/exclude``,
+    and the files of the test's tree that held the token, the sentinel aside (its content is compared on its own).
+    Every comparison with the token is kept as a bool, so that no failed assertion prints a file's bytes."""
+
+    project: Any
+    representation_holds_the_token: bool
+    at: datetime
+    clone_is_directory: bool
+    config_keys: Tuple[str, ...]
+    config_target: Tuple[Any, Any]
+    config_token_is_the_test_token: bool
+    git_token_file_is_the_test_token: bool
+    git_config_holds_the_token: bool
+    exclude_lines: Tuple[str, ...]
+    holders: Tuple[str, ...]
+
+
+def _holders(*, setup: _Provisioning) -> List[str]:
+    """The files under the test's tree holding the token, relative and in forward-slash form, the sentinel aside."""
+    token = setup.token.encode(encoding=TEXT_ENCODING)
+    return sorted(
+        path.relative_to(setup.root).as_posix()
+        for path in setup.root.rglob(pattern="*")
+        if path.is_file() and path != setup.sentinel and token in path.read_bytes()
+    )
+
+
+def _text_of(*, path: Path) -> str:
+    """The text of ``path``; empty while it is no file."""
+    return path.read_text(encoding=TEXT_ENCODING) if path.is_file() else ""
+
+
+def _bytes_of(*, path: Path) -> Optional[bytes]:
+    """The bytes of ``path``; ``None`` while it is no file."""
+    return path.read_bytes() if path.is_file() else None
+
+
+def _enter(*, project: Any, setup: _Provisioning) -> _Entered:
+    """What the body of a provision over ``setup`` finds on entry (``_Entered``)."""
+    clone = setup.clone
+    config = _clone_config(clone=clone)
+    exclude = _text_of(path=clone / GIT_EXCLUDE_FILE)
+    git_token = _bytes_of(path=clone / CLONE_GIT_TOKEN_FILE)
+    return _Entered(
+        project=project,
+        representation_holds_the_token=setup.token in repr(project),
+        at=datetime.now(tz=timezone.utc),
+        clone_is_directory=clone.is_dir(),
+        config_keys=tuple(sorted(config)),
+        config_target=(config.get(FIELD_HOSTNAME), config.get(FIELD_PROJECT_ID)),
+        config_token_is_the_test_token=config.get(FIELD_TOKEN) == setup.token,
+        git_token_file_is_the_test_token=git_token == (setup.token + LINE_END).encode(encoding=TEXT_ENCODING),
+        git_config_holds_the_token=setup.token in _text_of(path=clone / GIT_CONFIG_FILE),
+        exclude_lines=tuple(line.strip() for line in exclude.splitlines()),
+        holders=tuple(_holders(setup=setup)),
+    )
+
+
+def _provide(*, forge: ModuleType, setup: _Provisioning, entered: List[_Entered], body_raises: bool) -> None:
+    """One ``provision`` over ``setup``. Its body notes what it found in ``entered`` and its entry in the timeline, then
+    returns or raises ``_BodyFailure``; it asserts nothing, so a teardown error cannot hide a failed assertion."""
+    with forge.provision(
+        checkout=setup.checkout, workspace=setup.workspace, wrapper=setup.wrapper, git=setup.git
+    ) as project:
+        entered.append(_enter(project=project, setup=setup))
+        setup.script.enter()
+        if body_raises:
+            raise _BodyFailure(message="the test body raised")
+
+
+@dataclass(frozen=True)
+class _ProvisionCase:
+    """One way a provision ends: the seed's tree, whether the body raises, the deletion's answer, whether the body is
+    entered, and the error of ``ephemeral.py`` the context then raises, by name (``None``: the body's own, or none)."""
+
+    seed_tree: Tuple[str, ...]
+    body_raises: bool
+    deletion: _Answer
+    yields: bool
+    error: Optional[str] = None
+
+
+PROVISION_CASES = (
+    pytest.param(
+        _ProvisionCase(seed_tree=SEED_TREE, body_raises=False, deletion=DELETION_ACCEPTED, yields=True),
+        id="the-body-returns",
+    ),
+    pytest.param(
+        _ProvisionCase(seed_tree=SEED_TREE, body_raises=True, deletion=DELETION_ACCEPTED, yields=True),
+        id="the-body-raises",
+    ),
+    pytest.param(
+        _ProvisionCase(
+            seed_tree=GITLAB_CI_SEED_TREE,
+            body_raises=False,
+            deletion=DELETION_ACCEPTED,
+            yields=False,
+            error="ForgeSetupError",
+        ),
+        id="a-gitlab-ci-file-in-the-seed",
+    ),
+    pytest.param(
+        _ProvisionCase(
+            seed_tree=SEED_TREE, body_raises=False, deletion=DELETION_FAILURE, yields=True, error="ForgeCommandError"
+        ),
+        id="the-deletion-fails",
+    ),
+)
+
+
+def _expected_error(*, forge: ModuleType, case: _ProvisionCase) -> Any:
+    """The exception the context raises in ``case``: the body's ``_BodyFailure``, the named error of ``ephemeral.py``,
+    or ``None``."""
+    if case.body_raises:
+        return _BodyFailure
+    return getattr(forge, case.error) if case.error is not None else None
+
+
+def _deletions(*, setup: _Provisioning) -> List[List[str]]:
+    """The ``call tenant-scale#delete-a-project`` invocations the provision's wrapper recorded."""
+    return [argv for argv in setup.wrapper.recorded if argv[:2] == [CALL_SUBCOMMAND, DELETE_OPERATION]]
+
+
+def _creations(*, setup: _Provisioning) -> List[List[str]]:
+    """The ``call tenant-scale#create-a-project`` invocations the provision's wrapper recorded."""
+    return [argv for argv in setup.wrapper.recorded if argv[:2] == [CALL_SUBCOMMAND, CREATE_OPERATION]]
+
+
+def _assert_yielded(*, forge: ModuleType, entered: _Entered, setup: _Provisioning, started: datetime) -> None:
+    """AC-1.1, AC-1.3 (D9): the yielded ``EphemeralProject`` names this run's project as the creation answered it, the
+    seed the git reads answered, the time of the sweep, the existing clone, and the runners it was given."""
+    project = entered.project
+    assert isinstance(project, forge.EphemeralProject), f"provision yielded {type(project)}, no EphemeralProject"
+    path = str(setup.script.path)
+    expected = (TEST_GROUP, path, _full_path(namespace=TEST_GROUP, path=path), CREATED_PROJECT_ID, SEED_BRANCH)
+    named = (project.group, project.path, project.full_path, project.project_id, project.default_branch)
+    assert named == expected, f"the yielded project is {named}, not the creation's answer {expected}"
+    assert project.path == EPHEMERAL_PREFIX + project.run_id, f"the run id {project.run_id!r} is not the path's"
+    assert (project.seed_sha, project.seed_tree_sha) == (SEED_SHA, SEED_TREE_SHA), (
+        f"the yielded seed is {project.seed_sha} {project.seed_tree_sha}, not the git reads' answer"
+    )
+    swept_at = project.swept_at
+    assert isinstance(swept_at, datetime) and swept_at.utcoffset() == timedelta(0), f"swept_at is {swept_at!r}"
+    assert started.replace(microsecond=0) <= swept_at <= entered.at, f"swept_at {swept_at} is not this run's sweep"
+    assert entered.clone_is_directory and Path(project.clone).resolve() == setup.clone.resolve(), (
+        f"the yielded clone is {project.clone}, not the existing {setup.clone}"
+    )
+    assert project.wrapper is setup.wrapper and project.git is setup.git, "the yielded runners are not the given"
+
+
+@pytest.mark.parametrize(argnames="case", argvalues=PROVISION_CASES)
+def test_provisioning_runs_in_order(tmp_path: Path, case: _ProvisionCase) -> None:
+    """AC-1.1, AC-1.3, AC-1.4 (D3 "The clone", D9): one provision runs ``git init`` in the created
+    ``<workspace>/clone`` and adds D3's origin, lists the test group, reads the group, sends exactly one creation of
+    ``sff-test-<run id>`` holding ``-F namespace_id=<the group's id>``, ``-f visibility=private``, ``-F
+    initialize_with_readme=true`` and ``-F auto_devops_enabled=false``, fetches authenticated and checks the answered
+    default branch out, then reads the seed; at every wrapper invocation the clone's ``config/gitlab.json`` names
+    gitlab.com and this run's project and its origin is this run's project, so every invocation in the clone targets
+    it. Whether the body returns or raises, after the context exactly one deletion of this run's project is recorded
+    and the workspace no longer exists; a seed holding ``.gitlab-ci.yml`` raises ``ForgeSetupError`` before the yield
+    and the deletion is still sent; a deletion answering exit 1 raises ``ForgeCommandError`` and the workspace is still
+    removed."""
+    forge = _ephemeral()
+    _require(module=forge, names=PROVISION_SYMBOLS)
+    setup = _provisioning(forge=forge, tmp_path=tmp_path, seed_tree=case.seed_tree, deletion=case.deletion)
+    expected_error = _expected_error(forge=forge, case=case)
+    entered: List[_Entered] = []
+    started = datetime.now(tz=timezone.utc)
+
+    if expected_error is None:
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+    else:
+        with pytest.raises(expected_exception=expected_error):
+            _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+
+    expected_steps = [*PREPARED_STEPS, *([STEP_BODY] if case.yields else []), STEP_DELETION]
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+    path = str(setup.script.path)
+    assert path.startswith(EPHEMERAL_PREFIX) and RUN_ID_PATTERN.fullmatch(string=path[len(EPHEMERAL_PREFIX) :]), (
+        f"the creation asked for {path!r}, not sff-test-<run id> (D4)"
+    )
+    creations = _creations(setup=setup)
+    expected_pairs = _expected_creation_pairs(path=path)
+    assert [_creation_pairs(arguments=argv) for argv in creations] == [expected_pairs], (
+        f"the provision sent the creations {creations}, not one holding exactly {expected_pairs}"
+    )
+    expected_view = _CloneView(
+        hostname=GITLAB_HOSTNAME, project_id=_full_path(namespace=TEST_GROUP, path=path), origin=_origin_url(path=path)
+    )
+    views = [event.view for event in setup.script.timeline if event.runner == WRAPPER_RUNNER]
+    assert views and all(view == expected_view for view in views), (
+        f"the wrapper ran where the clone held {views}, not {expected_view}"
+    )
+    assert _deletions(setup=setup) == [_deletion(namespace=TEST_GROUP, path=path)], (
+        f"the provision sent the deletions {_deletions(setup=setup)}"
+    )
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+    assert len(entered) == (1 if case.yields else 0), f"the body was entered {len(entered)} times"
+    if case.yields:
+        _assert_yielded(forge=forge, entered=entered[0], setup=setup, started=started)
+
+
+@pytest.mark.parametrize(
+    argnames="visibility", argvalues=(pytest.param("internal", id="internal"), pytest.param("public", id="public"))
+)
+def test_a_project_created_other_than_private_is_refused_and_deleted(tmp_path: Path, visibility: str) -> None:
+    """AC-1.1, AC-1.4 (D9 steps 6 and 8): a creation answered with ``visibility`` ``internal`` or ``public`` makes
+    ``provision`` raise ``ForgeSetupError`` before the seed is fetched and without entering the body; the teardown still
+    sends exactly one ``call tenant-scale#delete-a-project`` of the project the creation answered with, and the
+    workspace no longer exists."""
+    forge = _ephemeral()
+    _require(module=forge, names=PROVISION_SYMBOLS)
+    setup = _provisioning(forge=forge, tmp_path=tmp_path, visibility=visibility)
+    entered: List[_Entered] = []
+
+    with pytest.raises(expected_exception=forge.ForgeSetupError):
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+
+    expected_steps = [*CREATED_STEPS, STEP_DELETION]
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+    path = str(setup.script.path)
+    assert _deletions(setup=setup) == [_deletion(namespace=TEST_GROUP, path=path)], (
+        f"the provision of a project created {visibility} sent the deletions {_deletions(setup=setup)}"
+    )
+    assert entered == [], f"the provision yielded a project created {visibility}"
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+
+
+def test_no_creation_no_deletion(tmp_path: Path) -> None:
+    """AC-2.3 (D9): ``delete_ephemeral`` given ``created=None`` sends nothing; a provision whose creation answers exit
+    1 raises ``ForgeCommandError`` without entering the body, sends no ``call tenant-scale#delete-a-project``, and
+    removes the workspace."""
+    forge = _ephemeral()
+    _require(module=forge, names=NO_CREATION_SYMBOLS)
+    untouched = _recording_runner(forge=forge, script=_refuse_every_invocation)
+    assert forge.delete_ephemeral(wrapper=untouched, created=None, run_id=_run_id()) is None
+    assert untouched.recorded == [], f"the teardown of no creation sent {untouched.recorded}"
+
+    setup = _provisioning(forge=forge, tmp_path=tmp_path, creation=CREATION_FAILURE)
+    entered: List[_Entered] = []
+    with pytest.raises(expected_exception=forge.ForgeCommandError):
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+
+    expected_steps = list(CREATED_STEPS)
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+    assert _deletions(setup=setup) == [], f"the provision whose creation failed sent {_deletions(setup=setup)}"
+    assert entered == [], "the provision yielded though its creation failed"
+    assert not setup.workspace.exists(), f"the workspace {setup.workspace} outlived the provision"
+
+
+@dataclass(frozen=True)
+class _BadCredential:
+    """A bad test credential file: its bytes (``None``: no file) and the parts of its text a refusal must not hold."""
+
+    data: Optional[bytes]
+    parts: Tuple[str, ...]
+
+
+def _bad_credential(*, kind: str) -> _BadCredential:
+    """The bad test credential file of ``kind``, each token in it fresh."""
+    if kind == MISSING_CREDENTIAL:
+        return _BadCredential(data=None, parts=())
+    first = _new_token(label="first")
+    second = _new_token(label="second")
+    texts: Dict[str, Tuple[str, Tuple[str, ...]]] = {
+        EMPTY_CREDENTIAL: ("", ()),
+        LONE_LINE_END_CREDENTIAL: (LINE_END, ()),
+        PLACEHOLDER_CREDENTIAL: (PLACEHOLDER_TOKEN + LINE_END, (PLACEHOLDER_TOKEN,)),
+        SPACE_CREDENTIAL: (first + SPACE + second + LINE_END, (first, second)),
+        NON_ASCII_CREDENTIAL: (first + NON_ASCII_CHARACTER + second + LINE_END, (first, second)),
+        TWO_LINES_CREDENTIAL: (first + LINE_END + second + LINE_END, (first, second)),
+    }
+    text, parts = texts[kind]
+    return _BadCredential(data=text.encode(encoding=TEXT_ENCODING), parts=parts)
+
+
+def _assert_a_final_line_end_is_read_away(*, forge: ModuleType, directory: Path) -> None:
+    """AC-6.2 (D8 "Reading"): ``read_test_token`` of a test credential file holding a token and a final ``\\r\\n``, or
+    a final ``\\n``, answers the token alone."""
+    credential = directory / TEST_CREDENTIAL_FILE
+    credential.parent.mkdir(parents=True)
+    for line_end in ACCEPTED_LINE_ENDS:
+        token = _new_token(label="accepted")
+        credential.write_bytes(data=(token + line_end).encode(encoding=TEXT_ENCODING))
+        # Compared into a bool first, so that no assertion prints the token.
+        read_the_token = forge.read_test_token(path=credential) == token
+        assert read_the_token, f"read_test_token did not answer the token of a file ending {line_end!r}"
+
+
+@pytest.mark.parametrize(argnames="kind", argvalues=BAD_CREDENTIAL_KINDS)
+def test_a_bad_test_credential_fails_before_any_request(tmp_path: Path, kind: str) -> None:
+    """AC-6.2 (D8, D9 step 2): a test credential file ``credentials/gitlab-sff-testing-pat.txt`` that is missing,
+    empty, a lone line end, ``PASTE_TOKEN``, a token holding a space, one holding a non-ASCII character, or two lines
+    makes ``provision`` raise ``ForgeSetupError`` naming the file and none of its text, before any wrapper or git
+    invocation and without entering the body, the GitHub suite's valid test credential file beside it passed over; the
+    workspace no longer exists. A token with a final ``\\r\\n`` (or ``\\n``) is read as the token alone."""
+    forge = _ephemeral()
+    _require(module=forge, names=READING_SYMBOLS)
+    checkout = tmp_path / CHECKOUT_NAME
+    _init_checkout(path=checkout)
+    _write_credential(directory=checkout, name=GITHUB_TEST_CREDENTIAL_NAME, token=_new_token(label=DECOY_LABEL))
+    credential = checkout / TEST_CREDENTIAL_FILE
+    bad = _bad_credential(kind=kind)
+    if bad.data is not None:
+        credential.write_bytes(data=bad.data)
+    workspace = tmp_path / WORKSPACE_NAME
+    workspace.mkdir()
+    wrapper = _recording_runner(forge=forge, script=_refuse_every_invocation)
+    git = _scripted_git_runner(forge=forge, script=_refuse_every_git_command)
+    yielded: List[Any] = []
+
+    with pytest.raises(expected_exception=forge.ForgeSetupError) as refused:
+        with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+            yielded.append(project)
+
+    message = str(refused.value)
+    assert _names_one_of(message=message, paths=(credential,)), f"the refusal does not name {credential}: {message}"
+    quotes_the_text = any(part in message for part in bad.parts)
+    assert not quotes_the_text, "the refusal holds the test credential file's text"
+    assert (wrapper.recorded, git.recorded) == ([], []), f"the refused provision ran {wrapper.recorded} {git.recorded}"
+    assert yielded == [], f"the provision yielded with a {kind} test credential file"
+    assert not workspace.exists(), f"the workspace {workspace} outlived the refused provision"
+    _assert_a_final_line_end_is_read_away(forge=forge, directory=tmp_path / "accepted")
+
+
+def _noting_open(*, original: Callable[..., Any], opened: List[Path]) -> Callable[..., Any]:
+    """``original``, an ``open``, that first notes in ``opened`` the resolved path of a file it is given by name."""
+
+    def noting_open(file: Any, *positional: Any, **keywords: Any) -> Any:
+        if isinstance(file, (str, bytes, os.PathLike)):
+            opened.append(Path(os.fsdecode(filename=file)).resolve())
+        return original(file, *positional, **keywords)
+
+    return noting_open
+
+
+def _record_opens(*, patch: pytest.MonkeyPatch) -> List[Path]:
+    """Replaces ``open``, ``io.open`` and ``os.open`` through ``patch`` with ``_noting_open``; returns the list the
+    opened paths are noted in."""
+    opened: List[Path] = []
+    for target, attribute in OPEN_TARGETS:
+        original = getattr(target, attribute)
+        patch.setattr(target=target, name=attribute, value=_noting_open(original=original, opened=opened))
+    return opened
+
+
+def _assert_sentinel_untouched(*, setup: _Provisioning, content: bytes, opened: Sequence[Path], clone: Path) -> None:
+    """UB-2: the checkout's ``config/gitlab.json`` keeps ``content``, and of the files named ``config/gitlab.json``
+    the provision opened, none lies outside ``clone`` (resolved)."""
+    kept = setup.sentinel.read_bytes() == content
+    assert kept, "the checkout's config/gitlab.json changed"
+    sentinel = setup.sentinel.resolve()
+    assert sentinel not in opened, f"the provision opened the checkout's {sentinel}"
+    named = (CLONE_CONFIG_FILE.parent.name, CLONE_CONFIG_FILE.name)
+    outside = [path for path in opened if (path.parent.name, path.name) == named and clone not in path.parents]
+    assert outside == [], f"the provision opened a config/gitlab.json outside its clone: {outside}"
+
+
+def test_the_token_is_written_only_to_the_clone(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    """AC-6.3, UB-2 (D3, D8): in a scripted provision's body, the files of the test's tree holding the token are
+    exactly the test credential file, the clone's ``config/gitlab.json`` and its ``.git/sff-forge-token``; the clone's
+    ``config/gitlab.json`` holds exactly the keys ``hostname`` (gitlab.com), ``project_id`` (this run's project) and
+    ``token`` (the test token), its ``.git/sff-forge-token`` exactly the token and ``\\n``, its ``.git/info/exclude``
+    names ``config/``, and its ``.git/config`` does not hold the token; no recorded argv, no record captured at DEBUG
+    and no ``repr`` of the yielded ``EphemeralProject`` holds it; afterwards only the test credential file holds it.
+    The checkout's own ``config/gitlab.json``, holding another token and a ``token_type``, keeps its content, and no
+    ``config/gitlab.json`` outside the clone is opened."""
+    forge = _ephemeral()
+    _require(module=forge, names=WRITTEN_SYMBOLS)
+    assert Path(forge.CLONE_CONFIG_FILE) == CLONE_CONFIG_FILE, (
+        f"CLONE_CONFIG_FILE is {forge.CLONE_CONFIG_FILE!r}, not {CLONE_CONFIG_FILE.as_posix()} (D8)"
+    )
+    assert Path(forge.CLONE_GIT_TOKEN_FILE) == CLONE_GIT_TOKEN_FILE, (
+        f"CLONE_GIT_TOKEN_FILE is {forge.CLONE_GIT_TOKEN_FILE!r}, not {CLONE_GIT_TOKEN_FILE.as_posix()} (D3)"
+    )
+    setup = _provisioning(forge=forge, tmp_path=tmp_path)
+    sentinel_content = setup.sentinel.read_bytes()
+    clone = setup.workspace.resolve() / CLONE_NAME
+    entered: List[_Entered] = []
+    caplog.set_level(level=logging.DEBUG)
+
+    with pytest.MonkeyPatch.context() as patch:
+        opened = _record_opens(patch=patch)
+        _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+
+    assert len(entered) == 1, f"the body was entered {len(entered)} times"
+    found = entered[0]
+    test_credential = setup.test_credential.relative_to(setup.root).as_posix()
+    clone_files = [setup.clone / CLONE_CONFIG_FILE, setup.clone / CLONE_GIT_TOKEN_FILE]
+    clone_credentials = [path.relative_to(setup.root).as_posix() for path in clone_files]
+    assert list(found.holders) == sorted([test_credential, *clone_credentials]), f"the token was in {found.holders}"
+    assert found.config_keys == tuple(sorted(CLONE_CONFIG_KEYS)), (
+        f"the clone's config/gitlab.json holds the keys {found.config_keys}, not exactly {sorted(CLONE_CONFIG_KEYS)}"
+    )
+    target = (GITLAB_HOSTNAME, _full_path(namespace=TEST_GROUP, path=str(setup.script.path)))
+    assert found.config_target == target, f"the clone's config/gitlab.json names {found.config_target}, not {target}"
+    assert found.config_token_is_the_test_token, "the token of the clone's config/gitlab.json is not the test token"
+    assert found.git_token_file_is_the_test_token, (
+        "the clone's .git/sff-forge-token does not hold exactly the test token and a \\n"
+    )
+    assert not found.git_config_holds_the_token, "the clone's .git/config holds the token"
+    assert EXCLUDED_CONFIG in found.exclude_lines, f"the clone's .git/info/exclude names no {EXCLUDED_CONFIG}"
+    recorded = [*setup.wrapper.recorded, *(argv for argv, _ in setup.git.recorded)]
+    argv_holds_the_token = any(setup.token in part for argv in recorded for part in argv)
+    assert not argv_holds_the_token, "a recorded argv holds the token"
+    holding = [f"{record.name} {record.levelname}" for record in caplog.records if setup.token in record.getMessage()]
+    logged = setup.token in caplog.text
+    assert holding == [] and not logged, f"captured log records hold the token: {holding}"
+    assert not found.representation_holds_the_token, "the repr of the yielded EphemeralProject holds the token"
+    assert _holders(setup=setup) == [test_credential], "a file holding the token outlived the provision"
+    _assert_sentinel_untouched(setup=setup, content=sentinel_content, opened=opened, clone=clone)
+
+
+def test_the_clone_commits_no_credential(tmp_path: Path) -> None:
+    """AC-6.3 (D3, D8): ``prepare_clone`` with the real git runner, ``SubprocessGitRunner`` given ``CLONE_GIT_HELPER``
+    (local commands only: ``git init``, ``git remote add``), writes the clone's ``config/gitlab.json`` and
+    ``.git/sff-forge-token``; with a file added beside them, ``git add -A`` stages it and ``git ls-files`` names it
+    alone, neither credential file."""
+    forge = _ephemeral()
+    _require(module=forge, names=CLONE_SYMBOLS)
+    workspace = tmp_path / WORKSPACE_NAME
+    workspace.mkdir()
+    clone = workspace / CLONE_NAME
+    git = forge.SubprocessGitRunner(clone=clone, helper=forge.CLONE_GIT_HELPER)
+
+    forge.prepare_clone(clone=clone, token=_new_token(label="clone"), path=EPHEMERAL_PREFIX + _run_id(), git=git)
+
+    credential_files = [clone / forge.CLONE_CONFIG_FILE, clone / forge.CLONE_GIT_TOKEN_FILE]
+    unwritten = [path for path in credential_files if not path.is_file()]
+    assert unwritten == [], f"prepare_clone wrote no {unwritten}"
+    (clone / SEED_FILE).write_bytes(data=("seed" + LINE_END).encode(encoding=TEXT_ENCODING))
+    _git(arguments=["add", "-A"], cwd=clone)
+    listed = _git(arguments=["ls-files"], cwd=clone).stdout.splitlines()
+    assert listed == [SEED_FILE], f"after git add -A, git ls-files names {listed}, not {SEED_FILE} alone"
