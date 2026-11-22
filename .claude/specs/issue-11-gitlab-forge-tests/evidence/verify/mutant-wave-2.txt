@@ -1,0 +1,150 @@
+# mutant-wave-2 M2: wave 2 IMPL stubbed: 2.4 .github/workflows/ci.yml reverted to 83a1415 (no forge-gitlab job, report unchanged); 2.5 test/forge_gitlab/ephemeral.py part 1 mutated: refuse_distributed_run drops command=, ephemeral_full_path drops the group, CLONE_GIT_HELPER drops username=, TEST_CREDENTIAL_FILE is the GitHub file, SECRET_NAME is SFF_TEST_TOKEN
+# mutated lines:
+warning: in the working copy of 'test/forge_gitlab/ephemeral.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index f0c47ec..f6ad250 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -4,3 +4,2 @@
+-# The forge job (github.com) and the forge-gitlab job (gitlab.com) run beside them with ONE check command each
+-# (scripts/run_tests.py refuses fail-fast flags and lists every non-passing test); the report also fails unless
+-# both forge jobs succeeded.
++# The forge job runs beside them with ONE check command too (scripts/run_tests.py refuses fail-fast flags and
++# lists every non-passing test); the report also fails unless the forge job succeeded.
+@@ -60,14 +58,0 @@ jobs:
+-  forge-gitlab:
+-    runs-on: ubuntu-latest
+-    steps:
+-      - uses: actions/checkout@v4
+-        with: {persist-credentials: false}
+-      - uses: actions/setup-python@v5
+-        with: {python-version: '3.10'}
+-      - run: pip install -e ".[dev]"
+-      - name: Write the GitLab test credential file
+-        env:
+-          SFF_GITLAB_TEST_TOKEN: ${{ secrets.SFF_GITLAB_TEST_TOKEN }}
+-        run: python test/forge_gitlab/write_credential.py
+-      - run: python scripts/run_tests.py --workers 1 test/forge_gitlab
+-
+@@ -76 +61 @@ jobs:
+-    needs: [verify, forge, forge-gitlab]
++    needs: [verify, forge]
+@@ -90,2 +74,0 @@ jobs:
+-          echo "forge-gitlab job: ${{ needs.forge-gitlab.result }}" | tee -a verdict.txt
+-          if [ "${{ needs.forge-gitlab.result }}" != "success" ]; then status=1; fi
+diff --git a/test/forge_gitlab/ephemeral.py b/test/forge_gitlab/ephemeral.py
+index ed6dd81..34e1504 100644
+--- a/test/forge_gitlab/ephemeral.py
++++ b/test/forge_gitlab/ephemeral.py
+@@ -126,2 +126,2 @@ CREDENTIALS_DIRECTORY = Path("credentials")
+-TEST_CREDENTIAL_FILE = CREDENTIALS_DIRECTORY / "gitlab-sff-testing-pat.txt"
+-SECRET_NAME = "SFF_GITLAB_TEST_TOKEN"  # pragma: allowlist secret
++TEST_CREDENTIAL_FILE = CREDENTIALS_DIRECTORY / "github-sff-testing-pat.txt"
++SECRET_NAME = "SFF_TEST_TOKEN"  # pragma: allowlist secret
+@@ -267 +266,0 @@ CLONE_GIT_HELPER = functools.partial(
+-    username=GIT_USERNAME,
+@@ -276 +275 @@ def refuse_distributed_run(*, worker_id: str) -> None:
+-    _REUSED.refuse_distributed_run(worker_id=worker_id, command=GITLAB_FORGE_COMMAND)
++    _REUSED.refuse_distributed_run(worker_id=worker_id)
+@@ -303 +302 @@ def ephemeral_full_path(*, run_id: str) -> str:
+-    return TEST_GROUP + PROJECT_PATH_SEPARATOR + ephemeral_path(run_id=run_id)
++    return ephemeral_path(run_id=run_id)
+# run: the wave 2 paired tests (S 2.1, G 2.2, L 2.3) selected by -k from S, G and L
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_gitlab_support.py test/test_forge_gitlab_layout.py test/test_forge_suite_layout.py -k test_a_distributed_run_is_refused or test_a_run_id_names_an_ephemeral_project or test_the_credential_helper_answers_git_with_the_clone_token or test_the_test_credential_is_found_in_the_checkout_or_its_main_tree or test_a_missing_secret_fails_the_credential_step or test_the_gitlab_forge_job_runs_beside_verify or test_the_gitlab_secret_reaches_one_step or test_the_report_judges_the_gitlab_forge_job or test_the_default_configuration_collects_no_gitlab_forge_test or test_the_report_judges_the_forge_job
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [10 items]
+
+FFFFFFFFF.                                                               [100%]
+================================== FAILURES ===================================
+______________________ test_a_distributed_run_is_refused ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:385: in test_a_distributed_run_is_refused
+    assert GITLAB_FORGE_COMMAND in message, f"the refusal does not name {GITLAB_FORGE_COMMAND}: {message}"
+E   AssertionError: the refusal does not name python scripts/run_tests.py --workers 1 test/forge_gitlab: The forge suite is running in the xdist worker gw0, and each worker would create its own repository; run it in one process with --workers 1: python scripts/run_tests.py --workers 1 test/forge
+E   assert 'python scripts/run_tests.py --workers 1 test/forge_gitlab' in 'The forge suite is running in the xdist worker gw0, and each worker would create its own repository; run it in one process with --workers 1: python scripts/run_tests.py --workers 1 test/forge'
+__________________ test_a_run_id_names_an_ephemeral_project ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:413: in test_a_run_id_names_an_ephemeral_project
+    assert full_path == TEST_GROUP + PROJECT_PATH_SEPARATOR + path, (
+E   AssertionError: ephemeral_full_path gave 'sff-test-20261122144725-6338bfe7ee7643ab84bd8b92ade367f6' for '20261122144725-6338bfe7ee7643ab84bd8b92ade367f6'
+E   assert 'sff-test-202...d8b92ade367f6' == 'bestehorn-sf...d8b92ade367f6'
+E     
+E     [0m[91m- bestehorn-sff-test/sff-test-20261122144725-6338bfe7ee7643ab84bd8b92ade367f6[39;49;00m[90m[39;49;00m
+E     ? -------------------[90m[39;49;00m
+E     [92m+ sff-test-20261122144725-6338bfe7ee7643ab84bd8b92ade367f6[39;49;00m[90m[39;49;00m
+_________ test_the_credential_helper_answers_git_with_the_clone_token _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:468: in test_the_credential_helper_answers_git_with_the_clone_token
+    assert user == GIT_USERNAME, f"git answered the user {user!r}, not {GIT_USERNAME!r}"
+E   AssertionError: git answered the user 'x-access-token', not 'sff-forge-suite'
+E   assert 'x-access-token' == 'sff-forge-suite'
+E     
+E     [0m[91m- sff-forge-suite[39;49;00m[90m[39;49;00m
+E     [92m+ x-access-token[39;49;00m[90m[39;49;00m
+_______________ test_a_missing_secret_fails_the_credential_step _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:540: in test_a_missing_secret_fails_the_credential_step
+    assert forge.SECRET_NAME == SECRET_NAME, f"SECRET_NAME is {forge.SECRET_NAME!r}, not {SECRET_NAME!r} (D8)"
+E   AssertionError: SECRET_NAME is 'SFF_TEST_TOKEN', not 'SFF_GITLAB_TEST_TOKEN' (D8)
+E   assert 'SFF_TEST_TOKEN' == 'SFF_GITLAB_TEST_TOKEN'
+E     
+E     [0m[91m- SFF_GITLAB_TEST_TOKEN[39;49;00m[90m[39;49;00m
+E     ?    -------[90m[39;49;00m
+E     [92m+ SFF_TEST_TOKEN[39;49;00m[90m[39;49;00m
+_____ test_the_test_credential_is_found_in_the_checkout_or_its_main_tree ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:486: in test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+    assert Path(forge.TEST_CREDENTIAL_FILE) == TEST_CREDENTIAL_FILE, (
+E   AssertionError: TEST_CREDENTIAL_FILE is WindowsPath('credentials/github-sff-testing-pat.txt'), not credentials/gitlab-sff-testing-pat.txt (D8)
+E   assert WindowsPath('credentials/github-sff-testing-pat.txt') == WindowsPath('credentials/gitlab-sff-testing-pat.txt')
+E    +  where WindowsPath('credentials/github-sff-testing-pat.txt') = Path(WindowsPath('credentials/github-sff-testing-pat.txt'))
+E    +    where WindowsPath('credentials/github-sff-testing-pat.txt') = <module 'forge_gitlab_ephemeral' from 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-11\\test\\forge_gitlab\\ephemeral.py'>.TEST_CREDENTIAL_FILE
+________________ test_the_gitlab_forge_job_runs_beside_verify _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:441: in test_the_gitlab_forge_job_runs_beside_verify
+    gitlab = layout.job_named(workflow=workflow, name=JOB_FORGE_GITLAB)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_suite_layout.py:472: in job_named
+    assert isinstance(job, dict), f"{WORKFLOW_NAME} has no job `{name}`; its jobs are {sorted(jobs)}"
+           ^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: .github/workflows/ci.yml has no job `forge-gitlab`; its jobs are ['forge', 'report', 'verify']
+___________________ test_the_gitlab_secret_reaches_one_step ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:464: in test_the_gitlab_secret_reaches_one_step
+    assert len(references) == 1, (
+E   AssertionError: .github/workflows/ci.yml references the secret SFF_GITLAB_TEST_TOKEN 0 times, not once
+E   assert 0 == 1
+E    +  where 0 = len([])
+_________________ test_the_report_judges_the_gitlab_forge_job _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:505: in test_the_report_judges_the_gitlab_forge_job
+    assert not missing, f"`{layout.JOB_REPORT}` needs {needs}, missing {missing}; it must run after {expected}"
+E   AssertionError: `report` needs ['verify', 'forge'], missing ['forge-gitlab']; it must run after ['verify', 'forge', 'forge-gitlab']
+E   assert not ['forge-gitlab']
+____________________ test_the_report_judges_the_forge_job _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1173: in test_the_report_judges_the_forge_job
+    assert sorted(needs) == sorted([JOB_VERIFY, JOB_FORGE, JOB_FORGE_GITLAB]), (
+E   AssertionError: `report` needs ['verify', 'forge'], not [verify, forge, forge-gitlab]
+E   assert ['forge', 'verify'] == ['forge', 'fo...ab', 'verify']
+E     
+E     At index 1 diff: [0m[33m'[39;49;00m[33mverify[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33mforge-gitlab[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Right contains one more item: [0m[33m'[39;49;00m[33mverify[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED test/test_forge_gitlab_support.py::test_a_distributed_run_is_refused
+FAILED test/test_forge_gitlab_support.py::test_a_run_id_names_an_ephemeral_project
+FAILED test/test_forge_gitlab_support.py::test_the_credential_helper_answers_git_with_the_clone_token
+FAILED test/test_forge_gitlab_support.py::test_a_missing_secret_fails_the_credential_step
+FAILED test/test_forge_gitlab_support.py::test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+FAILED test/test_forge_gitlab_layout.py::test_the_gitlab_forge_job_runs_beside_verify
+FAILED test/test_forge_gitlab_layout.py::test_the_gitlab_secret_reaches_one_step
+FAILED test/test_forge_gitlab_layout.py::test_the_report_judges_the_gitlab_forge_job
+FAILED test/test_forge_suite_layout.py::test_the_report_judges_the_forge_job
+========================= 9 failed, 1 passed in 5.73s =========================
+exit=1

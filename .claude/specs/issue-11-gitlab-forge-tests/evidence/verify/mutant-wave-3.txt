@@ -1,0 +1,169 @@
+# mutant-wave-3 M3: wave 3 IMPL stubbed: 3.3 test/forge_gitlab/ephemeral.py part 2 (SubprocessWrapperRunner argv without the marker and without PRODUCT_WRAPPER; delete_ephemeral judges the path only and deletes id=<path>; is_leftover accepts any namespace starting with the test group); 3.4 write_credential.py main returns 0 on a refusal
+# mutated lines:
+warning: in the working copy of 'test/forge_gitlab/write_credential.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/test/forge_gitlab/ephemeral.py b/test/forge_gitlab/ephemeral.py
+index ed6dd81..7bc0c7b 100644
+--- a/test/forge_gitlab/ephemeral.py
++++ b/test/forge_gitlab/ephemeral.py
+@@ -328 +328 @@ class SubprocessWrapperRunner(WrapperRunner):
+-        argv = [sys.executable, INTERPRETER_OPTION, marker, str(PRODUCT_WRAPPER), *arguments]
++        argv = [sys.executable, str(CHECKOUT / "src" / "payload" / "scripts" / "gitlab_wrapper.py"), *arguments]
+@@ -459 +459 @@ def delete_ephemeral(*, wrapper: WrapperRunner, created: Optional[CreatedProject
+-    if (created.namespace, created.path) != (TEST_GROUP, own):
++    if created.path != own:
+@@ -466 +466 @@ def delete_ephemeral(*, wrapper: WrapperRunner, created: Optional[CreatedProject
+-    invocation = wrapper.run(arguments=_deletion_arguments(full_path=created.full_path))
++    invocation = wrapper.run(arguments=_deletion_arguments(full_path=created.path))
+@@ -498 +498 @@ def is_leftover(*, record: ProjectRecord, now: datetime) -> bool:
+-        record.namespace == TEST_GROUP
++        record.namespace.startswith(TEST_GROUP)
+diff --git a/test/forge_gitlab/write_credential.py b/test/forge_gitlab/write_credential.py
+index 70aa624..0c84149 100644
+--- a/test/forge_gitlab/write_credential.py
++++ b/test/forge_gitlab/write_credential.py
+@@ -73 +73 @@ def main(*, checkout: Path = CHECKOUT) -> int:
+-        return EXIT_REFUSED
++        return EXIT_WROTE
+# run: the wave 3 paired tests (S 3.1, G 3.2) selected by -k from S and G
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_gitlab_support.py test/test_forge_gitlab_layout.py -k test_every_wrapper_invocation_carries_the_marker or test_the_teardown_deletes_only_this_runs_project or test_the_teardown_refuses_any_other_target or test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects or test_the_sweep_boundaries_and_refusals or test_a_missing_secret_fails_the_credential_step or test_the_gitlab_forge_tests_reach_only_the_ephemeral_project
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [10 items]
+
+FFFF.F.FFF                                                               [100%]
+================================== FAILURES ===================================
+_______________ test_a_missing_secret_fails_the_credential_step _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:566: in test_a_missing_secret_fails_the_credential_step
+    _assert_the_credential_step_judges_the_secret(
+test\test_forge_gitlab_support.py:590: in _assert_the_credential_step_judges_the_secret
+    assert exit_code == STEP_REFUSED, f"main returned {exit_code!r} with {SECRET_NAME} {state}, not 1"
+E   AssertionError: main returned 0 with SFF_GITLAB_TEST_TOKEN unset, not 1
+E   assert 0 == 1
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m forge_gitlab_write_credential:write_credential.py:72 Wrote no test credential file: the secret SFF_GITLAB_TEST_TOKEN is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)
+______________ test_the_teardown_deletes_only_this_runs_project _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1013: in test_the_teardown_deletes_only_this_runs_project
+    assert runner.recorded == [_deletion(namespace=TEST_GROUP, path=path)], (
+E   AssertionError: the teardown of bestehorn-sff-test/sff-test-20261122144809-0967cc26672d46c196779e25a42cb8ca sent [['call', 'tenant-scale#delete-a-project', '--path', 'id=sff-test-20261122144809-0967cc26672d46c196779e25a42cb8ca']]
+E   assert [['call', 'te...e25a42cb8ca']] == [['call', 'te...e25a42cb8ca']]
+E     
+E     At index 0 diff: [0m[[33m'[39;49;00m[33mcall[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtenant-scale#delete-a-project[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m--path[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mid=sff-test-20261122144809-0967cc26672d46c196779e25a42cb8ca[39;49;00m[33m'[39;49;00m][90m[39;49;00m != [0m[[33m'[39;49;00m[33mcall[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtenant-scale#delete-a-project[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m--path[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mid=best...
+E     
+E     ...Full output truncated, use '-vv' to show
+______________ test_every_wrapper_invocation_carries_the_marker _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:983: in test_every_wrapper_invocation_carries_the_marker
+    assert argv[:MARKER_ARGV_LENGTH] == [sys.executable, INTERPRETER_OPTION, marker, str(forge.PRODUCT_WRAPPER)], (
+E   AssertionError: the invocation does not start with the interpreter, -X sff_test_marker and the product GitLab wrapper: ['D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\\python.exe', 'D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-11\\src\\payload\\scripts\\gitlab_wrapper.py', 'call', 'tenant-scale#retrieve-a-project']
+E   assert ['D:\\Code Wo...ve-a-project'] == ['D:\\Code Wo...b_wrapper.py']
+E     
+E     At index 1 diff: [0m[33m'[39;49;00m[33mD:[39;49;00m[33m\\[39;49;00m[33mCode Workspace[39;49;00m[33m\\[39;49;00m[33mCodingProjectSetupPrompt[39;49;00m[33m\\[39;49;00m[33m.claude[39;49;00m[33m\\[39;49;00m[33mworktrees[39;49;00m[33m\\[39;49;00m[33missue-11[39;49;00m[33m\\[39;49;00m[33msrc[39;49;00m[33m\\[39;49;00m[33mpayload[39;49;00m[33m\\[39;49;00m[33mscripts[39;49;00m[33m\\[39;49;00m[33mgitlab_wrapper.py[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33m-X[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+________ test_the_teardown_refuses_any_other_target[another-namespace] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1039: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge_gitlab\ephemeral.py:466: in delete_ephemeral
+    invocation = wrapper.run(arguments=_deletion_arguments(full_path=created.path))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:760: in run
+    answer = script(arguments=argv)
+             ^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:777: in _refuse_every_invocation
+    raise AssertionError(f"the product GitLab wrapper was invoked where nothing may be sent: {arguments}")
+E   AssertionError: the product GitLab wrapper was invoked where nothing may be sent: ['call', 'tenant-scale#delete-a-project', '--path', 'id=sff-test-20261122144809-93a115fe350e4ae4af77b0002d4dd895']
+__ test_the_teardown_refuses_any_other_target[a-subgroup-of-the-test-group] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1039: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge_gitlab\ephemeral.py:466: in delete_ephemeral
+    invocation = wrapper.run(arguments=_deletion_arguments(full_path=created.path))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:760: in run
+    answer = script(arguments=argv)
+             ^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:777: in _refuse_every_invocation
+    raise AssertionError(f"the product GitLab wrapper was invoked where nothing may be sent: {arguments}")
+E   AssertionError: the product GitLab wrapper was invoked where nothing may be sent: ['call', 'tenant-scale#delete-a-project', '--path', 'id=sff-test-20261122144809-399df9ef50894077b38d0141067961ef']
+________ test_the_gitlab_forge_tests_reach_only_the_ephemeral_project _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:540: in test_the_gitlab_forge_tests_reach_only_the_ephemeral_project
+    assert not problems, "the GitLab forge suite reaches past its ephemeral project:\n" + "\n".join(problems)
+E   AssertionError: the GitLab forge suite reaches past its ephemeral project:
+E     test/forge_gitlab/ephemeral.py: `SubprocessWrapperRunner` does not name `PRODUCT_WRAPPER`
+E   assert not ['test/forge_gitlab/ephemeral.py: `SubprocessWrapperRunner` does not name `PRODUCT_WRAPPER`']
+____ test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1050: in test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects
+    @given(listing=LISTINGS, now=SWEEP_MOMENTS)
+                   ^^^
+test\test_forge_gitlab_support.py:1079: in test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects
+    assert sorted(runner.recorded[1:]) == expected, (
+E   AssertionError: the sweep at 2024-01-01T00:00:00Z sent [['call', 'tenant-scale#delete-a-project', '--path', 'id=bestehorn-sff-test-archive/sff-test-0']], not []
+E   assert [['call', 'te.../sff-test-0']] == []
+E     
+E     Left contains one more item: [0m[[33m'[39;49;00m[33mcall[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mtenant-scale#delete-a-project[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33m--path[39;49;00m[33m'[39;49;00m, [33m'[39;49;00m[33mid=bestehorn-sff-test-archive/sff-test-0[39;49;00m[33m'[39;49;00m][90m[39;49;00m
+E     Use -v to get more diff
+E   Failing test case: test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects(
+E       # The test always failed when commented parts were varied together.
+E       listing=[_listed_project(
+E            in_group=False,  # or any other generated value
+E            prefixed=False,  # or any other generated value
+E            old=False,  # or any other generated value
+E            scheduled=False,  # or any other generated value
+E            other_namespace='Bestehorn',  # or any other generated value
+E            suffix='0',  # or any other generated value
+E            unprefixed_path='0',  # or any other generated value
+E            young_age=0,  # or any other generated value
+E            old_age=86400001,  # or any other generated value
+E            marked_on='2024-01-01',  # or any other generated value
+E            unscheduled_key_listed=False,  # or any other generated value
+E        ), _listed_project(
+E            in_group=False,
+E            prefixed=True,
+E            old=True,
+E            scheduled=False,
+E            other_namespace='bestehorn-sff-test-archive',
+E            suffix='0',  # or any other generated value
+E            unprefixed_path='0',  # or any other generated value
+E            young_age=0,  # or any other generated value
+E            old_age=86400001,  # or any other generated value
+E            marked_on='2024-01-01',  # or any other generated value
+E            unscheduled_key_listed=False,  # or any other generated value
+E        )],
+E       now=datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),  # or any other generated value
+E   )
+E   Explanation:
+E       These lines were always and only run by failing test cases:
+E           D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\test\test_forge_gitlab_support.py:1080
+E           D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\test\test_forge_gitlab_support.py:1081
+___________________ test_the_sweep_boundaries_and_refusals ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1183: in test_the_sweep_boundaries_and_refusals
+    forge.delete_leftover(wrapper=runner, record=forge.ProjectRecord.of(item=no_leftover), now=SWEEP_NOW)
+test\forge_gitlab\ephemeral.py:558: in delete_leftover
+    invocation = wrapper.run(arguments=_deletion_arguments(full_path=record.full_path))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:760: in run
+    answer = script(arguments=argv)
+             ^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:777: in _refuse_every_invocation
+    raise AssertionError(f"the product GitLab wrapper was invoked where nothing may be sent: {arguments}")
+E   AssertionError: the product GitLab wrapper was invoked where nothing may be sent: ['call', 'tenant-scale#delete-a-project', '--path', 'id=bestehorn-sff-test/sub/sff-test-a-subgroup']
+=========================== short test summary info ===========================
+FAILED test/test_forge_gitlab_support.py::test_a_missing_secret_fails_the_credential_step
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_deletes_only_this_runs_project
+FAILED test/test_forge_gitlab_support.py::test_every_wrapper_invocation_carries_the_marker
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_refuses_any_other_target[another-namespace]
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_refuses_any_other_target[a-subgroup-of-the-test-group]
+FAILED test/test_forge_gitlab_layout.py::test_the_gitlab_forge_tests_reach_only_the_ephemeral_project
+FAILED test/test_forge_gitlab_support.py::test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects
+FAILED test/test_forge_gitlab_support.py::test_the_sweep_boundaries_and_refusals
+======================== 8 failed, 2 passed in 26.84s =========================
+exit=1

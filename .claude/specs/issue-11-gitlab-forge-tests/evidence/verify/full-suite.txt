@@ -1,0 +1,261 @@
+# Whole-suite verdict: CI run 45033382186 read through scripts/github_wrapper.py (get-jobs, get-run), 2026-11-22T14:44:23Z
+# worktree HEAD 5b373337acf38c739a02c0c0791a4b23e18751d7; c389d46..HEAD touches only: .claude/specs/issue-11-gitlab-forge-tests/decisions/decision-log.md .claude/specs/issue-11-gitlab-forge-tests/evidence/regress/ci-45033382186-c389d46.txt   # pragma: allowlist secret
+## get-jobs 45033382186
+137241660514   completed    failure      forge-gitlab
+137241660625   completed    success      verify (lint)
+137241660750   completed    success      verify (tests)
+137241660798   completed    success      verify (security)
+137241660821   completed    success      forge
+137241660985   completed    success      verify (types)
+137242390296   completed    failure      report
+exit=0
+## get-run 45033382186
+{
+  "id": 45033382186,
+  "name": "ci",
+  "node_id": "WFR_kwLOQMptMM8AAAAKfDLhKg",
+  "head_branch": "issue-11-gitlab-forge-tests",
+  "head_sha": "c389d466969802a3442132d2a82ec9c6c6e1598b",  # pragma: allowlist secret
+  "path": ".github/workflows/ci.yml",
+  "display_title": "Test the GitLab wrapper against ephemeral gitlab.com projects",
+  "run_number": 124,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "failure",
+  "workflow_id": 412142773,
+  "check_suite_id": 121871724305,
+  "check_suite_node_id": "CS_kwDOQMptMM8AAAAcYB7vEQ",
+  "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/45033382186",
+  "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework/actions/runs/45033382186",
+  "pull_requests": [
+    {
+      "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/pulls/69",
+      "id": 5439973991,
+      "number": 69,
+      "head": {
+        "ref": "issue-11-gitlab-forge-tests",
+        "sha": "c389d466969802a3442132d2a82ec9c6c6e1598b",  # pragma: allowlist secret
+        "repo": {
+          "id": 1087008048,
+          "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+          "name": "SoftwareFactoryFramework"
+        }
+      },
+      "base": {
+        "ref": "main",
+        "sha": "83a1415a83fdbe483857b4b1a73312b6c87b2669",  # pragma: allowlist secret
+        "repo": {
+          "id": 1087008048,
+          "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+          "name": "SoftwareFactoryFramework"
+        }
+      }
+    }
+  ],
+  "created_at": "2026-11-22T14:32:35Z",
+  "updated_at": "2026-11-22T14:35:24Z",
+  "actor": {
+    "login": "Bestehorn",
+    "id": 35574067,
+    "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Bestehorn",
+    "html_url": "https://github.com/Bestehorn",
+    "followers_url": "https://api.github.com/users/Bestehorn/followers",
+    "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+    "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+    "repos_url": "https://api.github.com/users/Bestehorn/repos",
+    "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "run_attempt": 1,
+  "referenced_workflows": [],
+  "run_started_at": "2026-11-22T14:32:35Z",
+  "triggering_actor": {
+    "login": "Bestehorn",
+    "id": 35574067,
+    "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+    "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/Bestehorn",
+    "html_url": "https://github.com/Bestehorn",
+    "followers_url": "https://api.github.com/users/Bestehorn/followers",
+    "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+    "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+    "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+    "repos_url": "https://api.github.com/users/Bestehorn/repos",
+    "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "jobs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/45033382186/jobs",
+  "logs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/45033382186/logs",
+  "check_suite_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/check-suites/121871724305",
+  "artifacts_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/45033382186/artifacts",
+  "cancel_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/45033382186/cancel",
+  "rerun_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/runs/45033382186/rerun",
+  "previous_attempt_url": null,
+  "workflow_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/actions/workflows/412142773",
+  "head_commit": {
+    "id": "c389d466969802a3442132d2a82ec9c6c6e1598b",  # pragma: allowlist secret
+    "tree_id": "f2ae26ab80cf62dba112bd4b03ee000d0cf302b1",  # pragma: allowlist secret
+    "message": "Add the GitLab forge suite's session fixture and real-gitlab.com tests\n\nWave 5 of the GitLab forge suite: test/forge_gitlab/pytest.ini and conftest.py (one ephemeral project per run), push_branch and wait_until_checked, and the real-forge modules for the subcommands, call records, a GraphQL-only capability and the request forms.\n\nRefs #11",
+    "timestamp": "2026-11-22T14:27:41Z",
+    "author": {
+      "name": "Markus Bestehorn",
+      "email": "markus.bestehorn@googlemail.com"
+    },
+    "committer": {
+      "name": "Markus Bestehorn",
+      "email": "markus.bestehorn@googlemail.com"
+    }
+  },
+  "repository": {
+    "id": 1087008048,
+    "node_id": "R_kgDOQMptMA",
+    "name": "SoftwareFactoryFramework",
+    "full_name": "Bestehorn/SoftwareFactoryFramework",
+    "private": false,
+    "owner": {
+      "login": "Bestehorn",
+      "id": 35574067,
+      "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Bestehorn",
+      "html_url": "https://github.com/Bestehorn",
+      "followers_url": "https://api.github.com/users/Bestehorn/followers",
+      "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+      "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+      "repos_url": "https://api.github.com/users/Bestehorn/repos",
+      "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework",
+    "description": "This project contains prompts that can be used to automate the setup of coding projects using coding assistants, e.g., by setting up versining mechanisms, directory sturctures and similar ",
+    "fork": false,
+    "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+    "forks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/forks",
+    "keys_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/teams",
+    "hooks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/hooks",
+    "issue_events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/events",
+    "assignees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/tags",
+    "blobs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/languages",
+    "stargazers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/stargazers",
+    "contributors_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contributors",
+    "subscribers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscribers",
+    "subscription_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscription",
+    "commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/merges",
+    "archive_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/downloads",
+    "issues_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/deployments"
+  },
+  "head_repository": {
+    "id": 1087008048,
+    "node_id": "R_kgDOQMptMA",
+    "name": "SoftwareFactoryFramework",
+    "full_name": "Bestehorn/SoftwareFactoryFramework",
+    "private": false,
+    "owner": {
+      "login": "Bestehorn",
+      "id": 35574067,
+      "node_id": "MDQ6VXNlcjM1NTc0MDY3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35574067?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Bestehorn",
+      "html_url": "https://github.com/Bestehorn",
+      "followers_url": "https://api.github.com/users/Bestehorn/followers",
+      "following_url": "https://api.github.com/users/Bestehorn/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Bestehorn/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Bestehorn/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Bestehorn/subscriptions",
+      "organizations_url": "https://api.github.com/users/Bestehorn/orgs",
+      "repos_url": "https://api.github.com/users/Bestehorn/repos",
+      "events_url": "https://api.github.com/users/Bestehorn/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Bestehorn/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "html_url": "https://github.com/Bestehorn/SoftwareFactoryFramework",
+    "description": "This project contains prompts that can be used to automate the setup of coding projects using coding assistants, e.g., by setting up versining mechanisms, directory sturctures and similar ",
+    "fork": false,
+    "url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework",
+    "forks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/forks",
+    "keys_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/teams",
+    "hooks_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/hooks",
+    "issue_events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/events",
+    "assignees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/tags",
+    "blobs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/languages",
+    "stargazers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/stargazers",
+    "contributors_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contributors",
+    "subscribers_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscribers",
+    "subscription_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/subscription",
+    "commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/merges",
+    "archive_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/downloads",
+    "issues_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/labels{/name}",
+    "releases_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/Bestehorn/SoftwareFactoryFramework/deployments"
+  }
+}
+exit=0
