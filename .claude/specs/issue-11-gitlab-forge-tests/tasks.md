@@ -18,14 +18,14 @@ follows the D section it cites.
 
 ## Wave 1 — The project guard and the reused module's parameters
 
-- [ ] 1.1 TEST: W, created: `test_the_marker_refuses_a_project_without_the_prefix`,
+- [x] 1.1 TEST: W, created: `test_the_marker_refuses_a_project_without_the_prefix`,
   `test_the_interpreter_option_reaches_the_entry_script`, `test_the_marker_lets_an_ephemeral_project_through`,
   `test_the_marker_values_are_issue_10s`, `test_without_the_marker_every_project_is_served`, in-process through
   `gitlab_wrapper_fixtures` (`write_config`, `FakeGitLab`, `install_socket_guard`, `load_wrapper`, `run_main`), the
   fixtures module loaded by path as C's `load_fixtures` loads it, with the marker set on `sys._xoptions` by
   `monkeypatch.setitem` or not, the entry-script example as a subprocess — Files:
   src/payload/test/test_gitlab_wrapper_marker.py — Validates: AC-4.1, AC-4.2, AC-4.3, UB-1, UB-3
-- [ ] 1.2 TEST: the unchanged-behaviour guards, no file written, added to every wave's red and green runs (green
+- [x] 1.2 TEST: the unchanged-behaviour guards, no file written, added to every wave's red and green runs (green
   before and after; L's 2.3 expectation red until 2.4): C, A, K, V and P, P `test_standard_library_only` included
   (UB-1, UB-3); H, the pair of 1.4, and L (UB-4); I (UB-5); B `test_llm_map_within_cap` (AC-9.2) — Files, run and
   unedited: src/payload/test/test_gitlab_wrapper_compat.py, src/payload/test/test_gitlab_api_*.py,
@@ -34,12 +34,12 @@ follows the D section it cites.
   test/test_gitlab_wrapper_contract.py, test/test_gitlab_wrapper_coverage.py, test/test_forge_support.py,
   test/test_forge_suite_layout.py (written only by 2.3), test/test_toolchain_integrity.py,
   test/test_instruction_corpus_budget.py — Validates: UB-1, UB-3, UB-4, UB-5, AC-9.2
-- [ ] 1.3 IMPL: the project guard (D2): `TEST_MARKER_OPTION`, `EPHEMERAL_PROJECT_PREFIX`, `PROJECT_PATH_SEPARATOR`,
+- [x] 1.3 IMPL: the project guard (D2): `TEST_MARKER_OPTION`, `EPHEMERAL_PROJECT_PREFIX`, `PROJECT_PATH_SEPARATOR`,
   `EXIT_PROJECT_REFUSED`, `_test_marker_set`, `_is_ephemeral_project`, `_refuse_unless_ephemeral`, its two calls in
   `_run`, `main`'s mapping of `GitLabProjectRefusedError`, the docstrings; `GitLabProjectRefusedError(GitLabAPIError)`
   and the module docstring of `errors.py` — Files: src/payload/scripts/gitlab_wrapper.py,
   src/payload/scripts/gitlab_api/errors.py — Validates: AC-4.1, AC-4.2, AC-4.3, UB-3
-- [ ] 1.4 IMPL: the keyword-only parameters of D10's `test/forge/ephemeral.py` row, each defaulting to today's value,
+- [x] 1.4 IMPL: the keyword-only parameters of D10's `test/forge/ephemeral.py` row, each defaulting to today's value,
   used in the six bodies and described in their docstrings, #10's refusal words kept; paired with 1.2's H, unedited
   — Files: test/forge/ephemeral.py — Validates: UB-4
 

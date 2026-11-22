@@ -35,7 +35,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -202,25 +202,36 @@ class ForgeSweepRefusedError(ForgeSuiteError):
     """The sweep was given a repository that is no leftover; nothing was sent."""
 
 
-def refuse_distributed_run(*, worker_id: str) -> None:
+def refuse_distributed_run(*, worker_id: str, command: str = FORGE_COMMAND) -> None:
     """D1: raises ``ForgeSetupError`` unless ``worker_id`` (xdist's fixture) is ``master``, since a session fixture
-    runs once per xdist worker and each would create its own repository."""
+    runs once per xdist worker and each would create its own repository; the refusal names ``command``, the suite's
+    one-process run (``FORGE_COMMAND`` by default)."""
     if worker_id != CONTROLLER_WORKER_ID:
         raise ForgeSetupError(
             message=(
                 f"The forge suite is running in the xdist worker {worker_id}, and each worker would create its own "
-                f"repository; run it in one process with --workers 1: {FORGE_COMMAND}"
+                f"repository; run it in one process with --workers 1: {command}"
             )
         )
 
 
-def credential_helper_arguments(*, clone: Path) -> List[str]:
-    """D3: the global options that make one git command authenticate to github.com with the clone's token.
+def credential_helper_arguments(
+    *,
+    clone: Path,
+    helper_key: str = GITHUB_HELPER_KEY,
+    username: str = ACCESS_TOKEN_USERNAME,
+    credential_file: Path = CLONE_CREDENTIAL_FILE,
+) -> List[str]:
+    """D3: the global options that make one git command authenticate to the host of ``helper_key`` with the clone's
+    token.
 
-    The helper string holds the clone credential file's absolute path in forward-slash form, single-quoted so a space
-    is literal, and never the token; a path holding a single quote raises ``ForgeSetupError``.
+    ``helper_key`` is the git configuration key the helper is set under (``GITHUB_HELPER_KEY``, github.com, by
+    default), ``username`` the user name it answers (``ACCESS_TOKEN_USERNAME`` by default) and ``credential_file`` the
+    file it reads the token from, relative to ``clone`` (``CLONE_CREDENTIAL_FILE`` by default). The helper string holds
+    that file's absolute path in forward-slash form, single-quoted so a space is literal, and never the token; a path
+    holding a single quote raises ``ForgeSetupError``.
     """
-    credential = (clone.absolute() / CLONE_CREDENTIAL_FILE).as_posix()
+    credential = (clone.absolute() / credential_file).as_posix()
     if SHELL_QUOTE in credential:
         raise ForgeSetupError(
             message=(
@@ -228,8 +239,8 @@ def credential_helper_arguments(*, clone: Path) -> List[str]:
                 "quote; use a workspace whose path holds none"
             )
         )
-    helper = HELPER_SNIPPET.format(credential=credential, username=ACCESS_TOKEN_USERNAME)
-    return [CONFIG_OPTION, HELPER_RESET, CONFIG_OPTION, GITHUB_HELPER_KEY + CONFIG_ASSIGNMENT + helper]
+    helper = HELPER_SNIPPET.format(credential=credential, username=username)
+    return [CONFIG_OPTION, HELPER_RESET, CONFIG_OPTION, helper_key + CONFIG_ASSIGNMENT + helper]
 
 
 def _git_output(*, arguments: Sequence[str], directory: Path) -> str:
@@ -262,14 +273,15 @@ def main_working_tree(*, checkout: Path) -> Path:
     return Path(_git_output(arguments=GIT_COMMON_DIR_ARGUMENTS, directory=checkout)).parent
 
 
-def find_test_credential(*, checkout: Path) -> Path:
-    """D8: ``checkout``'s own test credential file, else the main working tree's (a linked worktree holds no
-    git-ignored file); with neither, ``ForgeSetupError`` naming both paths."""
-    own = checkout / TEST_CREDENTIAL_FILE
+def find_test_credential(*, checkout: Path, credential_file: Path = TEST_CREDENTIAL_FILE) -> Path:
+    """D8: ``checkout``'s own test credential file ``credential_file``, a path relative to a working tree
+    (``TEST_CREDENTIAL_FILE`` by default), else the main working tree's (a linked worktree holds no git-ignored file);
+    with neither, ``ForgeSetupError`` naming both paths."""
+    own = checkout / credential_file
     if own.is_file():
         logger.debug("The test credential file is %s", own)
         return own
-    shared = main_working_tree(checkout=checkout) / TEST_CREDENTIAL_FILE
+    shared = main_working_tree(checkout=checkout) / credential_file
     if shared.is_file():
         logger.debug("The test credential file is the main working tree's %s", shared)
         return shared
@@ -282,17 +294,20 @@ def find_test_credential(*, checkout: Path) -> Path:
     )
 
 
-def write_test_credential(*, token: str, checkout: Path) -> None:
-    """D8 "CI": writes ``token`` and a line end as ``checkout``'s test credential file; an empty ``token`` raises
-    ``ForgeSetupError`` and writes nothing."""
+def write_test_credential(
+    *, token: str, checkout: Path, credential_file: Path = TEST_CREDENTIAL_FILE, secret_name: str = SECRET_NAME
+) -> None:
+    """D8 "CI": writes ``token`` and a line end as ``checkout``'s test credential file ``credential_file``, a path
+    relative to a working tree (``TEST_CREDENTIAL_FILE`` by default); an empty ``token`` raises ``ForgeSetupError``
+    naming the secret ``secret_name`` the token comes from (``SECRET_NAME`` by default) and writes nothing."""
     if not token:
         raise ForgeSetupError(
             message=(
-                f"Wrote no test credential file: the secret {SECRET_NAME} is unavailable to this run (it is unset, or "
+                f"Wrote no test credential file: the secret {secret_name} is unavailable to this run (it is unset, or "
                 "the run is a fork's or Dependabot's pull request, which receives no secrets)"
             )
         )
-    path = checkout / TEST_CREDENTIAL_FILE
+    path = checkout / credential_file
     path.parent.mkdir(exist_ok=True)
     path.write_bytes(data=(token + LINE_END).encode(encoding=TEXT_ENCODING))
     logger.info("Wrote the test credential file %s", path)
@@ -419,39 +434,43 @@ class GitRunner(ABC):
 
 
 class SubprocessGitRunner(GitRunner):
-    """Starts git: D3's helper options when ``authenticated``, the suite's commit identity, ``-C <clone>`` and the
-    arguments."""
+    """Starts git: the options of ``helper(clone=<clone>)`` when ``authenticated``, the suite's commit identity, ``-C
+    <clone>`` and the arguments. ``helper`` gives D3's credential helper options for the clone; it is
+    ``credential_helper_arguments`` by default, the github.com helper."""
 
-    def __init__(self, *, clone: Path) -> None:
+    def __init__(self, *, clone: Path, helper: Callable[..., List[str]] = credential_helper_arguments) -> None:
         self.clone = clone
+        self.helper = helper
 
     def run(self, *, arguments: Sequence[str], authenticated: bool = False) -> Invocation:
-        helper = credential_helper_arguments(clone=self.clone) if authenticated else []
+        helper = self.helper(clone=self.clone) if authenticated else []
         argv = [GIT, *helper, *COMMIT_IDENTITY, GIT_DIRECTORY_OPTION, str(self.clone), *arguments]
         return _invoke(argv=argv, directory=None)
 
 
-def product_wrapper() -> ModuleType:
-    """The product wrapper ``PRODUCT_WRAPPER``, loaded by path on first use and reused while ``sys.modules`` holds it.
+def product_wrapper(*, path: Path = PRODUCT_WRAPPER, module_name: str = PRODUCT_WRAPPER_MODULE) -> ModuleType:
+    """The product wrapper ``path``, an absolute resolved path (``PRODUCT_WRAPPER`` by default), loaded by path under
+    the ``sys.modules`` key ``module_name`` (``PRODUCT_WRAPPER_MODULE`` by default) on first use and reused while
+    ``sys.modules`` holds it under that key.
 
     Never loaded at import, so loading this module changes no ``sys.path``; the directory the wrapper puts on
     ``sys.path`` for its package is taken off again once it is loaded. A missing script raises ``ForgeSetupError``.
     """
-    loaded = sys.modules.get(PRODUCT_WRAPPER_MODULE)
-    if loaded is not None and Path(str(loaded.__file__)).resolve() == PRODUCT_WRAPPER:
+    loaded = sys.modules.get(module_name)
+    if loaded is not None and Path(str(loaded.__file__)).resolve() == path:
         return loaded
-    if not PRODUCT_WRAPPER.is_file():
-        raise ForgeSetupError(message=f"The product wrapper {PRODUCT_WRAPPER} does not exist")
-    spec = importlib.util.spec_from_file_location(name=PRODUCT_WRAPPER_MODULE, location=PRODUCT_WRAPPER)
+    if not path.is_file():
+        raise ForgeSetupError(message=f"The product wrapper {path} does not exist")
+    spec = importlib.util.spec_from_file_location(name=module_name, location=path)
     if spec is None or spec.loader is None:
-        raise ForgeSetupError(message=f"The product wrapper {PRODUCT_WRAPPER} cannot be loaded")
+        raise ForgeSetupError(message=f"The product wrapper {path} cannot be loaded")
     module = importlib.util.module_from_spec(spec=spec)
     search_path = list(sys.path)
-    sys.modules[PRODUCT_WRAPPER_MODULE] = module
+    sys.modules[module_name] = module
     try:
         spec.loader.exec_module(module=module)
     except BaseException:
-        sys.modules.pop(PRODUCT_WRAPPER_MODULE, None)
+        sys.modules.pop(module_name, None)
         raise
     finally:
         sys.path[:] = search_path
