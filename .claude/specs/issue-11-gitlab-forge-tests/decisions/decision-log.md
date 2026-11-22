@@ -56,3 +56,11 @@
 **Alternatives considered:** a fourth panel round for one C (not offered: C never gates).
 **Evidence:** review/spec-review-agent/iteration-03.md C1, review/test-architect/iteration-03.md C1, review/standards-reviewer/iteration-03.md (CLEAN).
 **Artifacts touched:** review/review-latest.md
+
+## DL-008 — 2026-11-22T16:10:00Z — issue-work-orchestrator — phase:TASKS_REVIEW
+
+**Decision:** tasks.md approved at tasks iteration 02 (both lanes CLEAN, TEST-READY, every AC and UB in a TEST task); five waves after splitting wave 1 so no IMPL depends on an IMPL of its own wave.
+**Driver:** review/spec-review-agent/tasks-iteration-01.md B1; tasks-iteration-02.md of both lanes.
+**Alternatives considered:** none
+**Evidence:** review/spec-review-agent/tasks-iteration-02.md (READY), review/test-architect/tasks-iteration-02.md (TEST-READY).
+**Artifacts touched:** tasks.md
