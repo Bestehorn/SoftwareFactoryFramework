@@ -204,8 +204,9 @@ down, so that the suite can be run without reading its code.
   SHALL CONTINUE TO be the proof of every record the GitLab forge suite does not call.
 - UB-2 (issue #10 UB-2) `config/gitlab.json` SHALL CONTINUE TO be the product GitLab wrapper's only credential source:
   the GitLab forge suite SHALL neither read nor write the `config/gitlab.json` of the checkout that runs it.
-- UB-3 WHILE the test marker is not set, THE product GitLab wrapper SHALL CONTINUE TO send the same requests, print the
-  same output and return the same exit code for every argv as before this change; its existing tests
+- UB-3 WHILE the test marker is not set, THE product GitLab wrapper SHALL CONTINUE TO send the same requests and
+  return the same exit code for every argv as before this change, and to print the same output, except that its help
+  text (the module docstring, `build_parser`'s description) now also names the marker refusal; its existing tests
   (`src/payload/test/test_gitlab_wrapper_compat.py`, the `test_gitlab_api_*` suites of `src/payload/test/` and
   `test/`, `test/test_gitlab_wrapper_contract.py`, `test/test_gitlab_wrapper_coverage.py` among them) SHALL CONTINUE TO
   pass with no assertion edited, and it SHALL CONTINUE TO import only the standard library

@@ -129,7 +129,7 @@ PRODUCT_SYMBOLS = ("EPHEMERAL_PROJECT_PREFIX", "_is_ephemeral_project")
 TEST_GROUP = "bestehorn-sff-test"
 EPHEMERAL_PREFIX = "sff-test-"
 PROJECT_PATH_SEPARATOR = "/"
-EPHEMERAL_PATH_FORM = re.compile(r"[a-z](?:-?[a-z0-9])*")
+EPHEMERAL_PATH_FORM = re.compile(pattern=r"[a-z](?:-?[a-z0-9])*")
 HEX_DIGITS = "0123456789abcdef"
 RUN_ID_SAMPLES = 64
 #: A run id of #10 D4's form, made by the test: the UTC time, ``-``, a fresh ``uuid4`` hex.
@@ -1320,7 +1320,7 @@ SEED_TREE = (SEED_FILE,)
 #: AC-1.3: a seed whose root holds GitLab's default CI configuration file, which a push would run.
 GITLAB_CI_SEED_TREE = (SEED_FILE, ".gitlab-ci.yml")
 #: D4: a run id as #10's ``new_run_id`` makes it.
-RUN_ID_PATTERN = re.compile(r"[0-9]{14}-[0-9a-f]{32}")
+RUN_ID_PATTERN = re.compile(pattern=r"[0-9]{14}-[0-9a-f]{32}")
 
 # AC-1.1: a provision's timeline, as the steps of D9 it shows.
 WRAPPER_RUNNER = "wrapper"

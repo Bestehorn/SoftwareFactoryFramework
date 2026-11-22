@@ -216,7 +216,7 @@ full path.
 | F:fixture | `test_the_run_owns_a_private_seeded_project` | `call tenant-scale#retrieve-a-project`: `path_with_namespace` P, `visibility` `private`, `default_branch` the creation's; in the clone, `HEAD` equals `origin/<default branch>` and `<seed>`, `git ls-tree -r --name-only <seed>` names exactly `README.md`, `git remote get-url origin` is `https://gitlab.com/P.git`, the clone's `config/gitlab.json`, read into its `hostname` and `project_id` values alone (the loaded mapping is never compared or printed), holds `hostname` `gitlab.com` and `project_id` P (AC-1.1, AC-1.3) |
 | F:fixture | `test_no_leftover_survives_the_sweep` | `list_group_projects`: no record lacks `marked_for_deletion_on` among those it selects inline (not through `is_leftover`): namespace `TEST_GROUP`, path starting `sff-test-`, `created_at` over a day before `swept_at` (AC-3.1) |
 | F:subcommands (#13) | `test_an_issue_and_label_round_trip` | `label create --name forge-<hex> --color #1F75CB` (`name`); `label list` (names it); `issue create --title T --description D` (`state` `opened`, `title` T); `issue show N` (T, D, opened); `issue comment N --body C` (`body` C); `issue label-add N --labels forge-<hex>` (`labels` name it); `issue show N` (the same); `issue close N` (`state` `closed`); `issue show N` (closed) |
-| F:subcommands (#13) | `test_a_merge_request_round_trip` | `push_branch`; `mr create --source <b> --target <default branch> --title T` (`source_branch`, `target_branch`, `sha` the pushed commit, `state` `opened`); `wait_until_checked` (`mr get N` until `detailed_merge_status` is none of `unchecked`, `checking`, `preparing`; then `mergeable`); `mr merge N` (`state` `merged`); `mr get N` (`merged`) |
+| F:subcommands (#13) | `test_a_merge_request_round_trip` | `push_branch`; `mr create --source <b> --target <default branch> --title T` (`source_branch`, `target_branch`, `sha` the pushed commit, `state` `opened`); `wait_until_checked` (D10; then `mergeable`); `mr merge N` (`state` `merged`); `mr get N` (`merged`) |
 | F:subcommands (#13) | `test_delete_branch_removes_a_pushed_branch` | `push_branch`; `call create#retrieve-a-repository-branch --path branch=<b>` (`name`, `commit.id` the pushed commit); `delete-branch <b>` (`{"branch": <b>, "deleted": true}`); the same `call`: exit 1, standard error `answered 404` |
 | F:subcommands (#13) | `test_no_pipeline_has_run` | `pipeline status`: `[]` (AC-1.3) |
 | F:records | `test_the_repository_records_read_the_seed` | `call tenant-scale#retrieve-a-project` (`default_branch`); `call create#retrieve-a-commit --path sha=<seed>` (`id` `<seed>`, `parent_ids` `[]`); `call create#list-all-repository-trees-in-a-project --query ref=<seed>` (one entry: `name` `README.md`, `type` `blob`, `id` the blob of `git rev-parse <seed>:README.md`) |
@@ -389,8 +389,9 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
   committed by name (never `git add -A`), an authenticated `git push origin <branch>`, `git checkout <default branch>`;
   the commit's SHA.
 - `wait_until_checked(*, wrapper, iid) -> Mapping[str, Any]`: `mr get <iid>` until `detailed_merge_status` is none of
-  `unchecked`, `checking` and `preparing`, pausing between reads, bounded by a deadline (both constants of the
-  module); the last answer; the deadline raises `ForgeCommandError` naming the last status.
+  `unchecked`, `checking`, `preparing` and `approvals_syncing` (`docs/api-reference/gitlab/conventions.md`), pausing
+  between reads, bounded by a deadline (both constants of the module); the last answer; the deadline raises
+  `ForgeCommandError` naming the last status.
 - Named parameters, JSON fields through constants, `logging` (`coding-standards.md`).
 
 **Not edited:** every file under `test/forge/` but `ephemeral.py`, `test/test_forge_support.py`, `pyproject.toml`,

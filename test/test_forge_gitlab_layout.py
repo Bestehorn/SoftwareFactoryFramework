@@ -59,11 +59,11 @@ GITLAB_CREDENTIAL_COMMAND = "python test/forge_gitlab/write_credential.py"
 GITLAB_SECRET_NAME = "SFF_GITLAB_TEST_TOKEN"  # pragma: allowlist secret
 # Both expression spellings of the secret: the property (`secrets.NAME`) and the index (`secrets['NAME']`).
 GITLAB_SECRET_REFERENCE = re.compile(
-    r"\bsecrets\s*(?:\.\s*" + GITLAB_SECRET_NAME + r"\b|\[\s*['\"]" + GITLAB_SECRET_NAME + r"['\"]\s*\])"
+    pattern=r"\bsecrets\s*(?:\.\s*" + GITLAB_SECRET_NAME + r"\b|\[\s*['\"]" + GITLAB_SECRET_NAME + r"['\"]\s*\])"
 )
-GITLAB_SECRET_EXPRESSION = re.compile(r"^\$\{\{\s*secrets\." + GITLAB_SECRET_NAME + r"\s*\}\}$")
+GITLAB_SECRET_EXPRESSION = re.compile(pattern=r"^\$\{\{\s*secrets\." + GITLAB_SECRET_NAME + r"\s*\}\}$")
 # The GitLab forge job's id or its suite's directory, as a word of its own (`forge-gitlab`, `test/forge_gitlab`).
-GITLAB_FORGE_MENTION = re.compile(r"(?<![\w-])forge[-_]gitlab(?![\w-])")
+GITLAB_FORGE_MENTION = re.compile(pattern=r"(?<![\w-])forge[-_]gitlab(?![\w-])")
 
 GITLAB_FORGE_RESULT = r"\"?\$\{\{\s*needs\.forge-gitlab\.result\s*\}\}\"?"
 SUCCESS = r"\"?success\"?"
@@ -71,7 +71,7 @@ FAILING_STATUS = r"status=[1-9][0-9]*"
 # `if [ "<result>" != "success" ]; then status=N; fi`, or `[ "<result>" = "success" ] || status=N`.
 GITLAB_FORGE_GUARDS = (
     re.compile(
-        r"^if\s+\[\[?\s*"
+        pattern=r"^if\s+\[\[?\s*"
         + GITLAB_FORGE_RESULT
         + r"\s*!=\s*"
         + SUCCESS
@@ -80,7 +80,13 @@ GITLAB_FORGE_GUARDS = (
         + r"\s*;\s*fi$"
     ),
     re.compile(
-        r"^\[\[?\s*" + GITLAB_FORGE_RESULT + r"\s*==?\s*" + SUCCESS + r"\s*\]\]?\s*\|\|\s*" + FAILING_STATUS + r"$"
+        pattern=r"^\[\[?\s*"
+        + GITLAB_FORGE_RESULT
+        + r"\s*==?\s*"
+        + SUCCESS
+        + r"\s*\]\]?\s*\|\|\s*"
+        + FAILING_STATUS
+        + r"$"
     ),
 )
 
@@ -91,13 +97,17 @@ GITLAB_FORGE_DIRECTORY = ROOT / GITLAB_FORGE_SUITE
 GITLAB_FIXTURES_MODULE = "gitlab_wrapper_fixtures"
 # A `--path id=`, which names a project other than the configured one: its value an argv entry of its own (`id=...`)
 # or after `--path` in one string; `--path merge_request_iid=` and `--path issue_iid=` name no project.
-GITLAB_TARGETING_ARGUMENT = re.compile(r"(?:^|--path[ =])id=")
+GITLAB_TARGETING_ARGUMENT = re.compile(pattern=r"(?:^|--path[ =])id=")
 GITLAB_TARGETING_DESCRIPTION = "a string starting `id=` or holding `--path id=`"
 # The records that create and delete a project (D9); `create-a-project-for-a-user` and the `-topic` records are others.
 PROJECT_CREATION = "tenant-scale#create-a-project"
 PROJECT_DELETION = "tenant-scale#delete-a-project"
 GITLAB_PROJECT_LIFECYCLE = re.compile(
-    r"(?<![\w#/-])(?:" + re.escape(PROJECT_CREATION) + r"|" + re.escape(PROJECT_DELETION) + r")(?![\w-])"
+    pattern=r"(?<![\w#/-])(?:"
+    + re.escape(pattern=PROJECT_CREATION)
+    + r"|"
+    + re.escape(pattern=PROJECT_DELETION)
+    + r")(?![\w-])"
 )
 
 # The GitLab forge suite's setup, read as text from the setup note's GitLab section and from the map (D7; AC-9.1,
@@ -109,20 +119,20 @@ GITLAB_SERVICE_ACCOUNTS = "Service accounts"
 GITLAB_OWNER_ROLE = "Owner"
 GITLAB_TOKEN_SCOPE = "api"
 # gitlab.com as a host of its own, not the tail of another (`docs.gitlab.com`); a full stop may end its sentence.
-GITLAB_HOST_MENTION = re.compile(r"(?<![\w.-])" + re.escape(GITLAB_HOST) + r"(?![\w-]|\.\w)")
+GITLAB_HOST_MENTION = re.compile(pattern=r"(?<![\w.-])" + re.escape(pattern=GITLAB_HOST) + r"(?![\w-]|\.\w)")
 # The scope `api` as a word of its own: not `read_api`, not `API`, not a path segment (`docs.gitlab.com/api/...`).
-GITLAB_SCOPE_MENTION = re.compile(r"(?<![\w./-])" + re.escape(GITLAB_TOKEN_SCOPE) + r"(?![\w/-]|\.\w)")
+GITLAB_SCOPE_MENTION = re.compile(pattern=r"(?<![\w./-])" + re.escape(pattern=GITLAB_TOKEN_SCOPE) + r"(?![\w/-]|\.\w)")
 # The GitLab forge job's id as a word of its own, never the suite's directory `test/forge_gitlab`.
-GITLAB_FORGE_JOB_MENTION = re.compile(r"(?<![\w/-])" + re.escape(JOB_FORGE_GITLAB) + r"(?![\w-])")
+GITLAB_FORGE_JOB_MENTION = re.compile(pattern=r"(?<![\w/-])" + re.escape(pattern=JOB_FORGE_GITLAB) + r"(?![\w-])")
 GITLAB_LOCAL_ONLY_CLAIM = (
     "a sentence saying that only a machine that runs the GitLab forge suite locally needs the file"
 )
 # The word that a heading of the setup note's GitLab section holds.
-GITLAB_WORD = re.compile(r"\bGitLab\b")
+GITLAB_WORD = re.compile(pattern=r"\bGitLab\b")
 # An ATX heading: up to three spaces, one to six `#`, whitespace, its title.
-MARKDOWN_HEADING = re.compile(r"^ {0,3}(?P<marks>#{1,6})[ \t]+(?P<title>\S.*?)[ \t]*$")
+MARKDOWN_HEADING = re.compile(pattern=r"^ {0,3}(?P<marks>#{1,6})[ \t]+(?P<title>\S.*?)[ \t]*$")
 # A line opening or closing a fenced code block, whose `#` lines are no headings.
-MARKDOWN_FENCE = re.compile(r"^ {0,3}(?:`{3,}|~{3,})")
+MARKDOWN_FENCE = re.compile(pattern=r"^ {0,3}(?:`{3,}|~{3,})")
 
 # The GitLab forge suite's own configuration and its conftest, read with L's INI reader and `ast` helpers (D1, D9;
 # AC-1.1, AC-1.4, AC-5.2, AC-7.2, AC-7.3).
@@ -166,7 +176,7 @@ class UncalledRecord:
     def mention(self) -> re.Pattern[str]:
         """The record's ID as a word of its own, never the start of a longer ID (``...-endpoint`` of
         ``...-endpoint-1``)."""
-        return re.compile(pattern=r"(?<![\w#/-])" + re.escape(self.record) + r"(?![\w-])")
+        return re.compile(pattern=r"(?<![\w#/-])" + re.escape(pattern=self.record) + r"(?![\w-])")
 
 
 # The reasons of AC-8.6's design entry: its tier, `administrator credentials`, no documented answer, outside the
@@ -248,16 +258,18 @@ def _layout() -> ModuleType:
 def assert_fails_unless_gitlab_forge_succeeded(*, script: str, layout: ModuleType) -> None:
     """``script`` sets a failing status unless the GitLab forge job succeeded, keeps it, and exits with it."""
     lines = [line.strip() for line in script.splitlines() if line.strip()]
-    guards = [index for index, line in enumerate(lines) if any(guard.match(line) for guard in GITLAB_FORGE_GUARDS)]
+    guards = [
+        index for index, line in enumerate(lines) if any(guard.match(string=line) for guard in GITLAB_FORGE_GUARDS)
+    ]
     assert guards, (
         f"no line of the verdict sets a failing status unless the `{JOB_FORGE_GITLAB}` job's result is success:\n"
         f"{script}"
     )
-    overwrites = [line for line in lines[guards[-1] + 1 :] if layout.STATUS_ASSIGNMENT.match(line)]
+    overwrites = [line for line in lines[guards[-1] + 1 :] if layout.STATUS_ASSIGNMENT.match(string=line)]
     assert not overwrites, (
         f"the verdict overwrites the `{JOB_FORGE_GITLAB}` job's failing status afterwards: {overwrites}"
     )
-    assert layout.STATUS_EXIT.match(lines[-1]), f'the verdict ends with `{lines[-1]}`, not with `exit "$status"`'
+    assert layout.STATUS_EXIT.match(string=lines[-1]), f'the verdict ends with `{lines[-1]}`, not with `exit "$status"`'
 
 
 def read_gitlab_forge_modules(*, layout: ModuleType) -> list[Any]:
@@ -279,7 +291,7 @@ def gitlab_fixture_loads(*, tree: ast.Module, layout: ModuleType) -> list[int]:
     a string naming it, as a load by path would."""
     imports = [
         layout.line_of(node=node)
-        for node in ast.walk(tree)
+        for node in ast.walk(node=tree)
         if any(
             GITLAB_FIXTURES_MODULE in module.split(layout.MODULE_SEPARATOR)
             for module in layout.imported_modules(node=node)
@@ -330,10 +342,10 @@ def markdown_headings(*, lines: list[str]) -> list[MarkdownHeading]:
     headings = []
     fenced = False
     for index, line in enumerate(lines):
-        if MARKDOWN_FENCE.match(line):
+        if MARKDOWN_FENCE.match(string=line):
             fenced = not fenced
             continue
-        heading = None if fenced else MARKDOWN_HEADING.match(line)
+        heading = None if fenced else MARKDOWN_HEADING.match(string=line)
         if heading is not None:
             headings.append(
                 MarkdownHeading(line=index, level=len(heading.group("marks")), title=heading.group("title"))
@@ -401,11 +413,11 @@ def uncalled_record_problems(*, docstring: str, layout: ModuleType) -> list[str]
     problems = []
     for uncalled in UNCALLED_RECORDS:
         mention = uncalled.mention()
-        naming = [sentence for sentence in sentences if mention.search(sentence)]
+        naming = [sentence for sentence in sentences if mention.search(string=sentence)]
         reasons = " or ".join(reason.description for reason in uncalled.reasons)
         if not naming:
             problems.append(f"names no `{uncalled.record}`, which the suite does not call ({reasons})")
-        elif not any(reason.pattern.search(sentence) for sentence in naming for reason in uncalled.reasons):
+        elif not any(reason.pattern.search(string=sentence) for sentence in naming for reason in uncalled.reasons):
             problems.append(f"names `{uncalled.record}` in no sentence that gives its reason, {reasons}: {naming}")
     return problems
 
@@ -416,13 +428,13 @@ def other_constants_naming(*, modules: list[Any]) -> list[str]:
     problems = []
     for module in modules:
         kept = module_docstring(tree=module.tree) if module.name == REQUEST_FORMS_NAME else None
-        for node in ast.walk(module.tree):
+        for node in ast.walk(node=module.tree):
             if not isinstance(node, ast.Constant) or not isinstance(node.value, str) or node is kept:
                 continue
             problems += [
                 f"{module.name}:{node.lineno}: names `{uncalled.record}`, which the suite does not call"
                 for uncalled in UNCALLED_RECORDS
-                if uncalled.mention().search(node.value)
+                if uncalled.mention().search(string=node.value)
             ]
     return problems
 
@@ -436,7 +448,7 @@ def test_the_gitlab_forge_job_runs_beside_verify() -> None:
     )
     for name in (layout.JOB_VERIFY, layout.JOB_FORGE):
         job = layout.job_named(workflow=workflow, name=name)
-        naming = [text for text in layout.scalars_of(node=job) if GITLAB_FORGE_MENTION.search(text)]
+        naming = [text for text in layout.scalars_of(node=job) if GITLAB_FORGE_MENTION.search(string=text)]
         assert not naming, f"the job `{name}` names `{JOB_FORGE_GITLAB}` or `{GITLAB_FORGE_SUITE}`: {naming}"
     gitlab = layout.job_named(workflow=workflow, name=JOB_FORGE_GITLAB)
     assert layout.KEY_NEEDS not in gitlab, (
@@ -460,7 +472,7 @@ def test_the_gitlab_forge_job_runs_beside_verify() -> None:
 
 def test_the_gitlab_secret_reaches_one_step() -> None:
     layout = _layout()
-    references = GITLAB_SECRET_REFERENCE.findall(layout.WORKFLOW.read_text(encoding=layout.SOURCE_ENCODING))
+    references = GITLAB_SECRET_REFERENCE.findall(string=layout.WORKFLOW.read_text(encoding=layout.SOURCE_ENCODING))
     assert len(references) == 1, (
         f"{layout.WORKFLOW_NAME} references the secret {GITLAB_SECRET_NAME} {len(references)} times, not once"
     )
@@ -475,7 +487,7 @@ def test_the_gitlab_secret_reaches_one_step() -> None:
         f"the credential step has no `{layout.KEY_ENV}:` mapping: {credential_steps[0]}"
     )
     secret = environment.get(GITLAB_SECRET_NAME)
-    assert isinstance(secret, str) and GITLAB_SECRET_EXPRESSION.match(secret), (
+    assert isinstance(secret, str) and GITLAB_SECRET_EXPRESSION.match(string=secret), (
         f"the credential step's `{layout.KEY_ENV}:` does not hand {GITLAB_SECRET_NAME} the secret: {environment}"
     )
     checkouts = [step for step in steps if str(step.get(layout.KEY_USES, "")).startswith(layout.CHECKOUT_ACTION)]
@@ -489,7 +501,7 @@ def test_the_gitlab_secret_reaches_one_step() -> None:
     checks = [
         command
         for command in layout.run_commands(steps=steps)
-        if command != GITLAB_CREDENTIAL_COMMAND and not layout.INSTALL_COMMAND.match(command)
+        if command != GITLAB_CREDENTIAL_COMMAND and not layout.INSTALL_COMMAND.match(string=command)
     ]
     assert checks == [GITLAB_FORGE_COMMAND], (
         f"the check commands of `{JOB_FORGE_GITLAB}` are {checks}, expected [{GITLAB_FORGE_COMMAND}]"
@@ -546,7 +558,7 @@ def test_the_setup_note_names_the_gitlab_credential() -> None:
     lines = layout.read_document(path=layout.SETUP_NOTE).splitlines()
     headings = markdown_headings(lines=lines)
     # The title, the first heading, heads the whole note and its GitHub sections, so it is never the GitLab section.
-    openings = [heading for heading in headings[1:] if GITLAB_WORD.search(heading.title)]
+    openings = [heading for heading in headings[1:] if GITLAB_WORD.search(string=heading.title)]
     assert openings, (
         f"no heading after the title of {layout.SETUP_NOTE_NAME} names GitLab; its headings are "
         f"{[heading.title for heading in headings]}"
@@ -561,7 +573,7 @@ def test_the_setup_note_names_the_gitlab_credential() -> None:
         (layout.phrase_pattern(phrase=GITLAB_OWNER_ROLE), f'the role "{GITLAB_OWNER_ROLE}"'),
         (GITLAB_SCOPE_MENTION, f"the token scope `{GITLAB_TOKEN_SCOPE}`"),
     )
-    missing += [item for pattern, item in patterns if pattern.search(prose) is None]
+    missing += [item for pattern, item in patterns if pattern.search(string=prose) is None]
     if not layout.says_only_local_machines_need_it(text=section):
         missing.append(GITLAB_LOCAL_ONLY_CLAIM)
     assert not missing, f"the GitLab section `{openings[0].title}` of {layout.SETUP_NOTE_NAME} does not name: {missing}"
@@ -581,7 +593,7 @@ def test_the_map_names_the_gitlab_forge_suite() -> None:
         (GITLAB_FORGE_COMMAND in prose, f"the local command `{GITLAB_FORGE_COMMAND}`"),
         (GITLAB_TEST_CREDENTIAL_FILE in prose, f"the test credential file `{GITLAB_TEST_CREDENTIAL_FILE}`"),
         (layout.SETUP_NOTE_NAME in prose, f"the setup note `{layout.SETUP_NOTE_NAME}`"),
-        (GITLAB_FORGE_JOB_MENTION.search(prose) is not None, f"the CI job `{JOB_FORGE_GITLAB}`"),
+        (GITLAB_FORGE_JOB_MENTION.search(string=prose) is not None, f"the CI job `{JOB_FORGE_GITLAB}`"),
     )
     missing = [item for present, item in checks if not present]
     assert not missing, f"{layout.LLM_MAP_NAME} does not name: {missing}"

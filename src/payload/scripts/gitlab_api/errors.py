@@ -1,7 +1,7 @@
 """The exceptions of the GitLab wrapper package: one hierarchy under ``GitLabAPIError``.
 
 ``GitLabAPIError(message, status_code=0, details=None)`` keeps the signature of the skeleton wrapper's exception, so
-``gitlab_wrapper.py`` still maps any of them to exit code 1, but ``GitLabProjectRefusedError``, which it maps to 2.
+``gitlab_wrapper.py`` still maps each of them to exit code 1, except ``GitLabProjectRefusedError``, which it maps to 2.
 ``status_code`` is the HTTP status of the response that caused the error, 0 when no response did (a refused value, a
 connection failure); ``details`` carries the raw response body, never the request or its credential.
 """

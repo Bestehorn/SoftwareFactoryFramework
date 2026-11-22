@@ -162,8 +162,8 @@ WRAPPER_EXIT_OK = 0
 #: ``"{method} {url} answered {status}: {error_text}"``, logged by ``main`` ``_report``.
 WRAPPER_API_FAILURE = 1
 #: A project a concurrent run's sweep marked, which renamed it, so its old path answers 404.
-NOT_FOUND_ANSWER = re.compile(r"\banswered 404\b")
-BAD_REQUEST_ANSWER = re.compile(r"\banswered 400\b")
+NOT_FOUND_ANSWER = re.compile(pattern=r"\banswered 404\b")
+BAD_REQUEST_ANSWER = re.compile(pattern=r"\banswered 400\b")
 #: ``mark_for_deletion_base_service.rb``: "#{resource_name.titleize} has already been marked for deletion".
 ALREADY_MARKED = "has already been marked for deletion"
 
@@ -211,9 +211,11 @@ HEAD_TREE = "HEAD^{tree}"
 SEED_REVISION_COUNT = 2
 GITLAB_CI_FILE = ".gitlab-ci.yml"
 
-# D9 steps 5 and 6: the group read (docs.gitlab.com/api/groups/, "Get a single group") and the creation
-# (docs.gitlab.com/api/projects/, "Create a project"), as ``call`` arguments, and the fields of the creation's answer
-# the record is made of; ``details`` of the refusal of a project created other than private keep the record.
+# D9 steps 5 and 6: the group read (docs.gitlab.com/api/groups/, "Get a single group"; ``with_projects=false`` keeps
+# its answer free of the projects' details on API v4, where GitLab has deprecated the parameter for removal in v5) and
+# the creation (docs.gitlab.com/api/projects/, "Create a project"), as ``call`` arguments, and the fields of the
+# creation's answer the record is made of; ``details`` of the refusal of a project created other than private keep the
+# record.
 GROUP_READ = "tenant-scale#retrieve-a-group"
 QUERY_OPTION = "--query"
 WITH_PROJECTS_PARAMETER = "with_projects"
@@ -253,7 +255,7 @@ BRANCH_COMMIT_MESSAGE = "Add the forge suite's file of the branch {branch}"
 MR_GROUP = "mr"
 MR_GET = "get"
 FIELD_DETAILED_MERGE_STATUS = "detailed_merge_status"
-UNDECIDED_MERGE_STATUSES = ("unchecked", "checking", "preparing")
+UNDECIDED_MERGE_STATUSES = ("unchecked", "checking", "preparing", "approvals_syncing")
 CHECK_PAUSE_SECONDS = 2.0
 CHECK_DEADLINE_SECONDS = 180.0
 
@@ -512,7 +514,7 @@ def sweep_leftovers(*, wrapper: WrapperRunner, now: datetime) -> None:
     ``delete_leftover``."""
     for record in select_leftovers(records=list_group_projects(wrapper=wrapper), now=now):
         if record.scheduled:
-            logger.info(
+            logger.debug(
                 "The leftover project %s is already marked for deletion (on %s); the sweep sends nothing",
                 record.full_path,
                 record.marked_for_deletion_on,

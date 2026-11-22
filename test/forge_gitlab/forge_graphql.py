@@ -19,10 +19,10 @@ what the test knows in advance (AC-8.1, AC-8.4). ``<hex>`` is a fresh ``uuid.uui
   are ``CLOSED`` and ``OPEN`` (``docs/api-reference/gitlab/graphql/objects-p-x.md``, ``enums.md``).
 
 The variable ``fullPath`` names a project itself, which the wrapper's project guard does not judge (design.md Security
-Considerations, "The guard's bound"), so it is the fixture's ``full_path`` and nothing else (AC-8.7). The reference's
-Notes for ``Project.workItems`` read "**deprecated** in 15.9; experiment since 15.1": GitLab may change it without
-notice, and a change fails this test until the record follows it (design.md Residuals). The token's scope ``api``
-covers both invocations (D6's table).
+Considerations, "The guard's bound"), so it is the fixture's ``full_path`` and nothing else (AC-8.7).
+``Project.workItems`` is an experiment since 15.1 (the "**deprecated** in 15.9" of the reference's Notes belongs to its
+argument ``requirementLegacyWidget``): GitLab may change it without notice, and a change fails this test until the
+record follows it (design.md Residuals). The token's scope ``api`` covers both invocations (D6's table).
 
 Run: ``python scripts/run_tests.py --workers 1 test/forge_gitlab``.
 """
