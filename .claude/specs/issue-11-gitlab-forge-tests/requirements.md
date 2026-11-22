@@ -9,8 +9,9 @@ Tier: M. Kind: FEATURE. Scope: `prompt.md` and DL-001 to DL-003, gitlab.com only
 2. Issue #11, work item: "Real-GitLab integration tests (needs a GitLab equivalent of #10)".
 3. User, 2026-11-16: "Let's set up the GitLab test target for #11; walk me through the exact steps I need to perform
    on gitlab."
-4. User, 2026-11-22: "Use gitlab.com" (issue #11). The operator's other answers (the group, the token, its file, the
-   CI secret) are in `prompts.md`.
+4. User, 2026-11-21: "There is no "Service Accounts" submenu in the settings of the group"
+5. User, 2026-11-22: "The group URL is https://gitlab.aws.dev/bestehorn-sff-test" (issue #11)
+6. User, 2026-11-22: "Use gitlab.com" (issue #11).
 
 ## Overview
 
@@ -90,11 +91,11 @@ accumulate.
 As the owner of this backlog, I want the product GitLab wrapper to refuse every project but an ephemeral one while the
 GitLab forge suite drives it, so that a test that runs it in the wrong directory cannot act on a real project.
 
-- AC-4.1 WHILE the test marker is set, IF the wrapper cannot establish that the configured project's path is an
-  `sff-test-*` path, THEN THE product GitLab wrapper SHALL, for every subcommand (the delivery verbs and `call`
-  included), send no request other than, at most, a read of the configured project, write to standard error a message
-  saying that the test marker is set and naming the configured project and no credential, and exit 2
-  (`gitlab_api/commands/_common.py` `EXIT_REFUSED`).
+- AC-4.1 WHILE the test marker is set, IF `config/gitlab.json` passes `_load_config` and its `project_id` is not an
+  `sff-test-*` project path (`design.md` D2), THEN THE product GitLab wrapper SHALL, for every subcommand (the delivery
+  verbs and `call` included), send no request other than, at most, a read of the configured project, write to standard
+  error a message saying that the test marker is set and naming the configured project and no credential, and exit 2.
+  A configuration `_load_config` refuses exits 1 with nothing sent, as it does without the marker.
 - AC-4.2 WHILE the test marker is set, WHEN the configured project's path is an `sff-test-*` path, THE product GitLab
   wrapper SHALL print the same output, return the same exit code and send the same requests, besides at most that
   read, as it does without the marker. How the wrapper knows the path of the configured project is `design.md`'s.
@@ -178,7 +179,7 @@ host proves is confirmed by GitLab's own answers.
   asserted, or the form handled as AC-8.6 says.
 - AC-8.6 An operation the ephemeral project cannot serve (administrator-only, Premium-only, OAuth-only) SHALL either be
   called and its answer asserted as GitLab documents it for this token and a private Free-tier project, or, where
-  GitLab documents no such answer, be named with that reason in the test's docstring and not called.
+  GitLab documents no such answer, be named with that reason in the docstring of its test module and not called.
 - AC-8.7 No real-GitLab test SHALL create, change or delete anything outside the ephemeral project, and no fake host or
   canned response SHALL stand in for gitlab.com in the GitLab forge suite.
 
@@ -209,11 +210,14 @@ down, so that the suite can be run without reading its code.
   `test/`, `test/test_gitlab_wrapper_contract.py`, `test/test_gitlab_wrapper_coverage.py` among them) SHALL CONTINUE TO
   pass with no assertion edited, and it SHALL CONTINUE TO import only the standard library
   (`test/test_gitlab_api_properties.py` `test_standard_library_only`).
-- UB-4 The GitHub forge suite and the `forge` job SHALL CONTINUE TO behave as before this change: every file under
-  `test/forge/` unchanged, the secret `SFF_TEST_TOKEN`, the credential file `credentials/github-sff-testing-pat.txt`,
-  and a `report` verdict that fails unless the `forge` job succeeded. Their tests (`test/test_forge_support.py`,
-  `test/test_forge_suite_layout.py`) SHALL CONTINUE TO pass with no assertion removed or weakened; the one workflow
-  expectation that names `report`'s exact `needs` is extended by the GitLab forge job.
+- UB-4 The GitHub forge suite and the `forge` job SHALL CONTINUE TO behave as before this change: the same
+  `test/forge/` tests, unedited, run by the `forge` job with the secret `SFF_TEST_TOKEN` and the credential file
+  `credentials/github-sff-testing-pat.txt`, and a `report` verdict that fails unless the `forge` job succeeded. Every
+  existing call of `test/forge/ephemeral.py` SHALL behave as before: the file SHALL change only by keyword-only
+  parameters that default to its GitHub constants (`design.md` D10), and no other file under `test/forge/` SHALL
+  change. Their tests (`test/test_forge_support.py`, `test/test_forge_suite_layout.py`) SHALL CONTINUE TO pass with no
+  assertion removed or weakened; the one workflow expectation that names `report`'s exact `needs` is extended by the
+  GitLab forge job.
 - UB-5 No toolchain file (`config/toolchain.json` and the files it lists, `scripts/run_tests.py` and
   `scripts/run_checks.py` among them) SHALL be edited by this change, `test/test_toolchain_integrity.py` SHALL CONTINUE
   TO pass, and nothing in this change SHALL depend on a product change reaching the toolchain before a promotion.
