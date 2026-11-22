@@ -64,3 +64,11 @@
 **Alternatives considered:** none
 **Evidence:** review/spec-review-agent/tasks-iteration-02.md (READY), review/test-architect/tasks-iteration-02.md (TEST-READY).
 **Artifacts touched:** tasks.md
+
+## DL-009 — 2026-11-22T14:40:00Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** CI run 45033382186: 2 failures across 2 jobs (`forge-gitlab`, `report`) → 1 root cause, the Actions secret `SFF_GITLAB_TEST_TOKEN` is unset; no code change, the real run waits on the operator's token.
+**Driver:** the credential step logged "the secret SFF_GITLAB_TEST_TOKEN is unavailable to this run" (AC-5.3 as designed); `report` failed on `forge-gitlab job: failure`; all four `verify` legs and the `forge` job succeeded.
+**Alternatives considered:** none (a missing secret is the operator's prerequisite, tasks.md Operator prerequisite).
+**Evidence:** evidence/regress/ci-45033382186-c389d46.txt.
+**Artifacts touched:** evidence/regress/ci-45033382186-c389d46.txt
