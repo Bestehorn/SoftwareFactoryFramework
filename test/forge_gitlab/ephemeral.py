@@ -8,9 +8,12 @@ refusal of a distributed run, naming this suite's command (D1); the per-command 
 its token is read and how the CI step writes it (D8); the teardown guard and the leftover sweep (D9); and
 ``provision``, the context manager around one run's project: it reads the test token, prepares the clone, sweeps,
 reads the test group, creates and seeds the project, and afterwards deletes it and removes the workspace (D3 "The
-clone", D9). ``SubprocessWrapperRunner`` is the suite's one way out to the product wrapper, with the test marker and
-the bytes of its answer kept (D10); the teardown, the sweep and ``provision`` take a ``WrapperRunner``, and
-``provision`` a ``GitRunner`` too, so a test gives them doubles.
+clone", D9); and the two helpers the merge-request tests share (D10): ``push_branch``, which pushes a fresh branch with
+one new file from the clone, and ``wait_until_checked``, which reads a merge request until GitLab has decided its
+mergeability (D6 "Mergeability"). ``SubprocessWrapperRunner`` is the suite's one way out to the product wrapper, with
+the test marker and the bytes of its answer kept (D10); the teardown, the sweep and ``provision`` take a
+``WrapperRunner``, and ``provision`` a ``GitRunner`` too, so a test gives them doubles; so do ``push_branch`` and
+``wait_until_checked``.
 
 What issue #10 settled is reused, not copied (design.md Overview): ``test/forge/ephemeral.py`` is loaded by path under
 its own ``sys.modules`` key ``forge_ephemeral``, with the reuse rule of ``test/forge/conftest.py`` ``_load_ephemeral``,
@@ -36,6 +39,7 @@ import logging
 import re
 import subprocess
 import sys
+import time
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -226,6 +230,32 @@ PRIVATE_VISIBILITY = "private"
 TEXT_TRUE = "true"
 TEXT_FALSE = "false"
 DETAIL_CREATED = "created"
+
+# D10 ``push_branch``: the git commands that make, commit, push and leave one branch of the clone, and its one new file,
+# ``forge/<branch>.txt``: a name no other branch gives, outside ``config/`` and ``.git/``, holding a line of text that
+# names the branch and no token.
+GIT_NEW_BRANCH_OPTION = "-b"
+GIT_ADD = "add"
+GIT_COMMIT = "commit"
+GIT_MESSAGE_OPTION = "-m"
+GIT_PATHSPEC_SEPARATOR = "--"
+GIT_PUSH = "push"
+GIT_SHOW_TOPLEVEL_OPTION = "--show-toplevel"
+BRANCH_FILE_DIRECTORY = Path("forge")
+BRANCH_FILE_SUFFIX = ".txt"
+BRANCH_FILE_TEXT = "The forge suite's file of the branch {branch}." + LINE_END
+BRANCH_COMMIT_MESSAGE = "Add the forge suite's file of the branch {branch}"
+
+# D6 "Mergeability", D10 ``wait_until_checked``: the read it repeats, ``mr get <iid>``, which prints the merge request
+# record (``gitlab_api/commands/mr.py`` ``get_mr``); the field it judges and the values that mean GitLab has not decided
+# the mergeability yet (docs.gitlab.com/api/merge_requests/); the pause between two reads, and the deadline of the
+# wait, measured with ``time.monotonic`` from before the first read.
+MR_GROUP = "mr"
+MR_GET = "get"
+FIELD_DETAILED_MERGE_STATUS = "detailed_merge_status"
+UNDECIDED_MERGE_STATUSES = ("unchecked", "checking", "preparing")
+CHECK_PAUSE_SECONDS = 2.0
+CHECK_DEADLINE_SECONDS = 180.0
 
 #: D3, D10: the global git options that make one git command authenticate to gitlab.com as ``GIT_USERNAME`` with the
 #: token of the clone's ``CLONE_GIT_TOKEN_FILE``, called as ``CLONE_GIT_HELPER(clone=<clone>)``: #10's
@@ -872,3 +902,88 @@ def provision(*, checkout: Path, workspace: Path, wrapper: WrapperRunner, git: G
             delete_ephemeral(wrapper=wrapper, created=created, run_id=run_id)
         finally:
             remove_tree(path=workspace)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The pushed branch and the mergeability wait of the merge-request tests (D10, D6 "Mergeability")
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+def _branch_file(*, branch: str) -> Path:
+    """D10: the one new file of ``branch``, relative to the clone: ``forge/<branch>.txt``."""
+    return BRANCH_FILE_DIRECTORY / (branch + BRANCH_FILE_SUFFIX)
+
+
+def _working_tree(*, git: GitRunner) -> Path:
+    """The working tree ``git`` is bound to, as ``git rev-parse --show-toplevel`` answers it; a git failure, or an
+    empty answer, raises ``ForgeCommandError``."""
+    answer = _run_git(git=git, arguments=[GIT_REV_PARSE, GIT_SHOW_TOPLEVEL_OPTION]).stdout.strip()
+    if not answer:
+        raise ForgeCommandError(message=f"`{GIT} {GIT_REV_PARSE} {GIT_SHOW_TOPLEVEL_OPTION}` answered no working tree")
+    return Path(answer)
+
+
+def push_branch(*, git: GitRunner, default_branch: str, branch: str) -> str:
+    """D10: pushes ``branch``, made from ``default_branch`` with one new file, and answers its commit's SHA.
+
+    ``git checkout -b <branch> <default branch>``; the file ``forge/<branch>.txt`` (``_branch_file``) written in the
+    working tree, added and committed by name, never with ``git add -A``; the commit's SHA, ``git rev-parse HEAD``; an
+    authenticated ``git push origin <branch>``; then, in a ``finally``, ``git checkout <default branch>``, so the clone
+    is back on the default branch even when a step failed. Every git command runs through ``git``, bound to the clone;
+    an exit other than 0 raises ``ForgeCommandError`` naming the command, which never holds the token.
+    """
+    _run_git(git=git, arguments=[GIT_CHECKOUT, GIT_NEW_BRANCH_OPTION, branch, default_branch])
+    try:
+        relative = _branch_file(branch=branch)
+        target = _working_tree(git=git) / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data=BRANCH_FILE_TEXT.format(branch=branch).encode(encoding=TEXT_ENCODING))
+        named = relative.as_posix()
+        message = BRANCH_COMMIT_MESSAGE.format(branch=branch)
+        _run_git(git=git, arguments=[GIT_ADD, GIT_PATHSPEC_SEPARATOR, named])
+        _run_git(git=git, arguments=[GIT_COMMIT, GIT_MESSAGE_OPTION, message, GIT_PATHSPEC_SEPARATOR, named])
+        pushed = _run_git(git=git, arguments=[GIT_REV_PARSE, HEAD]).stdout.strip()
+        _run_git(git=git, arguments=[GIT_PUSH, ORIGIN_REMOTE, branch], authenticated=True)
+    finally:
+        _run_git(git=git, arguments=[GIT_CHECKOUT, default_branch])
+    logger.info("Pushed the branch %s at %s", branch, pushed)
+    return pushed
+
+
+def _merge_request(*, wrapper: WrapperRunner, iid: int) -> Mapping[str, Any]:
+    """One read of the merge request ``iid``, ``mr get <iid>``: the record it printed. A non-zero exit, or an answer
+    that is no JSON object, raises ``ForgeCommandError``."""
+    invocation = wrapper.run(arguments=[MR_GROUP, MR_GET, str(iid)])
+    if invocation.returncode != WRAPPER_EXIT_OK:
+        raise _failure(action=f"Reading the merge request !{iid}", invocation=invocation)
+    answer = invocation.json()
+    if not isinstance(answer, Mapping):
+        raise ForgeCommandError(message=f"`{MR_GROUP} {MR_GET} {iid}` printed no JSON object")
+    return answer
+
+
+def wait_until_checked(*, wrapper: WrapperRunner, iid: int) -> Mapping[str, Any]:
+    """D10: reads the merge request ``iid`` with ``mr get <iid>`` until its ``detailed_merge_status`` is none of
+    ``UNDECIDED_MERGE_STATUSES``, and answers that last record.
+
+    GitLab checks a merge request's mergeability asynchronously when it is read (D6 "Mergeability"), so the reads are
+    ``CHECK_PAUSE_SECONDS`` apart (``time.sleep``), and a status still undecided ``CHECK_DEADLINE_SECONDS`` after the
+    first read began (``time.monotonic``) raises ``ForgeCommandError`` naming it. A failed read raises
+    ``ForgeCommandError`` (``_merge_request``).
+    """
+    deadline = time.monotonic() + CHECK_DEADLINE_SECONDS
+    while True:
+        record = _merge_request(wrapper=wrapper, iid=iid)
+        status = record.get(FIELD_DETAILED_MERGE_STATUS)
+        if status not in UNDECIDED_MERGE_STATUSES:
+            logger.info("Merge request !%s is checked: its %s is %r", iid, FIELD_DETAILED_MERGE_STATUS, status)
+            return record
+        if time.monotonic() >= deadline:
+            raise ForgeCommandError(
+                message=(
+                    f"Merge request !{iid} still has the {FIELD_DETAILED_MERGE_STATUS} {status!r} "
+                    f"{CHECK_DEADLINE_SECONDS:g} seconds after the first read: GitLab has not decided its mergeability"
+                )
+            )
+        logger.debug("Merge request !%s has the %s %r; reading it again", iid, FIELD_DETAILED_MERGE_STATUS, status)
+        time.sleep(CHECK_PAUSE_SECONDS)

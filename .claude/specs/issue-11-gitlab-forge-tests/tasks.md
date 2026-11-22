@@ -114,30 +114,30 @@ follows the D section it cites.
 
 ## Wave 5 — The session fixture, the suite's collection and the real-GitLab tests (D6)
 
-- [ ] 5.1 TEST: G, `test_the_session_fixture_wraps_one_provision`,
+- [x] 5.1 TEST: G, `test_the_session_fixture_wraps_one_provision`,
   `test_the_gitlab_forge_path_collects_every_gitlab_forge_test`, `test_nothing_keeps_a_gitlab_forge_test_from_running`,
   `test_each_uncalled_form_is_named_with_its_reason` — Files: test/test_forge_gitlab_layout.py — Validates: AC-1.1,
   AC-1.4, AC-5.2, AC-7.2, AC-7.3, AC-8.5, AC-8.6
-- [ ] 5.2 TEST: F:fixture, `test_the_run_owns_a_private_seeded_project`, `test_no_leftover_survives_the_sweep`, with
+- [x] 5.2 TEST: F:fixture, `test_the_run_owns_a_private_seeded_project`, `test_no_leftover_survives_the_sweep`, with
   its module docstring — Files: test/forge_gitlab/forge_fixture.py — Validates: AC-1.1, AC-1.3, AC-3.1, AC-4.2,
   AC-8.1, AC-8.3
-- [ ] 5.3 TEST: F:subcommands (#13), `test_an_issue_and_label_round_trip`, `test_a_merge_request_round_trip`,
+- [x] 5.3 TEST: F:subcommands (#13), `test_an_issue_and_label_round_trip`, `test_a_merge_request_round_trip`,
   `test_delete_branch_removes_a_pushed_branch`, `test_no_pipeline_has_run`, with its module docstring — Files:
   test/forge_gitlab/forge_subcommands.py — Validates: AC-1.3, AC-4.2, AC-8.1, AC-8.2
-- [ ] 5.4 TEST: F:records, `test_the_repository_records_read_the_seed`, `test_the_issue_and_note_records`,
+- [x] 5.4 TEST: F:records, `test_the_repository_records_read_the_seed`, `test_the_issue_and_note_records`,
   `test_the_merge_request_records`, with its module docstring — Files: test/forge_gitlab/forge_records.py —
   Validates: AC-1.3, AC-4.2, AC-8.1, AC-8.3
-- [ ] 5.5 TEST: F:graphql (#44), `test_the_work_items_of_the_project`, with its module docstring — Files:
+- [x] 5.5 TEST: F:graphql (#44), `test_the_work_items_of_the_project`, with its module docstring — Files:
   test/forge_gitlab/forge_graphql.py — Validates: AC-4.2, AC-8.1, AC-8.4
-- [ ] 5.6 TEST: F:request_forms (#63), `test_an_endpoint_named_by_endpoint`, `test_a_format_suffix`; its module
+- [x] 5.6 TEST: F:request_forms (#63), `test_an_endpoint_named_by_endpoint`, `test_a_format_suffix`; its module
   docstring names each form D6 lists as not called, with D6's reason — Files: test/forge_gitlab/forge_request_forms.py
   — Validates: AC-4.2, AC-8.1, AC-8.5, AC-8.6
-- [ ] 5.7 IMPL: the suite's configuration, #10 D1's four keys verbatim (D1) — Files: test/forge_gitlab/pytest.ini —
+- [x] 5.7 IMPL: the suite's configuration, #10 D1's four keys verbatim (D1) — Files: test/forge_gitlab/pytest.ini —
   Validates: AC-5.2, AC-7.2, AC-7.3
-- [ ] 5.8 IMPL: the by-path load of `ephemeral.py` under `forge_gitlab_ephemeral` and the session fixture
+- [x] 5.8 IMPL: the by-path load of `ephemeral.py` under `forge_gitlab_ephemeral` and the session fixture
   `ephemeral_project` (D1 "One project per run", D9), its git runner given `helper=CLONE_GIT_HELPER` (D10) — Files:
   test/forge_gitlab/conftest.py — Validates: AC-1.1, AC-1.4, AC-6.3, AC-7.1, AC-7.3
-- [ ] 5.9 IMPL: `ephemeral.py`, part 4: `push_branch`, `wait_until_checked` and its pause and deadline constants
+- [x] 5.9 IMPL: `ephemeral.py`, part 4: `push_branch`, `wait_until_checked` and its pause and deadline constants
   (D10) — Files: test/forge_gitlab/ephemeral.py — Validates: AC-8.2, AC-8.3, AC-8.5
 
 ## Final

@@ -1,0 +1,61 @@
+# tasks: 5.1 5.2 5.3 5.4 5.5 5.6
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_gitlab_layout.py test/test_forge_gitlab_support.py src/payload/test/test_gitlab_wrapper_marker.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_wrapper_delivery.py test/test_layout.py test/test_gitlab_graphql_contract.py test/test_github_graphql_contract.py test/test_toolchain_manifest.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_forge_support.py test/test_forge_suite_layout.py test/test_toolchain_integrity.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [1385 items]
+
+..............................................FF..F..................... [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 20%]
+........................................................................ [ 25%]
+........................................................................ [ 31%]
+........................................................................ [ 36%]
+........................................................................ [ 41%]
+........................................................................ [ 46%]
+........................................................................ [ 51%]
+........................................................................ [ 57%]
+........................................................................ [ 62%]
+........................................................................ [ 67%]
+........................................................................ [ 72%]
+........................................................................ [ 77%]
+........................................................................ [ 83%]
+........................................................................ [ 88%]
+........................................................................ [ 93%]
+........................................................................ [ 98%]
+.................                                                        [100%]
+================================== FAILURES ===================================
+________________ test_the_session_fixture_wraps_one_provision _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:592: in test_the_session_fixture_wraps_one_provision
+    assert GITLAB_CONFTEST.is_file(), (
+E   AssertionError: test/forge_gitlab/conftest.py, which defines the session fixture `ephemeral_project`, does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-11/test/forge_gitlab/conftest.py').is_file
+_________ test_the_gitlab_forge_path_collects_every_gitlab_forge_test _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:610: in test_the_gitlab_forge_path_collects_every_gitlab_forge_test
+    assert GITLAB_CONFIGURATION.is_file(), (
+E   AssertionError: test/forge_gitlab/pytest.ini, the GitLab forge suite's configfile, does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-11/test/forge_gitlab/pytest.ini').is_file
+_____________ test_nothing_keeps_a_gitlab_forge_test_from_running _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:645: in test_nothing_keeps_a_gitlab_forge_test_from_running
+    assert not problems, "something keeps a GitLab forge test from running:\n" + "\n".join(problems)
+E   AssertionError: something keeps a GitLab forge test from running:
+E     test/forge_gitlab/pytest.ini does not exist
+E     test/forge_gitlab/conftest.py does not exist
+E   assert not ['test/forge_gitlab/pytest.ini does not exist', 'test/forge_gitlab/conftest.py does not exist']
+=========================== short test summary info ===========================
+FAILED test/test_forge_gitlab_layout.py::test_the_session_fixture_wraps_one_provision
+FAILED test/test_forge_gitlab_layout.py::test_the_gitlab_forge_path_collects_every_gitlab_forge_test
+FAILED test/test_forge_gitlab_layout.py::test_nothing_keeps_a_gitlab_forge_test_from_running
+================= 3 failed, 1382 passed in 234.60s (0:03:54) ==================
+exit=1
