@@ -73,7 +73,7 @@ follows the D section it cites.
 
 ## Wave 3 — The wrapper runner, the teardown guard, the sweep and the credential step
 
-- [ ] 3.1 TEST: S, extended with `RecordingWrapperRunner(WrapperRunner)`:
+- [x] 3.1 TEST: S, extended with `RecordingWrapperRunner(WrapperRunner)`:
   `test_every_wrapper_invocation_carries_the_marker`, `test_the_teardown_deletes_only_this_runs_project`,
   `test_the_teardown_refuses_any_other_target`,
   `test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects` (the one Hypothesis property),
@@ -81,15 +81,15 @@ follows the D section it cites.
   `write_credential.main`, loaded by path, logs the refusal and returns 1, and with a token writes the file and returns
   0 — Files: test/test_forge_gitlab_support.py — Validates: AC-2.1, AC-2.2, AC-3.1, AC-3.2, AC-3.3, AC-4.3, AC-5.3,
   UB-1
-- [ ] 3.2 TEST: G, `test_the_gitlab_forge_tests_reach_only_the_ephemeral_project`, by L's `ast` helpers over the
+- [x] 3.2 TEST: G, `test_the_gitlab_forge_tests_reach_only_the_ephemeral_project`, by L's `ast` helpers over the
   `.py` files of `test/forge_gitlab/`; "`PRODUCT_WRAPPER` (in `SubprocessWrapperRunner` and `product_wrapper` only)" is
   read as exactly there, so it is red until 3.3 — Files: test/test_forge_gitlab_layout.py — Validates: AC-4.3,
   AC-8.1, AC-8.7
-- [ ] 3.3 IMPL: `ephemeral.py`, part 2: `SubprocessWrapperRunner` (D10); `CreatedProject`, `delete_ephemeral` (D9
+- [x] 3.3 IMPL: `ephemeral.py`, part 2: `SubprocessWrapperRunner` (D10); `CreatedProject`, `delete_ephemeral` (D9
   "The teardown guard"); `ProjectRecord`, `ProjectRecord.of`, `list_group_projects`, `is_leftover`,
   `select_leftovers`, `sweep_leftovers`, `delete_leftover` (D9 "The sweep") — Files: test/forge_gitlab/ephemeral.py —
   Validates: AC-2.1, AC-2.2, AC-3.1, AC-3.2, AC-3.3, AC-4.3, AC-8.7
-- [ ] 3.4 IMPL: the CI step's command (D8 "CI"): it loads `test/forge_gitlab/ephemeral.py` by path under
+- [x] 3.4 IMPL: the CI step's command (D8 "CI"): it loads `test/forge_gitlab/ephemeral.py` by path under
   `forge_gitlab_ephemeral`, the key of `conftest.py` (D1); `main` reads `SFF_GITLAB_TEST_TOKEN`, calls the reused
   `write_test_credential` with this suite's keywords, logs a refusal and returns 1 — Files:
   test/forge_gitlab/write_credential.py — Validates: AC-5.3

@@ -118,3 +118,4 @@ deleted from git; what changes is what a session loads.
 | 2026-11-13 | forge local credential | the main checkout has no credentials/github-sff-testing-pat.txt; only local forge runs need it | #10 comment 6834467302 | operator machine setup; docs/forge-suite.md | open |
 | 2026-11-22 | forge-gitlab rate limit | gitlab.com's proposed Free per-user limit (git included) is not in effect; runs of one service account would share it | issue-11 review devops iter-01 C4 | not yet in effect | open |
 | 2026-11-22 | forge-gitlab git helper | reused SubprocessGitRunner resets helpers only for authenticated commands; an unauthenticated remote one asks the user's helper | issue-11 security iter-01 C3 | no such command | open |
+| 2026-11-22 | forge-gitlab confinement | the layout rule confines create-a-project and delete-a-project only; create-a-project-for-a-user would pass it | issue-11 task 3.2 report; design D6 | D6 calls no such record | open |

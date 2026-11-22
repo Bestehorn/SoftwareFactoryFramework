@@ -8,18 +8,25 @@ file collects whatever L holds. They apply L's workflow reader (``read_workflow`
 ``needs_of``, ``run_of``, ``run_commands``, ``scalars_of``, ``condition_of``) to the ``forge-gitlab`` and ``report``
 jobs of ``.github/workflows/ci.yml`` (AC-5.1, AC-5.2, AC-5.4, AC-6.3), and L's ``collect_only`` to
 ``test/forge_gitlab`` under the default configuration, which no fixture runs under, so no token or network is needed
-(AC-7.1).
+(AC-7.1). They parse the ``.py`` files of ``test/forge_gitlab/`` with ``ast`` into L's ``ForgeModule`` and apply L's
+``ast`` helpers to bound what the suite reaches: ``product_wrapper_problems`` to ``ephemeral.py``, so
+``PRODUCT_WRAPPER`` is named in ``SubprocessWrapperRunner`` and ``product_wrapper`` and nowhere else but its
+definition (D10), and to every module the checks of L's ``module_problems`` with this suite's fake host, project
+argument and project records, so only ``ephemeral.py`` starts the product wrapper or names, creates or deletes a
+project (AC-4.3, AC-8.1, AC-8.7).
 
 Run: ``python scripts/run_tests.py test/test_forge_gitlab_layout.py``.
 """
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 import re
 import sys
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 import pytest
 
@@ -59,6 +66,22 @@ GITLAB_FORGE_GUARDS = (
     re.compile(
         r"^\[\[?\s*" + GITLAB_FORGE_RESULT + r"\s*==?\s*" + SUCCESS + r"\s*\]\]?\s*\|\|\s*" + FAILING_STATUS + r"$"
     ),
+)
+
+# The GitLab forge suite's modules, read with L's `ast` helpers (D10; AC-8.7): every `.py` file under
+# test/forge_gitlab/, whichever wave adds it.
+GITLAB_FORGE_DIRECTORY = ROOT / GITLAB_FORGE_SUITE
+# The GitLab fake host, which no module of the suite may load (AC-8.7).
+GITLAB_FIXTURES_MODULE = "gitlab_wrapper_fixtures"
+# A `--path id=`, which names a project other than the configured one: its value an argv entry of its own (`id=...`)
+# or after `--path` in one string; `--path merge_request_iid=` and `--path issue_iid=` name no project.
+GITLAB_TARGETING_ARGUMENT = re.compile(r"(?:^|--path[ =])id=")
+GITLAB_TARGETING_DESCRIPTION = "a string starting `id=` or holding `--path id=`"
+# The records that create and delete a project (D9); `create-a-project-for-a-user` and the `-topic` records are others.
+PROJECT_CREATION = "tenant-scale#create-a-project"
+PROJECT_DELETION = "tenant-scale#delete-a-project"
+GITLAB_PROJECT_LIFECYCLE = re.compile(
+    r"(?<![\w#/-])(?:" + re.escape(PROJECT_CREATION) + r"|" + re.escape(PROJECT_DELETION) + r")(?![\w-])"
 )
 
 
@@ -102,6 +125,71 @@ def assert_fails_unless_gitlab_forge_succeeded(*, script: str, layout: ModuleTyp
         f"the verdict overwrites the `{JOB_FORGE_GITLAB}` job's failing status afterwards: {overwrites}"
     )
     assert layout.STATUS_EXIT.match(lines[-1]), f'the verdict ends with `{lines[-1]}`, not with `exit "$status"`'
+
+
+def read_gitlab_forge_modules(*, layout: ModuleType) -> list[Any]:
+    """Every ``.py`` file under ``test/forge_gitlab/``, parsed into L's ``ForgeModule``, its ``name`` its path from the
+    repository root; ``ephemeral.py`` at the top of the suite is its support module."""
+    support = GITLAB_FORGE_DIRECTORY / layout.SUPPORT_MODULE
+    return [
+        layout.ForgeModule(
+            name=path.relative_to(ROOT).as_posix(),
+            tree=ast.parse(source=path.read_text(encoding=layout.SOURCE_ENCODING), filename=str(path)),
+            is_support=path == support,
+        )
+        for path in sorted(GITLAB_FORGE_DIRECTORY.rglob(layout.PYTHON_FILES))
+    ]
+
+
+def gitlab_fixture_loads(*, tree: ast.Module, layout: ModuleType) -> list[int]:
+    """L's ``fixture_loads`` for the GitLab fake host: an import of ``gitlab_wrapper_fixtures`` (as any dotted part), or
+    a string naming it, as a load by path would."""
+    imports = [
+        layout.line_of(node=node)
+        for node in ast.walk(tree)
+        if any(
+            GITLAB_FIXTURES_MODULE in module.split(layout.MODULE_SEPARATOR)
+            for module in layout.imported_modules(node=node)
+        )
+    ]
+    paths = [line for line, text in layout.string_constants(tree=tree) if GITLAB_FIXTURES_MODULE in text]
+    return sorted(imports + paths)
+
+
+def gitlab_module_problems(*, module: Any, layout: ModuleType) -> list[str]:
+    """What ``module`` may not do (L's ``module_problems`` with this suite's fake host, project argument and project
+    records): read an attribute ``main``, load ``gitlab_wrapper_fixtures`` or patch ``urllib``; and, unless it is
+    ``ephemeral.py``, import ``subprocess``, name ``product_wrapper`` or ``PRODUCT_WRAPPER``, give a string starting
+    ``id=`` or holding ``--path id=``, or name ``tenant-scale#create-a-project`` or
+    ``tenant-scale#delete-a-project``."""
+    tree = module.tree
+    checks = [
+        (layout.entry_point_reads(tree=tree), f"reads the attribute `{layout.ENTRY_POINT}`"),
+        (gitlab_fixture_loads(tree=tree, layout=layout), f"loads `{GITLAB_FIXTURES_MODULE}`"),
+        (layout.urllib_patches(tree=tree), f"patches `{layout.URLLIB_PACKAGE}`"),
+    ]
+    if not module.is_support:
+        only_support = f"which only {layout.SUPPORT_MODULE} may"
+        checks += [
+            (layout.subprocess_imports(tree=tree), f"imports `{layout.SUBPROCESS_MODULE}`, {only_support}"),
+            (
+                layout.lines_naming(root=tree, identifier=layout.PRODUCT_WRAPPER_LOADER),
+                f"names `{layout.PRODUCT_WRAPPER_LOADER}`, {only_support}",
+            ),
+            (
+                layout.lines_naming(root=tree, identifier=layout.PRODUCT_WRAPPER_PATH),
+                f"names `{layout.PRODUCT_WRAPPER_PATH}`, {only_support}",
+            ),
+            (
+                layout.constants_matching(tree=tree, pattern=GITLAB_TARGETING_ARGUMENT),
+                f"gives {GITLAB_TARGETING_DESCRIPTION}, {only_support}",
+            ),
+            (
+                layout.constants_matching(tree=tree, pattern=GITLAB_PROJECT_LIFECYCLE),
+                f"names `{PROJECT_CREATION}` or `{PROJECT_DELETION}`, {only_support}",
+            ),
+        ]
+    return [problem for lines, text in checks for problem in layout.located(module=module, lines=lines, problem=text)]
 
 
 def test_the_gitlab_forge_job_runs_beside_verify() -> None:
@@ -201,3 +289,17 @@ def test_the_default_configuration_collects_no_gitlab_forge_test() -> None:
     assert layout.NO_TESTS_COLLECTED in output, f"the collection does not say `{layout.NO_TESTS_COLLECTED}`:\n{output}"
     errors = [marker for marker in layout.COLLECTION_ERROR_MARKERS if marker in output]
     assert not errors, f"the collection reports {errors}:\n{output}"
+
+
+def test_the_gitlab_forge_tests_reach_only_the_ephemeral_project() -> None:
+    layout = _layout()
+    modules = read_gitlab_forge_modules(layout=layout)
+    supports = [module for module in modules if module.is_support]
+    assert len(supports) == 1, (
+        f"{GITLAB_FORGE_SUITE} holds no {layout.SUPPORT_MODULE}; its files are {[module.name for module in modules]}"
+    )
+    # D10: one module-level definition of PRODUCT_WRAPPER, named outside it in SubprocessWrapperRunner and
+    # product_wrapper only, and in each of them.
+    problems = list(layout.product_wrapper_problems(module=supports[0]))
+    problems += [problem for module in modules for problem in gitlab_module_problems(module=module, layout=layout)]
+    assert not problems, "the GitLab forge suite reaches past its ephemeral project:\n" + "\n".join(problems)
