@@ -72,3 +72,12 @@
 **Alternatives considered:** none (a missing secret is the operator's prerequisite, tasks.md Operator prerequisite).
 **Evidence:** evidence/regress/ci-45033382186-c389d46.txt.
 **Artifacts touched:** evidence/regress/ci-45033382186-c389d46.txt
+
+## DL-010 — 2026-11-22T15:30:00Z — issue-work-orchestrator — phase:PR
+
+**Decision:** CI run 45037920116 on ce7ea83: the same 1 root cause as DL-009 (secret `SFF_GITLAB_TEST_TOKEN` unset; `forge-gitlab` and `report` failed, every other job green); the PR waits for the operator's token, nothing to fix in code.
+**Driver:** the credential step logged "the secret SFF_GITLAB_TEST_TOKEN is unavailable to this run" again.
+**Alternatives considered:** merging with `forge-gitlab` red (fails `report` on `main` and every later PR; devops verify-01 C2).
+**Evidence:** evidence/regress/ci-45037920116-ce7ea83.txt.
+**Supersedes:** none
+**Artifacts touched:** evidence/regress/ci-45037920116-ce7ea83.txt
