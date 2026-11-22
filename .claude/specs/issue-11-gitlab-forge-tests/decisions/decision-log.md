@@ -48,3 +48,11 @@
 **Evidence:** lifecycle research burst (Q1); design.md D1, D5, D9.
 **Supersedes:** none
 **Artifacts touched:** design.md D1, D5, D9; requirements.md UB-4
+
+## DL-007 — 2026-11-22T14:30:00Z — issue-work-orchestrator — phase:DESIGN_REVIEW
+
+**Decision:** Design approved at iteration 03 (A+B 0, TEST-READY with zero GAP); the one remaining C (name the GitLab git helper binding `CLONE_GIT_HELPER`) is applied with the tasks pass, without another panel round.
+**Driver:** review/review-latest.md (iteration 03); `spec-phase-review.md` Readiness gate.
+**Alternatives considered:** a fourth panel round for one C (not offered: C never gates).
+**Evidence:** review/spec-review-agent/iteration-03.md C1, review/test-architect/iteration-03.md C1, review/standards-reviewer/iteration-03.md (CLEAN).
+**Artifacts touched:** review/review-latest.md
