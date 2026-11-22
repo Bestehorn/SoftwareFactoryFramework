@@ -33,7 +33,6 @@ the reuse rule of `test/forge/conftest.py` `_load_ephemeral`: `new_run_id`, `mai
 parameters D10 gives them, `refuse_distributed_run`, `credential_helper_arguments`, `find_test_credential`,
 `write_test_credential`, `SubprocessGitRunner` and `product_wrapper`. Also reused: the interpreter-option marker (#10
 D2), the suite outside the default `python_files` (D1), the teardown and sweep guards (D9), the `report` verdict (D5).
-Under `test/forge/` only `ephemeral.py` changes, by those parameters.
 
 **Deviations, each where GitLab differs:** the guard judges the configured `project_id`, since nothing in the GitLab
 wrapper reads a git `origin`, and raises its own exception type, since `main` maps every `GitLabAPIError` to exit 1
@@ -59,7 +58,7 @@ GitLab's asynchronous preparation and mergeability check (D6).
   fixture and no hook, and loads `ephemeral.py` by path (key `forge_gitlab_ephemeral`); that module loads
   `test/forge/ephemeral.py` by path. Both run only standard-library imports and constants, so no `sys.path` changes and
   nothing is sent.
-- **Not an exclusion**, as #10 D1: `pyproject.toml` is not edited, and nothing skips, xfails, deselects or hooks.
+- **Not an exclusion**, as #10 D1: nothing skips, xfails, deselects or hooks.
 - **One project per run.** `--workers 1`, and `ephemeral_project` first calls
   `refuse_distributed_run(worker_id=worker_id)` of `test/forge_gitlab/ephemeral.py`, which calls the reused one with
   `worker_id=worker_id, command=GITLAB_FORGE_COMMAND` (L's `passes_own_worker_id` admits one keyword only): #10 D1's
@@ -131,7 +130,7 @@ git-scm.com quotes and platform note.
 **The clone** follows #10 D3's steps: `git init` in `<clone>`, the clone's two credential files (D8), `git remote add
 origin https://gitlab.com/bestehorn-sff-test/<path>.git` (no userinfo, so `.git/config` holds no token), and after the
 creation an authenticated `git fetch origin` and `git checkout -B <default branch> --track origin/<default branch>`.
-A test pushes a branch through `push_branch` (D10). Every git command passes `COMMIT_IDENTITY`.
+Every git command passes `COMMIT_IDENTITY`.
 
 Alternatives: the helper parsing `config/gitlab.json` (above); #10's `credentials/` file in the working tree (one more
 exclude line; `.git/` needs none); the token in the URL, `http.extraHeader`, `GIT_ASKPASS` or the `store` helper (#10
@@ -362,7 +361,7 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
 | `test/forge_gitlab/pytest.ini` | new: D1 |
 | `test/forge_gitlab/conftest.py` | new: loads `ephemeral.py` by path once per process; `ephemeral_project` (D9) |
 | `test/forge/ephemeral.py` | keyword-only parameters, each defaulting to today's value: `refuse_distributed_run(command=)`, `credential_helper_arguments(helper_key=, username=, credential_file=)`, `find_test_credential(credential_file=)`, `write_test_credential(credential_file=, secret_name=)`, `SubprocessGitRunner(helper=)` (default `credential_helper_arguments`), `product_wrapper(path=, module_name=)`; the six bodies use them and their docstrings describe them; every existing call unchanged (UB-4); the refusal messages keep #10's words ("test organization", "repository") | <!-- pragma: allowlist secret -->
-| `test/forge_gitlab/ephemeral.py` | new: the reused symbols of `test/forge/ephemeral.py` (Overview), loaded by path, the six parameterised ones called with this module's constants; the constants of D1 to D9, `TEST_GROUP` included; the dataclasses `CreatedProject`, `ProjectRecord`, `EphemeralProject`; `SubprocessWrapperRunner`; `product_wrapper()`; `push_branch`, `wait_until_checked`; `refuse_distributed_run(*, worker_id)` (D1); the functions of D4, D8 and D9 |
+| `test/forge_gitlab/ephemeral.py` | new: the reused symbols of `test/forge/ephemeral.py` (Overview), loaded by path, the six parameterised ones called with this module's constants; the constants of D1 to D9, `TEST_GROUP` included; the dataclasses `CreatedProject`, `ProjectRecord`, `EphemeralProject`; `SubprocessWrapperRunner`; `CLONE_GIT_HELPER`; `product_wrapper()`; `push_branch`, `wait_until_checked`; `refuse_distributed_run(*, worker_id)` (D1); the functions of D4, D8 and D9 |
 | `test/forge_gitlab/write_credential.py` | new: the CI step's command (D8) |
 | `test/forge_gitlab/forge_fixture.py`, `forge_subcommands.py`, `forge_records.py`, `forge_graphql.py`, `forge_request_forms.py` | new: D6, one module docstring per slice |
 | `test/test_forge_gitlab_support.py`, `test/test_forge_gitlab_layout.py` | new: S, G |
@@ -379,9 +378,10 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
   of a body `print_bytes` wrote ("This code will then be turned back into the same byte when the 'surrogateescape'
   error handler is used when encoding the data", docs.python.org `library/codecs.html` "Error Handlers"). #10's runner
   decodes strictly, and F:request_forms' archive is no UTF-8 text.
-- The git runner is the reused `SubprocessGitRunner(clone=..., helper=...)`, its `helper` a callable that `run` calls
-  as `helper(clone=self.clone)` when `authenticated`: `credential_helper_arguments` with D3's other three keywords
-  bound (`functools.partial`).
+- The git runner is the reused `SubprocessGitRunner(clone=..., helper=CLONE_GIT_HELPER)`, as `ephemeral_project`
+  builds it. `CLONE_GIT_HELPER`, a module constant, is `credential_helper_arguments` with D3's other three keywords
+  bound (`functools.partial`); `run` calls it as `helper(clone=self.clone)` when `authenticated`, and S
+  `test_the_credential_helper_answers_git_with_the_clone_token` calls it.
 - `product_wrapper()` returns the reused `product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)`
   for `src/payload/scripts/gitlab_wrapper.py` under the key `forge_gitlab_product_wrapper`: loaded on first use, never
   at import, `sys.path` restored afterwards.
@@ -497,11 +497,11 @@ shape: the distributed-run refusal, a `tempfile.mkdtemp` workspace, both runners
   `.git/sff-forge-token`; no recorded argv, no record `caplog` captured at `DEBUG`, and no `repr` of the yielded
   `EphemeralProject` holds it. Example, S `test_the_clone_commits_no_credential`: `prepare_clone` with the real git
   runner (local commands only), then `git add -A`: `git ls-files` names neither file. Example, S
-  `test_the_credential_helper_answers_git_with_the_clone_token`, as #10's, through the `helper` that
-  `test/forge_gitlab/ephemeral.py` gives `SubprocessGitRunner`: it first asserts that the options are
-  exactly `-c credential.helper=` then `-c credential.https://gitlab.com.helper=!...` and hold no token, then runs
-  `git credential fill` with them and `protocol=https`, `host=gitlab.com`, and checks `username=sff-forge-suite` and
-  the file's token without printing the answer. Structural, G `test_the_gitlab_secret_reaches_one_step`.
+  `test_the_credential_helper_answers_git_with_the_clone_token`, as #10's, through `CLONE_GIT_HELPER` (D10): it
+  first asserts that the options are exactly `-c credential.helper=` then `-c credential.https://gitlab.com.helper=!...`
+  and hold no token, then runs `git credential fill` with them and `protocol=https`, `host=gitlab.com`, and checks
+  `username=sff-forge-suite` and the file's token without printing the answer. Structural, G
+  `test_the_gitlab_secret_reaches_one_step`.
 - **AC-7.1** — Example, G `test_the_default_configuration_collects_no_gitlab_forge_test`: `--collect-only -c
   pyproject.toml test/forge_gitlab` exits 5, "no tests collected", no import error.
 - **AC-7.2** — Example, G `test_the_gitlab_forge_path_collects_every_gitlab_forge_test`: `--collect-only -q
