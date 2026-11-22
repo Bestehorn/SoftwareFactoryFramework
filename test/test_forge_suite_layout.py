@@ -54,6 +54,8 @@ KEY_CONTINUE_ON_ERROR = "continue-on-error"
 
 JOB_VERIFY = "verify"
 JOB_FORGE = "forge"
+# The GitLab forge job, which `report` also waits for (issue #11 D5).
+JOB_FORGE_GITLAB = "forge-gitlab"
 JOB_REPORT = "report"
 
 TRIGGER_PUSH = "push"
@@ -1168,7 +1170,9 @@ def test_the_secret_reaches_one_step() -> None:
 def test_the_report_judges_the_forge_job() -> None:
     report = job_named(workflow=read_workflow(), name=JOB_REPORT)
     needs = needs_of(job=report)
-    assert sorted(needs) == sorted([JOB_VERIFY, JOB_FORGE]), f"`{JOB_REPORT}` needs {needs}, not [verify, forge]"
+    assert sorted(needs) == sorted([JOB_VERIFY, JOB_FORGE, JOB_FORGE_GITLAB]), (
+        f"`{JOB_REPORT}` needs {needs}, not [verify, forge, forge-gitlab]"
+    )
     assert condition_of(job=report) == ALWAYS, f"`{JOB_REPORT}` runs `{KEY_IF}: {report.get(KEY_IF)}`, not {ALWAYS}"
     verdicts = [
         command for command in run_commands(steps=steps_of(job=report, name=JOB_REPORT)) if SUMMARY_COMMAND in command

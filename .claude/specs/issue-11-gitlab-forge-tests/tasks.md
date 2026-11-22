@@ -45,7 +45,7 @@ follows the D section it cites.
 
 ## Wave 2 — The GitLab forge job and the credential primitives
 
-- [ ] 2.1 TEST: S, created. It loads `test/forge_gitlab/ephemeral.py` by path from inside each test body, through a
+- [x] 2.1 TEST: S, created. It loads `test/forge_gitlab/ephemeral.py` by path from inside each test body, through a
   cached helper like #10's S `_load_by_path`, never at import and never in a fixture, so S collects in every wave and
   a test whose symbol does not exist yet fails in its own body; its doubles (3.1, 4.1) are built from the loaded
   module, and 3.1 loads `test/forge_gitlab/write_credential.py`, the same way: `test_a_distributed_run_is_refused`,
@@ -54,17 +54,17 @@ follows the D section it cites.
   `test_a_missing_secret_fails_the_credential_step` (`write_test_credential` with this suite's keywords); checkouts in
   `tmp_path`, local git only — Files: test/test_forge_gitlab_support.py — Validates: AC-1.1, AC-1.2, AC-5.3, AC-6.1,
   AC-6.3, UB-1
-- [ ] 2.2 TEST: G, created; it loads L by path, registered in `sys.modules` before it runs as #10's S
+- [x] 2.2 TEST: G, created; it loads L by path, registered in `sys.modules` before it runs as #10's S
   `_load_by_path` does, for its workflow reader and `collect_only`: `test_the_gitlab_forge_job_runs_beside_verify`,
   `test_the_gitlab_secret_reaches_one_step`, `test_the_report_judges_the_gitlab_forge_job`, and
   `test_the_default_configuration_collects_no_gitlab_forge_test` (red while `test/forge_gitlab/` does not exist) —
   Files: test/test_forge_gitlab_layout.py — Validates: AC-5.1, AC-5.2, AC-5.4, AC-6.3, AC-7.1, UB-1
-- [ ] 2.3 TEST: L, `test_the_report_judges_the_forge_job`'s expected `needs` becomes `verify`, `forge` and
+- [x] 2.3 TEST: L, `test_the_report_judges_the_forge_job`'s expected `needs` becomes `verify`, `forge` and
   `forge-gitlab` (D5); no other assertion changed or removed — Files: test/test_forge_suite_layout.py — Validates:
   AC-5.4, UB-4
-- [ ] 2.4 IMPL: the job `forge-gitlab`, the changed `report` and the header comment (D5) — Files:
+- [x] 2.4 IMPL: the job `forge-gitlab`, the changed `report` and the header comment (D5) — Files:
   .github/workflows/ci.yml — Validates: AC-5.1, AC-5.2, AC-5.4, AC-6.3
-- [ ] 2.5 IMPL: `test/forge_gitlab/ephemeral.py`, part 1: the reused symbols of `test/forge/ephemeral.py`, loaded by
+- [x] 2.5 IMPL: `test/forge_gitlab/ephemeral.py`, part 1: the reused symbols of `test/forge/ephemeral.py`, loaded by
   path under `forge_ephemeral` (Overview); `GITLAB_FORGE_COMMAND`, `GITLAB_HELPER_KEY`, `GIT_USERNAME`,
   `CLONE_GIT_TOKEN_FILE`, `TEST_GROUP`, `TEST_CREDENTIAL_FILE`, `SECRET_NAME`, `PRODUCT_WRAPPER`,
   `PRODUCT_WRAPPER_MODULE`; `refuse_distributed_run(*, worker_id)` (D1); `CLONE_GIT_HELPER` and
