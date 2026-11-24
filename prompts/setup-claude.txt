@@ -1520,13 +1520,17 @@ cp templates/config/delivery.json.template          config/delivery.json   # TRA
    `cancel-in-progress: ${{ github.event_name == 'pull_request' }}`. (On GitHub Free a private
    repository's rulesets are not enforced and there is no native merge queue; the steward needs
    neither.)
-4. **Deploys.** Take the triggers, the concurrency block, the `guard` job and the last two jobs of
-   `templates/ci/github-deploy.yml.template` into the deploy workflow, keeping its own deploy
-   steps: `workflow_dispatch` with the landed `sha` (guarded: a 40-hex commit on the trunk), ONE
+4. **Deploys.** Take the triggers, the concurrency block, the deploy job's `outputs:` and its guard
+   steps, and the last two jobs of `templates/ci/github-deploy.yml.template` into the deploy
+   workflow, keeping its own deploy steps: `workflow_dispatch` with the landed `sha`, guarded to be
+   the trunk's TIP when the deploy job starts — the guard is that job's FIRST step, run from a
+   checkout of the default branch before the commit is checked out, because a re-run of only the
+   deploy job would skip a guard in a job of its own, and an older trunk commit (a re-run, a queued
+   run, a dispatch naming one) would run old code with the deploy role. Then ONE
    concurrency group per environment with `cancel-in-progress: false` and no `queue: max` — a
    running deploy is never cancelled and a newer pending one supersedes an older pending one —
    then the post-deploy `e2e` job and the `verdict` job (`if: ${{ !cancelled() &&
-   needs.guard.result == 'success' }}` — a refused dispatch is not a failed deploy and returns no
+   needs.deploy.outputs.admitted != '' }}` — a refused dispatch is not a failed deploy and returns no
    issue as `needs-rework`; `merge_steward.py verdict`). GitLab: `resource_group: deploy-<env>`, `interruptible: false`,
    "Prevent outdated deployment jobs", and the `delivery-verdict` job in `.post`. Supersession
    loses no verdict because verification is by ANCESTRY: a green post-deploy check on commit N
@@ -1552,7 +1556,7 @@ cp templates/config/delivery.json.template          config/delivery.json   # TRA
    or `github.event.after`. Each must admit the steward's DISPATCH of the deploy workflow
    (`workflow_dispatch` with `sha`; the commit is `inputs.sha || github.sha`); a post-merge job that
    is not a deploy (publishing, a coverage upload, a release) moves into the deploy workflow as a job
-   after `guard`. GitLab is not affected: the steward pushes with a project access token, and that
+   that `needs: deploy`, so only an admitted commit reaches it. GitLab is not affected: the steward pushes with a project access token, and that
    push starts the trunk pipeline as before.
 5. **The labels**, created once per repository: `queue`, `queue-failed`, `queue-conflict`,
    `queue-retried`, `do-not-merge`, `awaiting-verification`, `verified`, `verification-failed`,
@@ -2328,7 +2332,8 @@ this prompt (leave any existing one alone).
     workflow triggers on `schedule` + `workflow_dispatch` only, the CI workflow accepts
     `workflow_dispatch`, no trunk-push run can be cancelled by a later push, the deploy
     workflow's concurrency group is per environment with `cancel-in-progress: false` and no
-    `queue: max`, its `verdict` job runs `if: ${{ !cancelled() && needs.guard.result == 'success' }}`,
+    `queue: max`, its deploy job's first step after the default-branch checkout is `merge_steward.py
+    deploy-guard`, its `verdict` job runs `if: ${{ !cancelled() && needs.deploy.outputs.admitted != '' }}`,
     the CI workflow ends with the `steward-wake` job, the twelve labels exist,
     and `.gitattributes` carries the `merge=union` lines of Part 9.
 

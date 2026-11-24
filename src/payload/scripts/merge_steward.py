@@ -54,7 +54,7 @@ USAGE
   python scripts/merge_steward.py [...] verdict --sha SHA | --sha-from-event FILE
          --conclusion success|failure|auto [--run-url URL] [--environment NAME]
          [--gitlab-pipeline ID --deploy-jobs job1,job2]
-  python scripts/merge_steward.py deploy-guard --event-file FILE   # GitHub deploy: a 40-hex trunk commit or exit 4
+  python scripts/merge_steward.py deploy-guard --event-file FILE [--github-output FILE]  # the trunk's tip or exit 4
   python scripts/merge_steward.py [...] enqueue <pr> [--allow-pending]      # what `enqueue-pr` runs
   python scripts/merge_steward.py [...] dequeue <pr> [--reason TEXT]
   python scripts/merge_steward.py [...] check-pr <pr>                       # would the queue take it now?
@@ -1958,15 +1958,29 @@ class Steward:
         self._do(f"issue #{number}: close", self.host.issue_close, number)
         self._issue_labels(number, remove=done_labels)
 
-    def deploy_guard(self, event_file: str) -> int:
-        """The GitHub deploy's first job: the commit it is asked to deploy is a 40-hex commit ON the trunk. Runs
-        the default branch's copy of this file, so a dispatch can never make the guard run the commit it guards."""
+    def deploy_guard(self, event_file: str, github_output: str = "") -> int:
+        """The GitHub deploy job's FIRST step: the commit it is asked to deploy is the trunk's TIP, read now. An older
+        trunk commit is refused too — a re-run, a queued run or a dispatch naming one would put old code live with
+        the deploy role, and the tip's own deploy verifies it by ancestry. Runs the default branch's copy of this
+        file, so a dispatch can never make the guard run the commit it guards. On admission it appends
+        `admitted=<sha>` to `github_output` (the step's `$GITHUB_OUTPUT`): the verdict job runs only on that."""
         sha = deployed_sha(read_event(event_file))
         trunk = self.fetch()
-        if self.git.has_commit(sha) and (sha == trunk or self.git.is_ancestor(sha, self.trunk_ref)):
-            self.report.say(f"deploying {sha} from {self.s.trunk} (at {trunk[:12]})")
+        if sha == trunk:
+            self.report.say(f"deploying {sha}, the tip of {self.s.trunk}")
+            if github_output:
+                with Path(github_output).open("a", encoding="utf-8") as out:
+                    out.write(f"admitted={sha}\n")
             return EXIT_OK
-        self.report.say(f"REFUSED: {sha} is not a commit on {self.s.trunk} — nothing is deployed, no verdict follows")
+        if self.git.has_commit(sha) and self.git.is_ancestor(sha, self.trunk_ref):
+            self.report.say(
+                f"REFUSED: {sha} is on {self.s.trunk} but superseded by its tip {trunk[:12]} — nothing is deployed, "
+                "no verdict follows; the tip's deploy verifies it by ancestry"
+            )
+        else:
+            self.report.say(
+                f"REFUSED: {sha} is not a commit on {self.s.trunk} — nothing is deployed, no verdict follows"
+            )
         return EXIT_REFUSED
 
     # -- the session waits for its landing (A2), and asks whether its issue may be handed off (B3) ------
@@ -2280,6 +2294,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     landed_all.add_argument("prs", type=int, nargs="+")
     guard = sub.add_parser("deploy-guard")
     guard.add_argument("--event-file", required=True)
+    guard.add_argument("--github-output", default="", help="append admitted=<sha> here (the step's $GITHUB_OUTPUT)")
     return parser.parse_args(list(argv))
 
 
@@ -2305,7 +2320,9 @@ def main(argv: Sequence[str]) -> int:  # noqa: C901 — one dispatch per subcomm
     git = Git(ROOT, str(settings.steward["git_user_name"]), str(settings.steward["git_user_email"]))
     try:
         if args.command == "deploy-guard":  # git only: no token, no tracker
-            return Steward(settings, git, NO_HOST, Report()).deploy_guard(args.event_file)
+            return Steward(settings, git, NO_HOST, Report()).deploy_guard(
+                event_file=args.event_file, github_output=args.github_output
+            )
         token = read_token(args, settings)
         host = make_host(settings, token, git)
         report = Report(dry_run=bool(getattr(args, "dry_run", False)))

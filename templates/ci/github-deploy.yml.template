@@ -1,11 +1,12 @@
-# Deploy {{ENVIRONMENT}} — the newest landed commit, never cancelled while running, verified by ancestry.
+# Deploy {{ENVIRONMENT}} — only the trunk's tip, never cancelled while running, verified by ancestry.
 # Installed from templates/ci/github-deploy.yml.template as the project's deploy workflow (merge it into an
-# existing one: keep its deploy steps, take the triggers, the concurrency block, `guard` and the two last jobs).
+# existing one: keep its deploy steps, take the triggers, the concurrency block, the deploy job's `outputs:` and its
+# steps up to and including "Check out the commit to deploy", and the two last jobs).
 # Under the steward the trunk moves by a GITHUB_TOKEN push, which starts no workflow: a deploy chain admitted only
 # by `workflow_run` of the CI or by a trunk `push` never fires again, so its admission (`on:`, job `if:`s, reads
 # of `github.event.workflow_run.head_sha`) must admit this dispatch — setup prompt Part 7.1 item 4.
 #
-# THE THREE RULES (each from a measured failure, docs/reports/merge-velocity-chess-2026-10-25.md):
+# THE FOUR RULES (1-3 each from a measured failure, docs/reports/merge-velocity-chess-2026-10-25.md):
 #   1. The merge steward starts this workflow with the commit it just landed (`workflow_dispatch`, input `sha`);
 #      a push made with GITHUB_TOKEN starts no workflow, a dispatch does. The `push` trigger serves a project
 #      that merges directly (`merge: direct`, and the bootstrap before the steward is switched on): a merge made
@@ -17,22 +18,31 @@
 #   3. Supersession loses no verdict, because verification is by ANCESTRY: the `verdict` job verifies every
 #      landed issue whose landing commit the deployed commit contains. It runs for a deploy that ran to a
 #      result and never for a cancelled one (`!cancelled()`), so a superseded deploy renders nothing — and never
-#      for a commit the guard refused: a refused dispatch is not a failed deploy, and must not return the issues
-#      it happens to contain as `needs-rework`.
+#      for a commit the guard refused (the deploy job's `admitted` output is empty): a refused dispatch is not a
+#      failed deploy, and must not return the issues it happens to contain as `needs-rework`. The runner sets a
+#      job's outputs when the job completes, whatever its result, so an admitted deploy that fails still gets its
+#      red verdict.
+#   4. The deploy deploys ONLY the trunk's tip, read when its job starts. Any token with Actions write can
+#      dispatch this workflow with an older trunk commit as `sha`, or re-run an old run, and either would run old
+#      code with the deploy role; the guard refuses both (an older commit's issues are verified by the tip's
+#      deploy, by ancestry). The guard is the deploy job's FIRST step, run from a checkout of the default branch,
+#      before the job checks out the commit and before any step that holds the role: a re-run of only the deploy
+#      job reuses the other jobs' results, so a guard in a job of its own would not run again.
 #
 # The end-to-end job runs the project's committed post-deploy checks (always-test-e2e.md); never a human step.
 #
 # NO `env:` MAPS. The one untrusted value — the dispatch input `sha` — never reaches a shell: the guard and the
 # verdict read it from the run's event file (`${{ github.event_path }}`) with the default branch's copy of
 # scripts/merge_steward.py, which validates it; `checkout` takes it as a `with:` input. Everything else interpolated
-# into a `run:` line is a GitHub-controlled value (job results, server URL, run id).
+# into a `run:` line is a GitHub-controlled value (job results, server URL, run id) or the runner's own output
+# file (`$GITHUB_OUTPUT`).
 name: Deploy {{ENVIRONMENT}}
 
 on:
   workflow_dispatch:
     inputs:
       sha:
-        description: "The trunk commit to deploy (the merge steward passes the commit it just landed)"
+        description: "The trunk commit to deploy, refused unless it is the trunk's tip (the steward passes its landing)"
         required: true
         type: string
   push:
@@ -46,9 +56,13 @@ permissions:
   contents: read
 
 jobs:
-  guard:
+  deploy:
     runs-on: {{DEPLOY_RUNS_ON}}
+    environment: {{ENVIRONMENT}}
+    outputs:
+      admitted: ${{ steps.guard.outputs.admitted }}
     steps:
+      # THE GUARD COMES FIRST, IN THIS JOB (rule 4): nothing below it runs for a refused commit.
       - name: Check out the default branch (the trusted copy of the steward, with the trunk's history)
         uses: actions/checkout@v4 # pin to a commit SHA per the project's supply-chain policy
         with:
@@ -57,15 +71,14 @@ jobs:
       - uses: actions/setup-python@v5 # pin to a commit SHA per the project's supply-chain policy
         with:
           python-version: "{{PYTHON_VERSION}}"
-      - name: Guard — deploy only a 40-hex commit that is on the trunk
-        run: python scripts/merge_steward.py deploy-guard --event-file "${{ github.event_path }}"
-
-  deploy:
-    needs: guard
-    runs-on: {{DEPLOY_RUNS_ON}}
-    environment: {{ENVIRONMENT}}
-    steps:
-      - uses: actions/checkout@v4 # pin to a commit SHA per the project's supply-chain policy
+      - name: Guard — deploy only the trunk's tip, read now
+        id: guard
+        shell: bash
+        run: >-
+          python scripts/merge_steward.py deploy-guard --event-file "${{ github.event_path }}"
+          --github-output "$GITHUB_OUTPUT"
+      - name: Check out the commit to deploy
+        uses: actions/checkout@v4 # pin to a commit SHA per the project's supply-chain policy
         with:
           ref: ${{ inputs.sha || github.sha }}
       # {{DEPLOY_STEPS}} — the project's own deploy steps (CDK/SAM/... through its deploy script)
@@ -80,8 +93,8 @@ jobs:
       # {{E2E_STEPS}} — e.g. `python scripts/run_checks.py --group e2e` against the deployed {{ENVIRONMENT}}
 
   verdict:
-    needs: [guard, deploy, e2e]
-    if: ${{ !cancelled() && needs.guard.result == 'success' }}
+    needs: [deploy, e2e]
+    if: ${{ !cancelled() && needs.deploy.outputs.admitted != '' }}
     runs-on: {{DEPLOY_RUNS_ON}}
     permissions:
       contents: read

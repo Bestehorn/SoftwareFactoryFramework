@@ -713,16 +713,35 @@ def test_a_closing_keyword_is_never_a_reference_keyword(tmp_path: Path) -> None:
         ms.load_settings(path)
 
 
-def test_the_deploy_guard_admits_only_a_trunk_commit(world: World, tmp_path: Path) -> None:
-    on_trunk = world.main()
+def test_the_deploy_guard_admits_only_the_trunk_tip(world: World, tmp_path: Path) -> None:
+    older = world.main()
     off_trunk = world.pr(1, "a.txt", "a changed\n")
     world.git.run("fetch", "origin", "+refs/heads/pr-1:refs/remotes/origin/pr-1")
     event = tmp_path / "event.json"
-    steward = ms.Steward(world.settings, world.git, ms.NO_HOST, ms.Report())
-    event.write_text(json.dumps({"inputs": {"sha": on_trunk}}), encoding="utf-8")
-    assert steward.deploy_guard(str(event)) == ms.EXIT_OK
-    event.write_text(json.dumps({"inputs": {"sha": off_trunk}}), encoding="utf-8")
-    assert steward.deploy_guard(str(event)) == ms.EXIT_REFUSED, "a commit off the trunk is never deployed"
+    output = tmp_path / "github-output"
+    report = ms.Report()
+    steward = ms.Steward(world.settings, world.git, ms.NO_HOST, report)
+
+    def guard(sha: str) -> int:
+        event.write_text(json.dumps({"inputs": {"sha": sha}}), encoding="utf-8")
+        return steward.deploy_guard(event_file=str(event), github_output=str(output))
+
+    assert guard(sha=older) == ms.EXIT_OK, "the trunk's tip is deployed"
+    assert output.read_text(encoding="utf-8") == f"admitted={older}\n", "the verdict job runs on this output"
+    tip = world.push_main("b.txt", "trunk moved on\n")
+    assert guard(sha=older) == ms.EXIT_REFUSED, "an older trunk commit is never deployed (a re-run, a queued run)"
+    assert "superseded" in report.lines[-1], report.lines[-1]
+    assert guard(sha=off_trunk) == ms.EXIT_REFUSED, "a commit off the trunk is never deployed"
+    assert "not a commit on" in report.lines[-1], report.lines[-1]
+    assert output.read_text(encoding="utf-8") == f"admitted={older}\n", "a refused commit writes no output"
+    assert guard(sha=tip) == ms.EXIT_OK
+    assert output.read_text(encoding="utf-8") == f"admitted={older}\nadmitted={tip}\n"
+
+
+def test_the_deploy_guard_cli_takes_the_job_output_file() -> None:
+    args = ms.parse_args(["deploy-guard", "--event-file", "event.json", "--github-output", "out"])
+    assert (args.event_file, args.github_output) == ("event.json", "out")
+    assert ms.parse_args(["deploy-guard", "--event-file", "event.json"]).github_output == ""
 
 
 def steward_of(world: World) -> Any:
