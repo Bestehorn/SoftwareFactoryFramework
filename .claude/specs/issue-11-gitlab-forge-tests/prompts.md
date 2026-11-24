@@ -18,3 +18,6 @@
    (comment 7077150394).
 7. User, 2026-11-22: "Use gitlab.com"
    Answer: the gitlab.com steps of comment 6923784402 stand; the suite is built now, its real run waits for the token.
+8. User, 2026-11-24: "I have created a new gitlab account on gitlab.com. Provide me with the steps to create the secret."
+   Answer: the gitlab.com group, service account, Owner membership and `api` token steps, then the GitHub Actions
+   secret `SFF_GITLAB_TEST_TOKEN` (issue #11).
