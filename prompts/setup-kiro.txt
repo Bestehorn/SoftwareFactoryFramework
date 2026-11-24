@@ -1500,12 +1500,13 @@ What each piece guarantees — keep all of them; each closes a measured failure:
   gets. The project's CI workflow accepts `workflow_dispatch` (GitHub): the steward
   dispatches it on each train, because a `GITHUB_TOKEN` push starts no workflow.
 - **Deploys supersede, never cancel.** The steward starts the deploy with the landed commit
-  (`workflow_dispatch` input `sha`, guarded to be on the trunk), in ONE concurrency group per
+  (`workflow_dispatch` input `sha`, guarded to be the trunk's TIP by the deploy job's FIRST step,
+  run from the default branch — a re-run of that job alone runs it again), in ONE concurrency group per
   environment — `concurrency: deploy-<env>`, `cancel-in-progress: false`, no `queue: max`
   (GitLab: `resource_group: deploy-<env>`, `interruptible: false`, "Prevent outdated
   deployment jobs"): a running deploy finishes, a newer pending one replaces an older one.
 - **Verification by ancestry.** The deploy's LAST job — `verdict`, `if: ${{ !cancelled() &&
-  needs.guard.result == 'success' }}`, so a refused dispatch returns no issue
+  needs.deploy.outputs.admitted != '' }}`, so a refused dispatch returns no issue
   (GitLab `delivery-verdict` in `.post`, `when: always`) — runs `merge_steward.py verdict`:
   every open issue whose landing the deployed commit CONTAINS (`git merge-base
   --is-ancestor`) is verified on green — its `(post-deploy)` checklist items ticked, CLOSED
@@ -1545,7 +1546,7 @@ What each piece guarantees — keep all of them; each closes a measured failure:
   chain admitted only by a trunk `push` or a `workflow_run` of the CI never fires again —
   inventory those workflows and job `if:`s and re-admit them for the steward's dispatch
   (`inputs.sha || github.sha`); a post-merge job that is not a deploy moves into the deploy
-  workflow after `guard`. GitLab is unaffected (a project-token push starts the pipeline).
+  workflow as a job that `needs: deploy`. GitLab is unaffected (a project-token push starts the pipeline).
 - **Bootstrap, in two PRs:** the first installs the steward with `config/delivery.json` at
   `merge: direct` and merges directly (the steward is not there yet to land it); the second, after
   a tick ran green, switches to `steward`; every later PR is enqueued.
