@@ -1,0 +1,1180 @@
+# mutant-wave-1 M1a: wave 1 IMPL (1.3 gitlab_wrapper.py + gitlab_api/errors.py, 1.4 test/forge/ephemeral.py) reverted to 83a1415
+# mutated files:
+ src/payload/scripts/gitlab_api/errors.py | 11 ++--
+ src/payload/scripts/gitlab_wrapper.py    | 76 ++++----------------------
+ test/forge/ephemeral.py                  | 91 +++++++++++++-------------------
+ 3 files changed, 49 insertions(+), 129 deletions(-)
+# expect: W red (guard absent); H green (UB-4 guard, old behaviour); S red (keyword-only parameters absent)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_wrapper_marker.py test/test_forge_support.py test/test_forge_gitlab_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [106 items]
+
+FFF.FFFFFFFFFFF.FFF.FFFFFFFFF.FFFFFFFFF.FF..FFFFFFFF.................... [ 67%]
+.FFFFF.FFFFFF...FFFFFFFFFFFFFFFFFF                                       [100%]
+================================== FAILURES ===================================
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-inner-prefix] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-under-an-ephemeral-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-text] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-id] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-product-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n', stderr...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-text] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-test-group-unprefixed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n', stderr='', reque...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-product-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n', stderr='', requests=(RecordedR...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-test-group-unprefixed] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n', stderr='', request...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-prefix-without-namespace] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n', stder...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-inner-prefix] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-under-an-ephemeral-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-id] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-text] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-text] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-product-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-test-group-unprefixed] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-prefix-without-namespace] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-inner-prefix] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-product-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-under-an-ephemeral-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-id] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-text] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-product-project] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-test-group-unprefixed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-test-group-unprefixed] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-prefix-without-namespace] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+________ test_without_the_marker_every_project_is_served[inner-prefix] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n', stderr='', request...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+__ test_without_the_marker_every_project_is_served[under-an-ephemeral-path] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n', stder...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+____________ test_the_interpreter_option_reaches_the_entry_script _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_wrapper_marker.py:309: in test_the_interpreter_option_reaches_the_entry_script
+    assert len(refusals) == 1, f"standard error holds no single refusal naming {MARKER_OPTION}: {outcome}"
+E   AssertionError: standard error holds no single refusal naming sff_test_marker: exit 2; stdout ''; stderr 'call refuses the GitLab operation "plan#create-an-issue": use the issue create subcommand, which sends it\n'
+E   assert 0 == 1
+E    +  where 0 = len([])
+______________ test_the_marker_lets_an_ephemeral_project_through ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:381: in test_the_marker_lets_an_ephemeral_project_through
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n', stderr...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+____________________ test_the_marker_values_are_issue_10s _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_wrapper_marker.py:395: in test_the_marker_values_are_issue_10s
+    assert gitlab_values == issue_10s, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\scripts\gitlab_wrapper.py (TEST_MARKER_OPTION, EPHEMERAL_PROJECT_PREFIX) is (None, None), D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\scripts\github_wrapper.py (TEST_MARKER_OPTION, EPHEMERAL_REPOSITORY_PREFIX) is ('sff_test_marker', 'sff-test-')
+E   assert (None, None) == ('sff_test_ma..., 'sff-test-')
+E     
+E     At index 0 diff: [0m[94mNone[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33msff_test_marker[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_________ test_without_the_marker_every_project_is_served[numeric-id] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+________ test_without_the_marker_every_project_is_served[numeric-text] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+______ test_without_the_marker_every_project_is_served[product-project] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n', stderr...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+___ test_without_the_marker_every_project_is_served[test-group-unprefixed] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n', stderr='', reque...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+__ test_without_the_marker_every_project_is_served[prefix-without-namespace] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n', stderr='', requests=(RecordedR...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+______________________ test_a_distributed_run_is_refused ______________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:382: in test_a_distributed_run_is_refused
+    forge.refuse_distributed_run(worker_id=DISTRIBUTED_WORKER_ID)
+test\forge_gitlab\ephemeral.py:276: in refuse_distributed_run
+    _REUSED.refuse_distributed_run(worker_id=worker_id, command=GITLAB_FORGE_COMMAND)
+E   TypeError: refuse_distributed_run() got an unexpected keyword argument 'command'
+__________________ test_a_run_id_names_an_ephemeral_project ___________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:397: in test_a_run_id_names_an_ephemeral_project
+    _require(module=wrapper, names=PRODUCT_SYMBOLS)
+test\test_forge_gitlab_support.py:272: in _require
+    assert not missing, f"{source} defines no {', '.join(missing)}"
+E   AssertionError: src/payload/scripts/gitlab_wrapper.py defines no EPHEMERAL_PROJECT_PREFIX, _is_ephemeral_project
+E   assert not ['EPHEMERAL_PROJECT_PREFIX', '_is_ephemeral_project']
+_________ test_the_credential_helper_answers_git_with_the_clone_token _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:444: in test_the_credential_helper_answers_git_with_the_clone_token
+    options = list(forge.CLONE_GIT_HELPER(clone=clone))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: credential_helper_arguments() got an unexpected keyword argument 'helper_key'
+_____ test_the_test_credential_is_found_in_the_checkout_or_its_main_tree ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:495: in test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+    found=forge.find_test_credential(checkout=main_tree, credential_file=credential_file), expected=main_credential
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: find_test_credential() got an unexpected keyword argument 'credential_file'
+_______________ test_a_missing_secret_fails_the_credential_step _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:549: in test_a_missing_secret_fails_the_credential_step
+    forge.write_test_credential(
+E   TypeError: write_test_credential() got an unexpected keyword argument 'credential_file'
+______________ test_every_wrapper_invocation_carries_the_marker _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:951: in test_every_wrapper_invocation_carries_the_marker
+    marker = _product_wrapper(monkeypatch=monkeypatch).TEST_MARKER_OPTION
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'forge_gitlab_support_product_wrapper' has no attribute 'TEST_MARKER_OPTION'
+______________ test_the_teardown_deletes_only_this_runs_project _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1011: in test_the_teardown_deletes_only_this_runs_project
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge_gitlab\ephemeral.py:458: in delete_ephemeral
+    own = ephemeral_path(run_id=run_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+________ test_the_teardown_refuses_any_other_target[another-namespace] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1039: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge_gitlab\ephemeral.py:458: in delete_ephemeral
+    own = ephemeral_path(run_id=run_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+__ test_the_teardown_refuses_any_other_target[a-subgroup-of-the-test-group] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1039: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge_gitlab\ephemeral.py:458: in delete_ephemeral
+    own = ephemeral_path(run_id=run_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+____ test_the_teardown_refuses_any_other_target[a-path-without-the-prefix] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1039: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge_gitlab\ephemeral.py:458: in delete_ephemeral
+    own = ephemeral_path(run_id=run_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+_________ test_the_teardown_refuses_any_other_target[another-runs-id] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1039: in test_the_teardown_refuses_any_other_target
+    forge.delete_ephemeral(wrapper=runner, created=created, run_id=run_id)
+test\forge_gitlab\ephemeral.py:458: in delete_ephemeral
+    own = ephemeral_path(run_id=run_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+______________ test_provisioning_runs_in_order[the-body-returns] ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1901: in test_provisioning_runs_in_order
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+______________ test_provisioning_runs_in_order[the-body-raises] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1904: in test_provisioning_runs_in_order
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+____ test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1050: in test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects
+    @given(listing=LISTINGS, now=SWEEP_MOMENTS)
+                   ^^^
+test\test_forge_gitlab_support.py:1075: in test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects
+    forge.sweep_leftovers(wrapper=runner, now=now)
+test\forge_gitlab\ephemeral.py:513: in sweep_leftovers
+    for record in select_leftovers(records=list_group_projects(wrapper=wrapper), now=now):
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:506: in select_leftovers
+    return [record for record in records if is_leftover(record=record, now=now)]
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:499: in is_leftover
+    and record.path.startswith(_ephemeral_prefix())
+                               ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+E   Failing test case: test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects(
+E       # The test always failed when commented parts were varied together.
+E       listing=[_listed_project(
+E            in_group=True,
+E            prefixed=False,  # or any other generated value
+E            old=False,  # or any other generated value
+E            scheduled=False,  # or any other generated value
+E            other_namespace='Bestehorn',  # or any other generated value
+E            suffix='0',  # or any other generated value
+E            unprefixed_path='0',  # or any other generated value
+E            young_age=0,  # or any other generated value
+E            old_age=86400001,  # or any other generated value
+E            marked_on='2024-01-01',  # or any other generated value
+E            unscheduled_key_listed=False,  # or any other generated value
+E        )],
+E       now=datetime.datetime(2024, 1, 1, 0, 0, tzinfo=datetime.timezone.utc),  # or any other generated value
+E   )
+E   Explanation:
+E       These lines were always and only run by failing test cases:
+E           D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\test\forge_gitlab\ephemeral.py:499
+___________________ test_the_sweep_boundaries_and_refusals ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1129: in test_the_sweep_boundaries_and_refusals
+    leftovers = [forge.is_leftover(record=record, now=SWEEP_NOW) for record in records]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:499: in is_leftover
+    and record.path.startswith(_ephemeral_prefix())
+                               ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+________ test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1904: in test_provisioning_runs_in_order
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+__ test_a_project_created_other_than_private_is_refused_and_deleted[public] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1947: in test_a_project_created_other_than_private_is_refused_and_deleted
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+_____________ test_provisioning_runs_in_order[the-deletion-fails] _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1904: in test_provisioning_runs_in_order
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=case.body_raises)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+________________________ test_no_creation_no_deletion _________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1972: in test_no_creation_no_deletion
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+_ test_a_project_created_other_than_private_is_refused_and_deleted[internal] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1947: in test_a_project_created_other_than_private_is_refused_and_deleted
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+________ test_a_bad_test_credential_fails_before_any_request[missing] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+_________ test_a_bad_test_credential_fails_before_any_request[empty] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+____ test_a_bad_test_credential_fails_before_any_request[a-lone-line-end] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+____ test_a_bad_test_credential_fails_before_any_request[the-placeholder] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+_ test_a_bad_test_credential_fails_before_any_request[a-token-holding-a-space] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+_ test_a_bad_test_credential_fails_before_any_request[a-non-ascii-character] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+_______ test_a_bad_test_credential_fails_before_any_request[two-lines] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+____________________ test_the_clone_commits_no_credential _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2154: in test_the_clone_commits_no_credential
+    git = forge.SubprocessGitRunner(clone=clone, helper=forge.CLONE_GIT_HELPER)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: SubprocessGitRunner.__init__() got an unexpected keyword argument 'helper'
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2114: in test_the_token_is_written_only_to_the_clone
+    _provide(forge=forge, setup=setup, entered=entered, body_raises=False)
+test\test_forge_gitlab_support.py:1792: in _provide
+    with forge.provision(
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:865: in provision
+    path = ephemeral_path(run_id=run_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:297: in ephemeral_path
+    return _ephemeral_prefix() + run_id
+           ^^^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:292: in _ephemeral_prefix
+    return str(product_wrapper().EPHEMERAL_PROJECT_PREFIX)
+               ^^^^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:286: in product_wrapper
+    module: ModuleType = _REUSED.product_wrapper(path=PRODUCT_WRAPPER, module_name=PRODUCT_WRAPPER_MODULE)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: product_wrapper() got an unexpected keyword argument 'path'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_interpreter_option_reaches_the_entry_script
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_lets_an_ephemeral_project_through
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_values_are_issue_10s
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[prefix-without-namespace]
+FAILED test/test_forge_gitlab_support.py::test_a_distributed_run_is_refused
+FAILED test/test_forge_gitlab_support.py::test_a_run_id_names_an_ephemeral_project
+FAILED test/test_forge_gitlab_support.py::test_the_credential_helper_answers_git_with_the_clone_token
+FAILED test/test_forge_gitlab_support.py::test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+FAILED test/test_forge_gitlab_support.py::test_a_missing_secret_fails_the_credential_step
+FAILED test/test_forge_gitlab_support.py::test_every_wrapper_invocation_carries_the_marker
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_deletes_only_this_runs_project
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_refuses_any_other_target[another-namespace]
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_refuses_any_other_target[a-subgroup-of-the-test-group]
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_refuses_any_other_target[a-path-without-the-prefix]
+FAILED test/test_forge_gitlab_support.py::test_the_teardown_refuses_any_other_target[another-runs-id]
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[the-body-returns]
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[the-body-raises]
+FAILED test/test_forge_gitlab_support.py::test_the_sweep_deletes_exactly_the_old_unscheduled_ephemeral_projects
+FAILED test/test_forge_gitlab_support.py::test_the_sweep_boundaries_and_refusals
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed]
+FAILED test/test_forge_gitlab_support.py::test_a_project_created_other_than_private_is_refused_and_deleted[public]
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[the-deletion-fails]
+FAILED test/test_forge_gitlab_support.py::test_no_creation_no_deletion - Type...
+FAILED test/test_forge_gitlab_support.py::test_a_project_created_other_than_private_is_refused_and_deleted[internal]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[missing]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[empty]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[a-lone-line-end]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[the-placeholder]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[a-token-holding-a-space]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[a-non-ascii-character]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[two-lines]
+FAILED test/test_forge_gitlab_support.py::test_the_clone_commits_no_credential
+FAILED test/test_forge_gitlab_support.py::test_the_token_is_written_only_to_the_clone
+======================= 74 failed, 32 passed in 35.35s ========================
+exit=1
+
+# mutant-wave-1 M1b: targeted mutants: gitlab_wrapper.py _is_ephemeral_project loosened to 'prefix anywhere in the text'; test/forge/ephemeral.py defaults changed (find_test_credential credential_file, write_test_credential secret_name, credential_helper_arguments username)
+# mutated lines:
+diff --git a/src/payload/scripts/gitlab_wrapper.py b/src/payload/scripts/gitlab_wrapper.py
+index 9d88ba1..5566dee 100644
+--- a/src/payload/scripts/gitlab_wrapper.py
++++ b/src/payload/scripts/gitlab_wrapper.py
+@@ -274 +274 @@ def _is_ephemeral_project(*, project_id: Any) -> bool:
+-    return bool(separator) and bool(namespace) and name.startswith(EPHEMERAL_PROJECT_PREFIX)
++    return EPHEMERAL_PROJECT_PREFIX in project_id
+diff --git a/test/forge/ephemeral.py b/test/forge/ephemeral.py
+index 69eb5a7..696e0dd 100644
+--- a/test/forge/ephemeral.py
++++ b/test/forge/ephemeral.py
+@@ -222 +222 @@ def credential_helper_arguments(
+-    username: str = ACCESS_TOKEN_USERNAME,
++    username: str = "mutant-user",
+@@ -276 +276 @@ def main_working_tree(*, checkout: Path) -> Path:
+-def find_test_credential(*, checkout: Path, credential_file: Path = TEST_CREDENTIAL_FILE) -> Path:
++def find_test_credential(*, checkout: Path, credential_file: Path = CLONE_CREDENTIAL_FILE) -> Path:
+@@ -298 +298 @@ def write_test_credential(
+-    *, token: str, checkout: Path, credential_file: Path = TEST_CREDENTIAL_FILE, secret_name: str = SECRET_NAME
++    *, token: str, checkout: Path, credential_file: Path = TEST_CREDENTIAL_FILE, secret_name: str = "MUTANT_SECRET"
+# expect: W red on the edge-case project_ids; H red on the changed defaults (UB-4 guard binds them)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_wrapper_marker.py test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [77 items]
+
+.......FFFFFF.........FFF..F...FFFF.F....F.F..F........F..FF..........FF [ 93%]
+FF.F.                                                                    [100%]
+================================== FAILURES ===================================
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-prefix-without-namespace] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n', stderr='', requests=(RecordedR...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-inner-prefix] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n', stderr='', request...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-under-an-ephemeral-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n', stder...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-prefix-without-namespace] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-inner-prefix] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-under-an-ephemeral-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-prefix-without-namespace] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-inner-prefix] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-under-an-ephemeral-path] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+__ test_without_the_marker_every_project_is_served[prefix-without-namespace] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n', stderr='', requests=(RecordedR...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+________ test_without_the_marker_every_project_is_served[inner-prefix] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n', stderr='', request...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+__ test_without_the_marker_every_project_is_served[under-an-ephemeral-path] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n', stder...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_________ test_the_credential_helper_answers_git_with_the_clone_token _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:325: in test_the_credential_helper_answers_git_with_the_clone_token
+    assert fields.get(USER_FIELD) == ACCESS_TOKEN_USERNAME, f"git answered the user {fields.get(USER_FIELD)!r}"
+E   AssertionError: git answered the user 'mutant-user'
+E   assert 'mutant-user' == 'x-access-token'
+E     
+E     [0m[91m- x-access-token[39;49;00m[90m[39;49;00m
+E     [92m+ mutant-user[39;49;00m[90m[39;49;00m
+_____ test_the_test_credential_is_found_in_the_checkout_or_its_main_tree ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:344: in test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+    _assert_found(found=forge.find_test_credential(checkout=main_tree), expected=main_credential)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\forge\ephemeral.py:289: in find_test_credential
+    raise ForgeSetupError(
+E   forge_ephemeral.ForgeSetupError: No test credential file: D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw0\test_the_test_credential_is_fo0\main tree\credentials\github-pat.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)
+_______________ test_a_missing_secret_fails_the_credential_step _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:384: in test_a_missing_secret_fails_the_credential_step
+    assert UNAVAILABLE_TOKEN_MESSAGE in str(refused.value), f"the refusal says: {refused.value}"
+E   AssertionError: the refusal says: Wrote no test credential file: the secret MUTANT_SECRET is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)
+E   assert 'the secret SFF_TEST_TOKEN is unavailable to this run' in "Wrote no test credential file: the secret MUTANT_SECRET is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)"
+E    +  where "Wrote no test credential file: the secret MUTANT_SECRET is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)" = str(ForgeSetupError("Wrote no test credential file: the secret MUTANT_SECRET is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)"))
+E    +    where ForgeSetupError("Wrote no test credential file: the secret MUTANT_SECRET is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)") = <ExceptionInfo ForgeSetupError("Wrote no test credential file: the secret MUTANT_SECRET is unavailable to this run (it is unset, or the run is a fork's or Dependabot's pull request, which receives no secrets)") tblen=2>.value
+________ test_a_bad_test_credential_fails_before_any_request[missing] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1520: in test_a_bad_test_credential_fails_before_any_request
+    assert _names_one_of(message=message, paths=(credential,)), f"the refusal does not name {credential}: {message}"
+E   AssertionError: the refusal does not name D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw1\test_a_bad_test_credential_fai0\checkout\credentials\github-sff-testing-pat.txt: No test credential file: D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw1\test_a_bad_test_credential_fai0\checkout\credentials\github-pat.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)
+E   assert False
+E    +  where False = _names_one_of(message="No test credential file: D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-777\\popen-gw1\\test_a_bad...at.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)", paths=(WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-777/popen-gw1/test_a_bad_test_credential_fai0/checkout/credentials/github-sff-testing-pat.txt'),))
+_________ test_a_bad_test_credential_fails_before_any_request[empty] __________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1520: in test_a_bad_test_credential_fails_before_any_request
+    assert _names_one_of(message=message, paths=(credential,)), f"the refusal does not name {credential}: {message}"
+E   AssertionError: the refusal does not name D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw0\test_a_bad_test_credential_fai0\checkout\credentials\github-sff-testing-pat.txt: No test credential file: D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw0\test_a_bad_test_credential_fai0\checkout\credentials\github-pat.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)
+E   assert False
+E    +  where False = _names_one_of(message="No test credential file: D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-777\\popen-gw0\\test_a_bad...at.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)", paths=(WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-777/popen-gw0/test_a_bad_test_credential_fai0/checkout/credentials/github-sff-testing-pat.txt'),))
+____ test_a_bad_test_credential_fails_before_any_request[the-placeholder] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1520: in test_a_bad_test_credential_fails_before_any_request
+    assert _names_one_of(message=message, paths=(credential,)), f"the refusal does not name {credential}: {message}"
+E   AssertionError: the refusal does not name D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw1\test_a_bad_test_credential_fai1\checkout\credentials\github-sff-testing-pat.txt: No test credential file: D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw1\test_a_bad_test_credential_fai1\checkout\credentials\github-pat.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)
+E   assert False
+E    +  where False = _names_one_of(message="No test credential file: D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-777\\popen-gw1\\test_a_bad...at.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)", paths=(WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-777/popen-gw1/test_a_bad_test_credential_fai1/checkout/credentials/github-sff-testing-pat.txt'),))
+_ test_a_bad_test_credential_fails_before_any_request[two-tokens-on-two-lines] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1520: in test_a_bad_test_credential_fails_before_any_request
+    assert _names_one_of(message=message, paths=(credential,)), f"the refusal does not name {credential}: {message}"
+E   AssertionError: the refusal does not name D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw0\test_a_bad_test_credential_fai1\checkout\credentials\github-sff-testing-pat.txt: No test credential file: D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw0\test_a_bad_test_credential_fai1\checkout\credentials\github-pat.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)
+E   assert False
+E    +  where False = _names_one_of(message="No test credential file: D:\\Users\\bestem\\AppData\\Local\\Temp\\pytest-of-bestem\\pytest-777\\popen-gw0\\test_a_bad...at.txt is not a file. Paste the test organization's token, on one line, into the checkout's file (docs/forge-suite.md)", paths=(WindowsPath('D:/Users/bestem/AppData/Local/Temp/pytest-of-bestem/pytest-777/popen-gw0/test_a_bad_test_credential_fai1/checkout/credentials/github-sff-testing-pat.txt'),))
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_support.py:1586: in test_the_token_is_written_only_to_the_clone
+    assert list(found.holders) == sorted([test_credential, clone_credential]), f"the token was in {found.holders}"
+E   AssertionError: the token was in ('checkout/credentials/github-sff-testing-pat.txt',)
+E   assert ['checkout/cr...ting-pat.txt'] == ['checkout/cr...thub-pat.txt']
+E     
+E     Right contains one more item: [0m[33m'[39;49;00m[33mworkspace/clone/credentials/github-pat.txt[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:282 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-777\popen-gw1\test_the_token_is_written_only0\checkout\credentials\github-pat.txt
+[32mINFO    [0m forge_ephemeral:ephemeral.py:772 Created this run's repository bestehorn-sff-test/sff-test-20261122144624-46b408713fad4b8bb4f80d8e54cf5763
+[32mINFO    [0m forge_ephemeral:ephemeral.py:547 Deleted this run's repository bestehorn-sff-test/sff-test-20261122144624-46b408713fad4b8bb4f80d8e54cf5763
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[under-an-ephemeral-path]
+FAILED test/test_forge_support.py::test_the_credential_helper_answers_git_with_the_clone_token
+FAILED test/test_forge_support.py::test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+FAILED test/test_forge_support.py::test_a_missing_secret_fails_the_credential_step
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[missing]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[empty]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[the-placeholder]
+FAILED test/test_forge_support.py::test_a_bad_test_credential_fails_before_any_request[two-tokens-on-two-lines]
+FAILED test/test_forge_support.py::test_the_token_is_written_only_to_the_clone
+======================= 26 failed, 51 passed in 21.42s ========================
+exit=1

@@ -1,0 +1,480 @@
+# CI run 45362306563 attempt 2 on 4273cbb (PR 69), failed jobs re-run after the operator confirmed the gitlab.com account's email: every job success; the complete forge-gitlab log follows (12 passed against gitlab.com).
+138356610938   completed    success      forge-gitlab
+138356612892   completed    success      verify (lint)
+138356613306   completed    success      forge
+138356613778   completed    success      verify (tests)
+138356615024   completed    success      verify (security)
+138356684968   completed    success      verify (types)
+138357155657   completed    success      report
+
+===== forge-gitlab (138356610938) =====
+﻿2026-11-24T09:47:50.8435081Z Current runner version: '2.338.2'
+2026-11-24T09:47:50.8472041Z ##[group]Runner Image Provisioner
+2026-11-24T09:47:50.8473412Z Hosted Compute Agent
+2026-11-24T09:47:50.8474520Z Version: 20261111.635
+2026-11-24T09:47:50.8475707Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-24T09:47:50.8477235Z Build Date: 2026-11-11T01:49:01Z
+2026-11-24T09:47:50.8478625Z Worker ID: {0403157b-3064-4f56-9090-78c6a777d1bb}
+2026-11-24T09:47:50.8480262Z Region: eastus2
+2026-11-24T09:47:50.8481273Z Cloud: Azure
+2026-11-24T09:47:50.8482256Z ##[endgroup]
+2026-11-24T09:47:50.8484699Z ##[group]Operating System
+2026-11-24T09:47:50.8485814Z Ubuntu
+2026-11-24T09:47:50.8486883Z 26.04.1
+2026-11-24T09:47:50.8487918Z LTS
+2026-11-24T09:47:50.8489227Z ##[endgroup]
+2026-11-24T09:47:50.8490279Z ##[group]Runner Image
+2026-11-24T09:47:50.8491521Z Image: ubuntu-26.04
+2026-11-24T09:47:50.8492622Z Version: 20261116.202.1
+2026-11-24T09:47:50.8494992Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-24T09:47:50.8497906Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-24T09:47:50.8500227Z ##[endgroup]
+2026-11-24T09:47:50.8502392Z ##[group]GITHUB_TOKEN Permissions
+2026-11-24T09:47:50.8505166Z Contents: read
+2026-11-24T09:47:50.8506276Z Metadata: read
+2026-11-24T09:47:50.8507223Z ##[endgroup]
+2026-11-24T09:47:50.8510550Z Secret source: Actions
+2026-11-24T09:47:50.8512260Z Cache mode: write
+2026-11-24T09:47:50.8513686Z Prepare workflow directory
+2026-11-24T09:47:50.9015850Z Prepare all required actions
+2026-11-24T09:47:50.9089187Z Getting action download info
+2026-11-24T09:47:51.0915390Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-24T09:47:51.2690733Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-24T09:47:51.4602091Z Complete job name: forge-gitlab
+2026-11-24T09:47:51.5521853Z ##[group]Run actions/checkout@v4
+2026-11-24T09:47:51.5522784Z with:
+2026-11-24T09:47:51.5523403Z   persist-credentials: false
+2026-11-24T09:47:51.5524217Z   repository: Bestehorn/SoftwareFactoryFramework
+2026-11-24T09:47:51.5528196Z   token: ***
+2026-11-24T09:47:51.5528664Z   ssh-strict: true
+2026-11-24T09:47:51.5529282Z   ssh-user: git
+2026-11-24T09:47:51.5529758Z   clean: true
+2026-11-24T09:47:51.5530241Z   sparse-checkout-cone-mode: true
+2026-11-24T09:47:51.5530817Z   fetch-depth: 1
+2026-11-24T09:47:51.5531269Z   fetch-tags: false
+2026-11-24T09:47:51.5531737Z   show-progress: true
+2026-11-24T09:47:51.5532347Z   lfs: false
+2026-11-24T09:47:51.5532780Z   submodules: false
+2026-11-24T09:47:51.5533247Z   set-safe-directory: true
+2026-11-24T09:47:51.5533809Z   allow-unsafe-pr-checkout: false
+2026-11-24T09:47:51.5534709Z ##[endgroup]
+2026-11-24T09:47:52.1183402Z Syncing repository: Bestehorn/SoftwareFactoryFramework
+2026-11-24T09:47:52.1185478Z ##[group]Getting Git version info
+2026-11-24T09:47:52.1186796Z Working directory is '/home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework'
+2026-11-24T09:47:52.1188425Z [command]/usr/bin/git version
+2026-11-24T09:47:52.1198956Z git version 2.56.1
+2026-11-24T09:47:52.1221102Z ##[endgroup]
+2026-11-24T09:47:52.1235245Z Temporarily overriding HOME='/home/runner/work/_temp/b07259d6-25a2-4d80-8362-3b7418e7f3e0' before making global git config changes
+2026-11-24T09:47:52.1236900Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-24T09:47:52.1241433Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework
+2026-11-24T09:47:52.1323960Z Deleting the contents of '/home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework'
+2026-11-24T09:47:52.1328066Z ##[group]Initializing the repository
+2026-11-24T09:47:52.1333738Z [command]/usr/bin/git init /home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework
+2026-11-24T09:47:52.1454499Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-24T09:47:52.1455980Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-24T09:47:52.1457374Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-24T09:47:52.1458371Z hint: call:
+2026-11-24T09:47:52.1459147Z hint:
+2026-11-24T09:47:52.1459817Z hint: 	git config --global init.defaultBranch <name>
+2026-11-24T09:47:52.1460830Z hint:
+2026-11-24T09:47:52.1461586Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-24T09:47:52.1462663Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-24T09:47:52.1463839Z hint:
+2026-11-24T09:47:52.1464408Z hint: 	git branch -m <name>
+2026-11-24T09:47:52.1465033Z hint:
+2026-11-24T09:47:52.1466144Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-24T09:47:52.1469031Z Initialized empty Git repository in /home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework/.git/
+2026-11-24T09:47:52.1479661Z [command]/usr/bin/git remote add origin https://github.com/Bestehorn/SoftwareFactoryFramework
+2026-11-24T09:47:52.1530195Z ##[endgroup]
+2026-11-24T09:47:52.1531092Z ##[group]Disabling automatic garbage collection
+2026-11-24T09:47:52.1533850Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-24T09:47:52.1567432Z ##[endgroup]
+2026-11-24T09:47:52.1569414Z ##[group]Setting up auth
+2026-11-24T09:47:52.1574986Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-24T09:47:52.1609569Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-24T09:47:52.2070228Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-24T09:47:52.2104035Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-24T09:47:52.2378326Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-24T09:47:52.2413921Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-24T09:47:52.2689227Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-24T09:47:52.2729894Z ##[endgroup]
+2026-11-24T09:47:52.2730854Z ##[group]Fetching the repository
+2026-11-24T09:47:52.2743262Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +35f8b884c539f1c42d24205460ac8c560e319882:refs/remotes/pull/69/merge
+2026-11-24T09:47:53.4584650Z From https://github.com/Bestehorn/SoftwareFactoryFramework
+2026-11-24T09:47:53.4588277Z  * [new ref]         35f8b884c539f1c42d24205460ac8c560e319882 -> pull/69/merge
+2026-11-24T09:47:53.4593431Z ##[endgroup]
+2026-11-24T09:47:53.4595416Z ##[group]Determining the checkout info
+2026-11-24T09:47:53.4597690Z ##[endgroup]
+2026-11-24T09:47:53.4598610Z [command]/usr/bin/git sparse-checkout disable
+2026-11-24T09:47:53.4660215Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-24T09:47:53.4690235Z ##[group]Checking out the ref
+2026-11-24T09:47:53.4693586Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/69/merge
+2026-11-24T09:47:53.6500862Z Note: switching to 'refs/remotes/pull/69/merge'.
+2026-11-24T09:47:53.6502118Z 
+2026-11-24T09:47:53.6503273Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-24T09:47:53.6505653Z changes and commit them, and you can discard any commits you make in this
+2026-11-24T09:47:53.6507600Z state without impacting any branches by switching back to a branch.
+2026-11-24T09:47:53.6508627Z 
+2026-11-24T09:47:53.6509833Z If you want to create a new branch to retain commits you create, you may
+2026-11-24T09:47:53.6512029Z do so (now or later) by using -c with the switch command. Example:
+2026-11-24T09:47:53.6512950Z 
+2026-11-24T09:47:53.6513621Z   git switch -c <new-branch-name>
+2026-11-24T09:47:53.6514912Z 
+2026-11-24T09:47:53.6515920Z Or undo this operation with:
+2026-11-24T09:47:53.6517151Z 
+2026-11-24T09:47:53.6518068Z   git switch -
+2026-11-24T09:47:53.6519310Z 
+2026-11-24T09:47:53.6520912Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-24T09:47:53.6523046Z 
+2026-11-24T09:47:53.6525610Z HEAD is now at 35f8b88 Merge 4273cbbd6c5a97adb54eb88c74e87e008fd9658c into 83a1415a83fdbe483857b4b1a73312b6c87b2669
+2026-11-24T09:47:53.6532947Z ##[endgroup]
+2026-11-24T09:47:53.6576746Z [command]/usr/bin/git log -1 --format=%H
+2026-11-24T09:47:53.6603346Z 35f8b884c539f1c42d24205460ac8c560e319882
+2026-11-24T09:47:53.6614939Z ##[group]Removing auth
+2026-11-24T09:47:53.6619289Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-24T09:47:53.6653812Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-24T09:47:53.6932715Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-24T09:47:53.6956412Z http.https://github.com/.extraheader
+2026-11-24T09:47:53.6964589Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-24T09:47:53.6998554Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-24T09:47:53.7266231Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-24T09:47:53.7298501Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-24T09:47:53.7561696Z ##[endgroup]
+2026-11-24T09:47:53.8044906Z ##[group]Run actions/setup-python@v5
+2026-11-24T09:47:53.8046176Z with:
+2026-11-24T09:47:53.8047109Z   python-version: 3.10
+2026-11-24T09:47:53.8048162Z   check-latest: false
+2026-11-24T09:47:53.8058816Z   token: ***
+2026-11-24T09:47:53.8059820Z   update-environment: true
+2026-11-24T09:47:53.8060954Z   allow-prereleases: false
+2026-11-24T09:47:53.8062061Z   freethreaded: false
+2026-11-24T09:47:53.8063068Z ##[endgroup]
+2026-11-24T09:47:53.9439897Z ##[group]Installed versions
+2026-11-24T09:47:53.9563166Z Version 3.10 was not found in the local cache
+2026-11-24T09:47:53.9736278Z (node:2483) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-24T09:47:53.9740181Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-24T09:47:54.6782573Z Version 3.10 is available for downloading
+2026-11-24T09:47:54.6783921Z Download from "https://github.com/actions/python-versions/releases/download/3.10.22-36876129702/python-3.10.22-linux-26.04-x64.tar.gz"
+2026-11-24T09:47:55.1413683Z Extract downloaded archive
+2026-11-24T09:47:55.1559868Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/5fa8f603-fd90-4689-bbae-530718f777d2 -f /home/runner/work/_temp/df377abe-64e3-4ee7-b56e-612fce09068d
+2026-11-24T09:47:56.0494742Z Execute installation script
+2026-11-24T09:47:56.0636064Z Check if Python hostedtoolcache folder exist...
+2026-11-24T09:47:56.0636781Z Create Python 3.10.22 folder
+2026-11-24T09:47:56.0663395Z Copy Python binaries to hostedtoolcache folder
+2026-11-24T09:47:56.5146746Z Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)
+2026-11-24T09:47:56.5254786Z Upgrading pip...
+2026-11-24T09:47:58.3200923Z Collecting pip
+2026-11-24T09:47:58.3524126Z Downloading pip-26.3-py3-none-any.whl (2.0 MB)
+2026-11-24T09:47:58.3980636Z ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 46.7 MB/s eta 0:00:00
+2026-11-24T09:47:58.3981889Z 
+2026-11-24T09:47:58.4620903Z Installing collected packages: pip
+2026-11-24T09:47:58.4622086Z Attempting uninstall: pip
+2026-11-24T09:47:58.4628175Z Found existing installation: pip 23.0.1
+2026-11-24T09:47:58.6337909Z Uninstalling pip-23.0.1:
+2026-11-24T09:47:58.6407106Z Successfully uninstalled pip-23.0.1
+2026-11-24T09:47:59.5289885Z Successfully installed pip-26.3
+2026-11-24T09:47:59.5819706Z Create complete file
+2026-11-24T09:47:59.5886160Z Successfully set up CPython (3.10.22)
+2026-11-24T09:47:59.5887595Z ##[endgroup]
+2026-11-24T09:47:59.6097140Z ##[group]Run pip install -e ".[dev]"
+2026-11-24T09:47:59.6097528Z [36;1mpip install -e ".[dev]"[0m
+2026-11-24T09:47:59.6135994Z shell: /usr/bin/bash -e {0}
+2026-11-24T09:47:59.6136261Z env:
+2026-11-24T09:47:59.6136540Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:47:59.6137008Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.22/x64/lib/pkgconfig
+2026-11-24T09:47:59.6137491Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:47:59.6137889Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:47:59.6138297Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:47:59.6138936Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.22/x64/lib
+2026-11-24T09:47:59.6139282Z ##[endgroup]
+2026-11-24T09:47:59.9951107Z Obtaining file:///home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework
+2026-11-24T09:47:59.9970473Z   Installing build dependencies: started
+2026-11-24T09:48:00.9922022Z   Installing build dependencies: finished with status 'done'
+2026-11-24T09:48:00.9929061Z   Checking if build backend supports build_editable: started
+2026-11-24T09:48:01.2778621Z   Checking if build backend supports build_editable: finished with status 'done'
+2026-11-24T09:48:01.2786625Z   Getting requirements to build editable: started
+2026-11-24T09:48:02.1808834Z   Getting requirements to build editable: finished with status 'done'
+2026-11-24T09:48:02.1820285Z   /tmp/pip-build-env-_e5a5qbv/overlay/lib/python3.10/site-packages/vcs_versioning/_backends/_git.py:709: BuildBackendWarning: "/home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework" is shallow and may cause errors
+2026-11-24T09:48:02.1821321Z     pre_parse(wd)
+2026-11-24T09:48:02.1826650Z   /tmp/pip-build-env-_e5a5qbv/overlay/lib/python3.10/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: BuildBackendWarning: `project.license` as a TOML table is deprecated
+2026-11-24T09:48:02.1827623Z   !!
+2026-11-24T09:48:02.1828031Z   
+2026-11-24T09:48:02.1828576Z           ********************************************************************************
+2026-11-24T09:48:02.1830118Z           Please use a simple string containing a SPDX expression for `project.license`. You can also use `project.license-files`. (Both options available on setuptools>=77.0.0).
+2026-11-24T09:48:02.1831412Z   
+2026-11-24T09:48:02.1832024Z           By 2027-Feb-18, you need to update your project and remove deprecated calls
+2026-11-24T09:48:02.1832785Z           or your builds will no longer be supported.
+2026-11-24T09:48:02.1833269Z   
+2026-11-24T09:48:02.1833973Z           See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+2026-11-24T09:48:02.1834910Z           ********************************************************************************
+2026-11-24T09:48:02.1835225Z   
+2026-11-24T09:48:02.1835387Z   !!
+2026-11-24T09:48:02.1835585Z     corresp(dist, value, root_dir)
+2026-11-24T09:48:02.1837585Z   Preparing editable metadata (pyproject.toml): started
+2026-11-24T09:48:02.7907906Z   Preparing editable metadata (pyproject.toml): finished with status 'done'
+2026-11-24T09:48:02.7912173Z   /tmp/pip-build-env-_e5a5qbv/overlay/lib/python3.10/site-packages/vcs_versioning/_backends/_git.py:709: BuildBackendWarning: "/home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework" is shallow and may cause errors
+2026-11-24T09:48:02.7913163Z     pre_parse(wd)
+2026-11-24T09:48:02.7915829Z   /tmp/pip-build-env-_e5a5qbv/overlay/lib/python3.10/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: BuildBackendWarning: `project.license` as a TOML table is deprecated
+2026-11-24T09:48:02.7916605Z   !!
+2026-11-24T09:48:02.7916975Z   
+2026-11-24T09:48:02.7917336Z           ********************************************************************************
+2026-11-24T09:48:02.7919217Z           Please use a simple string containing a SPDX expression for `project.license`. You can also use `project.license-files`. (Both options available on setuptools>=77.0.0).
+2026-11-24T09:48:02.7920522Z   
+2026-11-24T09:48:02.7921041Z           By 2027-Feb-18, you need to update your project and remove deprecated calls
+2026-11-24T09:48:02.7921795Z           or your builds will no longer be supported.
+2026-11-24T09:48:02.7922277Z   
+2026-11-24T09:48:02.7922989Z           See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+2026-11-24T09:48:02.7923948Z           ********************************************************************************
+2026-11-24T09:48:02.7924484Z   
+2026-11-24T09:48:02.7924783Z   !!
+2026-11-24T09:48:02.7925105Z     corresp(dist, value, root_dir)
+2026-11-24T09:48:02.8756870Z Collecting pytest (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:02.9067731Z   Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+2026-11-24T09:48:02.9295695Z Collecting pytest-cov (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:02.9364616Z   Downloading pytest_cov-7.1.0-py3-none-any.whl.metadata (32 kB)
+2026-11-24T09:48:02.9624144Z Collecting pytest-xdist (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:02.9694005Z   Downloading pytest_xdist-3.8.0-py3-none-any.whl.metadata (3.0 kB)
+2026-11-24T09:48:03.5527815Z Collecting hypothesis (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:03.5613646Z   Downloading hypothesis-6.168.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (5.7 kB)
+2026-11-24T09:48:04.0664123Z Collecting ruff (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.0737932Z   Downloading ruff-0.17.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (20 kB)
+2026-11-24T09:48:04.3273377Z Collecting mypy (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.3356179Z   Downloading mypy-2.4.1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-11-24T09:48:04.3587985Z Collecting bandit[toml] (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.3658208Z   Downloading bandit-1.9.4-py3-none-any.whl.metadata (7.1 kB)
+2026-11-24T09:48:04.3886251Z Collecting detect-secrets (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.3955887Z   Downloading detect_secrets-1.5.0-py3-none-any.whl.metadata (23 kB)
+2026-11-24T09:48:04.4379348Z Collecting pre-commit (from software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.4450560Z   Downloading pre_commit-4.6.2-py2.py3-none-any.whl.metadata (1.2 kB)
+2026-11-24T09:48:04.4943590Z Collecting PyYAML>=5.3.1 (from bandit[toml]; extra == "dev"->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.5015778Z   Downloading pyyaml-6.0.4-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.3 kB)
+2026-11-24T09:48:04.5276101Z Collecting stevedore>=1.20.0 (from bandit[toml]; extra == "dev"->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.5347197Z   Downloading stevedore-5.8.0-py3-none-any.whl.metadata (2.3 kB)
+2026-11-24T09:48:04.5875600Z Collecting rich (from bandit[toml]; extra == "dev"->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.5950222Z   Downloading rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+2026-11-24T09:48:04.6236562Z Collecting tomli>=1.1.0 (from bandit[toml]; extra == "dev"->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.6251107Z   Using cached tomli-2.5.0-py3-none-any.whl.metadata (10 kB)
+2026-11-24T09:48:04.6556365Z Collecting requests (from detect-secrets->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.6632836Z   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+2026-11-24T09:48:04.6813248Z Collecting exceptiongroup>=1.0.0 (from hypothesis->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.6884423Z   Downloading exceptiongroup-1.3.2-py3-none-any.whl.metadata (7.1 kB)
+2026-11-24T09:48:04.7045877Z Collecting sortedcontainers<3.0.0,>=2.1.0 (from hypothesis->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.7116371Z   Downloading sortedcontainers-2.4.0-py2.py3-none-any.whl.metadata (10 kB)
+2026-11-24T09:48:04.7252402Z Collecting typing-extensions>=4.6.0 (from exceptiongroup>=1.0.0->hypothesis->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.7267270Z   Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-24T09:48:04.7393254Z Collecting mypy_extensions>=1.0.0 (from mypy->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.7463042Z   Downloading mypy_extensions-1.2.0-py3-none-any.whl.metadata (1.1 kB)
+2026-11-24T09:48:04.7616770Z Collecting pathspec>=1.0.0 (from mypy->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.7686501Z   Downloading pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)
+2026-11-24T09:48:04.9543388Z Collecting librt>=0.16.0 (from mypy->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:04.9618213Z   Downloading librt-0.17.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (1.3 kB)
+2026-11-24T09:48:05.0271696Z Collecting ast-serialize<1.0.0,>=0.12.1 (from mypy->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.0343923Z   Downloading ast_serialize-0.13.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.4 kB)
+2026-11-24T09:48:05.0521779Z Collecting cfgv>=2.0.0 (from pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.0591400Z   Downloading cfgv-3.5.0-py2.py3-none-any.whl.metadata (8.9 kB)
+2026-11-24T09:48:05.1026709Z Collecting identify>=1.0.0 (from pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.1102667Z   Downloading identify-2.6.20-py2.py3-none-any.whl.metadata (4.4 kB)
+2026-11-24T09:48:05.1288638Z Collecting nodeenv>=0.11.1 (from pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.1359256Z   Downloading nodeenv-1.12.0-py3-none-any.whl.metadata (49 kB)
+2026-11-24T09:48:05.1935061Z Collecting virtualenv>=20.10.0 (from pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.2005358Z   Downloading virtualenv-21.15.13-py3-none-any.whl.metadata (4.1 kB)
+2026-11-24T09:48:05.2188964Z Collecting distlib<1,>=0.4.3 (from virtualenv>=20.10.0->pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.2257529Z   Downloading distlib-0.4.4-py2.py3-none-any.whl.metadata (5.3 kB)
+2026-11-24T09:48:05.2557406Z Collecting filelock<5,>=3.24.2 (from virtualenv>=20.10.0->pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.2629191Z   Downloading filelock-4.1.0-py3-none-any.whl.metadata (2.0 kB)
+2026-11-24T09:48:05.2736363Z Collecting packaging>=26.3 (from virtualenv>=20.10.0->pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.2749886Z   Using cached packaging-26.4-py3-none-any.whl.metadata (3.5 kB)
+2026-11-24T09:48:05.2990193Z Collecting platformdirs<5,>=4.4 (from virtualenv>=20.10.0->pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.3059256Z   Downloading platformdirs-4.12.4-py3-none-any.whl.metadata (5.5 kB)
+2026-11-24T09:48:05.3232209Z Collecting python-discovery>=1.6.1 (from virtualenv>=20.10.0->pre-commit->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.3301473Z   Downloading python_discovery-1.9.7-py3-none-any.whl.metadata (4.2 kB)
+2026-11-24T09:48:05.3517389Z Collecting iniconfig>=2 (from pytest->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.3586460Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-11-24T09:48:05.3750261Z Collecting pluggy<2,>=1.6 (from pytest->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.3821304Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-11-24T09:48:05.4040662Z Collecting pygments>=2.15 (from pytest->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.4112130Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+2026-11-24T09:48:05.9885794Z Collecting coverage>=7.10.6 (from coverage[toml]>=7.10.6->pytest-cov->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:05.9960411Z   Downloading coverage-7.16.2-cp310-cp310-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.2 kB)
+2026-11-24T09:48:06.0195033Z Collecting execnet>=2.1 (from pytest-xdist->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:06.0264165Z   Downloading execnet-2.1.2-py3-none-any.whl.metadata (2.9 kB)
+2026-11-24T09:48:06.2260781Z Collecting charset_normalizer<4,>=2 (from requests->detect-secrets->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:06.2337542Z   Downloading charset_normalizer-3.5.3-cp310-cp310-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (43 kB)
+2026-11-24T09:48:06.2534814Z Collecting idna<4,>=2.5 (from requests->detect-secrets->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:06.2605784Z   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-11-24T09:48:06.2871836Z Collecting urllib3<3,>=1.26 (from requests->detect-secrets->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:06.2944310Z   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-11-24T09:48:06.3193881Z Collecting certifi>=2023.5.7 (from requests->detect-secrets->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:06.3266885Z   Downloading certifi-2026.11.20-py3-none-any.whl.metadata (2.5 kB)
+2026-11-24T09:48:06.3477818Z Collecting markdown-it-py>=2.2.0 (from rich->bandit[toml]; extra == "dev"->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:06.3549737Z   Downloading markdown_it_py-4.3.0-py3-none-any.whl.metadata (7.9 kB)
+2026-11-24T09:48:06.3755392Z Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich->bandit[toml]; extra == "dev"->software-factory-framework==0.1.dev1+g35f8b884c)
+2026-11-24T09:48:06.3829056Z   Downloading mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+2026-11-24T09:48:06.3944405Z Downloading bandit-1.9.4-py3-none-any.whl (134 kB)
+2026-11-24T09:48:06.4095452Z Downloading pyyaml-6.0.4-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (798 kB)
+2026-11-24T09:48:06.4232466Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 798.9/798.9 kB 69.4 MB/s  0:00:00
+2026-11-24T09:48:06.4302714Z Downloading stevedore-5.8.0-py3-none-any.whl (54 kB)
+2026-11-24T09:48:06.4338567Z Using cached tomli-2.5.0-py3-none-any.whl (14 kB)
+2026-11-24T09:48:06.4411140Z Downloading detect_secrets-1.5.0-py3-none-any.whl (120 kB)
+2026-11-24T09:48:06.4538451Z Downloading hypothesis-6.168.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.2 MB)
+2026-11-24T09:48:06.4624228Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 157.3 MB/s  0:00:00
+2026-11-24T09:48:06.4693994Z Downloading sortedcontainers-2.4.0-py2.py3-none-any.whl (29 kB)
+2026-11-24T09:48:06.4783813Z Downloading exceptiongroup-1.3.2-py3-none-any.whl (16 kB)
+2026-11-24T09:48:06.4816639Z Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-24T09:48:06.4903559Z Downloading mypy-2.4.1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (15.5 MB)
+2026-11-24T09:48:06.5444640Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.5/15.5 MB 297.2 MB/s  0:00:00
+2026-11-24T09:48:06.5524131Z Downloading ast_serialize-0.13.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.3 MB)
+2026-11-24T09:48:06.5591097Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 245.0 MB/s  0:00:00
+2026-11-24T09:48:06.5664616Z Downloading librt-0.17.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (604 kB)
+2026-11-24T09:48:06.5722188Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 604.3/604.3 kB 107.3 MB/s  0:00:00
+2026-11-24T09:48:06.5791904Z Downloading mypy_extensions-1.2.0-py3-none-any.whl (5.1 kB)
+2026-11-24T09:48:06.5883142Z Downloading pathspec-1.1.1-py3-none-any.whl (57 kB)
+2026-11-24T09:48:06.5976767Z Downloading pre_commit-4.6.2-py2.py3-none-any.whl (226 kB)
+2026-11-24T09:48:06.6071642Z Downloading cfgv-3.5.0-py2.py3-none-any.whl (7.4 kB)
+2026-11-24T09:48:06.6160856Z Downloading identify-2.6.20-py2.py3-none-any.whl (99 kB)
+2026-11-24T09:48:06.6252634Z Downloading nodeenv-1.12.0-py3-none-any.whl (39 kB)
+2026-11-24T09:48:06.6506711Z Downloading virtualenv-21.15.13-py3-none-any.whl (5.8 MB)
+2026-11-24T09:48:06.6712014Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.8/5.8 MB 321.5 MB/s  0:00:00
+2026-11-24T09:48:06.6785823Z Downloading distlib-0.4.4-py2.py3-none-any.whl (472 kB)
+2026-11-24T09:48:06.6886278Z Downloading filelock-4.1.0-py3-none-any.whl (133 kB)
+2026-11-24T09:48:06.6987566Z Downloading platformdirs-4.12.4-py3-none-any.whl (32 kB)
+2026-11-24T09:48:06.7022666Z Using cached packaging-26.4-py3-none-any.whl (140 kB)
+2026-11-24T09:48:06.7128161Z Downloading python_discovery-1.9.7-py3-none-any.whl (99 kB)
+2026-11-24T09:48:06.7223131Z Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+2026-11-24T09:48:06.7319795Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-11-24T09:48:06.7409017Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-11-24T09:48:06.7501740Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+2026-11-24T09:48:06.7572234Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 236.2 MB/s  0:00:00
+2026-11-24T09:48:06.7643635Z Downloading pytest_cov-7.1.0-py3-none-any.whl (22 kB)
+2026-11-24T09:48:06.7735404Z Downloading coverage-7.16.2-cp310-cp310-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (252 kB)
+2026-11-24T09:48:06.7829335Z Downloading pytest_xdist-3.8.0-py3-none-any.whl (46 kB)
+2026-11-24T09:48:06.7919699Z Downloading execnet-2.1.2-py3-none-any.whl (40 kB)
+2026-11-24T09:48:06.8010166Z Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+2026-11-24T09:48:06.8107200Z Downloading charset_normalizer-3.5.3-cp310-cp310-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (263 kB)
+2026-11-24T09:48:06.8201504Z Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-11-24T09:48:06.8298615Z Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-11-24T09:48:06.8393511Z Downloading certifi-2026.11.20-py3-none-any.whl (127 kB)
+2026-11-24T09:48:06.8507844Z Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+2026-11-24T09:48:06.8605253Z Downloading markdown_it_py-4.3.0-py3-none-any.whl (96 kB)
+2026-11-24T09:48:06.8695722Z Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+2026-11-24T09:48:06.8783890Z Downloading ruff-0.17.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.6 MB)
+2026-11-24T09:48:06.9094874Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.6/10.6 MB 365.8 MB/s  0:00:00
+2026-11-24T09:48:07.0387315Z Building wheels for collected packages: software-factory-framework
+2026-11-24T09:48:07.0396748Z   Building editable for software-factory-framework (pyproject.toml): started
+2026-11-24T09:48:07.6589417Z   Building editable for software-factory-framework (pyproject.toml): finished with status 'done'
+2026-11-24T09:48:07.6593722Z   /tmp/pip-build-env-_e5a5qbv/overlay/lib/python3.10/site-packages/vcs_versioning/_backends/_git.py:709: BuildBackendWarning: "/home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework" is shallow and may cause errors
+2026-11-24T09:48:07.6594738Z     pre_parse(wd)
+2026-11-24T09:48:07.6597067Z   /tmp/pip-build-env-_e5a5qbv/overlay/lib/python3.10/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: BuildBackendWarning: `project.license` as a TOML table is deprecated
+2026-11-24T09:48:07.6598122Z   !!
+2026-11-24T09:48:07.6598298Z   
+2026-11-24T09:48:07.6598544Z           ********************************************************************************
+2026-11-24T09:48:07.6599602Z           Please use a simple string containing a SPDX expression for `project.license`. You can also use `project.license-files`. (Both options available on setuptools>=77.0.0).
+2026-11-24T09:48:07.6600305Z   
+2026-11-24T09:48:07.6600604Z           By 2027-Feb-18, you need to update your project and remove deprecated calls
+2026-11-24T09:48:07.6601224Z           or your builds will no longer be supported.
+2026-11-24T09:48:07.6601512Z   
+2026-11-24T09:48:07.6602173Z           See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+2026-11-24T09:48:07.6603202Z           ********************************************************************************
+2026-11-24T09:48:07.6603726Z   
+2026-11-24T09:48:07.6604025Z   !!
+2026-11-24T09:48:07.6604361Z     corresp(dist, value, root_dir)
+2026-11-24T09:48:07.6605525Z   /tmp/pip-build-env-_e5a5qbv/overlay/lib/python3.10/site-packages/setuptools/command/editable_wheel.py:354: BuildBackendWarning: Editable installation.
+2026-11-24T09:48:07.6606684Z   !!
+2026-11-24T09:48:07.6606970Z   
+2026-11-24T09:48:07.6607359Z           ********************************************************************************
+2026-11-24T09:48:07.6608161Z           Please be careful with folders in your working directory with the same
+2026-11-24T09:48:07.6609055Z           name as your package as they may take precedence during imports.
+2026-11-24T09:48:07.6609738Z           ********************************************************************************
+2026-11-24T09:48:07.6610291Z   
+2026-11-24T09:48:07.6610579Z   !!
+2026-11-24T09:48:07.6611024Z     with strategy, WheelFile(wheel_path, "w") as wheel_obj:
+2026-11-24T09:48:07.6612977Z   Created wheel for software-factory-framework: filename=software_factory_framework-0.1.dev1+g35f8b884c-0.editable-py3-none-any.whl size=6063 sha256=88ef413a4f8137adc0af72e226d289e829ba970a8fca288acb095e8f716bdb7e
+2026-11-24T09:48:07.6615178Z   Stored in directory: /tmp/pip-ephem-wheel-cache-vfpsmms3/wheels/1e/4a/04/a092ff070c7946fad289d5ced6f722a2b7fb67ab217c5f6ac1
+2026-11-24T09:48:07.6630786Z Successfully built software-factory-framework
+2026-11-24T09:48:07.7592304Z Installing collected packages: sortedcontainers, distlib, urllib3, typing-extensions, tomli, stevedore, software-factory-framework, ruff, PyYAML, pygments, pluggy, platformdirs, pathspec, packaging, nodeenv, mypy_extensions, mdurl, iniconfig, idna, identify, filelock, execnet, coverage, charset_normalizer, cfgv, certifi, ast-serialize, requests, python-discovery, markdown-it-py, librt, exceptiongroup, virtualenv, rich, pytest, mypy, hypothesis, detect-secrets, pytest-xdist, pytest-cov, pre-commit, bandit
+2026-11-24T09:48:11.9496251Z 
+2026-11-24T09:48:11.9558914Z Successfully installed PyYAML-6.0.4 ast-serialize-0.13.1 bandit-1.9.4 certifi-2026.11.20 cfgv-3.5.0 charset_normalizer-3.5.3 coverage-7.16.2 detect-secrets-1.5.0 distlib-0.4.4 exceptiongroup-1.3.2 execnet-2.1.2 filelock-4.1.0 hypothesis-6.168.5 identify-2.6.20 idna-3.20 iniconfig-2.3.1 librt-0.17.0 markdown-it-py-4.3.0 mdurl-0.1.2 mypy-2.4.1 mypy_extensions-1.2.0 nodeenv-1.12.0 packaging-26.4 pathspec-1.1.1 platformdirs-4.12.4 pluggy-1.7.0 pre-commit-4.6.2 pygments-2.21.0 pytest-9.2.0 pytest-cov-7.1.0 pytest-xdist-3.8.0 python-discovery-1.9.7 requests-2.34.2 rich-15.0.0 ruff-0.17.6 software-factory-framework-0.1.dev1+g35f8b884c sortedcontainers-2.4.0 stevedore-5.8.0 tomli-2.5.0 typing-extensions-4.16.0 urllib3-2.8.0 virtualenv-21.15.13
+2026-11-24T09:48:12.1302402Z ##[group]Run python test/forge_gitlab/write_credential.py
+2026-11-24T09:48:12.1302901Z [36;1mpython test/forge_gitlab/write_credential.py[0m
+2026-11-24T09:48:12.1337230Z shell: /usr/bin/bash -e {0}
+2026-11-24T09:48:12.1337489Z env:
+2026-11-24T09:48:12.1337767Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.1338219Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.22/x64/lib/pkgconfig
+2026-11-24T09:48:12.1339078Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.1339488Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.1339886Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.1340304Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.22/x64/lib
+2026-11-24T09:48:12.1340961Z   SFF_GITLAB_TEST_TOKEN: ***
+2026-11-24T09:48:12.1341213Z ##[endgroup]
+2026-11-24T09:48:12.2010917Z INFO: Wrote the test credential file /home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework/credentials/gitlab-sff-testing-pat.txt
+2026-11-24T09:48:12.2131244Z ##[group]Run python scripts/run_tests.py --workers 1 test/forge_gitlab
+2026-11-24T09:48:12.2131775Z [36;1mpython scripts/run_tests.py --workers 1 test/forge_gitlab[0m
+2026-11-24T09:48:12.2165524Z shell: /usr/bin/bash -e {0}
+2026-11-24T09:48:12.2165781Z env:
+2026-11-24T09:48:12.2166046Z   pythonLocation: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.2166515Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.22/x64/lib/pkgconfig
+2026-11-24T09:48:12.2166945Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.2167331Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.2167740Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.22/x64
+2026-11-24T09:48:12.2168145Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.22/x64/lib
+2026-11-24T09:48:12.2168468Z ##[endgroup]
+2026-11-24T09:48:12.3590726Z run_tests: /opt/hostedtoolcache/Python/3.10.22/x64/bin/python -m pytest -ra --tb=short --continue-on-collection-errors test/forge_gitlab
+2026-11-24T09:48:12.7329226Z ============================= test session starts ==============================
+2026-11-24T09:48:12.7330054Z platform linux -- Python 3.10.22, pytest-9.2.0, pluggy-1.7.0
+2026-11-24T09:48:12.7331062Z rootdir: /home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework/test/forge_gitlab
+2026-11-24T09:48:12.7331984Z configfile: pytest.ini
+2026-11-24T09:48:12.7332575Z plugins: xdist-3.8.0, hypothesis-6.168.5, platformdirs-4.12.4, cov-7.1.0
+2026-11-24T09:48:12.7333227Z collected 12 items
+2026-11-24T09:48:12.7333444Z 
+2026-11-24T09:48:16.4112500Z test/forge_gitlab/forge_fixture.py::test_the_run_owns_a_private_seeded_project 
+2026-11-24T09:48:16.4113148Z -------------------------------- live log setup --------------------------------
+2026-11-24T09:48:16.4113964Z INFO     forge_gitlab_ephemeral:ephemeral.py:806 Created this run's project bestehorn-sff-test/sff-test-20261124094812-997d1f9f1dfb4cf6b8db2825e0dc145e
+2026-11-24T09:48:17.9192947Z PASSED                                                                   [  8%]
+2026-11-24T09:48:18.3621686Z test/forge_gitlab/forge_fixture.py::test_no_leftover_survives_the_sweep PASSED [ 16%]
+2026-11-24T09:48:19.4094744Z test/forge_gitlab/forge_graphql.py::test_the_work_items_of_the_project PASSED [ 25%]
+2026-11-24T09:48:20.5917913Z test/forge_gitlab/forge_records.py::test_the_repository_records_read_the_seed PASSED [ 33%]
+2026-11-24T09:48:22.2494996Z test/forge_gitlab/forge_records.py::test_the_issue_and_note_records PASSED [ 41%]
+2026-11-24T09:48:23.3767118Z test/forge_gitlab/forge_records.py::test_the_merge_request_records 
+2026-11-24T09:48:23.3767850Z -------------------------------- live log call ---------------------------------
+2026-11-24T09:48:23.3768653Z INFO     forge_gitlab_ephemeral:ephemeral.py:951 Pushed the branch forge-records-d961fcf3531c43f59dc8ee419052adfa at 4af890deb9234df94e7d5cb8ce7cf9cf8e1fcb07
+2026-11-24T09:48:26.9604790Z INFO     forge_gitlab_ephemeral:ephemeral.py:981 Merge request !1 is checked: its detailed_merge_status is 'mergeable'
+2026-11-24T09:48:27.7106137Z PASSED                                                                   [ 50%]
+2026-11-24T09:48:28.9111423Z test/forge_gitlab/forge_request_forms.py::test_an_endpoint_named_by_endpoint 
+2026-11-24T09:48:28.9112081Z -------------------------------- live log call ---------------------------------
+2026-11-24T09:48:28.9113159Z INFO     forge_gitlab_ephemeral:ephemeral.py:951 Pushed the branch forge-emoji-b745d1a16fc34d7fb52596ea45c54bd3 at 3b4386bcc61d4d4d153c5c201f4affa8e5871e71
+2026-11-24T09:48:30.2191998Z PASSED                                                                   [ 58%]
+2026-11-24T09:48:30.5969311Z test/forge_gitlab/forge_request_forms.py::test_a_format_suffix PASSED    [ 66%]
+2026-11-24T09:48:35.1517227Z test/forge_gitlab/forge_subcommands.py::test_an_issue_and_label_round_trip PASSED [ 75%]
+2026-11-24T09:48:36.5677598Z test/forge_gitlab/forge_subcommands.py::test_a_merge_request_round_trip 
+2026-11-24T09:48:36.5679359Z -------------------------------- live log call ---------------------------------
+2026-11-24T09:48:36.5680705Z INFO     forge_gitlab_ephemeral:ephemeral.py:951 Pushed the branch forge-merge-request-5b1cd6c94a7d4ff389c1fa5fca9a6bdc at 5e0c888f7745f25ad279119b42d1ea36ccd174db
+2026-11-24T09:48:39.7982481Z INFO     forge_gitlab_ephemeral:ephemeral.py:981 Merge request !3 is checked: its detailed_merge_status is 'mergeable'
+2026-11-24T09:48:41.9664549Z PASSED                                                                   [ 83%]
+2026-11-24T09:48:43.1499854Z test/forge_gitlab/forge_subcommands.py::test_delete_branch_removes_a_pushed_branch 
+2026-11-24T09:48:43.1500841Z -------------------------------- live log call ---------------------------------
+2026-11-24T09:48:43.1502126Z INFO     forge_gitlab_ephemeral:ephemeral.py:951 Pushed the branch forge-delete-branch-67e744cb06a144e28dcb53cd8c2a7958 at 5d07396def371b1bf15cb66ed2a4bbaebea5504a
+2026-11-24T09:48:44.5917989Z PASSED                                                                   [ 91%]
+2026-11-24T09:48:45.7438306Z test/forge_gitlab/forge_subcommands.py::test_no_pipeline_has_run PASSED  [100%]
+2026-11-24T09:48:45.7439200Z ------------------------------ live log teardown -------------------------------
+2026-11-24T09:48:45.7440083Z INFO     forge_gitlab_ephemeral:ephemeral.py:471 Deleted this run's project bestehorn-sff-test/sff-test-20261124094812-997d1f9f1dfb4cf6b8db2825e0dc145e (marked for deletion)
+2026-11-24T09:48:46.3890696Z 
+2026-11-24T09:48:46.3890717Z 
+2026-11-24T09:48:46.3891492Z ============================= 12 passed in 33.73s ==============================
+2026-11-24T09:48:46.4560929Z Post job cleanup.
+2026-11-24T09:48:46.5862148Z (node:2818) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-24T09:48:46.5863022Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-24T09:48:46.6041026Z Post job cleanup.
+2026-11-24T09:48:46.6883260Z [command]/usr/bin/git version
+2026-11-24T09:48:46.6924122Z git version 2.56.1
+2026-11-24T09:48:46.6965861Z Temporarily overriding HOME='/home/runner/work/_temp/0f4bb02d-e7aa-4165-aeec-5e81f8745467' before making global git config changes
+2026-11-24T09:48:46.6967260Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-24T09:48:46.6972741Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/SoftwareFactoryFramework/SoftwareFactoryFramework
+2026-11-24T09:48:46.7009594Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-24T09:48:46.7047687Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-24T09:48:46.7331327Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-24T09:48:46.7364527Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-24T09:48:46.7637345Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-24T09:48:46.7700858Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-24T09:48:46.8127374Z Cleaning up orphan processes
+2026-11-24T09:48:46.8531317Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

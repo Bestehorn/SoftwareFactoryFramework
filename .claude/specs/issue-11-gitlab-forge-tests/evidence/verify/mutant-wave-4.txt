@@ -1,0 +1,210 @@
+# mutant-wave-4 M4a: wave 4 IMPL stubbed: 4.4 docs/forge-suite.md and 4.5 docs/forLLMConsumption.md reverted to 83a1415; 4.3 test/forge_gitlab/ephemeral.py part 3 mutated: create_ephemeral accepts any visibility, read_test_token skips _refuse_token_characters, _exclude_config writes no config/ line, fetch_seed accepts a .gitlab-ci.yml seed, provision holds a deletable record before the creation answered
+# mutated lines:
+diff --git a/test/forge_gitlab/ephemeral.py b/test/forge_gitlab/ephemeral.py
+index ed6dd81..e3e2757 100644
+--- a/test/forge_gitlab/ephemeral.py
++++ b/test/forge_gitlab/ephemeral.py
+@@ -635 +635 @@ def read_test_token(*, path: Path) -> str:
+-        product._refuse_token_characters(token=token)
++        pass
+@@ -693 +693 @@ def _exclude_config(*, clone: Path) -> None:
+-    exclude.write_bytes(data=existing + separator + EXCLUDED_CONFIG.encode(encoding=TEXT_ENCODING) + line_end)
++    exclude.write_bytes(data=existing + separator)
+@@ -806 +806 @@ def create_ephemeral(*, wrapper: WrapperRunner, group_id: int, path: str) -> Cre
+-    if visibility != PRIVATE_VISIBILITY:
++    if visibility != PRIVATE_VISIBILITY and False:
+@@ -843 +843 @@ def fetch_seed(*, git: GitRunner, default_branch: str) -> Tuple[str, str]:
+-    if GITLAB_CI_FILE in root:
++    if GITLAB_CI_FILE in root and False:
+@@ -878,0 +879 @@ def provision(*, checkout: Path, workspace: Path, wrapper: WrapperRunner, git: G
++        created = CreatedProject(project_id=0, namespace=TEST_GROUP, path=path, default_branch="")
+# run: the wave 4 paired tests (S 4.1, G 4.2) selected by -k from S and G
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_gitlab_support.py test/test_forge_gitlab_layout.py -k test_provisioning_runs_in_order or test_a_project_created_other_than_private_is_refused_and_deleted or test_no_creation_no_deletion or test_a_bad_test_credential_fails_before_any_request or test_the_token_is_written_only_to_the_clone or test_the_clone_commits_no_credential or test_the_setup_note_names_the_gitlab_credential or test_the_map_names_the_gitlab_forge_suite
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [18 items]
+
+.F..FF.F...F.FFFFF                                                       [100%]
+================================== FAILURES ===================================
+________ test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1903: in test_provisioning_runs_in_order
+    with pytest.raises(expected_exception=expected_error):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ForgeSetupError
+_ test_a_project_created_other_than_private_is_refused_and_deleted[internal] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1946: in test_a_project_created_other_than_private_is_refused_and_deleted
+    with pytest.raises(expected_exception=forge.ForgeSetupError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ForgeSetupError
+________________________ test_no_creation_no_deletion _________________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1975: in test_no_creation_no_deletion
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+E   AssertionError: the provision ran ['git init', "git remote add origin <this run's URL>", 'the listing', 'the group read', "the creation of this run's path in the group, private, seeded, without Auto DevOps", "the deletion of this run's project"], not ['git init', "git remote add origin <this run's URL>", 'the listing', 'the group read', "the creation of this run's path in the group, private, seeded, without Auto DevOps"]
+E   assert ['git init', ...un's project"] == ['git init', ... Auto DevOps']
+E     
+E     Left contains one more item: [0m[33m"[39;49;00m[33mthe deletion of this run[39;49;00m[33m'[39;49;00m[33ms project[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__ test_a_project_created_other_than_private_is_refused_and_deleted[public] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1946: in test_a_project_created_other_than_private_is_refused_and_deleted
+    with pytest.raises(expected_exception=forge.ForgeSetupError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ForgeSetupError
+_ test_a_bad_test_credential_fails_before_any_request[a-token-holding-a-space] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:872: in provision
+    prepare_clone(clone=clone, token=token, path=path, git=git)
+test\forge_gitlab\ephemeral.py:702: in prepare_clone
+    _run_git(git=git, arguments=[GIT_INIT])
+test\forge_gitlab\ephemeral.py:652: in _run_git
+    invocation = git.run(arguments=arguments, authenticated=authenticated)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:1641: in run
+    answer = script(arguments=argv, authenticated=authenticated)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:1649: in _refuse_every_git_command
+    raise AssertionError(f"git was run where nothing may run: {arguments} (authenticated: {authenticated})")
+E   AssertionError: git was run where nothing may run: ['init'] (authenticated: False)
+_______ test_a_bad_test_credential_fails_before_any_request[two-lines] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2043: in test_a_bad_test_credential_fails_before_any_request
+    with forge.provision(checkout=checkout, workspace=workspace, wrapper=wrapper, git=git) as project:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Program Files\Python314\Lib\contextlib.py:141: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+test\forge_gitlab\ephemeral.py:872: in provision
+    prepare_clone(clone=clone, token=token, path=path, git=git)
+test\forge_gitlab\ephemeral.py:702: in prepare_clone
+    _run_git(git=git, arguments=[GIT_INIT])
+test\forge_gitlab\ephemeral.py:652: in _run_git
+    invocation = git.run(arguments=arguments, authenticated=authenticated)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:1641: in run
+    answer = script(arguments=argv, authenticated=authenticated)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:1649: in _refuse_every_git_command
+    raise AssertionError(f"git was run where nothing may run: {arguments} (authenticated: {authenticated})")
+E   AssertionError: git was run where nothing may run: ['init'] (authenticated: False)
+____________________ test_the_clone_commits_no_credential _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2164: in test_the_clone_commits_no_credential
+    assert listed == [SEED_FILE], f"after git add -A, git ls-files names {listed}, not {SEED_FILE} alone"
+E   AssertionError: after git add -A, git ls-files names ['README.md', 'config/gitlab.json'], not README.md alone
+E   assert ['README.md',.../gitlab.json'] == ['README.md']
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mconfig/gitlab.json[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+__________________ test_the_map_names_the_gitlab_forge_suite __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:587: in test_the_map_names_the_gitlab_forge_suite
+    assert not missing, f"{layout.LLM_MAP_NAME} does not name: {missing}"
+E   AssertionError: docs/forLLMConsumption.md does not name: ['the GitLab forge suite `test/forge_gitlab`, beside its command', 'the local command `python scripts/run_tests.py --workers 1 test/forge_gitlab`', 'the test credential file `credentials/gitlab-sff-testing-pat.txt`', 'the CI job `forge-gitlab`']
+E   assert not ['the GitLab forge suite `test/forge_gitlab`, beside its command', 'the local command `python scripts/run_tests.py --w... test/forge_gitlab`', 'the test credential file `credentials/gitlab-sff-testing-pat.txt`', 'the CI job `forge-gitlab`']
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2132: in test_the_token_is_written_only_to_the_clone
+    assert EXCLUDED_CONFIG in found.exclude_lines, f"the clone's .git/info/exclude names no {EXCLUDED_CONFIG}"
+E   AssertionError: the clone's .git/info/exclude names no config/
+E   assert 'config/' in ('# git ls-files --others --exclude-from=.git/info/exclude', "# Lines that start with '#' are comments.", '# For a pro... following would be a good set of', '# exclude patterns (uncomment them if you want to use them):', '# *.[oa]', '# *~')
+E    +  where ('# git ls-files --others --exclude-from=.git/info/exclude', "# Lines that start with '#' are comments.", '# For a pro... following would be a good set of', '# exclude patterns (uncomment them if you want to use them):', '# *.[oa]', '# *~') = _Entered(project=EphemeralProject(run_id='20261122144949-ad232a0497674840821fa409dc50051a', group='bestehorn-sff-test'...credentials/gitlab-sff-testing-pat.txt', 'workspace/clone/.git/sff-forge-token', 'workspace/clone/config/gitlab.json')).exclude_lines
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:282 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-780\popen-gw1\test_the_token_is_written_only0\checkout\credentials\gitlab-sff-testing-pat.txt
+[32mINFO    [0m forge_gitlab_ephemeral:ephemeral.py:804 Created this run's project bestehorn-sff-test/sff-test-20261122144949-ad232a0497674840821fa409dc50051a
+[32mINFO    [0m forge_gitlab_ephemeral:ephemeral.py:469 Deleted this run's project bestehorn-sff-test/sff-test-20261122144949-ad232a0497674840821fa409dc50051a (marked for deletion)
+_______________ test_the_setup_note_names_the_gitlab_credential _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:550: in test_the_setup_note_names_the_gitlab_credential
+    assert openings, (
+E   AssertionError: no heading after the title of docs/forge-suite.md names GitLab; its headings are ['The forge suite and its test credential', 'The test credential file', 'The token', 'The Actions secret', 'Running the suite locally']
+E   assert []
+=========================== short test summary info ===========================
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed]
+FAILED test/test_forge_gitlab_support.py::test_a_project_created_other_than_private_is_refused_and_deleted[internal]
+FAILED test/test_forge_gitlab_support.py::test_no_creation_no_deletion - Asse...
+FAILED test/test_forge_gitlab_support.py::test_a_project_created_other_than_private_is_refused_and_deleted[public]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[a-token-holding-a-space]
+FAILED test/test_forge_gitlab_support.py::test_a_bad_test_credential_fails_before_any_request[two-lines]
+FAILED test/test_forge_gitlab_support.py::test_the_clone_commits_no_credential
+FAILED test/test_forge_gitlab_layout.py::test_the_map_names_the_gitlab_forge_suite
+FAILED test/test_forge_gitlab_support.py::test_the_token_is_written_only_to_the_clone
+FAILED test/test_forge_gitlab_layout.py::test_the_setup_note_names_the_gitlab_credential
+======================== 10 failed, 8 passed in 17.40s ========================
+exit=1
+
+# mutant-wave-4 M4b: wave 4 IMPL stubbed, second set (no overlap with M4a): provision deletes only on the body's normal return (outside the finally); prepare_clone logs the token at DEBUG
+# mutated lines:
+diff --git a/test/forge_gitlab/ephemeral.py b/test/forge_gitlab/ephemeral.py
+index ed6dd81..fe91203 100644
+--- a/test/forge_gitlab/ephemeral.py
++++ b/test/forge_gitlab/ephemeral.py
+@@ -701,0 +702 @@ def prepare_clone(*, clone: Path, token: str, path: str, git: GitRunner) -> None
++    logger.debug("prepare_clone token %s", token)
+@@ -899,0 +901 @@ def provision(*, checkout: Path, workspace: Path, wrapper: WrapperRunner, git: G
++        delete_ephemeral(wrapper=wrapper, created=created, run_id=run_id)
+@@ -902 +904 @@ def provision(*, checkout: Path, workspace: Path, wrapper: WrapperRunner, git: G
+-            delete_ephemeral(wrapper=wrapper, created=created, run_id=run_id)
++            pass
+# run: S test_provisioning_runs_in_order, test_the_token_is_written_only_to_the_clone
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_gitlab_support.py -k test_provisioning_runs_in_order or test_the_token_is_written_only_to_the_clone
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [5 items]
+
+.FF.F                                                                    [100%]
+================================== FAILURES ===================================
+________ test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed] ________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1907: in test_provisioning_runs_in_order
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+E   AssertionError: the provision ran ['git init', "git remote add origin <this run's URL>", 'the listing', 'the group read', "the creation of this run's path in the group, private, seeded, without Auto DevOps", 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads"], not ['git init', "git remote add origin <this run's URL>", 'the listing', 'the group read', "the creation of this run's path in the group, private, seeded, without Auto DevOps", 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads", "the deletion of this run's project"]
+E   assert ['git init', ... origin', ...] == ['git init', ... origin', ...]
+E     
+E     Right contains one more item: [0m[33m"[39;49;00m[33mthe deletion of this run[39;49;00m[33m'[39;49;00m[33ms project[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_provisioning_runs_in_order[the-body-raises] _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:1907: in test_provisioning_runs_in_order
+    assert setup.script.steps() == expected_steps, f"the provision ran {setup.script.steps()}, not {expected_steps}"
+E   AssertionError: the provision ran ['git init', "git remote add origin <this run's URL>", 'the listing', 'the group read', "the creation of this run's path in the group, private, seeded, without Auto DevOps", 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads", 'the body'], not ['git init', "git remote add origin <this run's URL>", 'the listing', 'the group read', "the creation of this run's path in the group, private, seeded, without Auto DevOps", 'the authenticated git fetch origin', 'git checkout -B <default branch> --track origin/<default branch>', "the seed's reads", 'the body', "the deletion of this run's project"]
+E   assert ['git init', ... origin', ...] == ['git init', ... origin', ...]
+E     
+E     Right contains one more item: [0m[33m"[39;49;00m[33mthe deletion of this run[39;49;00m[33m'[39;49;00m[33ms project[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_________________ test_the_token_is_written_only_to_the_clone _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:2138: in test_the_token_is_written_only_to_the_clone
+    assert holding == [] and not logged, f"captured log records hold the token: {holding}"
+E   AssertionError: captured log records hold the token: ['forge_gitlab_ephemeral DEBUG']
+E   assert (['forge_gitla...emeral DEBUG'] == []
+E     
+E     Left contains one more item: [0m[33m'[39;49;00m[33mforge_gitlab_ephemeral DEBUG[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff)
+------------------------------ Captured log call ------------------------------
+[35mDEBUG   [0m forge_ephemeral:ephemeral.py:282 The test credential file is D:\Users\bestem\AppData\Local\Temp\pytest-of-bestem\pytest-781\popen-gw0\test_the_token_is_written_only0\checkout\credentials\gitlab-sff-testing-pat.txt
+[35mDEBUG   [0m forge_gitlab_ephemeral:ephemeral.py:702 prepare_clone token test-7d0ac8af429c4ec2b6d8097c9f707498
+[32mINFO    [0m forge_gitlab_ephemeral:ephemeral.py:805 Created this run's project bestehorn-sff-test/sff-test-20261122145029-dee60e1c90304da599b85587e8906123
+[32mINFO    [0m forge_gitlab_ephemeral:ephemeral.py:469 Deleted this run's project bestehorn-sff-test/sff-test-20261122145029-dee60e1c90304da599b85587e8906123 (marked for deletion)
+=========================== short test summary info ===========================
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[a-gitlab-ci-file-in-the-seed]
+FAILED test/test_forge_gitlab_support.py::test_provisioning_runs_in_order[the-body-raises]
+FAILED test/test_forge_gitlab_support.py::test_the_token_is_written_only_to_the_clone
+======================== 3 failed, 2 passed in 13.23s =========================
+exit=1

@@ -87,6 +87,11 @@ Design and rationale: `docs/reports/self-hosting-proposal-2026-11-07.md`.
   (`python_files = forge_*.py`) is what collects them for `python scripts/run_tests.py --workers 1 test/forge`. Token in
   `credentials/github-sff-testing-pat.txt` (setup: `docs/forge-suite.md`). In CI the `forge` job runs beside
   `verify` with the secret `SFF_TEST_TOKEN`; `report` fails unless it succeeded. <!-- pragma: allowlist secret -->
+- The GitLab forge suite `test/forge_gitlab/`: the same layout (its own `pytest.ini`, modules `forge_*.py`) against
+  ephemeral `sff-test-*` projects in the gitlab.com group `bestehorn-sff-test`, run by
+  `python scripts/run_tests.py --workers 1 test/forge_gitlab`. Token in `credentials/gitlab-sff-testing-pat.txt`
+  (setup: `docs/forge-suite.md`). In CI the `forge-gitlab` job runs beside `verify` and `forge` with the secret
+  `SFF_GITLAB_TEST_TOKEN`; `report` fails unless it succeeded. <!-- pragma: allowlist secret -->
 
 ## Common commands
 - `python scripts/run_tests.py <paths>` — affected tests; no paths = all three suites (pyproject `testpaths`).

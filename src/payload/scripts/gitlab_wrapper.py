@@ -92,16 +92,20 @@ Usage:
         # graphql#workItemCreate and graphql#workItemsCsvImport are refused before any request: exit 2.
 
 Exit codes: 0 done; 1 a GitLab API error, a refused claim or a refused config/gitlab.json (the reason on standard
-error); 2 a usage error or a refused `call`; 3 `issue claim-check` on an open, unclaimed issue; 10 and 11
-`pipeline wait` (above). The delivery verbs (`enqueue-pr` to `check-landed`) run the merge steward,
-scripts/merge_steward.py, and return its exit code (0 accepted, 4 refused with the reason printed); on a host that is
-not the queue's (config/delivery.json `host`) they refuse with 2. Results go to standard output (JSON, or the job
-traces of `pipeline log`); diagnostics go to standard error.
+error); 2 a usage error, a refused `call`, or a project the test marker refuses: while the interpreter runs with
+`-X sff_test_marker` (the GitLab forge suite starts every wrapper it runs with it), a config/gitlab.json whose
+project_id is not a <namespace>/sff-test-* path is refused before any request or steward, the reason on standard
+error; 3 `issue claim-check` on an open, unclaimed issue; 10 and 11 `pipeline wait` (above). The delivery verbs
+(`enqueue-pr` to `check-landed`) run the merge steward, scripts/merge_steward.py, and return its exit code (0
+accepted, 4 refused with the reason printed); on a host that is not the queue's (config/delivery.json `host`) they
+refuse with 2. Results go to standard output (JSON, or the job traces of `pipeline log`); diagnostics go to standard
+error.
 
 Credentials: config/gitlab.json (gitignored; copy config/gitlab.json.template and fill in real values), and nothing
 else: no environment variable is read. Its keys:
     hostname           the GitLab host: gitlab.com or a self-hosted instance
-    project_id         the numeric project ID (Settings > General)
+    project_id         the project: its numeric ID (Settings > General) or its <namespace>/<path> path; only the
+                       path, an sff-test-* one, while the test marker is set (Exit codes, above)
     token              the access token, with at least the 'api' scope; printable ASCII without the space ('!' to
                        '~'), so a pasted space, line break or invisible character is refused, by key, never echoed
     token_type         optional, how the token is sent: "private" (the default; a personal, project or group access
@@ -139,7 +143,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import gitlab_api.commands  # noqa: E402
-from gitlab_api.errors import GitLabAPIError  # noqa: E402
+from gitlab_api.errors import GitLabAPIError, GitLabProjectRefusedError  # noqa: E402
 from gitlab_api.transport import (  # noqa: E402
     FIELD_HOSTNAME,
     FIELD_IN_PROGRESS_LABEL,
@@ -159,6 +163,13 @@ DEFAULT_IN_PROGRESS_LABEL = "in-progress"
 # is refused at load, named by its key and never echoed.
 PRINTABLE_FIRST = "!"
 PRINTABLE_LAST = "~"
+# The test marker: the interpreter option `-X sff_test_marker`, which CPython maps to `True` in `sys._xoptions`; the
+# GitLab forge suite starts every wrapper it runs with it. While it is set, only a configured `project_id` that is a
+# `<namespace>/sff-test-*` path is served (`_refuse_unless_ephemeral`). The values are github_wrapper.py's
+# `TEST_MARKER_OPTION` and `EPHEMERAL_REPOSITORY_PREFIX`; nothing is imported from it.
+TEST_MARKER_OPTION = "sff_test_marker"
+EPHEMERAL_PROJECT_PREFIX = "sff-test-"
+PROJECT_PATH_SEPARATOR = "/"
 
 # This wrapper's host as config/delivery.json names it (`steward_delegate`'s `host`).
 DELIVERY_HOST = "gitlab"
@@ -244,6 +255,40 @@ def _load_config() -> Dict[str, Any]:
     return config
 
 
+# --- The test marker and the project guard ------------------------------------------------------------------------
+
+
+def _test_marker_set() -> bool:
+    """Whether this interpreter was started with `-X sff_test_marker`; an interpreter without `sys._xoptions` has no
+    marker."""
+    return TEST_MARKER_OPTION in getattr(sys, "_xoptions", {})
+
+
+def _is_ephemeral_project(*, project_id: Any) -> bool:
+    """Whether `project_id` is an `sff-test-*` project path: a `str` holding `/` whose part before its last `/` is not
+    empty and whose part after it starts with `EPHEMERAL_PROJECT_PREFIX`. A number, or a text without `/`, is not
+    one."""
+    if not isinstance(project_id, str):
+        return False
+    namespace, separator, name = project_id.rpartition(PROJECT_PATH_SEPARATOR)
+    return bool(separator) and bool(namespace) and name.startswith(EPHEMERAL_PROJECT_PREFIX)
+
+
+def _refuse_unless_ephemeral(*, project_id: Any) -> None:
+    """Raise `GitLabProjectRefusedError` when the test marker is set and `project_id`, the configured one, is not an
+    `sff-test-*` project path (`_is_ephemeral_project`); return at once without the marker. It reads no other key of
+    the config, so no credential reaches the message."""
+    if not _test_marker_set() or _is_ephemeral_project(project_id=project_id):
+        return
+    raise GitLabProjectRefusedError(
+        message=(
+            f"The test marker (-X {TEST_MARKER_OPTION}) is set and {CONFIG_FILE} names the project "
+            f"{json.dumps(obj=project_id)}, which is not a <namespace>/{EPHEMERAL_PROJECT_PREFIX}* path; nothing was "
+            "sent"
+        )
+    )
+
+
 # Issue metadata and checklist subcommands, not served yet (#15 builds them; see the issue-tracking rule,
 # .claude/rules/issue-tracking.md). A project that needs one sooner adds a module to scripts/gitlab_api/commands/
 # defining register(subparsers). All paths are under /projects/{project_id} (URL-encode the id if it is a
@@ -284,6 +329,7 @@ DELIVERY_VERBS = {
     "check-landed": "check-landed",  # have all these PRs landed? (0 yes, 4 no — one line per PR that has not)
 }
 EXIT_DELIVERY_ELSEWHERE = 2
+EXIT_PROJECT_REFUSED = 2  # a project the test marker refuses (`_refuse_unless_ephemeral`); `main` maps it
 
 
 def steward_delegate(verb: str, args: list[str], token: str, host: str) -> int:
@@ -352,9 +398,14 @@ def _report(*, error: GitLabAPIError) -> int:
 
 def _run(*, argv: List[str]) -> int:
     """A delivery verb goes to the merge steward with the rest of argv unparsed; anything else is parsed before the
-    config is read, so a usage error exits 2 whatever the config, then served by its command module's handler."""
+    config is read, so a usage error exits 2 whatever the config, then served by its command module's handler.
+
+    Right after the config is read, `_refuse_unless_ephemeral` judges its `project_id`: before `steward_delegate` and
+    before `Transport.from_config`, so a project the test marker refuses is sent nothing and reaches no steward. A
+    config `_load_config` refuses raises before it."""
     if argv and argv[0] in DELIVERY_VERBS:
         config = _load_config()
+        _refuse_unless_ephemeral(project_id=config[FIELD_PROJECT_ID])
         return steward_delegate(verb=argv[0], args=argv[1:], token=str(config[FIELD_TOKEN]), host=DELIVERY_HOST)
     parser = build_parser()
     args = parser.parse_args(args=argv)
@@ -362,6 +413,7 @@ def _run(*, argv: List[str]) -> int:
     if not callable(handler):
         parser.error(message=f"'{getattr(args, COMMAND_DEST)}' needs one of its subcommands (see --help)")
     config = _load_config()
+    _refuse_unless_ephemeral(project_id=config[FIELD_PROJECT_ID])
     result = handler(
         transport=Transport.from_config(config=config),
         project=str(config[FIELD_PROJECT_ID]),
@@ -372,12 +424,16 @@ def _run(*, argv: List[str]) -> int:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
-    """Run one subcommand (``None``: ``sys.argv[1:]``) and return its exit code; a ``GitLabAPIError`` of any kind is
-    logged and returns 1 (design.md D7)."""
+    """Run one subcommand (``None``: ``sys.argv[1:]``) and return its exit code. A ``GitLabProjectRefusedError``, a
+    project the test marker refuses (``_refuse_unless_ephemeral``), is logged and returns ``EXIT_PROJECT_REFUSED``, 2;
+    a ``GitLabAPIError`` of any other kind is logged and returns 1 (design.md D7)."""
     _utf8_streams()
     arguments = list(sys.argv[1:] if argv is None else argv)
     try:
         return _run(argv=arguments)
+    except GitLabProjectRefusedError as error:
+        logger.error("%s", error)
+        return EXIT_PROJECT_REFUSED
     except GitLabAPIError as error:
         return _report(error=error)
 

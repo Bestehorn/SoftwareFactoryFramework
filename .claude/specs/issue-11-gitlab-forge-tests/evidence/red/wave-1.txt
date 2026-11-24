@@ -1,0 +1,395 @@
+# tasks: 1.1 1.2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_wrapper_marker.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_wrapper_delivery.py test/test_layout.py test/test_gitlab_graphql_contract.py test/test_github_graphql_contract.py test/test_toolchain_manifest.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_forge_support.py test/test_forge_suite_layout.py test/test_toolchain_integrity.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [1345 items]
+
+......F.F..F.F.F.F.F..F..F.F.F.F.F.F...F.F.F.F.F.F.F..FFFF.FFF..F.F.F.FF [  5%]
+F.F.......F...F.F..F..F..F..F...F..F..F................................. [ 10%]
+........................................................................ [ 16%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 32%]
+........................................................................ [ 37%]
+........................................................................ [ 42%]
+........................................................................ [ 48%]
+........................................................................ [ 53%]
+........................................................................ [ 58%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 91%]
+........................................................................ [ 96%]
+.................................................                        [100%]
+================================== FAILURES ===================================
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-text] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-product-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n', stderr...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-test-group-unprefixed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n', stderr='', reque...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n', stderr='', requests=(RecordedR...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n', stderr='', request...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n', stder...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-text] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-product-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-test-group-unprefixed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[issue-show-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother/issues/1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "iid": 1,\n  "title": "Guarded issue"\n}\n', stderr='', requests=(RecordedRequest(method...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-text] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-product-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-test-group-unprefixed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout '[]\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother/pipelines?order_by=id&sort=desc&per_page=1']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='[]\n', stderr='', requests=(RecordedRequest(method='GET', url='https://gitlab.example.com/api...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-text] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-product-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-test-group-unprefixed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-id] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-text] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-product-project] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-test-group-unprefixed] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-prefix-without-namespace] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-inner-prefix] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+_ test_the_marker_refuses_a_project_without_the_prefix[wait-landed-under-an-ephemeral-path] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:271: in test_the_marker_refuses_a_project_without_the_prefix
+    assert run.exit_code == expected_exit, outcome_of(run=run)
+E   AssertionError: exit 0; stdout ''; stderr ''; requests []
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='', stderr='', requests=()).exit_code
+____________ test_the_interpreter_option_reaches_the_entry_script _____________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_wrapper_marker.py:309: in test_the_interpreter_option_reaches_the_entry_script
+    assert len(refusals) == 1, f"standard error holds no single refusal naming {MARKER_OPTION}: {outcome}"
+E   AssertionError: standard error holds no single refusal naming sff_test_marker: exit 2; stdout ''; stderr 'call refuses the GitLab operation "plan#create-an-issue": use the issue create subcommand, which sends it\n'
+E   assert 0 == 1
+E    +  where 0 = len([])
+______________ test_the_marker_lets_an_ephemeral_project_through ______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:381: in test_the_marker_lets_an_ephemeral_project_through
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n', stderr...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+____________________ test_the_marker_values_are_issue_10s _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_gitlab_wrapper_marker.py:395: in test_the_marker_values_are_issue_10s
+    assert gitlab_values == issue_10s, (
+E   AssertionError: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\scripts\gitlab_wrapper.py (TEST_MARKER_OPTION, EPHEMERAL_PROJECT_PREFIX) is (None, None), D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\scripts\github_wrapper.py (TEST_MARKER_OPTION, EPHEMERAL_REPOSITORY_PREFIX) is ('sff_test_marker', 'sff-test-')
+E   assert (None, None) == ('sff_test_ma..., 'sff-test-')
+E     
+E     At index 0 diff: [0m[94mNone[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33msff_test_marker[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+_________ test_without_the_marker_every_project_is_served[numeric-id] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+________ test_without_the_marker_every_project_is_served[numeric-text] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/1234']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "1234"\n}\n', stderr='', requests=(RecordedRequest...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+______ test_without_the_marker_every_project_is_served[product-project] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2FSoftwareFactoryFramework']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/SoftwareFactoryFramework"\n}\n', stderr...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+___ test_without_the_marker_every_project_is_served[test-group-unprefixed] ____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/other"\n}\n', stderr='', reque...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+__ test_without_the_marker_every_project_is_served[prefix-without-namespace] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/sff-test-x']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "sff-test-x"\n}\n', stderr='', requests=(RecordedR...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+________ test_without_the_marker_every_project_is_served[inner-prefix] ________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/Bestehorn%2Fx-sff-test-y']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "Bestehorn/x-sff-test-y"\n}\n', stderr='', request...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+__ test_without_the_marker_every_project_is_served[under-an-ephemeral-path] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11\src\payload\test\test_gitlab_wrapper_marker.py:433: in test_without_the_marker_every_project_is_served
+    assert control.exit_code == EXIT_PROJECT_REFUSED, f"the marker was not read: {outcome_of(run=control)}"
+E   AssertionError: the marker was not read: exit 0; stdout '{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n'; stderr ''; requests ['GET https://gitlab.example.com/api/v4/projects/bestehorn-sff-test%2Fsff-test-x%2Fother']
+E   assert 0 == 2
+E    +  where 0 = Run(exit_code=0, stdout='{\n  "id": 4321,\n  "path_with_namespace": "bestehorn-sff-test/sff-test-x/other"\n}\n', stder...-agent': 'Python-urllib/3.14', 'Accept': 'application/json', 'Private-token': 'glpat-marker-guard-test'}, body=None),)).exit_code
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[call-retrieve-a-project-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[issue-show-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[pipeline-status-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[enqueue-pr-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_refuses_a_project_without_the_prefix[wait-landed-under-an-ephemeral-path]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_interpreter_option_reaches_the_entry_script
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_lets_an_ephemeral_project_through
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_the_marker_values_are_issue_10s
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[numeric-id]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[numeric-text]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[product-project]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[test-group-unprefixed]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[prefix-without-namespace]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[inner-prefix]
+FAILED src/payload/test/test_gitlab_wrapper_marker.py::test_without_the_marker_every_project_is_served[under-an-ephemeral-path]
+================= 45 failed, 1300 passed in 349.77s (0:05:49) =================
+exit=1

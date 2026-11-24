@@ -1,0 +1,152 @@
+# tasks: 2.1 2.2 2.3
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_forge_gitlab_support.py test/test_forge_gitlab_layout.py src/payload/test/test_gitlab_wrapper_compat.py src/payload/test/test_gitlab_api_agent_foundations.py src/payload/test/test_gitlab_api_ai_clients.py src/payload/test/test_gitlab_api_ai_coding.py src/payload/test/test_gitlab_api_analytics.py src/payload/test/test_gitlab_api_call.py src/payload/test/test_gitlab_api_container_registry.py src/payload/test/test_gitlab_api_create.py src/payload/test/test_gitlab_api_data_access.py src/payload/test/test_gitlab_api_deploy.py src/payload/test/test_gitlab_api_developer_experience.py src/payload/test/test_gitlab_api_facilitated_functionality.py src/payload/test/test_gitlab_api_fulfillment.py src/payload/test/test_gitlab_api_gitlab_dedicated.py src/payload/test/test_gitlab_api_gitlab_delivery.py src/payload/test/test_gitlab_api_graphql_only.py src/payload/test/test_gitlab_api_growth.py src/payload/test/test_gitlab_api_no_stage_assigned.py src/payload/test/test_gitlab_api_openapi_only.py src/payload/test/test_gitlab_api_orbit.py src/payload/test/test_gitlab_api_package.py src/payload/test/test_gitlab_api_plan.py src/payload/test/test_gitlab_api_registry.py src/payload/test/test_gitlab_api_runtime.py src/payload/test/test_gitlab_api_security_factory.py src/payload/test/test_gitlab_api_security_governance.py src/payload/test/test_gitlab_api_security_platform.py src/payload/test/test_gitlab_api_security_risk_management.py src/payload/test/test_gitlab_api_software_supply_chain_security.py src/payload/test/test_gitlab_api_tenant_scale.py src/payload/test/test_gitlab_api_transport.py src/payload/test/test_gitlab_api_verify.py src/payload/test/test_wrapper_delivery.py test/test_layout.py test/test_gitlab_graphql_contract.py test/test_github_graphql_contract.py test/test_toolchain_manifest.py test/test_gitlab_api_call_properties.py test/test_gitlab_api_properties.py test/test_gitlab_wrapper_contract.py test/test_gitlab_wrapper_coverage.py test/test_forge_support.py test/test_forge_suite_layout.py test/test_toolchain_integrity.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [1304 items]
+
+FFFFFFFF.......................F........................................ [  5%]
+........................................................................ [ 11%]
+........................................................................ [ 16%]
+........................................................................ [ 22%]
+........................................................................ [ 27%]
+........................................................................ [ 33%]
+........................................................................ [ 38%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 66%]
+........................................................................ [ 71%]
+........................................................................ [ 77%]
+........................................................................ [ 82%]
+.......................................................................F [ 88%]
+........................................................................ [ 93%]
+........................................................................ [ 99%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+______________________ test_a_distributed_run_is_refused ______________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:244: in test_a_distributed_run_is_refused
+    forge = _ephemeral()
+            ^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:141: in _ephemeral
+    return _load_by_path(
+test\test_forge_gitlab_support.py:125: in _load_by_path
+    assert path.is_file(), f"{description} {path.relative_to(ROOT).as_posix()} does not exist"
+E   AssertionError: the GitLab forge suite's support module test/forge_gitlab/ephemeral.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-11/test/forge_gitlab/ephemeral.py').is_file
+__________________ test_a_run_id_names_an_ephemeral_project ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:264: in test_a_run_id_names_an_ephemeral_project
+    forge = _ephemeral()
+            ^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:141: in _ephemeral
+    return _load_by_path(
+test\test_forge_gitlab_support.py:125: in _load_by_path
+    assert path.is_file(), f"{description} {path.relative_to(ROOT).as_posix()} does not exist"
+E   AssertionError: the GitLab forge suite's support module test/forge_gitlab/ephemeral.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-11/test/forge_gitlab/ephemeral.py').is_file
+_________ test_the_credential_helper_answers_git_with_the_clone_token _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:305: in test_the_credential_helper_answers_git_with_the_clone_token
+    forge = _ephemeral()
+            ^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:141: in _ephemeral
+    return _load_by_path(
+test\test_forge_gitlab_support.py:125: in _load_by_path
+    assert path.is_file(), f"{description} {path.relative_to(ROOT).as_posix()} does not exist"
+E   AssertionError: the GitLab forge suite's support module test/forge_gitlab/ephemeral.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-11/test/forge_gitlab/ephemeral.py').is_file
+_____ test_the_test_credential_is_found_in_the_checkout_or_its_main_tree ______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:354: in test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+    forge = _ephemeral()
+            ^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:141: in _ephemeral
+    return _load_by_path(
+test\test_forge_gitlab_support.py:125: in _load_by_path
+    assert path.is_file(), f"{description} {path.relative_to(ROOT).as_posix()} does not exist"
+E   AssertionError: the GitLab forge suite's support module test/forge_gitlab/ephemeral.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-11/test/forge_gitlab/ephemeral.py').is_file
+_______________ test_a_missing_secret_fails_the_credential_step _______________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_support.py:404: in test_a_missing_secret_fails_the_credential_step
+    forge = _ephemeral()
+            ^^^^^^^^^^^^
+test\test_forge_gitlab_support.py:141: in _ephemeral
+    return _load_by_path(
+test\test_forge_gitlab_support.py:125: in _load_by_path
+    assert path.is_file(), f"{description} {path.relative_to(ROOT).as_posix()} does not exist"
+E   AssertionError: the GitLab forge suite's support module test/forge_gitlab/ephemeral.py does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-11/test/forge_gitlab/ephemeral.py').is_file
+________________ test_the_gitlab_forge_job_runs_beside_verify _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:118: in test_the_gitlab_forge_job_runs_beside_verify
+    gitlab = layout.job_named(workflow=workflow, name=JOB_FORGE_GITLAB)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_forge_suite_layout.py:472: in job_named
+    assert isinstance(job, dict), f"{WORKFLOW_NAME} has no job `{name}`; its jobs are {sorted(jobs)}"
+           ^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: .github/workflows/ci.yml has no job `forge-gitlab`; its jobs are ['forge', 'report', 'verify']
+___________________ test_the_gitlab_secret_reaches_one_step ___________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:141: in test_the_gitlab_secret_reaches_one_step
+    assert len(references) == 1, (
+E   AssertionError: .github/workflows/ci.yml references the secret SFF_GITLAB_TEST_TOKEN 0 times, not once
+E   assert 0 == 1
+E    +  where 0 = len([])
+_________________ test_the_report_judges_the_gitlab_forge_job _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:182: in test_the_report_judges_the_gitlab_forge_job
+    assert not missing, f"`{layout.JOB_REPORT}` needs {needs}, missing {missing}; it must run after {expected}"
+E   AssertionError: `report` needs ['verify', 'forge'], missing ['forge-gitlab']; it must run after ['verify', 'forge', 'forge-gitlab']
+E   assert not ['forge-gitlab']
+________ test_the_default_configuration_collects_no_gitlab_forge_test _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_gitlab_layout.py:200: in test_the_default_configuration_collects_no_gitlab_forge_test
+    assert completed.returncode == expected, f"the collection exited {completed.returncode}, not {expected}:\n{output}"
+E   AssertionError: the collection exited 4, not 5:
+E     
+E     no tests collected in 1.38s
+E     ERROR: file or directory not found: test/forge_gitlab
+E     
+E     
+E   assert 4 == 5
+E    +  where 4 = CompletedProcess(args=['D:\\Code Workspace\\CodingProjectSetupPrompt\\venv\\Scripts\\python.exe', '-m', 'pytest', '--c...rncode=4, stdout='\nno tests collected in 1.38s\n', stderr='ERROR: file or directory not found: test/forge_gitlab\n\n').returncode
+____________________ test_the_report_judges_the_forge_job _____________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_forge_suite_layout.py:1173: in test_the_report_judges_the_forge_job
+    assert sorted(needs) == sorted([JOB_VERIFY, JOB_FORGE, JOB_FORGE_GITLAB]), (
+E   AssertionError: `report` needs ['verify', 'forge'], not [verify, forge, forge-gitlab]
+E   assert ['forge', 'verify'] == ['forge', 'fo...ab', 'verify']
+E     
+E     At index 1 diff: [0m[33m'[39;49;00m[33mverify[39;49;00m[33m'[39;49;00m[90m[39;49;00m != [0m[33m'[39;49;00m[33mforge-gitlab[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Right contains one more item: [0m[33m'[39;49;00m[33mverify[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED test/test_forge_gitlab_support.py::test_a_distributed_run_is_refused
+FAILED test/test_forge_gitlab_support.py::test_a_run_id_names_an_ephemeral_project
+FAILED test/test_forge_gitlab_support.py::test_the_credential_helper_answers_git_with_the_clone_token
+FAILED test/test_forge_gitlab_support.py::test_the_test_credential_is_found_in_the_checkout_or_its_main_tree
+FAILED test/test_forge_gitlab_support.py::test_a_missing_secret_fails_the_credential_step
+FAILED test/test_forge_gitlab_layout.py::test_the_gitlab_forge_job_runs_beside_verify
+FAILED test/test_forge_gitlab_layout.py::test_the_gitlab_secret_reaches_one_step
+FAILED test/test_forge_gitlab_layout.py::test_the_report_judges_the_gitlab_forge_job
+FAILED test/test_forge_gitlab_layout.py::test_the_default_configuration_collects_no_gitlab_forge_test
+FAILED test/test_forge_suite_layout.py::test_the_report_judges_the_forge_job
+================= 10 failed, 1294 passed in 316.07s (0:05:16) =================
+exit=1

@@ -1,9 +1,9 @@
 """The exceptions of the GitLab wrapper package: one hierarchy under ``GitLabAPIError``.
 
 ``GitLabAPIError(message, status_code=0, details=None)`` keeps the signature of the skeleton wrapper's exception, so
-``gitlab_wrapper.py`` still maps any of them to exit code 1. ``status_code`` is the HTTP status of the response that
-caused the error, 0 when no response did (a refused value, a connection failure); ``details`` carries the raw response
-body, never the request or its credential.
+``gitlab_wrapper.py`` still maps each of them to exit code 1, except ``GitLabProjectRefusedError``, which it maps to 2.
+``status_code`` is the HTTP status of the response that caused the error, 0 when no response did (a refused value, a
+connection failure); ``details`` carries the raw response body, never the request or its credential.
 """
 
 from __future__ import annotations
@@ -30,3 +30,8 @@ class GitLabGraphQLResponseError(GitLabAPIError):
 
 class GitLabClaimError(GitLabAPIError):
     """An ``issue start`` claim that is refused, or that the re-read does not confirm."""
+
+
+class GitLabProjectRefusedError(GitLabAPIError):
+    """A configured ``project_id`` the test marker refuses: while the interpreter runs with ``-X sff_test_marker``,
+    one that is not a ``<namespace>/sff-test-*`` path. It is raised before any request is sent."""

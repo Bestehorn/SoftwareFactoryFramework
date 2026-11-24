@@ -1,0 +1,17 @@
+# restored-green: after every mutant was restored; HEAD 5b373337acf38c739a02c0c0791a4b23e18751d7; git diff --stat HEAD (empty = restored):  # pragma: allowlist secret
+# git status --porcelain:
+?? .claude/specs/issue-11-gitlab-forge-tests/evidence/verify/
+# run: W, S, G, L, H
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_gitlab_wrapper_marker.py test/test_forge_gitlab_support.py test/test_forge_gitlab_layout.py test/test_forge_suite_layout.py test/test_forge_support.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-11
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [128 items]
+
+........................................................................ [ 56%]
+........................................................                 [100%]
+============================ 128 passed in 34.36s =============================
+exit=0
