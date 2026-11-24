@@ -142,7 +142,7 @@ follows the D section it cites.
 
 ## Final
 
-- [ ] F.1 E2E: the GitLab forge suite itself, every `test/forge_gitlab/forge_*.py`, run by the `forge-gitlab` job of
+- [x] F.1 E2E: the GitLab forge suite itself, every `test/forge_gitlab/forge_*.py`, run by the `forge-gitlab` job of
   `.github/workflows/ci.yml` on the PR (`python scripts/run_tests.py --workers 1 test/forge_gitlab`) and judged by
   `report`, its verdict read through the wrapper's `get-pr-checks` and `get-run`; and locally once the operator
   prerequisite is in place (issue #11 comment 6923784402). Nothing deploys. — Files: test/forge_gitlab/ — Validates:

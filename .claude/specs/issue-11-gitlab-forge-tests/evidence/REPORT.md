@@ -26,10 +26,14 @@ Tier M. PR 69, branch `issue-11-gitlab-forge-tests`. Legend as design.md's Accep
 
 ## CI
 
-- Run 45033382186 on c389d46 (the one push so far): `verify` lint, types, security and tests (incl. the hook suite)
-  success; `forge` (github.com) success; `forge-gitlab` failure at its credential step, "the secret
-  SFF_GITLAB_TEST_TOKEN is unavailable to this run"; `report` failure on it. One root cause, the unset secret
-  (DL-009, `evidence/regress/ci-45033382186-c389d46.txt`). CI runs caused: 1.
+- F.1, the end-to-end check: run 45362306563 on 4273cbb, attempt 2 (failed jobs re-run): every job success —
+  `verify` (lint, types, security, tests), `forge` (github.com), `forge-gitlab` (12 passed against gitlab.com: the
+  run created `bestehorn-sff-test/sff-test-20261124094812-…`, ran every test on it, and marked it for deletion),
+  `report`. Capture: `evidence/regress/ci-45362306563-4273cbb-rerun.txt`.
+- Before it, every run was green but `forge-gitlab`, each failing on the operator's setup, none on code: 45033382186
+  and 45037920116 (secret unset; DL-009, DL-010), 45349651679 (secret stored as `SFF_GITLAB_TETS_TOKEN`), 45362306563
+  attempt 1 (gitlab.com 403 "Your primary email address is not confirmed"; DL-011). CI runs caused: 4 pushes and one
+  re-run; none of them surfaced a code defect.
 
 ## Verification
 
@@ -39,8 +43,7 @@ Tier M. PR 69, branch `issue-11-gitlab-forge-tests`. Legend as design.md's Accep
 
 ## Open
 
-- F.1: the GitLab forge suite against gitlab.com waits for the operator's group service-account token as the Actions
-  secret `SFF_GITLAB_TEST_TOKEN` (issue #11 comment 6923784402).
+- Nothing: the "pending F.1" verdicts above are settled by run 45362306563 attempt 2 (12 of 12 F tests passed).
 
 ## Diff (83a1415.., code, tests, workflow, docs)
 

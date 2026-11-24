@@ -89,3 +89,11 @@
 **Alternatives considered:** none (account state on gitlab.com is the operator's).
 **Evidence:** evidence/regress/ci-45362306563-4273cbb.txt.
 **Artifacts touched:** evidence/regress/ci-45362306563-4273cbb.txt
+
+## DL-012 — 2026-11-24T09:55:00Z — issue-work-orchestrator — phase:PROOF_GATE
+
+**Decision:** Proof sufficient: F.1 green (run 45362306563 attempt 2: every job success, `forge-gitlab` 12 passed against gitlab.com), verifier VERIFIED, VERIFY panel A+B 0; the PR is integrated with origin/main and merged directly.
+**Driver:** `orchestrator` PROOF_GATE bar (a test per criterion green, suite green on the pushed SHA, VERIFIED); DL-009 to DL-011 were operator setup, none a code defect.
+**Alternatives considered:** none
+**Evidence:** evidence/regress/ci-45362306563-4273cbb-rerun.txt; evidence/verify/refutation-report.md; review/review-latest.md.
+**Artifacts touched:** tasks.md F.1, evidence/REPORT.md
