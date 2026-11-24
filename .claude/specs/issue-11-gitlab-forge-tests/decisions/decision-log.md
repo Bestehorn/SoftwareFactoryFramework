@@ -81,3 +81,11 @@
 **Evidence:** evidence/regress/ci-45037920116-ce7ea83.txt.
 **Supersedes:** none
 **Artifacts touched:** evidence/regress/ci-45037920116-ce7ea83.txt
+
+## DL-011 — 2026-11-24T09:20:00Z — issue-work-orchestrator — phase:PR
+
+**Decision:** CI run 45362306563 on 4273cbb: 12 setup errors across 1 job (`forge-gitlab`; `report` follows it) → 1 root cause, gitlab.com refuses the token's account with 403 "Your primary email address is not confirmed"; no code change, the operator confirms the account's email.
+**Driver:** every error is `GET https://gitlab.com/api/v4/groups/bestehorn-sff-test/projects?per_page=100 answered 403` with that message, in the sweep before any creation; the teardown logged "This run created no project; the teardown deletes nothing"; all `verify` legs and `forge` succeeded.
+**Alternatives considered:** none (account state on gitlab.com is the operator's).
+**Evidence:** evidence/regress/ci-45362306563-4273cbb.txt.
+**Artifacts touched:** evidence/regress/ci-45362306563-4273cbb.txt
