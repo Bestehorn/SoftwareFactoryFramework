@@ -280,7 +280,8 @@ it is the order `.claude/hooks/MIGRATION.md` §9 gives:
    scripts/merge_steward.py status`): `"merge": "steward"`, `"verification": "watcher"`
    (`"none"` where nothing deploys), and on GitHub the deploy workflow's triggers (the steward's
    dispatch plus the trunk push), per-environment concurrency (`cancel-in-progress: false`, no
-   `queue: max`), the `guard` job and the `verdict` job from the template — keeping the project's own deploy steps.
+   `queue: max`), the deploy job's guard steps and `outputs:` and the `verdict` job from the template — keeping the
+   project's own deploy steps.
    On GitHub this is an ADMISSION redesign, not a trigger edit (setup prompt Part 7.1 item 4): the
    steward's `GITHUB_TOKEN` push starts no workflow, so every workflow and job admitted only by a
    trunk `push` or a `workflow_run` of the CI must be re-admitted for the dispatch, or it never runs
