@@ -9,7 +9,14 @@ Usage:
         # timed_out/...), 11 on timeout — distinct from the wrapper's own 1 (API error),
         # 2 (usage), 3 (claim-check unclaimed). Agents run it AFTER the unblocked work, in the
         # FOREGROUND, bounded (parallel-by-default.md) — never `sleep` in a tool call.
+    python scripts/github_wrapper.py get-jobs <run_id> --failed-only
+    python scripts/github_wrapper.py get-jobs <run_id> --show-steps
+    python scripts/github_wrapper.py get-jobs <run_id> --step-status   # each step's live status, under its job
+    python scripts/github_wrapper.py get-jobs <run_id> --timing
+    python scripts/github_wrapper.py get-jobs <run_id> --all-attempts   # include re-run history
     python scripts/github_wrapper.py get-logs <run_id> --failed-only
+    python scripts/github_wrapper.py rerun <run_id> --failed-only
+    python scripts/github_wrapper.py cancel <run_id>
     python scripts/github_wrapper.py list-issues
     python scripts/github_wrapper.py list-issues --state open --assignee "*" --label in-progress
     python scripts/github_wrapper.py create-issue --title "..." --body "..."
