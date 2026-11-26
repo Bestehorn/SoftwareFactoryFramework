@@ -23,3 +23,11 @@
 **Alternatives considered:** retire the test (deleting a test is forbidden; its oracle still exists in git); a vendored copy of the fork under `test/` (a 315 KB duplicate of what git holds).
 **Evidence:** `config/toolchain.json` `files["scripts/github_wrapper.py"]`; PR #71.
 **Artifacts touched:** prompt.md
+
+## DL-004 — 2026-11-26T16:30:00Z — issue-work-orchestrator — phase:REVIEW
+
+**Decision:** change.md approved at combined review iteration 02 (CLEAN, TEST-READY); its one C (the attempt suffix tested without `--all-attempts`, `success` billed) applied by the conductor without another round.
+**Driver:** review/spec-review-agent/iteration-02.md; `spec-phase-review.md` Readiness gate.
+**Alternatives considered:** none
+**Evidence:** review/spec-review-agent/iteration-02.md C1.
+**Artifacts touched:** change.md § Tests AC-2, AC-6

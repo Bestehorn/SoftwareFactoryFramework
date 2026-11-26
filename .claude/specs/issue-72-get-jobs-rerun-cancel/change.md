@@ -71,15 +71,14 @@ Example tests: golden cases in `CASES`, run on the product by `test_a_subcommand
 
 - AC-1: `get-jobs/exit-0/latest-attempt` (one attempt, a job without a conclusion), `get-jobs/exit-0/all-attempts`;
   each a `StaticRouteSpec` whose query is the copy's `per_page` and `filter` and whose reply's `link` names a next page.
-- AC-2: `get-jobs/exit-0/failed-only` with `--timing` (`success` completed, `failure`, `cancelled`, `timed_out`,
-  `skipped`); the suffix in `all-attempts`, none in `every-column`.
+- AC-2: `get-jobs/exit-0/failed-only` with `--timing` on jobs of two attempts (`success` billed, `failure`,
+  `cancelled`, `timed_out`, `skipped`); the suffix there and in `all-attempts`, none in `every-column`.
 - AC-3: `get-jobs/exit-0/every-column`: `--all-attempts --show-steps --timing --show-runner --step-status` on jobs of
   one attempt, with and without steps, runner and labels, one running (no `completed_at`), one under a minute;
   `failed-only`'s TOTAL leaves the `success` job out.
 - AC-4: `rerun/exit-0/whole-run`, `rerun/exit-0/failed-only`, each `POST` in `writes`.
 - AC-5: `cancel/exit-0/requested`, its `POST` in `writes`.
-- AC-6: one `<command>/exit-1/...` case per command (`ListFailureRouteSpec` or an error `Reply`) and
-  `_refusal_cases` per command.
+- AC-6: one `<command>/exit-1/...` case per command and `_refusal_cases` per command.
 - AC-7: `test_the_parsers_match_option_by_option` on the three new rows; both parity tests on the tag's copy;
   `test_the_usage_names_the_ci_commands` (the compat file): the copy's `get-jobs`, `rerun` and `cancel` usage lines
   in the entry script's `__doc__`.
