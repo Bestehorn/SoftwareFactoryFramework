@@ -93,16 +93,16 @@ Example tests: golden cases in `CASES`, run on the product by `test_a_subcommand
 
 Wave 1 (red: T1-T2 then green: T3-T4, one commit).
 
-- T1 TEST: the three's golden, refusal and usage cases. Files: `src/payload/test/github_wrapper_fixtures.py`,
+- [x] T1 TEST: the three's golden, refusal and usage cases. Files: `src/payload/test/github_wrapper_fixtures.py`,
   `src/payload/test/test_github_wrapper_compat.py`. Validates: AC-1 to AC-7. The exit-0 and exit-1 rows (an
   unknown subcommand exits 2) and the usage test red on the product, the refusal rows already exit 2 there; every
   golden row green on the copy.
-- T2 TEST: the oracle from the tag in place of `FORK_SCRIPT`; the three `CI_SUBCOMMANDS` rows. Files:
+- [x] T2 TEST: the oracle from the tag in place of `FORK_SCRIPT`; the three `CI_SUBCOMMANDS` rows. Files:
   `test/test_github_wrapper_fork_parity.py`. Validates: AC-7, UB-1. The three parser rows red.
-- T3 IMPL: the three commands, added by `register`, and their usage lines. Files:
+- [x] T3 IMPL: the three commands, added by `register`, and their usage lines. Files:
   `src/payload/scripts/github_api/commands/ci.py`, `src/payload/scripts/github_api/families/actions.py`,
   `src/payload/scripts/github_wrapper.py`. Validates: AC-1 to AC-7, UB-1 to UB-3.
-- T4 IMPL: the prose. Files: `prompts/setup-claude.txt`, `prompts/setup-kiro.txt`, `CLAUDE.md`,
+- [x] T4 IMPL: the prose. Files: `prompts/setup-claude.txt`, `prompts/setup-kiro.txt`, `CLAUDE.md`,
   `docs/ci-capacity-ladder.md`. Validates: AC-8, UB-4 (existing tests).
 
 ## Residuals

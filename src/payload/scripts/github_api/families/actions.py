@@ -12,13 +12,18 @@ next page, by page number or, for the two concurrency-group lists, by cursor. Th
 with a ``Link`` header and have no ``Paging:`` line, ``actions/get-actions-cache-usage-for-org`` and
 ``actions/get-hosted-runner-for-org``, send one request (``Paging.NONE``).
 
-The ``ci`` commands use five records (design D5):
+The ``ci`` commands use nine records (design D5, issue #72):
 
 - ``actions/list-repo-workflows`` (``list-workflows``), ``actions/list-workflow-runs-for-repo`` and
   ``actions/list-workflow-runs`` (``list-runs`` without and with ``--workflow``) are page-based lists that answer
   with an object, so their items sit under an item key, ``workflows`` or ``workflow_runs`` (``conventions.md``
   "Lists wrapped in an object"), and the ``link`` header carries the next page (``Paging.LINK``).
+- ``actions/list-jobs-for-workflow-run`` (``get-jobs``) is a page-based list too, items in ``jobs``; ``get-jobs``
+  sends it once, ``per_page=100`` and ``filter`` ``latest`` or ``all``, and reads no next page, as the fork did.
 - ``actions/get-workflow-run`` (``get-run``, ``wait-run``) returns one run.
+- ``actions/re-run-workflow`` (``rerun``), ``actions/re-run-workflow-failed-jobs`` (``rerun --failed-only``) and
+  ``actions/cancel-workflow-run`` (``cancel``) act on the run as soon as they are sent; each command sends its record
+  with no body.
 - ``actions/download-workflow-run-logs`` (``get-logs``) answers ``302`` to a pre-signed storage URL that lives for a
   minute (``conventions.md`` "Downloads and redirects"); ``get-logs`` sends its expanded path with
   ``Transport.download``, which follows the redirect without the credential and returns the archive's bytes.

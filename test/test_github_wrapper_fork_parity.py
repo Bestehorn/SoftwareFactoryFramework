@@ -1,11 +1,15 @@
-"""Fork parity of the GitHub wrapper's golden cases (UB-1.1): the installed fork produces every golden value.
+"""Fork parity of the GitHub wrapper's golden cases (UB-1.1): the copy at ``v2026.11.10.1`` produces every golden value.
 
 The golden table ``CASES`` of ``src/payload/test/github_wrapper_fixtures.py`` is what the product's entry script must
-reproduce (``src/payload/test/test_github_wrapper_compat.py``). Its oracle is the fork this repository runs,
-``scripts/github_wrapper.py`` (``config/toolchain.json`` ``deviations``): each case that is neither ``c_only`` (a
-deviation UB-1.1 makes on purpose) nor a delivery verb's runs against the fork in the temporary project and with the
-fixture token the compatibility test builds, through the same fake GitHub host, comparing standard output, exit code
-and the requests other than ``GET``. The fork's ``main()`` takes no ``argv``, so ``sys.argv`` is set.
+reproduce (``src/payload/test/test_github_wrapper_compat.py``). Its oracle is the fork, the copy release
+``v2026.11.26`` replaced with the product: ``scripts/github_wrapper.py`` at the tag ``v2026.11.10.1`` (DL-003 of the
+issue-72 spec), which ``git show`` writes once per session into a pytest temporary directory under its own file name;
+a failing ``git show`` fails every test that needs it. The fork's credential path is relative to the working
+directory, and its one path relative to its own file, ``MERGE_STEWARD_SCRIPT``, serves only the delivery verbs, which
+are left out. Each case that is neither ``c_only`` (a deviation UB-1.1 makes on purpose) nor a delivery verb's runs
+against the fork in the temporary project and with the fixture token the compatibility test builds, through the same
+fake GitHub host, comparing standard output, exit code and the requests other than ``GET``. The fork's ``main()``
+takes no ``argv``, so ``sys.argv`` is set.
 
 Parser parity (P, UB-1.1): for each caller-used subcommand of the fork's parser and each nested ``issue …`` spelling,
 the subparser the fork's ``_build_parser()`` builds and the one the product's entry script,
@@ -14,16 +18,17 @@ positional: the option strings, and each argument's action kind, ``dest``, ``nar
 ``choices``, ``required`` and mutually exclusive group, and the parser's ``allow_abbrev``. The fork's ``--token-stdin``
 is left out of the fork's side only, so the product carrying it would still be a difference (UB-2.1).
 
-Both the fork and the fixtures exist only in this repository, so this module lives in ``test/`` and is never installed
+Both the tag and the fixtures exist only in this repository, so this module lives in ``test/`` and is never installed
 into a project. No test opens a connection.
 
-Run: ``python scripts/run_tests.py test/test_github_wrapper_fork_parity.py`` (no network).
+Run: ``python scripts/run_tests.py test/test_github_wrapper_fork_parity.py`` (no network; the clone holds the tag).
 """
 
 from __future__ import annotations
 
 import argparse
 import importlib.util
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -52,7 +57,15 @@ def _load_fixtures() -> ModuleType:
 
 fx = _load_fixtures()
 
-FORK_SCRIPT = ROOT / "scripts" / "github_wrapper.py"
+#: The fork (DL-003): the file at the tag release ``v2026.11.26`` replaced, written under its own name into a temporary
+#: directory, so its parser's ``prog`` is the one it had where it was installed.
+FORK_TAG = "v2026.11.10.1"
+FORK_SOURCE = "scripts/github_wrapper.py"
+FORK_REVISION = f"{FORK_TAG}:{FORK_SOURCE}"
+FORK_DIRECTORY = "fork"
+FORK_FILE_NAME = "github_wrapper.py"
+GIT = "git"
+GIT_SHOW = "show"
 FORK_MODULE = "github_wrapper_fork"
 #: Every golden case the fork can produce: the C-only deviations and the delivery verbs (the steward's) left out.
 FORK_CASES = tuple(case for case in fx.CASES if not case.c_only and case.argv[0] not in fx.DELIVERY_SUBCOMMANDS)
@@ -80,7 +93,7 @@ ISSUES_SUBCOMMANDS = (
 )
 CLAIM_SUBCOMMANDS = ("start-issue", "release-issue", "claim-check", "label-add", "label-remove", "assign")
 PULL_REQUEST_SUBCOMMANDS = ("create-pr", "get-pr", "get-pr-checks", "approve-pr", "merge-pr", "delete-remote-branch")
-CI_SUBCOMMANDS = ("list-workflows", "list-runs", "get-run", "get-logs", "wait-run")
+CI_SUBCOMMANDS = ("list-workflows", "list-runs", "get-run", "get-logs", "wait-run", "get-jobs", "rerun", "cancel")
 PARSED_DELIVERY_SUBCOMMANDS = ("enqueue-pr", "dequeue-pr", "queue-status")
 #: The fork's nested group and its verbs (`_register_issue_group_subcommands`, routed by `ISSUE_GROUP_DISPATCH`).
 ISSUE_GROUP = "issue"
@@ -107,11 +120,25 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
     fx.refuse_connections(monkeypatch=monkeypatch)
 
 
-def run_fork(*, argv: Any, monkeypatch: pytest.MonkeyPatch) -> int:
-    """The exit code of the fork's ``main()`` with ``sys.argv`` set to ``argv``: its return value, or the code of the
-    ``SystemExit`` it raises."""
-    fork = fx.load_script(path=FORK_SCRIPT, name=FORK_MODULE, monkeypatch=monkeypatch)
-    monkeypatch.setattr(target=sys, name="argv", value=[str(FORK_SCRIPT), *argv])
+@pytest.fixture(scope="session")
+def fork_script(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """The fork's file, ``FORK_REVISION`` as ``git show`` prints it in the repository root, written once per session
+    into a temporary directory; a ``git show`` that fails fails every test that needs the fork."""
+    result = subprocess.run(args=[GIT, GIT_SHOW, FORK_REVISION], cwd=ROOT, capture_output=True, check=False)
+    assert result.returncode == 0, (
+        f"cannot read the fork {FORK_REVISION}: {result.stderr.decode(errors='replace').strip()} "
+        f"(a shallow clone or one without the tag lacks it: fetch the full history and the tags)"
+    )
+    script = tmp_path_factory.mktemp(basename=FORK_DIRECTORY) / FORK_FILE_NAME
+    script.write_bytes(data=result.stdout)
+    return script
+
+
+def run_fork(*, script: Path, argv: Any, monkeypatch: pytest.MonkeyPatch) -> int:
+    """The exit code of the fork's ``main()``, loaded from ``script``, with ``sys.argv`` set to ``argv``: its return
+    value, or the code of the ``SystemExit`` it raises."""
+    fork = fx.load_script(path=script, name=FORK_MODULE, monkeypatch=monkeypatch)
+    monkeypatch.setattr(target=sys, name="argv", value=[str(script), *argv])
     try:
         result = fork.main()
     except SystemExit as exc:
@@ -122,12 +149,12 @@ def run_fork(*, argv: Any, monkeypatch: pytest.MonkeyPatch) -> int:
 
 @pytest.mark.parametrize(argnames="case", argvalues=FORK_CASES, ids=fx.case_name)
 def test_the_fork_produces_the_golden_case(
-    case: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    case: Any, fork_script: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """UB-1.1's oracle: the fork, run on the case's project and host, writes the golden standard output, exits with the
     golden code and sends the golden requests other than ``GET``."""
     host = fx.enter_project(project=case.project, root=tmp_path, monkeypatch=monkeypatch, routes=case.routes)
-    exit_code = run_fork(argv=case.argv, monkeypatch=monkeypatch)
+    exit_code = run_fork(script=fork_script, argv=case.argv, monkeypatch=monkeypatch)
     captured = capsys.readouterr()
     fx.assert_outcome(
         case=case, outcome=fx.Outcome(stdout=captured.out, exit_code=exit_code, requests=tuple(host.requests))
@@ -252,10 +279,12 @@ def _differences(*, fork: ParserShape, product: ParserShape) -> List[str]:
 
 
 @pytest.mark.parametrize(argnames="spelling", argvalues=PARSER_SPELLINGS, ids=SPELLING_SEPARATOR.join)
-def test_the_parsers_match_option_by_option(spelling: Tuple[str, ...], monkeypatch: pytest.MonkeyPatch) -> None:
+def test_the_parsers_match_option_by_option(
+    spelling: Tuple[str, ...], fork_script: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """UB-1.1 (P): the product's subparser for a caller-used subcommand or nested spelling takes the arguments the
     fork's takes, option by option and positional by positional, the fork's ``--token-stdin`` aside."""
-    fork = fx.load_script(path=FORK_SCRIPT, name=FORK_MODULE, monkeypatch=monkeypatch)
+    fork = fx.load_script(path=fork_script, name=FORK_MODULE, monkeypatch=monkeypatch)
     product = fx.load_script(path=PRODUCT_SCRIPT, name=PRODUCT_MODULE, monkeypatch=monkeypatch)
     fork_parser = _subparser(parser=fork._build_parser(), spelling=spelling, wrapper=FORK_NAME)
     product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)

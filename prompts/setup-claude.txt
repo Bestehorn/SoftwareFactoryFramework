@@ -756,8 +756,7 @@ solid `gh` support; if the constraints do not apply, you MAY instead allow
 `Bash(gh *)` and skip the wrappers — state which choice you made in the report.
 
 Required wrapper subcommands. The GitHub wrapper implements the subcommands the
-framework's agents and hooks invoke; of the set below, `get-jobs`, `rerun` and
-`cancel` arrive in a later framework release, and a further subcommand is added
+framework's agents and hooks invoke, and a further subcommand is added
 as a module of `scripts/github_api/commands/`. The GitLab wrapper implements the
 GitLab half of the set below except the issue metadata (dates, time spent,
 parent link) and the checklist toggle, which arrive in a later framework

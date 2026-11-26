@@ -14,8 +14,8 @@ rule violation, not a shortcut.
 
 Duration is NOT the signal and is forbidden as one: an unresolvable action reference fails in ~9
 seconds with an empty log archive, which looks identical. Fetch the per-job listing WITH per-step
-detail (`get-jobs <run-id> --steps`; the terse form cannot distinguish these) and classify EVERY
-non-successful job:
+detail (`get-jobs <run-id> --show-steps --show-runner`; the terse form cannot distinguish these) and
+classify EVERY non-successful job:
 
 | Shape | `conclusion` | runner name | labels | steps | Route |
 |---|---|---|---|---|---|
