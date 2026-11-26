@@ -25,6 +25,10 @@ WHY THIS EXISTS
 WHAT IS A "CHECK" HERE
     A named command plus the group it belongs to. Groups exist so CI can fan them out
     across parallel jobs; within a group every command runs even after one fails.
+    A check whose command ends in a file list (detect-secrets over every tracked file) runs
+    as several commands, each within MAX_COMMAND_LINE_CHARS, because Windows' CreateProcess
+    refuses a command line of 32,767 characters or more (`[WinError 206] The filename or
+    extension is too long`); it is still one check with one verdict.
 
 USAGE
     python scripts/run_checks.py                          # every group, aggregated
@@ -60,7 +64,7 @@ import shutil
 import subprocess  # nosec B404 — runs git and this interpreter with fixed argv lists, never a shell
 import sys
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -76,6 +80,10 @@ def tracked_files() -> list[str]:
     return [line for line in out.stdout.splitlines() if line.strip()]
 
 
+#: What follows the interpreter in every detect-secrets command, before the files it scans.
+DETECT_SECRETS_ARGS: tuple[str, ...] = ("-m", "detect_secrets.pre_commit_hook", "--baseline", ".secrets.baseline")
+
+
 def detect_secrets_argv() -> Argv:
     """The secret scan, as a GATE rather than a baseline refresh.
 
@@ -84,14 +92,7 @@ def detect_secrets_argv() -> Argv:
     hook entry point (`detect_secrets.pre_commit_hook`) is the one that exits non-zero on a
     finding absent from the baseline, and it wants an explicit file list.
     """
-    return (
-        PY,
-        "-m",
-        "detect_secrets.pre_commit_hook",
-        "--baseline",
-        ".secrets.baseline",
-        *tracked_files(),
-    )
+    return (PY, *DETECT_SECRETS_ARGS, *tracked_files())
 
 
 def tests_argv() -> Argv:
@@ -211,6 +212,10 @@ def bandit_argv() -> Argv:
 # Checks whose tool writes its report to a file rather than to the inherited stdout, by check name. run_check
 # prepares the file before the command and relays its text to its own stdout afterwards (see bandit_argv).
 RELAYED_REPORTS: dict[str, Path] = {"bandit": BANDIT_REPORT}
+
+# Checks whose argv ends in a file list, by check name: how many leading arguments every command repeats before its
+# batch of files. run_check runs such a check as several commands when one would not fit (see batches).
+FILE_LIST_FIXED_ARGS: dict[str, int] = {"detect-secrets": 1 + len(DETECT_SECRETS_ARGS)}
 
 
 # The check inventory. Each entry: (group, name, argv-or-argv-factory).
@@ -349,9 +354,67 @@ def relay_text(text: str) -> None:
     sys.stdout.flush()
 
 
+# The longest command line one command may have, measured as Windows receives it (command_line_chars): a margin
+# below the 32,767 characters CreateProcess accepts. MAX_COMMAND_CHARS above is only how much of a command is SHOWN.
+MAX_COMMAND_LINE_CHARS = 30_000
+
+
+def command_line_chars(argv: Sequence[str]) -> int:
+    """The length of the command line Windows' CreateProcess receives for `argv`: subprocess joins it this way."""
+    return len(subprocess.list2cmdline(seq=argv))
+
+
+def batches(argv: Argv, fixed: int) -> list[Argv]:
+    """Split `argv` into commands within MAX_COMMAND_LINE_CHARS, each its first `fixed` arguments followed by a
+    consecutive, non-empty batch of the rest: every argument in exactly one batch, in order. An argv that fits is the
+    one command, unchanged. list2cmdline quotes each argument on its own and joins them with one space, so a batch's
+    length is summed argument by argument instead of re-measuring the growing command."""
+    if command_line_chars(argv=argv) <= MAX_COMMAND_LINE_CHARS:
+        return [argv]
+    head = argv[:fixed]
+    head_chars = command_line_chars(argv=head)
+    commands: list[Argv] = []
+    batch: list[str] = []
+    chars = head_chars
+    for item in argv[fixed:]:
+        item_chars = command_line_chars(argv=(item,))
+        if batch and chars + 1 + item_chars > MAX_COMMAND_LINE_CHARS:
+            commands.append((*head, *batch))
+            batch = []
+            chars = head_chars
+        chars += item_chars + (1 if head or batch else 0)
+        batch.append(item)
+    commands.append((*head, *batch))
+    return commands
+
+
+def invocations(name: str, resolved: Argv, argv: Argv) -> list[Argv]:
+    """The commands check `name` runs as: `argv` once, unless the check ends in a file list (FILE_LIST_FIXED_ARGS).
+
+    `argv` is `resolved` after `runnable`, which may have replaced the leading `python -m <module>` by a console
+    script; the file list at the end is the same length in both, so the fixed head is everything before it."""
+    fixed = FILE_LIST_FIXED_ARGS.get(name)
+    if fixed is None:
+        return [argv]
+    return batches(argv=argv, fixed=len(argv) - (len(resolved) - fixed))
+
+
+def invoke(check: str, argv: Argv) -> int:
+    """Run one command to completion and return its exit code; a command that cannot start is exit 127."""
+    try:
+        return subprocess.call(args=list(argv))  # nosec B603 — an argv from the fixed CHECKS inventory
+    except OSError as exc:  # tool vanished mid-run, exec failed, ...
+        print(f"--- ERROR {check}: {exc}", flush=True)
+        return 127
+
+
 def run_check(group: str, name: str, spec: Argv | Callable[[], Argv]) -> Result:
-    """Run one check to completion. Never raises — a crashed tool is a failed check."""
-    argv, reason = runnable(resolve(spec))
+    """Run one check to completion. Never raises — a crashed tool is a failed check.
+
+    A check that runs as several commands (invocations) runs every one, after a failing one too, and its exit code
+    is the first non-zero exit code of its commands."""
+    resolved = resolve(spec=spec)
+    argv, reason = runnable(argv=resolved)
     shown = readable(argv)
     if reason:
         print(f"--- SKIP {group}/{name}: {reason}", flush=True)
@@ -369,13 +432,14 @@ def run_check(group: str, name: str, spec: Argv | Callable[[], Argv]) -> Result:
         report.parent.mkdir(parents=True, exist_ok=True)
         if report.exists():
             report.unlink()  # a stale report must never be relayed as this run's
-    print(f"--- RUN  {group}/{name}: {shown}", flush=True)
+    commands = invocations(name=name, resolved=resolved, argv=argv)
+    count = f" (as {len(commands)} commands)" if len(commands) > 1 else ""
+    print(f"--- RUN  {group}/{name}: {shown}{count}", flush=True)
     started = time.monotonic()
-    try:
-        code = subprocess.call(list(argv))  # nosec B603 — an argv from the fixed CHECKS inventory
-    except OSError as exc:  # tool vanished mid-run, exec failed, ...
-        print(f"--- ERROR {group}/{name}: {exc}", flush=True)
-        code = 127
+    code = 0
+    for command in commands:
+        command_code = invoke(check=f"{group}/{name}", argv=command)
+        code = code or command_code
     elapsed = time.monotonic() - started
     if report is not None and report.exists():
         relay_text(text=report.read_text(encoding="utf-8", errors="replace"))
