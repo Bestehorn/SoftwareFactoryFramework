@@ -6,7 +6,9 @@ directory name holds a space needs quotes — measured as a block of a provenanc
 with a space, an `=`-joined value, the `-F` / `--description-file` spellings, a flag that the title merely
 MENTIONS (measured as a fail-open of a provenance-free body), the LAST occurrence of a repeated flag (argparse
 and pflag keep it), and only the first create call's own words when a later chained command — after `&&`, `;`,
-`|` or an unquoted newline — passes a flag of its own. Standard library + pytest only; Python 3.9 compatible.
+`|` or an unquoted newline — passes a flag of its own. A create word counts only where it stands on its own: a
+double-quoted `"create-issue"` is still the create call, while `call issues/create-issue-artifact` creates no issue.
+Standard library + pytest only; Python 3.9 compatible.
 """
 
 from __future__ import annotations
@@ -52,6 +54,8 @@ NOT_READABLE_VALUE_RE = re.compile(r"--body-file '(?P<value>[^']*)' is not reada
 CREATE = 'python scripts/github_wrapper.py create-issue --title "t"'
 TITLE_MENTION = 'python scripts/github_wrapper.py create-issue --title "fix --body-file parsing"'
 COMMENT = "python scripts/github_wrapper.py comment-issue 5"
+#: A `call` whose operation id holds `create-issue` inside a longer word: it creates an artifact, never an issue.
+CALL_CREATE_ISSUE_ARTIFACT = "python scripts/github_wrapper.py call issues/create-issue-artifact --path issue_number=5"
 INLINE_PROVENANCE = '--body "Origin: human-request\nSubject: process\nFiling-rationale: HUMAN-REQUEST — test"'
 #: The trailing comment's apostrophe is an unclosed single quote, so `shlex` raises on the whole command.
 APOSTROPHE_COMMENT = "  # don't"
@@ -175,8 +179,17 @@ def test_a_provenance_complete_body_is_allowed_in_every_spelling(project: Path, 
         'echo "gh issue create -F body.md"',
         "git grep -n 'issue create' -- .claude",
         "",
+        CALL_CREATE_ISSUE_ARTIFACT + " -f name=plan -f body=text",
     ],
-    ids=["non-create-wrapper-call", "comment-call-with-provenance-free-file", "grep", "echo", "git-grep", "empty"],
+    ids=[
+        "non-create-wrapper-call",
+        "comment-call-with-provenance-free-file",
+        "grep",
+        "echo",
+        "git-grep",
+        "empty",
+        "call-create-issue-artifact",
+    ],
 )
 def test_a_command_that_creates_nothing_is_allowed_without_a_note(project: Path, command: str) -> None:
     decision = decide(command, project)
@@ -282,6 +295,8 @@ BLOCK_TEMPLATES = (
     ("title-mentions-the-flag-real-body-provenance-free", TITLE_MENTION + " --body-file " + BAD),
     ("title-mentions-the-flag-no-body-file", TITLE_MENTION + ' --body "plain text"'),
     ("inline-body-without-provenance", CREATE + ' --body "plain text"'),
+    # a quote is no word character: the double-quoted create word is the create call the shell passes
+    ("quoted-create-word", 'python scripts/github_wrapper.py "create-issue" --title "t" --body "plain text"'),
     ("no-body-at-all", "gh issue create --title t"),
     ("flag-as-the-last-word", CREATE + " --body-file"),
     (

@@ -1,8 +1,9 @@
 """issue-filing-gate — PreToolUse(Bash) gate for issue CREATION.
 
 Enforces issue-filing-discipline at the one moment that matters: the attempt to create a tracker issue. It
-recognises a CREATE call only (`create-issue`, `issue create`) and blocks when a required provenance line is
-provably absent from the command text plus any readable `--body-file`:
+recognises a CREATE call only (`create-issue`, `issue create`, with no word character, `/`, `.` or `-` directly
+before or after it, so `call issues/create-issue-artifact` creates no issue while a quoted `"create-issue"` does)
+and blocks when a required provenance line is provably absent from the command text plus any readable `--body-file`:
     Origin:            human-request | spawned-discovery | spawned-residual | agent-sweep
     Subject:           product | process
     Spawned-from:      #<N>   (only when Origin is spawned-*)
@@ -49,7 +50,10 @@ TEXT_TOOL_RE = re.compile(
     r"^\s*(grep|rg|ag|echo|printf|cat|sed|awk|less|more|head|tail|Select-String|Get-Content|"
     r"Write-Output|git\s+grep)\s"
 )
-CREATE_RE = re.compile(r"(create-issue|issue\s+create)")
+# a create word counts only where it stands on its own: a word character, `/`, `.` or `-` directly before or after
+# it (`call issues/create-issue-artifact`, `my-create-issue-tool.py`) makes it part of a longer name. A quote, a
+# blank, `&&` or `bash -c "` is not in the class, so a quoted or chained create call is still one.
+CREATE_RE = re.compile(r"(?<![\w/.-])(?:create-issue|issue\s+create)(?![\w/.-])")
 BODYFILE_FLAGS = ("--body-file", "--description-file", "-F")
 # bash removes an unquoted backslash-newline pair (a line continuation); shlex does not.
 CONTINUATION_RE = re.compile(r"\\\r?\n")

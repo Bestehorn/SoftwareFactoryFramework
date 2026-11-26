@@ -638,6 +638,22 @@ Contract `2026.10.26-delivery-5` (amended 2026-10-30: `2026.10.30-delivery-6`, i
    - lets live sessions learn the new phases from the contract handshake: a session already HANDED_OFF on a
      queued, unlanded PR is NOT done under this revision — `/continue-work` waits for its landing.
 
+10. **(2026-11-24) The GitHub deploy deploys only the trunk's tip.** The guard admitted any ancestor of the trunk
+   and ran in a job of its own, so any token with Actions write could dispatch the deploy with an older trunk
+   commit, or re-run only the deploy job of an old run (which reuses the guard job's result), and run old code
+   with the deploy role. A live GitHub project, in ONE PR (the workflow runs the default branch's copy of the
+   steward, and the old script refuses the new `--github-output` option with exit 2):
+   - installs `scripts/merge_steward.py` (`deploy-guard` admits only the tip and writes `admitted=<sha>`);
+   - re-merges its deploy workflow from `templates/ci/github-deploy.yml.template`: the `guard` job goes; the
+     deploy job gains `outputs: admitted` and, BEFORE its own checkout, the default-branch checkout, the
+     Python setup and the `deploy-guard` step; `verdict` becomes `needs: [deploy, e2e]`,
+     `if: ${{ !cancelled() && needs.deploy.outputs.admitted != '' }}`; a job that needed `guard` needs `deploy`.
+   A dispatch that is no longer the tip when its job starts now ends red with `REFUSED: … superseded`, and the
+   tip's deploy verifies its issues by ancestry. Residual: GitHub keeps a run re-runnable for 30 days, and a run
+   started from the OLD workflow file re-runs with that file, so for 30 days a re-run of only the deploy job of
+   such a run still skips the guard (a full re-run runs the old `guard` job, which runs the new tip-only
+   script). GitLab is unchanged: its trunk pipeline deploys its own commit.
+
 What is NOT weakened: every PR still needs its own green CI before the queue takes it, the train
 re-runs the full CI on the exact state that lands, an issue closes only after a green post-deploy
 check on a commit that contains its landing and with its counted checklist complete, and every
