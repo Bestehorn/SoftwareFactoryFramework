@@ -1,7 +1,7 @@
 ---
 description: Start a new spec — interview the user to author an evidence-grounded initial prompt for a feature or bugfix, then write prompt.md/prompt-discussion.md under .claude/specs/<feature>/.
 argument-hint: [short description of the feature or bug, e.g. "fix the customer count showing 0"]
-allowed-tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch, Agent(spec-researcher)
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch, mcp__ccd_session_mgmt__set_session_title, Agent(spec-researcher)
 ---
 
 You are starting the PROMPT_AUTHORING phase of the spec-driven workflow for this
@@ -20,6 +20,10 @@ Determine whether this is a FEATURE or a BUGFIX. Slugify a `<feature>` name and 
 under `.claude/specs/<feature>/`: `prompt.md`, `prompt-discussion.md`, `qa_log.md`.
 Append a `DL-NNN` entry per `.claude/rules/agent-state-convention.md`. Never touch
 `.kiro/`.
+
+Session title (Claude desktop app; `.claude/docs/session-title.md` is the rule): once the slug is known, rename
+this session to `Spec <feature> · prompt` with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`),
+and to `Spec <feature> — done` when the prompt is final. A declined rename is not a blocker.
 
 When the prompt is finalized, stop and tell the user it is ready, and that they can
 carry it forward end-to-end with `claude --agent spec-conductor` (which will resume

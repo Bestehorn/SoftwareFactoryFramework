@@ -46,13 +46,16 @@ of the work is fine), put no Claude/AI/bot into a branch or worktree name, and n
      (`CronCreate`, session-only, recurring, the `[run-watchdog]` prompt — `continuous-work.md`). It fires only
      while the session is idle, so a turn an API error kills is resumed without a person; it costs nothing
      while you work.
-   - **The session title names the issues this session is working on** (Claude desktop app; the agent
-     definition's "Session title" section is the full rule). An issue joins when its claim succeeds (Step 2)
-     and leaves when it is closed or handed off (Step 8): `Issue X`; `Issues X, Y` while this session also
-     works Y — an issue it filed and was told to take on here, or a second `/work-issue` in this session;
-     `Issue X — done` once its last issue left. Rename with `mcp__ccd_session_mgmt__set_session_title`
-     (`session_id: "self"`) only when the set changes, APPEND the set as `SESSION_ISSUES: X Y` each time, and
-     treat a declined rename as nothing to act on — never a question.
+   - **The session title names the issues this session is working on and what it is doing** (Claude desktop
+     app; `.claude/docs/session-title.md` is the rule, the agent definition's "Session title" section its
+     issue-work part). An issue joins when its claim succeeds (Step 2) and leaves when it is closed or handed off
+     (Step 8): `Issue X · <activity>`; `Issues X, Y · <activity>` while this session also works Y — an issue it
+     filed and was told to take on here, or a second `/work-issue` in this session; `Issue X — done` once its
+     last issue left. The activity follows the step: `spec` and `spec review` (Step 4), `implementing` and
+     `verifying` (Step 6), `CI` (Step 7), `queued` or `merging` (Step 8), `needs you` while `AWAITING_USER` holds
+     a reason. Rename with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`) each time the set or
+     the activity changes, APPEND the set as `SESSION_ISSUES: X Y` each time the set changes, and treat a
+     declined rename as nothing to act on — never a question.
    - **`WORKABLE_ISSUES_REMAIN: no` gates NOTHING** (`run-identity.md` §5): it only chooses
      the WORDING of an `issue-loop-gate` refusal. What lets this command finish after ONE
      issue is reaching a terminal `Phase` on X and not selecting another, not this field.

@@ -1,7 +1,7 @@
 ---
 description: Generate or regenerate tasks.md (test-first, dependency-ordered, every property/acceptance-criterion has a test task) for an existing spec, then run a light review pass.
 argument-hint: [feature slug, e.g. customer-count-fix]
-allowed-tools: Read, Write, Edit, Grep, Glob, Bash, Agent(spec-author, spec-review-agent, test-architect)
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-review-agent, test-architect)
 ---
 
 Generate (or regenerate) `tasks.md` for the spec at `.claude/specs/$ARGUMENTS/` (if no
@@ -21,3 +21,8 @@ Then run ONE light review pass (`spec-review-agent` report-only + `test-architec
 write the per-reviewer files + `review/review-latest.md`, append a `DL-NNN` entry, and
 print the combined A+B count and the coverage report. Tell the user whether tasks are
 ready for `/spec-implement`. Never touch `.kiro/`.
+
+Session title (Claude desktop app; `.claude/docs/session-title.md` is the rule): rename this session to
+`Spec <feature> · tasks` with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`) before
+`spec-author` is invoked, and to `Spec <feature> · spec review` for the review pass. A declined rename is not a
+blocker.

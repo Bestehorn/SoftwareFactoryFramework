@@ -61,8 +61,9 @@ RESOLVE → refresh, until no not-in-progress open issue remains; then every PR 
 (`wait-landed`, returns fixed) and be handed off before DONE (`.claude/docs/delivery.md` §3). A queued or
 handed-off issue keeps its claim, so SELECT skips it. The run ends with the SESSION verdict — the agent
 definition's "The SESSION verdict" section — and nothing after it. In the Claude desktop app the session
-title names the issues in flight, `Issues-Work 12, 15`, renamed with `mcp__ccd_session_mgmt__set_session_title`
-each time that set changes (the agent definition's "Session title" section).
+title names the issues in flight and what the run is doing, `Issues-Work 12, 15 · 12 CI`, renamed with
+`mcp__ccd_session_mgmt__set_session_title` each time the set or the activity changes (`.claude/docs/session-title.md`;
+the agent definition's "Session title" section).
 
 Honor all the mandates in the agent definition: wrapper-only remote ops, evidence-not-
 assertion (the implementer never certifies its own work; the adversarial-verifier

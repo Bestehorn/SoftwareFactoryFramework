@@ -93,6 +93,7 @@ Never keep a session alive to watch another issue or a deploy (a cron, a loop, a
 | Green post-deploy check on a commit that CONTAINS the landing | watcher | `(post-deploy)` items ticked, `verified`; checklist complete → closed with time spent and the run; else `needs-closeout`, claim released; the environment's red streak ends |
 | Red post-deploy check, the environment green before it | watcher | a red streak starts at that commit; the issues landed since the last green deploy and contained in it: `verification-failed` + `needs-rework`, claim released |
 | Red post-deploy check during a red streak, on an issue that landed AFTER the streak began | watcher | stays `awaiting-verification` with ONE comment naming the streak — it landed into an environment that was already red, so it is not a suspect; the first green deploy containing it verifies it |
+| GitHub deploy for a commit that is not the trunk's tip when its job starts (superseded by a newer landing, an old run re-run, or off the trunk) | the deploy job's `deploy-guard` step | none: nothing is deployed, the run ends red with `REFUSED: …` and no verdict follows; a superseded landing is verified by the tip's deploy, by ancestry |
 
 Verification is by ANCESTRY (`git merge-base --is-ancestor <landing> <deployed>`): a deploy superseded by a
 newer one loses no verdict, and no one waits for a deploy of their own commit. The steward keeps ONE open

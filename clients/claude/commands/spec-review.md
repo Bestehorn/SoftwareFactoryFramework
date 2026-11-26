@@ -1,7 +1,7 @@
 ---
 description: Run one adversarial review-panel pass over an existing spec (requirements/design or tasks) and report the combined A+B defect count and test-coverage report.
 argument-hint: [feature slug, e.g. customer-count-fix]
-allowed-tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch, Agent(spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer)
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash, WebSearch, WebFetch, mcp__ccd_session_mgmt__set_session_title, Agent(spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer)
 ---
 
 Run a single review-panel pass over the spec at `.claude/specs/$ARGUMENTS/` (if no
@@ -24,3 +24,7 @@ the combined **A+B count**, the per-reviewer breakdown, the `test-architect` Cov
 Report (COVERED vs GAP requirement rows), and whether the readiness gate (0 A+B + zero
 coverage GAPs) is met. If not met, list the A/B findings the user (or the conductor)
 must resolve. Never touch `.kiro/`.
+
+Session title (Claude desktop app; `.claude/docs/session-title.md` is the rule): rename this session to
+`Spec <feature> · spec review` with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`) before the
+panel is dispatched. A declined rename is not a blocker.

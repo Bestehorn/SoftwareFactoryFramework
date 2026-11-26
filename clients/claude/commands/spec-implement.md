@@ -1,7 +1,7 @@
 ---
 description: Implement an approved spec test-first (TDD), proving every task works with captured command/test evidence, then run adversarial verification and write the evidence report.
 argument-hint: [feature slug, e.g. customer-count-fix]
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Agent(spec-implementer, adversarial-verifier, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer)
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, mcp__ccd_session_mgmt__set_session_title, Agent(spec-implementer, adversarial-verifier, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer)
 ---
 
 Run the IMPLEMENT_LOOP + VERIFY + EVIDENCE_REPORT phases for the spec at
@@ -30,6 +30,11 @@ Then follow `.claude/specs/_workflow/phases/spec-phase-implement.md` exactly:
   refutation or new A/B.
 - Write `evidence/REPORT.md` and finish by quoting the proof summary (every "passes"
   is a quoted command output, never an assertion).
+
+Session title (Claude desktop app; `.claude/docs/session-title.md` is the rule): rename this session with
+`mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`) as the phase changes —
+`Spec <feature> · implementing` for the tasks, `Spec <feature> · verifying` for VERIFY, `Spec <feature> · report`
+for the report, `Spec <feature> — done` when it is written. A declined rename is not a blocker.
 
 Append `DL-NNN` entries throughout per `.claude/rules/agent-state-convention.md`.
 Honor the spec-drift guard (do not let the implementer edit requirements/design/

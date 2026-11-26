@@ -67,6 +67,7 @@ evidence-proven code in one session.
 | `clients/common/phases/spec-phase-*.md` | Phase procedures (shared by conductor + commands, and by Kiro) |
 | `rules/agent-state-convention.md` | State layout + plain `Name: value` field semantics + the cross-agent decision log; its §1a binds every REGISTERED run to the run-identity contract (all agents) |
 | `docs/run-identity.md` | The AUTHORITATIVE run-identity/gate-release contract (registry-derived run id, seeded fields, release vocabulary, `OWNED`/`UNREGISTERED`/`BROKEN` verdicts). Installs to `.claude/docs/` — deliberately NOT a rule, so it is read on demand by registered runs instead of loading into every session |
+| `docs/session-title.md` | What a main session's desktop-app title says: `<subject> · <activity>`, renamed when either changes, the forms per kind of session and the kept properties; installs to `.claude/docs/`, read on demand by the agents and commands that rename |
 | `rules/no-ai-attribution.md` | Descriptive names; no Claude/AI attribution in commits/PRs/issues/branches (all agents) |
 | `rules/issue-filing-discipline.md` | WHEN an issue may be filed at all: observed defects only, fix-first, zero-is-valid, provenance, findings ledger (all agents) |
 | `rules/continuous-work.md` | WHEN a turn may end: never stop for permission; four proven exceptions only; a question is five lines with the recommended option first; reversible decisions are decided, not asked (all agents + main session) |

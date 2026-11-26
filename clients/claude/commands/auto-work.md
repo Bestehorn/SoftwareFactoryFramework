@@ -77,12 +77,13 @@ Set `MODE: AUTO`, `Status: IN_PROGRESS`, `AWAITING_USER: none`, and
 `WORKABLE_ISSUES_REMAIN: yes` in this run's `resume_state.md`, and keep that last field `yes`
 for as long as any open, not-in-progress, unlocked issue exists.
 
-**The session title names the issues in flight** (Claude desktop app; the agent definition's "Session title"
-section is the full rule): `Auto-Work 12, 15, 19` while this run holds those issues — an issue joins when its
-claim succeeds and leaves when it is closed, handed off or released; a queued one stays — `Auto-Work` between
+**The session title names the issues in flight and what the run is doing** (Claude desktop app;
+`.claude/docs/session-title.md` is the rule, the agent definition's "Session title" section its issue-work part):
+`Auto-Work 12, 15, 19 · 19 CI` while this run holds those issues and works 19 — an issue joins when its claim
+succeeds and leaves when it is closed, handed off or released; a queued one stays — `Auto-Work · selecting` between
 two issues, `Auto-Work — done` at DONE. Rename with `mcp__ccd_session_mgmt__set_session_title`
-(`session_id: "self"`) only when the set changes, append it as `SESSION_ISSUES:` each time so compaction keeps
-it, and carry on past a declined rename: nobody is watching to approve one.
+(`session_id: "self"`) each time the set or the activity changes, append the set as `SESSION_ISSUES:` each time it
+changes so compaction keeps it, and carry on past a declined rename: nobody is watching to approve one.
 
 **What actually enforces non-negotiable #2.** The `issue-loop-gate` gate blocks turn-end while
 this run has CLAIMED tracked work and has not affirmatively released — and `MODE: AUTO`

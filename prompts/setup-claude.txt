@@ -1642,6 +1642,8 @@ facts the rules cannot know go under "This project".
   zero filings is normal; the rest is a findings-ledger row.
 - `keep-git-clean.md` and `no-ai-attribution.md`: no stale worktrees, branches or temp
   files; descriptive names and messages, never an AI trailer.
+- Desktop app: the main session's title is `<subject> · <activity>`, renamed when either
+  changes (`.claude/docs/session-title.md`).
 - Memory is compiled (`/compile-memory`): `test/test_instruction_corpus_budget.py` caps it.
 
 ## This project
@@ -2682,6 +2684,8 @@ cp clients/claude/docs/run-identity.md       .claude/docs/   # ON-DEMAND, delibe
                                                               # a rules/ file with no paths: would
                                                               # load into EVERY session
 cp clients/common/docs/delivery.md           .claude/docs/   # ON-DEMAND: read at the PR phase
+cp clients/claude/docs/session-title.md      .claude/docs/   # ON-DEMAND: what a main session's
+                                                              # desktop title says (Part 13.1d)
 cp src/hooks/hook*.py src/hooks/gate_*.py src/hooks/red_for_right_reason.py \
    src/hooks/wait_for.py src/hooks/supervisor.py .claude/hooks/   # not kiro_hooks.py (Kiro only)
 cp src/hooks/CONTRACT_VERSION                .claude/hooks/
@@ -3387,20 +3391,27 @@ per-tool approval, and see Part 8.2a for the full semantics.
 
 ### Part 13.1d — The session title names the work (Claude desktop app)
 
-In the desktop app's sidebar every work session otherwise carries an auto-generated title, so the operator
-cannot tell which session holds which issue. The orchestrator therefore keeps THIS session's title equal to
-the set of issues it is working on, through the app's `mcp__ccd_session_mgmt__set_session_title`
-(`session_id: "self"`), which `/work-issue`, `/auto-work` and `/issues-work` allowlist and the agent's `tools`
-line names. An issue joins the set when its claim succeeds and leaves when it is closed or landed and handed
-off (in a loop also when its claim is released); a queued, returned or escalated issue stays, and filing an
-issue does not add it. The titles: `Issue 77`, `Issues 77, 80`, `Issue 77 — done` (`/work-issue`, after its
-last issue); `Auto-Work 12, 15, 19`, `Auto-Work` between issues, `Auto-Work — done` at DONE; `Issues-Work 12,
-15` for `/issues-work`. The set is also appended to `resume_state.md` as `SESSION_ISSUES:` (no gate reads it),
-so compaction and a new process keep it. Three properties to preserve if you edit it: only the main session
-can rename itself, so the rename is never delegated; the rename happens before the close-out, never after the
-SESSION verdict, because the archive is the turn's last call; and a rename the app declines (a title the
-operator typed, in a session nobody can approve) is not a blocker and never a question. A CLI or Kiro session
-has no such tool and skips the rule.
+In the desktop app's sidebar every session otherwise carries an auto-generated title, so the operator cannot
+tell which session holds which work or where it stands. Every main session therefore keeps its own title as
+`<subject> · <activity>`, through the app's `mcp__ccd_session_mgmt__set_session_title` (`session_id:
+"self"`), renamed when the subject or the activity changes — at each phase transition, never within a phase. The
+one rule text is `.claude/docs/session-title.md` (from `clients/claude/docs/session-title.md`): the form, the
+trigger, the properties below and the forms per kind of session. The issue-work orchestrator and `/work-issue`,
+`/auto-work`, `/issues-work`, spec-conductor and the `/spec-*` commands, `/close-session`, `/continue-work`,
+`/supervise` and `/compile-memory` point to it and allowlist the tool (an agent names it in `tools`); the
+CLAUDE.md fleet line (Part 8.1) tells an interactive session. For issue work the subject is the set of issues the
+session is working on: an issue joins when its claim succeeds and leaves when it is closed or landed and handed
+off (in a loop also when its claim is released); a queued, returned or escalated issue stays, and filing an issue
+does not add it. The subjects: `Issue 77`, `Issues 77, 80`, `Issue 77 — done` (`/work-issue`, after its last
+issue); `Auto-Work 12, 15, 19`, `Auto-Work` between issues, `Auto-Work — done` at DONE; `Issues-Work 12, 15` for
+`/issues-work` — each followed while working by the activity its phase maps to (`Issue 77 · CI`,
+`Auto-Work 12, 15 · 15 implementing`). The set is also appended to `resume_state.md` as `SESSION_ISSUES:` (no
+gate reads it), so compaction and a new process keep it. Three properties to preserve if you edit it: only the
+main session can rename itself, so the rename is never delegated; a flow's last rename happens before the
+close-out, never after the SESSION verdict, because the archive is the turn's last call; and a rename the app
+declines (a title the operator typed, in a session nobody can approve) is not a blocker and never a question. A
+CLI or Kiro session has no such tool and skips the rule: Kiro documents no rename an agent can call
+(kirodotdev/Kiro#7836, kirodotdev/Kiro#5471).
 
 ### Part 13.2 — How it drives the fix (architecture)
 
@@ -3718,7 +3729,8 @@ expected outcome, not a sign that something was missed.
   native-tools-over-shell.md (Read/Grep/Glob/Write/Edit over shell file commands; one
   shell call per step; no foreground sleep; suites through the runner's host-wide slot).
   On-demand docs in .claude/docs/: review-contract.md (the finding shape every reviewer
-  uses), run-identity.md and delivery.md (how a green PR lands, deploys and is verified).
+  uses), run-identity.md and delivery.md (how a green PR lands, deploys and is verified),
+  session-title.md (what a main session's desktop title says).
 
 ### Autonomous issue resolution (Part 13; see docs/design/agents/issue-work-orchestrator.md)
 - Orchestrator: `issue-work-orchestrator` (`claude --agent issue-work-orchestrator`).

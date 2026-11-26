@@ -2,7 +2,7 @@
 description: Restart a stalled run — give a short status update, then resume the work and carry it to completion without stopping again. Voids any instruction to pause, check in, or produce intermediate summaries.
 argument-hint: "[optional: what to work on, if the session's state is unclear]"
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, CronCreate, CronList, CronDelete, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, CronCreate, CronList, CronDelete, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
 disallowed-tools: AskUserQuestion
 ---
 
@@ -89,6 +89,11 @@ not the truth — **reality wins; reconcile the file to it**, never the reverse:
    wait; merged but not cleaned →
    resume at MERGE_CLEANUP; issue closed → RESOLVE then the next iteration; between issues →
    LOAD_ISSUES.
+
+**Re-apply the session title once** (Claude desktop app; `.claude/docs/session-title.md` is the rule): from the
+reconciled state — the subject from `SESSION_ISSUES` (or `MODE`, or `CURRENT_SPEC`), the activity from `Phase` in
+the doc's words (`Auto-Work 12 · CI`) — rename this session with `mcp__ccd_session_mgmt__set_session_title`
+(`session_id: "self"`); the resumed flow renames from then on. A declined rename is not a blocker.
 
 **Record why the run stopped.** Before resuming, append a `DL-NNN` entry to this run's
 decision log stating what the last recorded phase was, what the evidence shows actually
