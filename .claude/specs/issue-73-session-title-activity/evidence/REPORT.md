@@ -17,7 +17,13 @@ Tier S, one wave (T1, I1). Spec: `change.md`. E2E: not applicable (natural-langu
 | Proof cycle 3 | `evidence/verify/refutation-report-cycle-3.md`: CI run 45844541424 green on 2fcfeb7; M9–M12, N1–N3 killed; P1–P3 survived → REFUTED AC-1, AC-3, AC-5 (DL-007) |
 | Fix | each form bound to its own bullet; every entry point must hold a rename verb tied to the tool; all nine phase-to-activity pairs pinned |
 | Green, after the fix | `evidence/green/wave-1-cycle-4.txt`: 65 passed; all twelve recorded mutants killed locally (DL-007) |
-| Reject cap | three reject cycles reached; the operator decides whether a fourth verifier cycle runs before the merge |
+| Reject cap | three reject cycles reached; the operator chose "Run a fourth round first" |
+| Proof cycle 4 | `evidence/verify/refutation-report-cycle-4.md`: CI run 45846642210 green on e60420a; P1–P3, N1, M10 killed; R1–R4 survived → REFUTED AC-2, AC-3, AC-5, AC-6 (DL-008) |
+| Fix | the fleet line's form and trigger pinned; the rename negation guard case-insensitive with contractions; the failed-rename clause pinned; every mapped phase kept beside its activity |
+| Green, after the fix | `evidence/green/wave-1-cycle-5.txt`: 65 passed; all twenty recorded mutants killed locally (DL-008) |
+
+Residual: the tests match phrases in prose. They pin each clause the criteria state, and every rewording any round
+produced is caught, but a rewording that keeps every asserted phrase inside a contradicting sentence can still pass.
 | Local checks | `run_checks.py --group lint --group types --group security`: 5 passed, 0 failed |
 
 ## Coverage

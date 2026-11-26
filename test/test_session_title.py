@@ -61,17 +61,17 @@ ISSUE_WORK_ACTIVITIES = (
     "`needs you`",
 )
 ISSUE_WORK_BULLET = "- **Issue work**"
-# The orchestrator's phase-to-activity mapping, one pair per phase that has an activity of its own (AC-5).
+# The orchestrator's phase-to-activity mapping, every phase it names kept beside its activity (AC-5).
 PHASE_MAPPING_PHRASES = (
-    "SELECT `selecting`",
-    "CLASSIFY and FIX while the spec is written `spec`",
+    "LOAD_ISSUES and SELECT `selecting`",
+    "PREPARE, CLASSIFY and FIX while the spec is written `spec`",
     "the spec's review loop `spec review`",
-    "`needs you` while `AWAITING_USER` holds a reason",
     "FIX's waves `implementing`",
     "PROOF_GATE `verifying`",
-    "PR until its CI is green, `CI`",
+    "DOCUMENT, and PR until its CI is green, `CI`",
     "QUEUE `queued`",
-    "MERGE_CLEANUP `merging`",
+    "the direct merge, its trunk run and MERGE_CLEANUP `merging`",
+    "`needs you` while `AWAITING_USER` holds a reason",
 )
 ORCHESTRATOR_TRIGGER = "each time the set or the activity below changes"
 # The trigger each work command states (AC-3), and the set-only trigger it had before issue #73.
@@ -94,6 +94,7 @@ DOC_PROPERTY_PHRASES = (
     "comes before the close-out",
     "no rename follows the SESSION verdict",
     "not a blocker",
+    "A decline or an error changes nothing else",
     "never ask about the title",
     "Kiro",
     "the session skips this rule",
@@ -110,8 +111,13 @@ DOC_KINDS = (
     ("- **Memory**", "/compile-memory"),
     ("- **An interactive session**", "no agent, no command"),
 )
-# An instruction to rename with the tool: a rename verb, not negated, then the tool within the same sentence (AC-3).
-RENAME_INSTRUCTION_RE = re.compile(r"(?<!never )(?<!not )\b[Rr]enam(?:e|es|ed)\b[^.]*?" + re.escape(TITLE_TOOL))
+# An instruction to rename with the tool: a rename verb, not negated in any case or contraction, then the tool within
+# the same sentence (AC-3).
+RENAME_INSTRUCTION_RE = re.compile(
+    r"(?<!never )(?<!not )(?<!n't )(?<!no )\brenam(?:e|es|ed)\b[^.]*?" + re.escape(TITLE_TOOL), re.IGNORECASE
+)
+# The CLAUDE.md template's fleet line states the form and the trigger, and names the rule (AC-6).
+FLEET_LINE_PHRASES = ("`<subject> · <activity>`", "renamed when either changes", DOC_POINTER)
 DOC_FORMS_HEADING = "## The forms"
 DOT_EXAMPLE_RE = re.compile(r"`[^`]+ · [^`]+`")
 PART_8_1_HEADING = "### Part 8.1"
@@ -307,7 +313,8 @@ def test_the_claude_md_template_names_the_rule() -> None:
     end = text.find(THIS_PROJECT_HEADING, start)
     assert start != -1 and end != -1, "Part 8.1's template has no Fleet conventions section"
     fleet = _collapsed(text=text[start:end])
-    assert DOC_POINTER in fleet, f"the CLAUDE.md template's Fleet conventions do not name {DOC_POINTER}"
+    missing = [phrase for phrase in FLEET_LINE_PHRASES if phrase not in fleet]
+    assert not missing, f"the CLAUDE.md template's Fleet conventions lack {missing}"
 
 
 def test_the_setup_prompt_installs_the_doc() -> None:

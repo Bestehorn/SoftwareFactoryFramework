@@ -66,3 +66,14 @@ cycles at 3, then the five-line question.
 **Evidence:** evidence/verify/refutation-report-cycle-3.md § 4; the local check of all twelve recorded mutants (M9–M12,
 N1–N3, P1–P3, O1, P4): all killed, 65 passed on the clean tree (evidence/green/wave-1-cycle-4.txt).
 **Artifacts touched:** test/test_session_title.py, change.md § Tests, evidence/REPORT.md
+
+## DL-008 — 2026-11-26T16:45:00Z — issue-work-orchestrator — phase:PROOF_GATE
+
+**Decision:** Fix the cycle-4 survivors R1–R4 in the test and merge PR 74 once CI is green, without a fifth round.
+**Driver:** the operator's answer "Run a fourth round first" (its option read "verification before merging; it may
+find further rewordings"); cycle 4 REFUTED AC-2, AC-3, AC-5, AC-6 with R1–R4.
+**Alternatives considered:** a fifth round (each round found new rewordings; the operator chose one more, not an
+open-ended loop); asking again.
+**Evidence:** evidence/verify/refutation-report-cycle-4.md § 4; the local check of all twenty recorded mutants:
+all killed, 65 passed on the clean tree (evidence/green/wave-1-cycle-5.txt).
+**Artifacts touched:** test/test_session_title.py, change.md § Tests, evidence/REPORT.md
