@@ -47,7 +47,7 @@ facts the rules cannot know go under "This project".
   and promoted with `prompts/update.txt` on a `framework-update-*` branch, which also regenerates
   `config/toolchain.json` (`python scripts/toolchain_manifest.py --release <tag>`).
 - GitHub, merge mode direct (no `config/delivery.json`, no merge steward). The toolchain wrapper
-  is a recorded deviation (the chess project's implementation) until the product wrapper rewrite
-  is released; new subcommands go into `src/payload/scripts/github_wrapper.py`.
+  is the product wrapper since v2026.11.26; a new subcommand is a module of
+  `src/payload/scripts/github_api/commands/`.
 - Forge-facing tests use ephemeral `sff-test-*` repositories they create and delete, never this
   backlog. `mypy src` is clean with no override (`test/test_mypy_baseline.py`).

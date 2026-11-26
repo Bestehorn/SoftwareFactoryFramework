@@ -1069,8 +1069,7 @@ a real (non-placeholder) token.
     (the package the entry script imports; the two are copied together).
 
 The GitHub wrapper implements the subcommands the framework's agents
-and hooks invoke; of the minimum below, `get-jobs`, `rerun` and
-`cancel` arrive in a later framework release, and a further subcommand
+and hooks invoke, and a further subcommand
 is added as a module of `scripts/github_api/commands/` (see the
 docstring of `scripts/github_wrapper.py`). The GitLab wrapper
 implements the GitLab subcommands this part requires except the issue
@@ -2705,8 +2704,8 @@ is a rule violation, not a shortcut.
 Duration is NOT the signal and is forbidden as one: an unresolvable
 action reference fails in ~9 seconds with an empty log archive, which
 looks identical. Fetch the per-job listing WITH per-step detail
-(`get-jobs <run-id> --steps`; the terse form cannot distinguish these)
-and classify EVERY non-successful job:
+(`get-jobs <run-id> --show-steps --show-runner`; the terse form cannot
+distinguish these) and classify EVERY non-successful job:
 
 | Shape | `conclusion` | runner name | labels | steps | Route |
 |---|---|---|---|---|---|

@@ -1,0 +1,1789 @@
+# verifier mutant runs at HEAD de1434e56f4b12abb0f464b77eaf6b7e5a586afe; paired tests: src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py
+## M00 wave-1 T3 reverted: ci.py, actions.py, github_wrapper.py at ce950f4 (whole paired files)
+ src/payload/scripts/github_api/commands/ci.py      | 273 +--------------------
+ src/payload/scripts/github_api/families/actions.py |   7 +-
+ src/payload/scripts/github_wrapper.py              |   7 -
+ 3 files changed, 7 insertions(+), 280 deletions(-)
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [536 items]
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+....F.FFF.....F...FFF...F.F.................F........................... [ 53%]
+........................................................................ [ 67%]
+........................................................................ [ 80%]
+........................................................................ [ 94%]
+...................F.FF.........                                         [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/latest-attempt: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-0/latest-attempt: exit code 2, the golden is 0; stdout ''
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/all-attempts: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-0/all-attempts: exit code 2, the golden is 0; stdout ''
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-0/every-column: exit code 2, the golden is 0; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-0/whole-run: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: rerun/exit-0/whole-run: exit code 2, the golden is 0; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: rerun/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: rerun/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: cancel/exit-0/requested: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: cancel/exit-0/requested: exit code 2, the golden is 0; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: cancel/exit-1/already-completed: exit code 2, the golden is 1; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: cancel/exit-1/already-completed: exit code 2, the golden is 1; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_wrapper.py does not carry: ['python scripts/github_wrapper.py get-jobs <run_id> --failed-only', 'python scripts/github_wrapper.py get-jobs <run_id> --show-steps', 'python scripts/github_wrapper.py get-jobs <run_id> --step-status', 'python scripts/github_wrapper.py get-jobs <run_id> --timing', 'python scripts/github_wrapper.py get-jobs <run_id> --all-attempts', 'python scripts/github_wrapper.py rerun <run_id> --failed-only', 'python scripts/github_wrapper.py cancel <run_id>']
+    assert ['python scri...ed-only', ...] == []
+      
+      Left contains 7 more items, first extra item: [0m[33m'[39;49;00m[33mpython scripts/github_wrapper.py get-jobs <run_id> --failed-only[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:350: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_wrapper.py does not carry: ['python scripts/github_wrapper.py get-jobs <run_id> --failed-only', 'python scripts/github_wrapper.py get-jobs <run_id> --show-steps', 'python scripts/github_wrapper.py get-jobs <run_id> --step-status', 'python scripts/github_wrapper.py get-jobs <run_id> --timing', 'python scripts/github_wrapper.py get-jobs <run_id> --all-attempts', 'python scripts/github_wrapper.py rerun <run_id> --failed-only', 'python scripts/github_wrapper.py cancel <run_id>']
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the product's parser has no subcommand 'get-jobs'
+    assert 'get-jobs' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:212: AssertionError: the product's parser has no subcommand 'get-jobs'
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the product's parser has no subcommand 'rerun'
+    assert 'rerun' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:212: AssertionError: the product's parser has no subcommand 'rerun'
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the product's parser has no subcommand 'cancel'
+    assert 'cancel' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:212: AssertionError: the product's parser has no subcommand 'cancel'
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/whole-run]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-0/requested]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-1/already-completed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_ci_commands
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[rerun]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[cancel]
+================== 14 failed, 522 passed in 82.97s (0:01:22) ==================
+exit=1
+restore: git diff HEAD --stat follows (empty = restored)
+?? .claude/specs/issue-72-get-jobs-rerun-cancel/evidence/verify/
+
+## M01 AC-1 filter: --all-attempts sends filter=latest
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..18ff9a3 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -416,7 +416,7 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+     The attempts are counted over the whole page, before ``--failed-only`` leaves any job out, so a page of two
+     attempts gives every printed line its attempt suffix.
+     """
+-    jobs_filter = JOBS_FILTER_ALL if args.all_attempts else JOBS_FILTER_LATEST
++    jobs_filter = JOBS_FILTER_LATEST if args.all_attempts else JOBS_FILTER_LATEST
+     data = registry.call(
+         transport=transport,
+         operation_id=OP_LIST_RUN_JOBS,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.....F...F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+2 failed, 40 passed in 10.38s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M02 AC-1 per_page 100 -> 50
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..62dc828 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -101,7 +101,7 @@ FIELD_RUNNER_NAME = "runner_name"
+ # The fork's ``get-jobs``: one page of ``JOBS_PER_PAGE`` jobs, the ``filter`` sent explicitly (``latest``, GitHub's
+ # default, is the newest attempt only; ``all`` every attempt), the conclusions ``--failed-only`` prints, and the widths
+ # of the id, status and conclusion columns (a step line's status and conclusion take the same widths).
+-JOBS_PER_PAGE = 100
++JOBS_PER_PAGE = 50
+ JOBS_FILTER_LATEST = "latest"
+ JOBS_FILTER_ALL = "all"
+ FAILED_JOB_CONCLUSIONS = ("failure", "cancelled", "timed_out")
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...F.F.F..F..F............................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=latest
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=latest
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=all
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=all
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=latest
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=latest
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=all
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=50&filter=all
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4243/jobs?per_page=50&filter=latest
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4243/jobs?per_page=50&filter=latest
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-1/not-found]
+5 failed, 37 passed in 13.31s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M03 AC-2 failed-only set drops timed_out
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..3c6e56a 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -104,7 +104,7 @@ FIELD_RUNNER_NAME = "runner_name"
+ JOBS_PER_PAGE = 100
+ JOBS_FILTER_LATEST = "latest"
+ JOBS_FILTER_ALL = "all"
+-FAILED_JOB_CONCLUSIONS = ("failure", "cancelled", "timed_out")
++FAILED_JOB_CONCLUSIONS = ("failure", "cancelled")
+ JOB_ID_WIDTH = 14
+ JOB_STATUS_WIDTH = 12
+ JOB_CONCLUSION_WIDTH = 12
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......F..................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+1 failed, 41 passed in 11.63s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M04 AC-2 attempt suffix always (> 0)
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..2644aa2 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -424,7 +424,7 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+         query={QUERY_PER_PAGE: JOBS_PER_PAGE, QUERY_FILTER: jobs_filter},
+     )
+     jobs = _listed(data=data, item_key=FIELD_JOBS, what=FIELD_JOBS)
+-    show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs}) > 1
++    show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs}) > 0
+     billed_total = 0
+     for job in jobs:
+         if args.failed_only and job.get(FIELD_CONCLUSION) not in FAILED_JOB_CONCLUSIONS:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...F.....F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+2 failed, 40 passed in 13.43s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M05 AC-2 attempt suffix never (> 2)
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..aedc01f 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -424,7 +424,7 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+         query={QUERY_PER_PAGE: JOBS_PER_PAGE, QUERY_FILTER: jobs_filter},
+     )
+     jobs = _listed(data=data, item_key=FIELD_JOBS, what=FIELD_JOBS)
+-    show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs}) > 1
++    show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs}) > 2
+     billed_total = 0
+     for job in jobs:
+         if args.failed_only and job.get(FIELD_CONCLUSION) not in FAILED_JOB_CONCLUSIONS:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.....F.F..................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+2 failed, 40 passed in 11.10s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M06 AC-2 attempts counted over the printed jobs only
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..8de112a 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -424,7 +424,7 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+         query={QUERY_PER_PAGE: JOBS_PER_PAGE, QUERY_FILTER: jobs_filter},
+     )
+     jobs = _listed(data=data, item_key=FIELD_JOBS, what=FIELD_JOBS)
+-    show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs}) > 1
++    show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs if not args.failed_only or job.get(FIELD_CONCLUSION) in FAILED_JOB_CONCLUSIONS}) > 1
+     billed_total = 0
+     for job in jobs:
+         if args.failed_only and job.get(FIELD_CONCLUSION) not in FAILED_JOB_CONCLUSIONS:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......F..................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+1 failed, 41 passed in 13.00s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M07 AC-1 id column width 14 -> 13
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..1b4220b 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -105,7 +105,7 @@ JOBS_PER_PAGE = 100
+ JOBS_FILTER_LATEST = "latest"
+ JOBS_FILTER_ALL = "all"
+ FAILED_JOB_CONCLUSIONS = ("failure", "cancelled", "timed_out")
+-JOB_ID_WIDTH = 14
++JOB_ID_WIDTH = 13
+ JOB_STATUS_WIDTH = 12
+ JOB_CONCLUSION_WIDTH = 12
+ SECONDS_PER_MINUTE = 60.0
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...F.F.F..F...............................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+4 failed, 38 passed in 9.85s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M08 AC-1 status column width 12 -> 11
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..7502fef 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -106,7 +106,7 @@ JOBS_FILTER_LATEST = "latest"
+ JOBS_FILTER_ALL = "all"
+ FAILED_JOB_CONCLUSIONS = ("failure", "cancelled", "timed_out")
+ JOB_ID_WIDTH = 14
+-JOB_STATUS_WIDTH = 12
++JOB_STATUS_WIDTH = 11
+ JOB_CONCLUSION_WIDTH = 12
+ SECONDS_PER_MINUTE = 60.0
+ NO_RUNNER = "(none)"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...F.F.F...F..............................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+4 failed, 38 passed in 10.38s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M09 AC-1 conclusion column width 12 -> 13
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..ebe4642 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -107,7 +107,7 @@ JOBS_FILTER_ALL = "all"
+ FAILED_JOB_CONCLUSIONS = ("failure", "cancelled", "timed_out")
+ JOB_ID_WIDTH = 14
+ JOB_STATUS_WIDTH = 12
+-JOB_CONCLUSION_WIDTH = 12
++JOB_CONCLUSION_WIDTH = 13
+ SECONDS_PER_MINUTE = 60.0
+ NO_RUNNER = "(none)"
+ NO_LABELS = "-"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...F.F.F..F...............................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/all-attempts: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+4 failed, 38 passed in 12.37s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M10 AC-1 missing conclusion not printed as None
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..86c95fb 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -357,7 +357,7 @@ def _job_columns(*, job: Mapping[str, Any]) -> str:
+     """The fork's ``get-jobs`` columns of one job, before any suffix; a job without a conclusion shows ``None``."""
+     return (
+         f"{job[FIELD_ID]:<{JOB_ID_WIDTH}} {job[FIELD_STATUS]:<{JOB_STATUS_WIDTH}} "
+-        f"{str(job.get(FIELD_CONCLUSION)):<{JOB_CONCLUSION_WIDTH}} {job[FIELD_NAME]}"
++        f"{str(job.get(FIELD_CONCLUSION) or 0):<{JOB_CONCLUSION_WIDTH}} {job[FIELD_NAME]}"
+     )
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...F....F.................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/latest-attempt: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+2 failed, 40 passed in 10.31s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M11 AC-3 steps suffix removed
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..af6fbae 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -386,7 +386,7 @@ def _job_line(
+     line = _job_columns(job=job)
+     if show_attempt:
+         line = f"{line}  [attempt={job.get(FIELD_RUN_ATTEMPT)}]"
+-    if args.show_steps:
++    if False:
+         line = f"{line}  [steps={len(job.get(FIELD_STEPS, []))}]"
+     if timing is not None:
+         line = f"{line}{_timing_suffix(timing=timing)}"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 10.39s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M12 AC-3 timing suffix removed
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..2519617 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -388,7 +388,7 @@ def _job_line(
+         line = f"{line}  [attempt={job.get(FIELD_RUN_ATTEMPT)}]"
+     if args.show_steps:
+         line = f"{line}  [steps={len(job.get(FIELD_STEPS, []))}]"
+-    if timing is not None:
++    if False:
+         line = f"{line}{_timing_suffix(timing=timing)}"
+     if args.show_runner:
+         line = f"{line}{_runner_suffix(job=job)}"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......F..F...............................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+2 failed, 40 passed in 8.07s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M13 AC-3 unbilled form wall=? billed=0
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..42fe81f 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -365,7 +365,7 @@ def _timing_suffix(*, timing: JobTiming) -> str:
+     """``--timing``'s suffix of one job: its wall seconds and billed minutes, ``?`` for both when it is unbilled."""
+     wall_seconds, billed = timing
+     if billed is None:
+-        return "  [wall=? billed=?]"
++        return "  [wall=? billed=0]"
+     return f"  [wall={wall_seconds:.0f}s billed={billed}min]"
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+..........F...............................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.37s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M14 AC-3 billing rounds down (floor)
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..614f8d4 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -350,7 +350,7 @@ def _job_billed_minutes(*, job: Mapping[str, Any]) -> JobTiming:
+     wall_seconds = (completed - started).total_seconds()
+     if wall_seconds < 0:
+         return wall_seconds, None
+-    return wall_seconds, math.ceil(wall_seconds / SECONDS_PER_MINUTE)  # positional: math.ceil is positional-only
++    return wall_seconds, math.floor(wall_seconds / SECONDS_PER_MINUTE)  # positional: math.ceil is positional-only
+ 
+ 
+ def _job_columns(*, job: Mapping[str, Any]) -> str:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......F.F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+2 failed, 40 passed in 8.32s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M15 AC-3 runner suffix removed
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..d41a3c9 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -390,7 +390,7 @@ def _job_line(
+         line = f"{line}  [steps={len(job.get(FIELD_STEPS, []))}]"
+     if timing is not None:
+         line = f"{line}{_timing_suffix(timing=timing)}"
+-    if args.show_runner:
++    if False:
+         line = f"{line}{_runner_suffix(job=job)}"
+     return line
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.28s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M16 AC-3 runner default (none) -> none
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..318650e 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -109,7 +109,7 @@ JOB_ID_WIDTH = 14
+ JOB_STATUS_WIDTH = 12
+ JOB_CONCLUSION_WIDTH = 12
+ SECONDS_PER_MINUTE = 60.0
+-NO_RUNNER = "(none)"
++NO_RUNNER = "none"
+ NO_LABELS = "-"
+ LABEL_SEPARATOR = ","
+ #: A GitHub timestamp's UTC designator, and the offset ``datetime.fromisoformat`` reads before Python 3.11.
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 9.78s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M17 AC-3 labels default - -> empty
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..b107691 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -110,7 +110,7 @@ JOB_STATUS_WIDTH = 12
+ JOB_CONCLUSION_WIDTH = 12
+ SECONDS_PER_MINUTE = 60.0
+ NO_RUNNER = "(none)"
+-NO_LABELS = "-"
++NO_LABELS = ""
+ LABEL_SEPARATOR = ","
+ #: A GitHub timestamp's UTC designator, and the offset ``datetime.fromisoformat`` reads before Python 3.11.
+ UTC_DESIGNATOR = "Z"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...........F..............................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 9.03s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M18 AC-3 labels joined with comma-space
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..642d271 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -111,7 +111,7 @@ JOB_CONCLUSION_WIDTH = 12
+ SECONDS_PER_MINUTE = 60.0
+ NO_RUNNER = "(none)"
+ NO_LABELS = "-"
+-LABEL_SEPARATOR = ","
++LABEL_SEPARATOR = ", "
+ #: A GitHub timestamp's UTC designator, and the offset ``datetime.fromisoformat`` reads before Python 3.11.
+ UTC_DESIGNATOR = "Z"
+ UTC_OFFSET = "+00:00"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.11s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M19 AC-3 order: runner suffix before timing
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..3dddc57 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -389,8 +389,8 @@ def _job_line(
+     if args.show_steps:
+         line = f"{line}  [steps={len(job.get(FIELD_STEPS, []))}]"
+     if timing is not None:
+-        line = f"{line}{_timing_suffix(timing=timing)}"
+-    if args.show_runner:
++        line = f"{line}{_runner_suffix(job=job) if args.show_runner else ""}{_timing_suffix(timing=timing)}"
++    if False:
+         line = f"{line}{_runner_suffix(job=job)}"
+     return line
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.90s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M20 AC-3 order: timing suffix before attempt suffix
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..9d660f5 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -385,10 +385,10 @@ def _job_line(
+     without ``--timing``) and runner suffixes, in that order."""
+     line = _job_columns(job=job)
+     if show_attempt:
+-        line = f"{line}  [attempt={job.get(FIELD_RUN_ATTEMPT)}]"
++        line = f"{line}{_timing_suffix(timing=timing) if timing is not None else ""}  [attempt={job.get(FIELD_RUN_ATTEMPT)}]"
+     if args.show_steps:
+         line = f"{line}  [steps={len(job.get(FIELD_STEPS, []))}]"
+-    if timing is not None:
++    if timing is not None and not show_attempt:
+         line = f"{line}{_timing_suffix(timing=timing)}"
+     if args.show_runner:
+         line = f"{line}{_runner_suffix(job=job)}"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......F..................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+1 failed, 41 passed in 8.62s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M21 AC-3 order: timing suffix before steps suffix
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..214c8cb 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -386,10 +386,10 @@ def _job_line(
+     line = _job_columns(job=job)
+     if show_attempt:
+         line = f"{line}  [attempt={job.get(FIELD_RUN_ATTEMPT)}]"
+-    if args.show_steps:
++    if args.show_steps and timing is None:
+         line = f"{line}  [steps={len(job.get(FIELD_STEPS, []))}]"
+     if timing is not None:
+-        line = f"{line}{_timing_suffix(timing=timing)}"
++        line = f"{line}{_timing_suffix(timing=timing)}{f"  [steps={len(job.get(FIELD_STEPS, []))}]" if args.show_steps else ""}"
+     if args.show_runner:
+         line = f"{line}{_runner_suffix(job=job)}"
+     return line
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........F.................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.28s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M22 AC-3 TOTAL summed over every job, not the printed ones
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..54d1f76 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -425,13 +425,13 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+     )
+     jobs = _listed(data=data, item_key=FIELD_JOBS, what=FIELD_JOBS)
+     show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs}) > 1
+-    billed_total = 0
++    billed_total = sum((_job_billed_minutes(job=j)[1] or 0) for j in jobs) if args.timing else 0
+     for job in jobs:
+         if args.failed_only and job.get(FIELD_CONCLUSION) not in FAILED_JOB_CONCLUSIONS:
+             continue
+         timing = _job_billed_minutes(job=job) if args.timing else None
+         if timing is not None and timing[1] is not None:
+-            billed_total += timing[1]
++            pass
+         print_line(text=_job_line(job=job, show_attempt=show_attempt, timing=timing, args=args))
+         if args.step_status:
+             for step in job.get(FIELD_STEPS, []):
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+......F...................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+1 failed, 41 passed in 8.44s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M23 AC-3 TOTAL line removed
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..fda8d6e 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -436,7 +436,7 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+         if args.step_status:
+             for step in job.get(FIELD_STEPS, []):
+                 print_line(text=_step_line(step=step))
+-    if args.timing:
++    if False:
+         print_line(text=_billed_total_line(minutes=billed_total))
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+......F.F.................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/failed-only: the standard output differs from the golden
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+2 failed, 40 passed in 8.50s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M24 AC-3 step lines in reverse order
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..620461f 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -434,7 +434,7 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+             billed_total += timing[1]
+         print_line(text=_job_line(job=job, show_attempt=show_attempt, timing=timing, args=args))
+         if args.step_status:
+-            for step in job.get(FIELD_STEPS, []):
++            for step in reversed(job.get(FIELD_STEPS, [])):
+                 print_line(text=_step_line(step=step))
+     if args.timing:
+         print_line(text=_billed_total_line(minutes=billed_total))
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.37s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M25 AC-3 step line indent 4 -> 3
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..a1482ea 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -398,7 +398,7 @@ def _job_line(
+ def _step_line(*, step: Mapping[str, Any]) -> str:
+     """``--step-status``'s line of one step, printed under its job."""
+     return (
+-        f"    step {step.get(FIELD_NUMBER)} {str(step.get(FIELD_STATUS)):<{JOB_STATUS_WIDTH}} "
++        f"   step {step.get(FIELD_NUMBER)} {str(step.get(FIELD_STATUS)):<{JOB_STATUS_WIDTH}} "
+         f"{str(step.get(FIELD_CONCLUSION)):<{JOB_CONCLUSION_WIDTH}} {step.get(FIELD_NAME)}"
+     )
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.47s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M26 AC-3 step lines removed
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..64a87f1 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -433,7 +433,7 @@ def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.
+         if timing is not None and timing[1] is not None:
+             billed_total += timing[1]
+         print_line(text=_job_line(job=job, show_attempt=show_attempt, timing=timing, args=args))
+-        if args.step_status:
++        if False:
+             for step in job.get(FIELD_STEPS, []):
+                 print_line(text=_step_line(step=step))
+     if args.timing:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: get-jobs/exit-0/every-column: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+1 failed, 41 passed in 8.58s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M27 AC-4 rerun --failed-only sends re-run-workflow
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..a3844f6 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -444,7 +444,7 @@ def cmd_rerun(*, transport: Transport, owner: str, repo: str, args: argparse.Nam
+     """Ask GitHub to re-run the run, or with ``--failed-only`` its failed jobs, with a ``POST`` with no body."""
+     operation_id, segment = OP_RERUN_RUN, RERUN_WHOLE_RUN_SEGMENT
+     if args.failed_only:
+-        operation_id, segment = OP_RERUN_FAILED_JOBS, RERUN_FAILED_JOBS_SEGMENT
++        operation_id, segment = OP_RERUN_RUN, RERUN_FAILED_JOBS_SEGMENT
+     registry.call(
+         transport=transport,
+         operation_id=operation_id,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+......F...................................                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/rerun
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/rerun
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/failed-only]
+1 failed, 41 passed in 8.33s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M28 AC-4 rerun confirmation text
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..924e213 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -450,7 +450,7 @@ def cmd_rerun(*, transport: Transport, owner: str, repo: str, args: argparse.Nam
+         operation_id=operation_id,
+         path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+     )
+-    print_line(text=f"Rerun requested for run {args.run_id}{segment}")
++    print_line(text=f"Rerun requested for {args.run_id}{segment}")
+ 
+ 
+ def cmd_cancel(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> None:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.....F.F..................................                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-0/whole-run: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: rerun/exit-0/whole-run: the standard output differs from the golden
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: rerun/exit-0/failed-only: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/whole-run]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/failed-only]
+2 failed, 40 passed in 9.35s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M29 AC-4 rerun confirmation drops the path segment
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..91b11d0 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -450,7 +450,7 @@ def cmd_rerun(*, transport: Transport, owner: str, repo: str, args: argparse.Nam
+         operation_id=operation_id,
+         path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+     )
+-    print_line(text=f"Rerun requested for run {args.run_id}{segment}")
++    print_line(text=f"Rerun requested for run {args.run_id}")
+ 
+ 
+ def cmd_cancel(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> None:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+....F.F...................................                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-0/whole-run: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: rerun/exit-0/whole-run: the standard output differs from the golden
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-0/failed-only: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: rerun/exit-0/failed-only: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/whole-run]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/failed-only]
+2 failed, 40 passed in 8.20s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M30 AC-5 cancel confirmation text
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..57a084a 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -460,7 +460,7 @@ def cmd_cancel(*, transport: Transport, owner: str, repo: str, args: argparse.Na
+         operation_id=OP_CANCEL_RUN,
+         path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+     )
+-    print_line(text=f"Cancel requested for run {args.run_id}")
++    print_line(text=f"Cancel requested for {args.run_id}")
+ 
+ 
+ def _add_command(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+..............F...........................                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: cancel/exit-0/requested: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: cancel/exit-0/requested: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-0/requested]
+1 failed, 41 passed in 8.13s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M31 AC-5 cancel sends force-cancel-workflow-run
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..758de60 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -76,7 +76,7 @@ OP_DOWNLOAD_RUN_LOGS = "actions/download-workflow-run-logs"
+ OP_LIST_RUN_JOBS = "actions/list-jobs-for-workflow-run"
+ OP_RERUN_RUN = "actions/re-run-workflow"
+ OP_RERUN_FAILED_JOBS = "actions/re-run-workflow-failed-jobs"
+-OP_CANCEL_RUN = "actions/cancel-workflow-run"
++OP_CANCEL_RUN = "actions/force-cancel-workflow-run"
+ 
+ PATH_OWNER = "owner"
+ PATH_REPO = "repo"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+..............F.F.........................                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/force-cancel
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/force-cancel
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/force-cancel
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/force-cancel
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-0/requested]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-1/already-completed]
+2 failed, 40 passed in 8.42s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M32 AC-6 cancel prints before its request
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..885986d 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -455,12 +455,12 @@ def cmd_rerun(*, transport: Transport, owner: str, repo: str, args: argparse.Nam
+ 
+ def cmd_cancel(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> None:
+     """Ask GitHub to cancel the run with a ``POST`` with no body."""
+-    registry.call(
++    print_line(text=f"Cancel requested for run {args.run_id}"); registry.call(
+         transport=transport,
+         operation_id=OP_CANCEL_RUN,
+         path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+     )
+-    print_line(text=f"Cancel requested for run {args.run_id}")
++    pass
+ 
+ 
+ def _add_command(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+................F.........................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: cancel/exit-1/already-completed: the standard output differs from the golden
+------------------------------ Captured log call ------------------------------
+[1m[31mERROR   [0m github_wrapper:github_wrapper.py:365 GitHub API POST "https://api.github.com/repos/o/r/actions/runs/4242/cancel" failed: HTTP 409
+[1m[31mERROR   [0m github_wrapper:github_wrapper.py:367 Details: {
+  "message": "Cannot cancel a workflow run that is completed.",
+  "documentation_url": "https://docs.github.com/rest",
+  "status": "409"
+}
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: cancel/exit-1/already-completed: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-1/already-completed]
+1 failed, 41 passed in 8.09s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M33 AC-6 rerun prints before its request
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..e52b131 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -445,12 +445,12 @@ def cmd_rerun(*, transport: Transport, owner: str, repo: str, args: argparse.Nam
+     operation_id, segment = OP_RERUN_RUN, RERUN_WHOLE_RUN_SEGMENT
+     if args.failed_only:
+         operation_id, segment = OP_RERUN_FAILED_JOBS, RERUN_FAILED_JOBS_SEGMENT
+-    registry.call(
++    print_line(text=f"Rerun requested for run {args.run_id}{segment}"); registry.call(
+         transport=transport,
+         operation_id=operation_id,
+         path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+     )
+-    print_line(text=f"Rerun requested for run {args.run_id}{segment}")
++    pass
+ 
+ 
+ def cmd_cancel(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> None:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........F................................                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-1/not-found: the standard output differs from the golden
+------------------------------ Captured log call ------------------------------
+[31m[1mERROR   [0m github_wrapper:github_wrapper.py:365 GitHub API POST "https://api.github.com/repos/o/r/actions/runs/4243/rerun" failed: HTTP 404
+[31m[1mERROR   [0m github_wrapper:github_wrapper.py:367 Details: {
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest",
+  "status": "404"
+}
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3088: AssertionError: rerun/exit-1/not-found: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-1/not-found]
+1 failed, 41 passed in 9.68s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M34 AC-7 get-jobs run_id without type=int
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..9c54613 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -477,7 +477,7 @@ def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.Argume
+     parser = _add_command(
+         subparsers=subparsers, name=CMD_GET_JOBS, help_text="List jobs for a run", handler=cmd_get_jobs
+     )
+-    parser.add_argument(ARG_RUN_ID, type=int)
++    parser.add_argument(ARG_RUN_ID)
+     parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
+     parser.add_argument(
+         OPTION_ALL_ATTEMPTS,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......................................F..                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs: the product's arguments differ from the fork's: positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type='int', choices=None, required=True, exclusive_group=None), the product ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)
+    assert not ["positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, val...t='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: get-jobs: the product's arguments differ from the fork's: positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type='int', choices=None, required=True, exclusive_group=None), the product ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+1 failed, 41 passed in 13.76s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M35 AC-7 get-jobs --all-attempts store_false
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..7ed1efb 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -481,7 +481,7 @@ def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.Argume
+     parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
+     parser.add_argument(
+         OPTION_ALL_ATTEMPTS,
+-        action=ACTION_STORE_TRUE,
++        action="store_false",
+         help=(
+             "Include jobs from EARLIER attempts of a re-run run (API filter=all). Without this, only "
+             "the newest attempt is listed, so a failure that was re-run to green is unreachable — "
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...F.F.F.F...F.........................F..                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=all
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=all
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=all
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=all
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4243/jobs?per_page=100&filter=all
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for GET https://api.github.com/repos/o/r/actions/runs/4243/jobs?per_page=100&filter=all
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs: the product's arguments differ from the fork's: --all-attempts: the fork ArgumentShape(action='_StoreTrueAction', dest='all_attempts', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product ArgumentShape(action='_StoreFalseAction', dest='all_attempts', nargs=0, const=False, default=True, value_type=None, choices=None, required=False, exclusive_group=None)
+    assert not ["--all-attempts: the fork ArgumentShape(action='_StoreTrueAction', dest='all_attempts', nargs=0, const=True, default=...l_attempts', nargs=0, const=False, default=True, value_type=None, choices=None, required=False, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: get-jobs: the product's arguments differ from the fork's: --all-attempts: the fork ArgumentShape(action='_StoreTrueAction', dest='all_attempts', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product ArgumentShape(action='_StoreFalseAction', dest='all_attempts', nargs=0, const=False, default=True, value_type=None, choices=None, required=False, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-1/not-found]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+6 failed, 36 passed in 10.65s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M36 AC-7 get-jobs --failed-only removed
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..779707d 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -478,7 +478,7 @@ def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.Argume
+         subparsers=subparsers, name=CMD_GET_JOBS, help_text="List jobs for a run", handler=cmd_get_jobs
+     )
+     parser.add_argument(ARG_RUN_ID, type=int)
+-    parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
++    parser.set_defaults(failed_only=False)
+     parser.add_argument(
+         OPTION_ALL_ATTEMPTS,
+         action=ACTION_STORE_TRUE,
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+......F................................F..                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs: the product's arguments differ from the fork's: --failed-only: the fork ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent
+    assert not ["--failed-only: the fork ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: get-jobs: the product's arguments differ from the fork's: --failed-only: the fork ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+2 failed, 40 passed in 8.82s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M37 AC-7 get-jobs --show-runner renamed --runner
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..1ef9f30 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -494,7 +494,7 @@ def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.Argume
+         help="Append [steps=N] per job; steps=0 evidences a startup/billing (quota) failure",
+     )
+     parser.add_argument(
+-        OPTION_SHOW_RUNNER,
++        "--runner", dest="show_runner",
+         action=ACTION_STORE_TRUE,
+         help=(
+             "Append [runner=NAME labels=...] per job — WHERE it ran. Required to verify a relocation "
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........F..............................F..                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-0/every-column: exit code 2, the golden is 0; stdout ''
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs: the product's arguments differ from the fork's: --show-runner: the fork ArgumentShape(action='_StoreTrueAction', dest='show_runner', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --runner: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='show_runner', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+    assert not ["--show-runner: the fork ArgumentShape(action='_StoreTrueAction', dest='show_runner', nargs=0, const=True, default=Fa...how_runner', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: get-jobs: the product's arguments differ from the fork's: --show-runner: the fork ArgumentShape(action='_StoreTrueAction', dest='show_runner', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --runner: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='show_runner', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+2 failed, 40 passed in 8.66s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M38 AC-7 get-jobs --timing renamed --timings (abbreviation still parses)
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..67f3e34 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -503,7 +503,7 @@ def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.Argume
+         ),
+     )
+     parser.add_argument(
+-        OPTION_TIMING,
++        "--timings", dest="timing",
+         action=ACTION_STORE_TRUE,
+         help="Append [wall=Ns billed=Mmin] per job (billed = wall rounded UP to a whole minute) "
+         "and print the run's TOTAL billed minutes (sum of per-job rounded durations)",
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......................................F..                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs: the product's arguments differ from the fork's: --timing: the fork ArgumentShape(action='_StoreTrueAction', dest='timing', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --timings: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='timing', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+    assert not ["--timing: the fork ArgumentShape(action='_StoreTrueAction', dest='timing', nargs=0, const=True, default=False, value...st='timing', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: get-jobs: the product's arguments differ from the fork's: --timing: the fork ArgumentShape(action='_StoreTrueAction', dest='timing', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --timings: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='timing', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+1 failed, 41 passed in 11.71s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M39 AC-7 get-jobs --step-status renamed --step-statuses (abbreviation still parses)
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..26ca277 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -509,7 +509,7 @@ def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.Argume
+         "and print the run's TOTAL billed minutes (sum of per-job rounded durations)",
+     )
+     parser.add_argument(
+-        OPTION_STEP_STATUS,
++        "--step-statuses", dest="step_status",
+         action=ACTION_STORE_TRUE,
+         help="Print, under each job, one line per step: `step <number> <status> <conclusion> <name>`, live while "
+         "the job runs",
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.......................................F..                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs: the product's arguments differ from the fork's: --step-status: the fork ArgumentShape(action='_StoreTrueAction', dest='step_status', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --step-statuses: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='step_status', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+    assert not ["--step-status: the fork ArgumentShape(action='_StoreTrueAction', dest='step_status', nargs=0, const=True, default=Fa...tep_status', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: get-jobs: the product's arguments differ from the fork's: --step-status: the fork ArgumentShape(action='_StoreTrueAction', dest='step_status', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --step-statuses: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='step_status', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+1 failed, 41 passed in 12.64s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M40 AC-7 get-jobs --show-steps renamed --show-step
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..1a00456 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -489,7 +489,7 @@ def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.Argume
+         ),
+     )
+     parser.add_argument(
+-        OPTION_SHOW_STEPS,
++        "--show-step", dest="show_steps",
+         action=ACTION_STORE_TRUE,
+         help="Append [steps=N] per job; steps=0 evidences a startup/billing (quota) failure",
+     )
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........F..............................F..                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/every-column: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: get-jobs/exit-0/every-column: exit code 2, the golden is 0; stdout ''
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs: the product's arguments differ from the fork's: --show-steps: the fork ArgumentShape(action='_StoreTrueAction', dest='show_steps', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --show-step: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='show_steps', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+    assert not ["--show-steps: the fork ArgumentShape(action='_StoreTrueAction', dest='show_steps', nargs=0, const=True, default=Fals...show_steps', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: get-jobs: the product's arguments differ from the fork's: --show-steps: the fork ArgumentShape(action='_StoreTrueAction', dest='show_steps', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent; --show-step: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='show_steps', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+2 failed, 40 passed in 12.38s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M41 AC-7 rerun run_id without type=int
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..f626d2c 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -551,7 +551,7 @@ def _register_reads(*, subparsers: argparse._SubParsersAction[argparse.ArgumentP
+ def _register_run_actions(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+     """``rerun`` and ``cancel``, as the fork's ``_register_actions_subcommands``."""
+     parser = _add_command(subparsers=subparsers, name=CMD_RERUN, help_text="Rerun a workflow run", handler=cmd_rerun)
+-    parser.add_argument(ARG_RUN_ID, type=int)
++    parser.add_argument(ARG_RUN_ID)
+     parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
+ 
+     parser = _add_command(
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+..........F.............................F.                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/last/rerun
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/last/rerun
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun: the product's arguments differ from the fork's: positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type='int', choices=None, required=True, exclusive_group=None), the product ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)
+    assert not ["positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, val...t='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: rerun: the product's arguments differ from the fork's: positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type='int', choices=None, required=True, exclusive_group=None), the product ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-2/usage-error]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[rerun]
+2 failed, 40 passed in 11.23s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M42 AC-7 rerun --failed-only removed
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..8c240c0 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -552,7 +552,7 @@ def _register_run_actions(*, subparsers: argparse._SubParsersAction[argparse.Arg
+     """``rerun`` and ``cancel``, as the fork's ``_register_actions_subcommands``."""
+     parser = _add_command(subparsers=subparsers, name=CMD_RERUN, help_text="Rerun a workflow run", handler=cmd_rerun)
+     parser.add_argument(ARG_RUN_ID, type=int)
+-    parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
++    parser.set_defaults(failed_only=False)
+ 
+     parser = _add_command(
+         subparsers=subparsers, name=CMD_CANCEL, help_text="Cancel an in-progress run", handler=cmd_cancel
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+......F................................F..                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: AssertionError: rerun/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: rerun: the product's arguments differ from the fork's: --failed-only: the fork ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent
+    assert not ["--failed-only: the fork ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: rerun: the product's arguments differ from the fork's: --failed-only: the fork ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None), the product absent
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/failed-only]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[rerun]
+2 failed, 40 passed in 11.33s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M43 AC-7 cancel run_id without type=int
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..4e5dc8b 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -557,7 +557,7 @@ def _register_run_actions(*, subparsers: argparse._SubParsersAction[argparse.Arg
+     parser = _add_command(
+         subparsers=subparsers, name=CMD_CANCEL, help_text="Cancel an in-progress run", handler=cmd_cancel
+     )
+-    parser.add_argument(ARG_RUN_ID, type=int)
++    parser.add_argument(ARG_RUN_ID)
+ 
+ 
+ def _register_wait(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+.........................................F                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: cancel: the product's arguments differ from the fork's: positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type='int', choices=None, required=True, exclusive_group=None), the product ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)
+    assert not ["positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, val...t='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: cancel: the product's arguments differ from the fork's: positional 1: the fork ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type='int', choices=None, required=True, exclusive_group=None), the product ArgumentShape(action='_StoreAction', dest='run_id', nargs=None, const=None, default=None, value_type=None, choices=None, required=True, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[cancel]
+1 failed, 41 passed in 11.44s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M44 AC-7 cancel gains --failed-only
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..28241fd 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -557,7 +557,7 @@ def _register_run_actions(*, subparsers: argparse._SubParsersAction[argparse.Arg
+     parser = _add_command(
+         subparsers=subparsers, name=CMD_CANCEL, help_text="Cancel an in-progress run", handler=cmd_cancel
+     )
+-    parser.add_argument(ARG_RUN_ID, type=int)
++    parser.add_argument(ARG_RUN_ID, type=int); parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
+ 
+ 
+ def _register_wait(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+................F........................F                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/cancel
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:442: Failed: the fake GitHub host has no route for POST https://api.github.com/repos/o/r/actions/runs/4242/cancel
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: cancel: the product's arguments differ from the fork's: --failed-only: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+    assert not ["--failed-only: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)"]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:297: AssertionError: cancel: the product's arguments differ from the fork's: --failed-only: the fork absent, the product ArgumentShape(action='_StoreTrueAction', dest='failed_only', nargs=0, const=True, default=False, value_type=None, choices=None, required=False, exclusive_group=None)
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-2/usage-error]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[cancel]
+2 failed, 40 passed in 12.06s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M45 AC-7 usage line cancel <run_id> dropped
+warning: in the working copy of 'src/payload/scripts/github_wrapper.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_wrapper.py b/src/payload/scripts/github_wrapper.py
+index 6a8854f..cea8447 100644
+--- a/src/payload/scripts/github_wrapper.py
++++ b/src/payload/scripts/github_wrapper.py
+@@ -16,7 +16,6 @@ Usage:
+     python scripts/github_wrapper.py get-jobs <run_id> --all-attempts   # include re-run history
+     python scripts/github_wrapper.py get-logs <run_id> --failed-only
+     python scripts/github_wrapper.py rerun <run_id> --failed-only
+-    python scripts/github_wrapper.py cancel <run_id>
+     python scripts/github_wrapper.py list-issues
+     python scripts/github_wrapper.py list-issues --state open --assignee "*" --label in-progress
+     python scripts/github_wrapper.py create-issue --title "..." --body "..."
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+..................F.......................                               [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_wrapper.py does not carry: ['python scripts/github_wrapper.py cancel <run_id>']
+    assert ['python scri...cel <run_id>'] == []
+      
+      Left contains one more item: [0m[33m'[39;49;00m[33mpython scripts/github_wrapper.py cancel <run_id>[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:350: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_wrapper.py does not carry: ['python scripts/github_wrapper.py cancel <run_id>']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_ci_commands
+1 failed, 41 passed in 10.95s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M46 AC-7 usage line get-jobs <run_id> --timing dropped
+warning: in the working copy of 'src/payload/scripts/github_wrapper.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_wrapper.py b/src/payload/scripts/github_wrapper.py
+index 6a8854f..9bf2dcc 100644
+--- a/src/payload/scripts/github_wrapper.py
++++ b/src/payload/scripts/github_wrapper.py
+@@ -12,7 +12,6 @@ Usage:
+     python scripts/github_wrapper.py get-jobs <run_id> --failed-only
+     python scripts/github_wrapper.py get-jobs <run_id> --show-steps
+     python scripts/github_wrapper.py get-jobs <run_id> --step-status   # each step's live status, under its job
+-    python scripts/github_wrapper.py get-jobs <run_id> --timing
+     python scripts/github_wrapper.py get-jobs <run_id> --all-attempts   # include re-run history
+     python scripts/github_wrapper.py get-logs <run_id> --failed-only
+     python scripts/github_wrapper.py rerun <run_id> --failed-only
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+...................F......................                               [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_wrapper.py does not carry: ['python scripts/github_wrapper.py get-jobs <run_id> --timing']
+    assert ['python scri...id> --timing'] == []
+      
+      Left contains one more item: [0m[33m'[39;49;00m[33mpython scripts/github_wrapper.py get-jobs <run_id> --timing[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+      Use -v to get more diff
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:350: AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_wrapper.py does not carry: ['python scripts/github_wrapper.py get-jobs <run_id> --timing']
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_ci_commands
+1 failed, 41 passed in 11.53s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M47 AC-7 parity oracle pointed back at scripts/github_wrapper.py
+warning: in the working copy of 'test/test_github_wrapper_fork_parity.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/test/test_github_wrapper_fork_parity.py b/test/test_github_wrapper_fork_parity.py
+index 5942bdc..da0e152 100644
+--- a/test/test_github_wrapper_fork_parity.py
++++ b/test/test_github_wrapper_fork_parity.py
+@@ -124,7 +124,7 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+ def fork_script(tmp_path_factory: pytest.TempPathFactory) -> Path:
+     """The fork's file, ``FORK_REVISION`` as ``git show`` prints it in the repository root, written once per session
+     into a temporary directory; a ``git show`` that fails fails every test that needs the fork."""
+-    result = subprocess.run(args=[GIT, GIT_SHOW, FORK_REVISION], cwd=ROOT, capture_output=True, check=False)
++    return ROOT / "scripts" / "github_wrapper.py"
+     assert result.returncode == 0, (
+         f"cannot read the fork {FORK_REVISION}: {result.stderr.decode(errors='replace').strip()} "
+         f"(a shallow clone or one without the tag lacks it: fetch the full history and the tags)"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py -k get-jobs or rerun or cancel or ci_commands --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+..........................................                               [100%]
+42 passed in 6.80s
+exit=0
+restore: git diff HEAD --stat (empty = restored):
+
+## M47-full AC-7 parity oracle pointed back at scripts/github_wrapper.py (whole paired files)
+warning: in the working copy of 'test/test_github_wrapper_fork_parity.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/test/test_github_wrapper_fork_parity.py b/test/test_github_wrapper_fork_parity.py
+index 5942bdc..da0e152 100644
+--- a/test/test_github_wrapper_fork_parity.py
++++ b/test/test_github_wrapper_fork_parity.py
+@@ -124,7 +124,7 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+ def fork_script(tmp_path_factory: pytest.TempPathFactory) -> Path:
+     """The fork's file, ``FORK_REVISION`` as ``git show`` prints it in the repository root, written once per session
+     into a temporary directory; a ``git show`` that fails fails every test that needs the fork."""
+-    result = subprocess.run(args=[GIT, GIT_SHOW, FORK_REVISION], cwd=ROOT, capture_output=True, check=False)
++    return ROOT / "scripts" / "github_wrapper.py"
+     assert result.returncode == 0, (
+         f"cannot read the fork {FORK_REVISION}: {result.stderr.decode(errors='replace').strip()} "
+         f"(a shallow clone or one without the tag lacks it: fetch the full history and the tags)"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+........................................................................ [ 53%]
+........................................................................ [ 67%]
+........................................................................ [ 80%]
+........................................................................ [ 94%]
+................................                                         [100%]
+536 passed in 26.50s
+exit=0
+restore: git diff HEAD --stat (empty = restored):
+
+## M48 AC-3 coverage probe: blank-timestamp, naive-timestamp and negative-duration lines raise if executed (whole paired files)
+warning: in the working copy of 'src/payload/scripts/github_api/commands/ci.py', LF will be replaced by CRLF the next time Git touches it
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..f9c2f03 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -326,7 +326,7 @@ def _parse_timestamp(*, value: str) -> Optional[datetime]:
+     ``_parse_iso8601_utc``; ``None`` for a blank or unparseable value, so a job still running (no ``completed_at``)
+     shows no timing rather than failing the command."""
+     if not value:
+-        return None
++        raise RuntimeError("M48 blank timestamp line executed")
+     text = value.strip()
+     if text.endswith(UTC_DESIGNATOR):
+         text = f"{text[: -len(UTC_DESIGNATOR)]}{UTC_OFFSET}"
+@@ -335,7 +335,7 @@ def _parse_timestamp(*, value: str) -> Optional[datetime]:
+     except ValueError:
+         return None
+     if parsed.tzinfo is None:
+-        parsed = parsed.replace(tzinfo=timezone.utc)
++        raise RuntimeError("M48 naive timestamp line executed")
+     return parsed.astimezone(tz=timezone.utc)
+ 
+ 
+@@ -349,7 +349,7 @@ def _job_billed_minutes(*, job: Mapping[str, Any]) -> JobTiming:
+         return None, None
+     wall_seconds = (completed - started).total_seconds()
+     if wall_seconds < 0:
+-        return wall_seconds, None
++        raise RuntimeError("M48 negative duration line executed")
+     return wall_seconds, math.ceil(wall_seconds / SECONDS_PER_MINUTE)  # positional: math.ceil is positional-only
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+........................................................................ [ 53%]
+........................................................................ [ 67%]
+........................................................................ [ 80%]
+........................................................................ [ 94%]
+................................                                         [100%]
+536 passed in 90.33s (0:01:30)
+exit=0
+restore: git diff HEAD --stat (empty = restored):
+
+## RECONFIRM restored tree at de1434e56f4b12abb0f464b77eaf6b7e5a586afe, git diff HEAD --stat (empty = restored):
+?? .claude/specs/issue-72-get-jobs-rerun-cancel/evidence/verify/
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+........................................................................ [ 53%]
+........................................................................ [ 67%]
+........................................................................ [ 80%]
+........................................................................ [ 94%]
+................................                                         [100%]
+536 passed in 64.63s (0:01:04)
+exit=0
