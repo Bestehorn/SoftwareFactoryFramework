@@ -64,6 +64,9 @@ ISSUE_WORK_BULLET = "- **Issue work**"
 # The orchestrator's phase-to-activity mapping, one pair per phase that has an activity of its own (AC-5).
 PHASE_MAPPING_PHRASES = (
     "SELECT `selecting`",
+    "CLASSIFY and FIX while the spec is written `spec`",
+    "the spec's review loop `spec review`",
+    "`needs you` while `AWAITING_USER` holds a reason",
     "FIX's waves `implementing`",
     "PROOF_GATE `verifying`",
     "PR until its CI is green, `CI`",
@@ -97,16 +100,18 @@ DOC_PROPERTY_PHRASES = (
 )
 # Each form bullet names its activities: a list in backticks, or the resumed run's (AC-1).
 ACTIVITIES_RE = re.compile(r"\b[Aa]ctivit(?:y|ies): (?:`[^`]+`|the resumed run's)")
-# The kinds of session "The forms" gives a bullet for, each by a name its bullet carries.
+# The kinds of session "The forms" gives a bullet for: each bullet's bold label and a name the bullet itself carries.
 DOC_KINDS = (
-    "/work-issue",
-    "spec-conductor",
-    "/close-session",
-    "/continue-work",
-    "/supervise",
-    "/compile-memory",
-    "interactive session",
+    ("- **Issue work**", "/work-issue"),
+    ("- **Spec workflow**", "spec-conductor"),
+    ("- **Close-out**", "/close-session"),
+    ("- **Resume**", "/continue-work"),
+    ("- **Supervisor**", "/supervise"),
+    ("- **Memory**", "/compile-memory"),
+    ("- **An interactive session**", "no agent, no command"),
 )
+# An instruction to rename with the tool: a rename verb, not negated, then the tool within the same sentence (AC-3).
+RENAME_INSTRUCTION_RE = re.compile(r"(?<!never )(?<!not )\b[Rr]enam(?:e|es|ed)\b[^.]*?" + re.escape(TITLE_TOOL))
 DOC_FORMS_HEADING = "## The forms"
 DOT_EXAMPLE_RE = re.compile(r"`[^`]+ · [^`]+`")
 PART_8_1_HEADING = "### Part 8.1"
@@ -212,7 +217,7 @@ def test_every_work_entry_point_keeps_the_session_title(name: str) -> None:
 @pytest.mark.parametrize("name", MAIN_SESSION_COMMANDS)
 def test_every_main_session_command_renames_by_the_shared_rule(name: str) -> None:
     front_matter, body = _split_front_matter(path=COMMANDS_DIR / name)
-    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+    assert RENAME_INSTRUCTION_RE.search(_collapsed(text=body)), f"{name} does not tell the session to rename itself"
     assert DOC_POINTER in body, f"{name} does not point at {DOC_POINTER}"
     assert TITLE_TOOL in _tool_list(front_matter=front_matter, key="allowed-tools"), f"{name}: tool not allowlisted"
 
@@ -229,7 +234,7 @@ def test_no_work_entry_point_limits_the_rename_to_the_set(name: str) -> None:
 @pytest.mark.parametrize("name", MAIN_SESSION_AGENTS)
 def test_every_main_session_agent_renames_by_the_shared_rule(name: str) -> None:
     front_matter, body = _split_front_matter(path=AGENTS_DIR / name)
-    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+    assert RENAME_INSTRUCTION_RE.search(_collapsed(text=body)), f"{name} does not tell the session to rename itself"
     assert DOC_POINTER in body, f"{name} does not point at {DOC_POINTER}"
     assert TITLE_TOOL in _tool_list(front_matter=front_matter, key="tools"), f"{name}: tool not in `tools`"
 
@@ -279,12 +284,13 @@ def test_the_doc_states_the_form_and_how_to_rename() -> None:
     assert not missing, f"the session-title doc lacks {missing}"
 
 
-@pytest.mark.parametrize("kind", DOC_KINDS)
-def test_the_doc_gives_every_kind_of_session_a_form(kind: str) -> None:
-    bullets = _form_bullets(doc=_read(path=DOC))
-    assert any(
-        kind in bullet and DOT_EXAMPLE_RE.search(bullet) and ACTIVITIES_RE.search(bullet) for bullet in bullets
-    ), f"no bullet of `{DOC_FORMS_HEADING}` names {kind} with its activities and a `<subject> · <activity>` example"
+@pytest.mark.parametrize(("label", "kind"), DOC_KINDS, ids=[kind for _, kind in DOC_KINDS])
+def test_the_doc_gives_every_kind_of_session_a_form(label: str, kind: str) -> None:
+    bullets = [bullet for bullet in _form_bullets(doc=_read(path=DOC)) if bullet.startswith(label)]
+    assert len(bullets) == 1, f"`{DOC_FORMS_HEADING}` has no single `{label}` bullet"
+    assert kind in bullets[0], f"the `{label}` bullet does not name {kind}"
+    assert ACTIVITIES_RE.search(bullets[0]), f"the `{label}` bullet names no activities"
+    assert DOT_EXAMPLE_RE.search(bullets[0]), f"the `{label}` bullet has no `<subject> · <activity>` example"
 
 
 def test_the_doc_keeps_the_four_properties() -> None:

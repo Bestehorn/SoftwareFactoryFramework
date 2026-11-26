@@ -14,7 +14,10 @@ Tier S, one wave (T1, I1). Spec: `change.md`. E2E: not applicable (natural-langu
 | Proof cycle 2 | `evidence/verify/refutation-report-cycle-2.md`: CI run 45842892204 green on 9dc2336; M9–M12 killed; new mutants N1–N3 survived → REFUTED AC-1, AC-2, AC-3 (DL-006) |
 | Fix | the rename trigger must follow the tool within one clause; every form bullet names its activities; the doc keeps "the session skips this rule" and "A subagent ignores this rule" |
 | Green, cycle 3 | `evidence/green/wave-1-cycle-3.txt`: 65 passed |
-| Proof cycle 3 | `evidence/verify/refutation-report-cycle-3.md` — CI_CYCLE_3 |
+| Proof cycle 3 | `evidence/verify/refutation-report-cycle-3.md`: CI run 45844541424 green on 2fcfeb7; M9–M12, N1–N3 killed; P1–P3 survived → REFUTED AC-1, AC-3, AC-5 (DL-007) |
+| Fix | each form bound to its own bullet; every entry point must hold a rename verb tied to the tool; all nine phase-to-activity pairs pinned |
+| Green, after the fix | `evidence/green/wave-1-cycle-4.txt`: 65 passed; all twelve recorded mutants killed locally (DL-007) |
+| Reject cap | three reject cycles reached; the operator decides whether a fourth verifier cycle runs before the merge |
 | Local checks | `run_checks.py --group lint --group types --group security`: 5 passed, 0 failed |
 
 ## Coverage

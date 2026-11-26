@@ -75,12 +75,14 @@ Every edited file keeps its line style, within 120 columns.
 after collapsing each whitespace run, line breaks included, to one space:
 
 - AC-1 — the doc holds `<subject> · <activity>`, `<subject> — done`, `"self"`, `ToolSearch`, the tool,
-  `Rename each time the subject or the activity changes` and `never within a phase`; under `## The forms`, a bullet
-  naming each of the seven kinds holds its `Activities:` (or `Activity:`) and a backticked ` · ` example.
+  `Rename each time the subject or the activity changes` and `never within a phase`; under `## The forms`, each of
+  the seven kinds has exactly one bullet, found by its bold label, that names the kind and holds its `Activities:`
+  (or `Activity:`) and a backticked ` · ` example.
 - AC-2 — the doc holds `never delegate`, `A subagent ignores this rule`, `comes before the close-out`,
   `no rename follows the SESSION verdict`, `not a blocker`, `never ask about the title`, `Kiro` and
   `the session skips this rule`.
-- AC-3 — each listed agent and command body names the tool and `.claude/docs/session-title.md`; in each work
+- AC-3 — each listed agent and command body holds a rename verb, not preceded by `never` or `not`, followed within
+  its sentence by the tool, and names `.claude/docs/session-title.md`; in each work
   command's body the tool is followed, within its clause (no `.`, `,` or `;` between), by
   `each time the set or the activity changes`, and the body holds neither `only when the set changes` nor
   `each time that set changes`.
@@ -88,7 +90,9 @@ after collapsing each whitespace run, line breaks included, to one space:
   `clients/claude/agents/` names in `tools` each desktop-app tool its body names.
 - AC-5 — the orchestrator section holds both activity forms, the pointer, every issue-work activity the doc
   lists, the tool followed within its clause by `each time the set or the activity below changes`, and the
-  phase-to-activity pairs `SELECT `selecting``,
+  phase-to-activity pairs (one for each of the nine activities) `SELECT `selecting``,
+  `CLASSIFY and FIX while the spec is written `spec``, `the spec's review loop `spec review``,
+  `` `needs you` while `AWAITING_USER` holds a reason ``,
   `FIX's waves `implementing``, `PROOF_GATE `verifying``, `PR until its CI is green, `CI``, `QUEUE `queued`` and
   `MERGE_CLEANUP `merging``, and no longer holds `each time the set below changes, and at no other time` or `only when the set next
   changes`.

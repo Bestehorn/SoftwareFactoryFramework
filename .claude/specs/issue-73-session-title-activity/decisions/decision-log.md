@@ -55,3 +55,14 @@ this rule" and "A subagent ignores this rule".
 orchestrator-trigger mutant: all killed, 65 passed on the clean tree.
 **Supersedes:** none
 **Artifacts touched:** test/test_session_title.py, change.md § Tests
+
+## DL-007 — 2026-11-26T16:05:00Z — issue-work-orchestrator — phase:PROOF_GATE
+
+**Decision:** Reject the proof (cycle 3 of 3), fix P1–P3 in the test, and put the reject cap to the operator as the
+five-line question, recommending merge as verified by the local mutant check with the residual stated.
+**Driver:** adversarial verifier cycle 3 REFUTED AC-1, AC-3, AC-5 (P1–P3); the orchestrator's PROOF_GATE caps reject
+cycles at 3, then the five-line question.
+**Alternatives considered:** a fourth verifier cycle without asking (breaks the cap); escalating with P1–P3 unfixed.
+**Evidence:** evidence/verify/refutation-report-cycle-3.md § 4; the local check of all twelve recorded mutants (M9–M12,
+N1–N3, P1–P3, O1, P4): all killed, 65 passed on the clean tree (evidence/green/wave-1-cycle-4.txt).
+**Artifacts touched:** test/test_session_title.py, change.md § Tests, evidence/REPORT.md
