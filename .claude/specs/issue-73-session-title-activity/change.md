@@ -76,16 +76,19 @@ after collapsing each whitespace run, line breaks included, to one space:
 
 - AC-1 — the doc holds `<subject> · <activity>`, `<subject> — done`, `"self"`, `ToolSearch`, the tool,
   `Rename each time the subject or the activity changes` and `never within a phase`; under `## The forms`, a bullet
-  naming each of the seven kinds holds a backticked ` · ` example.
-- AC-2 — the doc holds `never delegate`, `comes before the close-out`, `no rename follows the SESSION verdict`,
-  `not a blocker`, `never ask about the title` and `Kiro`.
-- AC-3 — each listed agent and command body names the tool and `.claude/docs/session-title.md`; each work command's
-  body holds `each time the set or the activity changes` and neither `only when the set changes` nor
+  naming each of the seven kinds holds its `Activities:` (or `Activity:`) and a backticked ` · ` example.
+- AC-2 — the doc holds `never delegate`, `A subagent ignores this rule`, `comes before the close-out`,
+  `no rename follows the SESSION verdict`, `not a blocker`, `never ask about the title`, `Kiro` and
+  `the session skips this rule`.
+- AC-3 — each listed agent and command body names the tool and `.claude/docs/session-title.md`; in each work
+  command's body the tool is followed, within its clause (no `.`, `,` or `;` between), by
+  `each time the set or the activity changes`, and the body holds neither `only when the set changes` nor
   `each time that set changes`.
 - AC-4 — each listed command allowlists the tool, each listed agent's `tools` names it, and every agent under
   `clients/claude/agents/` names in `tools` each desktop-app tool its body names.
 - AC-5 — the orchestrator section holds both activity forms, the pointer, every issue-work activity the doc
-  lists, `each time the set or the activity below changes` and the phase-to-activity pairs `SELECT `selecting``,
+  lists, the tool followed within its clause by `each time the set or the activity below changes`, and the
+  phase-to-activity pairs `SELECT `selecting``,
   `FIX's waves `implementing``, `PROOF_GATE `verifying``, `PR until its CI is green, `CI``, `QUEUE `queued`` and
   `MERGE_CLEANUP `merging``, and no longer holds `each time the set below changes, and at no other time` or `only when the set next
   changes`.

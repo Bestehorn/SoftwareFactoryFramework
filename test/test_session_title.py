@@ -87,12 +87,16 @@ DOC_FORM_PHRASES = (
 )
 DOC_PROPERTY_PHRASES = (
     "never delegate",
+    "A subagent ignores this rule",
     "comes before the close-out",
     "no rename follows the SESSION verdict",
     "not a blocker",
     "never ask about the title",
     "Kiro",
+    "the session skips this rule",
 )
+# Each form bullet names its activities: a list in backticks, or the resumed run's (AC-1).
+ACTIVITIES_RE = re.compile(r"\b[Aa]ctivit(?:y|ies): (?:`[^`]+`|the resumed run's)")
 # The kinds of session "The forms" gives a bullet for, each by a name its bullet carries.
 DOC_KINDS = (
     "/work-issue",
@@ -127,6 +131,15 @@ def _read(path: Path) -> str:
 def _collapsed(text: str) -> str:
     """The text with each whitespace run, line breaks included, collapsed to one space."""
     return WHITESPACE_RE.sub(" ", text)
+
+
+def _rename_governed_by(text: str, trigger: str) -> bool:
+    """Whether a mention of the rename tool is followed, within its clause, by ``trigger``.
+
+    The clause ends at the first ``.``, ``,`` or ``;``, so a trigger stated for something else in the same sentence
+    (``Rename … each time the set changes, APPEND … each time the set or the activity changes``) does not count.
+    """
+    return re.search(re.escape(TITLE_TOOL) + r"`?[^.,;]*?" + re.escape(trigger), text) is not None
 
 
 def _split_front_matter(path: Path) -> tuple[str, str]:
@@ -208,7 +221,7 @@ def test_every_main_session_command_renames_by_the_shared_rule(name: str) -> Non
 def test_no_work_entry_point_limits_the_rename_to_the_set(name: str) -> None:
     _, body = _split_front_matter(path=COMMANDS_DIR / name)
     text = _collapsed(text=body)
-    assert COMMAND_TRIGGER in text, f"{name} does not rename {COMMAND_TRIGGER!r}"
+    assert _rename_governed_by(text=text, trigger=COMMAND_TRIGGER), f"{name} does not rename {COMMAND_TRIGGER!r}"
     kept = [phrase for phrase in SET_ONLY_IN_COMMANDS if phrase in text]
     assert not kept, f"{name} still renames only when the issue set changes: {kept}"
 
@@ -246,7 +259,9 @@ def test_the_orchestrator_renames_when_the_activity_changes() -> None:
     assert not unmapped, f"the Session title section maps no phase to the activities {unmapped}"
     missing_pairs = [pair for pair in PHASE_MAPPING_PHRASES if pair not in section]
     assert not missing_pairs, f"the Session title section lacks the phase-to-activity pairs {missing_pairs}"
-    assert ORCHESTRATOR_TRIGGER in section, f"the Session title section does not rename {ORCHESTRATOR_TRIGGER!r}"
+    assert _rename_governed_by(text=section, trigger=ORCHESTRATOR_TRIGGER), (
+        f"the Session title section does not rename {ORCHESTRATOR_TRIGGER!r}"
+    )
     kept = [phrase for phrase in SET_ONLY_IN_ORCHESTRATOR if phrase in section]
     assert not kept, f"the Session title section still renames only when the set changes: {kept}"
 
@@ -267,9 +282,9 @@ def test_the_doc_states_the_form_and_how_to_rename() -> None:
 @pytest.mark.parametrize("kind", DOC_KINDS)
 def test_the_doc_gives_every_kind_of_session_a_form(kind: str) -> None:
     bullets = _form_bullets(doc=_read(path=DOC))
-    assert any(kind in bullet and DOT_EXAMPLE_RE.search(bullet) for bullet in bullets), (
-        f"no bullet of `{DOC_FORMS_HEADING}` names {kind} with a `<subject> · <activity>` example"
-    )
+    assert any(
+        kind in bullet and DOT_EXAMPLE_RE.search(bullet) and ACTIVITIES_RE.search(bullet) for bullet in bullets
+    ), f"no bullet of `{DOC_FORMS_HEADING}` names {kind} with its activities and a `<subject> · <activity>` example"
 
 
 def test_the_doc_keeps_the_four_properties() -> None:

@@ -44,3 +44,14 @@ end and no-question clauses, each work command's trigger and the orchestrator's 
 **Alternatives considered:** a structural parse of the mapping (more code, same kill set).
 **Evidence:** evidence/verify/refutation-report.md § 3 (M9–M12) and verdict table.
 **Artifacts touched:** test/test_session_title.py, change.md § Tests
+
+## DL-006 — 2026-11-26T15:30:00Z — issue-work-orchestrator — phase:PROOF_GATE
+
+**Decision:** Reject the proof (cycle 2 of 3) and tie each assertion to its clause: the rename trigger must follow
+the tool within one clause, every form bullet must name its activities, and the doc must keep "the session skips
+this rule" and "A subagent ignores this rule".
+**Driver:** adversarial verifier REFUTED AC-1, AC-2, AC-3 — mutants N1, N2, N3 survived at 65 passed.
+**Evidence:** evidence/verify/refutation-report-cycle-2.md § 5; the local check of N1–N3, M9–M12 and an
+orchestrator-trigger mutant: all killed, 65 passed on the clean tree.
+**Supersedes:** none
+**Artifacts touched:** test/test_session_title.py, change.md § Tests
