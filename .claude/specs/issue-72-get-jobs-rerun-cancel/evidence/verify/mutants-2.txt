@@ -1,0 +1,366 @@
+# verifier delta round 2 at HEAD c08859a79182a8c56646783c2a118926db005cb7; paired tests run TOGETHER: src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py
+## COPY-CHECK get-jobs/exit-0/timing-edges run on `git show v2026.11.10.1:scripts/github_wrapper.py` written to tmp/verify2_copy/github_wrapper.py (disposable probe tmp/verify2_copy_case.py, deleted after; venv python -I)
+copy file: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\tmp\verify2_copy\github_wrapper.py (git show v2026.11.10.1:scripts/github_wrapper.py)
+github_api modules in sys.modules during the copy run: []
+argv: ('get-jobs', '4242', '--timing')
+requests: [('GET', 'https://api.github.com/repos/o/r/actions/runs/4242/jobs?per_page=100&filter=latest')]
+copy _job_billed_minutes: id=92568369610 started_at='' completed_at='2026-11-10T10:01:30Z' -> (None, None)
+copy _job_billed_minutes: id=92568369611 started_at='2026-11-10T10:00:00' completed_at='2026-11-10T10:01:45Z' -> (105.0, 2)
+copy _job_billed_minutes: id=92568369612 started_at='2026-11-10T10:05:00Z' completed_at='2026-11-10T10:00:00Z' -> (-300.0, None)
+copy exit code: 0; golden exit code: 0
+copy stdout:
+92568369610    completed    success      verify (lint)  [wall=? billed=?]
+92568369611    completed    success      verify (tests)  [wall=105s billed=2min]
+92568369612    completed    failure      build  [wall=? billed=?]
+                                         TOTAL billed minutes (sum of per-job rounded-up): 2
+golden stdout:
+92568369610    completed    success      verify (lint)  [wall=? billed=?]
+92568369611    completed    success      verify (tests)  [wall=105s billed=2min]
+92568369612    completed    failure      build  [wall=? billed=?]
+                                         TOTAL billed minutes (sum of per-job rounded-up): 2
+copy stdout == golden stdout and exit equal: True
+exit=0
+
+## M47 AC-7 parity oracle pointed back at scripts/github_wrapper.py (round-1 edit, whole paired files together)
+diff --git a/test/test_github_wrapper_fork_parity.py b/test/test_github_wrapper_fork_parity.py
+index 0183a01..2d94d55 100644
+--- a/test/test_github_wrapper_fork_parity.py
++++ b/test/test_github_wrapper_fork_parity.py
+@@ -137,7 +137,7 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+ def fork_script(tmp_path_factory: pytest.TempPathFactory) -> Path:
+     """The fork's file, ``FORK_REVISION`` as ``git show`` prints it in the repository root, written once per session
+     into a temporary directory; a ``git show`` that fails fails every test that needs the fork."""
+-    result = subprocess.run(args=[GIT, GIT_SHOW, FORK_REVISION], cwd=ROOT, capture_output=True, check=False)
++    return ROOT / "scripts" / "github_wrapper.py"
+     assert result.returncode == 0, (
+         f"cannot read the fork {FORK_REVISION}: {result.stderr.decode(errors='replace').strip()} "
+         f"(a shallow clone or one without the tag lacks it: fetch the full history and the tags)"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+.....................................................................F.. [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the fork D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\scripts\github_wrapper.py is under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\scripts, where the wrappers' code lives
+    assert not ['D:\\Code Workspace\\CodingProjectSetupPrompt\\.claude\\worktrees\\issue-72\\scripts']
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:182: AssertionError: the fork D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\scripts\github_wrapper.py is under D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\scripts, where the wrappers' code lives
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_fork_parity.py::test_the_oracle_is_the_replaced_copy
+1 failed, 538 passed in 19.24s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M48a AC-3 coverage probe: blank-timestamp return None raises if executed (round-1 line, alone; whole paired files together)
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..8e97b04 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -326,7 +326,7 @@ def _parse_timestamp(*, value: str) -> Optional[datetime]:
+     ``_parse_iso8601_utc``; ``None`` for a blank or unparseable value, so a job still running (no ``completed_at``)
+     shows no timing rather than failing the command."""
+     if not value:
+-        return None
++        raise RuntimeError("M48 blank timestamp line executed")
+     text = value.strip()
+     if text.endswith(UTC_DESIGNATOR):
+         text = f"{text[: -len(UTC_DESIGNATOR)]}{UTC_OFFSET}"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+.............F.......................................................... [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   RuntimeError: M48 blank timestamp line executed
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_api\commands\ci.py:329: RuntimeError: M48 blank timestamp line executed
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/timing-edges]
+1 failed, 538 passed in 68.81s (0:01:08)
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M48b AC-3 coverage probe: naive-timestamp parsed.replace(tzinfo=timezone.utc) raises if executed (round-1 line, alone; whole paired files together)
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..d669690 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -335,7 +335,7 @@ def _parse_timestamp(*, value: str) -> Optional[datetime]:
+     except ValueError:
+         return None
+     if parsed.tzinfo is None:
+-        parsed = parsed.replace(tzinfo=timezone.utc)
++        raise RuntimeError("M48 naive timestamp line executed")
+     return parsed.astimezone(tz=timezone.utc)
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+.............F.......................................................... [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   RuntimeError: M48 naive timestamp line executed
+---------------------------- Captured stdout call -----------------------------
+92568369610    completed    success      verify (lint)  [wall=? billed=?]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_api\commands\ci.py:338: RuntimeError: M48 naive timestamp line executed
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/timing-edges]
+1 failed, 538 passed in 70.90s (0:01:10)
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M48c AC-3 coverage probe: negative-duration return wall_seconds, None raises if executed (round-1 line, alone; whole paired files together)
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..34c0af2 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -349,7 +349,7 @@ def _job_billed_minutes(*, job: Mapping[str, Any]) -> JobTiming:
+         return None, None
+     wall_seconds = (completed - started).total_seconds()
+     if wall_seconds < 0:
+-        return wall_seconds, None
++        raise RuntimeError("M48 negative duration line executed")
+     return wall_seconds, math.ceil(wall_seconds / SECONDS_PER_MINUTE)  # positional: math.ceil is positional-only
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+.............F.......................................................... [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   RuntimeError: M48 negative duration line executed
+---------------------------- Captured stdout call -----------------------------
+92568369610    completed    success      verify (lint)  [wall=? billed=?]
+92568369611    completed    success      verify (tests)  [wall=105s billed=2min]
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_api\commands\ci.py:352: RuntimeError: M48 negative duration line executed
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/timing-edges]
+1 failed, 538 passed in 72.50s (0:01:12)
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M47c AC-7 extra probe: the oracle tag moved to v2026.11.26 (the replacing entry script, which imports github_api; fixture and test both follow FORK_REVISION; whole paired files together)
+diff --git a/test/test_github_wrapper_fork_parity.py b/test/test_github_wrapper_fork_parity.py
+index 0183a01..1a23d8b 100644
+--- a/test/test_github_wrapper_fork_parity.py
++++ b/test/test_github_wrapper_fork_parity.py
+@@ -64,7 +64,7 @@ fx = _load_fixtures()
+ 
+ #: The fork (DL-003): the file at the tag release ``v2026.11.26`` replaced, written under its own name into a temporary
+ #: directory, so its parser's ``prog`` is the one it had where it was installed.
+-FORK_TAG = "v2026.11.10.1"
++FORK_TAG = "v2026.11.26"
+ FORK_SOURCE = "scripts/github_wrapper.py"
+ FORK_REVISION = f"{FORK_TAG}:{FORK_SOURCE}"
+ FORK_DIRECTORY = "fork"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+........................................................................ [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+539 passed in 71.13s (0:01:11)
+exit=0
+restore: git diff HEAD --stat (empty = restored):
+
+## M47c-note: M47c is equivalent: git rev-parse v2026.11.10.1:scripts/github_wrapper.py v2026.11.26:scripts/github_wrapper.py ce950f4:scripts/github_wrapper.py HEAD:scripts/github_wrapper.py
+99e0fc18828e368060abafdf747497a96e45111a
+99e0fc18828e368060abafdf747497a96e45111a
+4ae9739312fbd7adedd3834b9766188c73b47a7d
+4ae9739312fbd7adedd3834b9766188c73b47a7d
+
+## M47d AC-7 extra probe: FORK_REVISION = HEAD:scripts/github_wrapper.py (the installed product entry script, blob 4ae9739, imports github_api; whole paired files together)
+diff --git a/test/test_github_wrapper_fork_parity.py b/test/test_github_wrapper_fork_parity.py
+index 0183a01..19c84e4 100644
+--- a/test/test_github_wrapper_fork_parity.py
++++ b/test/test_github_wrapper_fork_parity.py
+@@ -66,7 +66,7 @@ fx = _load_fixtures()
+ #: directory, so its parser's ``prog`` is the one it had where it was installed.
+ FORK_TAG = "v2026.11.10.1"
+ FORK_SOURCE = "scripts/github_wrapper.py"
+-FORK_REVISION = f"{FORK_TAG}:{FORK_SOURCE}"
++FORK_REVISION = f"HEAD:{FORK_SOURCE}"
+ FORK_DIRECTORY = "fork"
+ FORK_FILE_NAME = "github_wrapper.py"
+ GIT = "git"
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+.....................................................................F.. [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: the fork's source names the product's package 'github_api'
+    assert b'github_api' not in b'"""GitHub API wrapper for CI/CD, issue, and PR operations.\n\nUsage:\n    python scripts/github_wrapper.py list-work...\n\nif __name__ == "__main__":\n    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)\n    sys.exit(main())\n'
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:187: AssertionError: the fork's source names the product's package 'github_api'
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_fork_parity.py::test_the_oracle_is_the_replaced_copy
+1 failed, 538 passed in 19.02s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M48d AC-3 extra semantic probe: a naive timestamp is left unparsed (return None) instead of read as UTC (whole paired files together)
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..ef11e54 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -335,7 +335,7 @@ def _parse_timestamp(*, value: str) -> Optional[datetime]:
+     except ValueError:
+         return None
+     if parsed.tzinfo is None:
+-        parsed = parsed.replace(tzinfo=timezone.utc)
++        return None
+     return parsed.astimezone(tz=timezone.utc)
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+.............F.......................................................... [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/timing-edges: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3135: AssertionError: get-jobs/exit-0/timing-edges: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/timing-edges]
+1 failed, 538 passed in 70.65s (0:01:10)
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M48e AC-3 extra semantic probe: a negative duration bills 0 minutes instead of none (whole paired files together)
+diff --git a/src/payload/scripts/github_api/commands/ci.py b/src/payload/scripts/github_api/commands/ci.py
+index 0c1198e..31d9ddf 100644
+--- a/src/payload/scripts/github_api/commands/ci.py
++++ b/src/payload/scripts/github_api/commands/ci.py
+@@ -349,7 +349,7 @@ def _job_billed_minutes(*, job: Mapping[str, Any]) -> JobTiming:
+         return None, None
+     wall_seconds = (completed - started).total_seconds()
+     if wall_seconds < 0:
+-        return wall_seconds, None
++        return wall_seconds, 0
+     return wall_seconds, math.ceil(wall_seconds / SECONDS_PER_MINUTE)  # positional: math.ceil is positional-only
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+.............F.......................................................... [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+================================== FAILURES ===================================
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   AssertionError: get-jobs/exit-0/timing-edges: the standard output differs from the golden
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3135: AssertionError: get-jobs/exit-0/timing-edges: the standard output differs from the golden
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/timing-edges]
+1 failed, 538 passed in 68.89s (0:01:08)
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## M47e coverage probe of the new test's helper: _is_in_package's module_name None return False raises if executed (its one caller, test_the_oracle_is_the_replaced_copy)
+diff --git a/test/test_github_wrapper_fork_parity.py b/test/test_github_wrapper_fork_parity.py
+index 0183a01..fa3ff55 100644
+--- a/test/test_github_wrapper_fork_parity.py
++++ b/test/test_github_wrapper_fork_parity.py
+@@ -169,7 +169,7 @@ def _module_name_of(*, value: Any) -> Optional[str]:
+ def _is_in_package(*, module_name: Optional[str], package: str) -> bool:
+     """Whether ``module_name`` is ``package`` or one of its submodules."""
+     if module_name is None:
+-        return False
++        raise RuntimeError("M47e module_name None line executed")
+     return module_name == package or module_name.startswith(f"{package}{MODULE_SEPARATOR}")
+ 
+ 
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_github_wrapper_fork_parity.py -k oracle_is_the_replaced_copy --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+F                                                                        [100%]
+================================== FAILURES ===================================
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+E   RuntimeError: M47e module_name None line executed
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\test\test_github_wrapper_fork_parity.py:172: RuntimeError: M47e module_name None line executed
+=========================== short test summary info ===========================
+FAILED test/test_github_wrapper_fork_parity.py::test_the_oracle_is_the_replaced_copy
+1 failed in 4.60s
+exit=1
+restore: git diff HEAD --stat (empty = restored):
+
+## VACUITY git diff 2742f81..HEAD -- src test | grep -nE 'skip|xfail|importorskip|deselect|^\+\s*#\s*(def test|assert)|pytest\.mark' (exit 1 = no hit)
+135: @pytest.mark.parametrize(argnames="case", argvalues=FORK_CASES, ids=fx.case_name)
+grep-exit=0
+
+## RECONFIRM restored tree at c08859a79182a8c56646783c2a118926db005cb7, git diff HEAD --stat (empty = restored):
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py --tb=line -q
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+........................................................................ [ 53%]
+........................................................................ [ 66%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+...................................                                      [100%]
+539 passed in 71.72s (0:01:11)
+exit=0

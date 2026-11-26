@@ -1,11 +1,13 @@
 """The CI subcommands of the GitHub wrapper (design D5): ``list-workflows``, ``list-runs``, ``get-run``, ``wait-run``
-and ``get-logs``.
+and ``get-logs``, and ``get-jobs``, ``rerun`` and ``cancel`` (issue #72).
 
 ``register`` adds each subcommand with the fork's arguments — its ``_register_actions_subcommands`` and
 ``_register_wait_and_task_item_subcommands``, names, types and defaults as they define them, without
-``--token-stdin`` (UB-1.1). Each subparser carries its handler as ``handler``, which the entry script calls as
-``handler(transport=..., owner=..., repo=..., args=...)`` (D6). A handler sends the fork handler's requests on the
-``actions`` family's records (``github_api/families/actions.py``) and writes the fork handler's standard output:
+``--token-stdin`` (UB-1.1). The fork of ``get-jobs``, ``rerun`` and ``cancel`` is the copy of
+``scripts/github_wrapper.py`` at the tag ``v2026.11.10.1``. Each subparser carries its handler as ``handler``, which the
+entry script calls as ``handler(transport=..., owner=..., repo=..., args=...)`` (D6). A handler sends the fork
+handler's requests on the ``actions`` family's records (``github_api/families/actions.py``) and writes the fork
+handler's standard output:
 
 - ``list-workflows``: one page of ``actions/list-repo-workflows``; one ``<id> <state> <name>`` line per workflow.
 - ``list-runs``: one page of ``actions/list-workflow-runs-for-repo``, or of ``actions/list-workflow-runs`` with
@@ -20,6 +22,17 @@ and ``get-logs``.
   storage host without the credential; each archive entry (only those whose name holds ``failed``, in any case, with
   ``--failed-only``) printed as a ``==== <name> ====`` line, then its UTF-8 text, undecodable bytes replaced, and a
   line end. The entry script has already made standard output UTF-8 (D6), as the fork's ``_configure_log_stream``.
+- ``get-jobs``: ONE request of ``actions/list-jobs-for-workflow-run``, ``per_page=100`` and ``filter=latest``
+  (``filter=all`` with ``--all-attempts``); the page's next page is never read. One
+  ``<id> <status> <conclusion> <name>`` line per job of the page — with ``--failed-only``, per job whose conclusion is
+  ``failure``, ``cancelled`` or ``timed_out`` — ending, when the page's jobs are of more than one attempt, in
+  ``  [attempt=<n>]``, then ``--show-steps``' ``  [steps=<n>]``, ``--timing``'s ``  [wall=<s>s billed=<m>min]`` (the
+  job's wall time rounded up to whole minutes, as GitHub bills a job; ``  [wall=? billed=?]`` without both times) and
+  ``--show-runner``'s ``  [runner=<name> labels=<labels>]``. ``--step-status`` prints a ``step`` line per step under
+  its job; ``--timing`` ends with the TOTAL of the printed jobs' billed minutes.
+- ``rerun``: a ``POST`` with no body of ``actions/re-run-workflow``, or of ``actions/re-run-workflow-failed-jobs`` with
+  ``--failed-only``; then ``Rerun requested for run <id>/rerun`` (``<id>/rerun-failed-jobs``).
+- ``cancel``: a ``POST`` with no body of ``actions/cancel-workflow-run``; then ``Cancel requested for run <id>``.
 
 A response that is not the JSON object a command reads, and a log download that is not a zip archive, raise
 ``GitHubAPIError`` (exit 1) where the fork crashed with a traceback (also exit 1). Every other refusal is the
@@ -30,14 +43,18 @@ from __future__ import annotations
 
 import argparse
 import io
+import math
 import time
 import zipfile
-from typing import Any, Callable, Dict, List, Mapping, Optional
+from datetime import datetime, timezone
+from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple
 
 from github_api import registry
 from github_api.commands._common import (
     FIELD_CONCLUSION,
+    FIELD_LABELS,
     FIELD_NAME,
+    FIELD_NUMBER,
     FIELD_STATE,
     FIELD_STATUS,
     print_compact_json,
@@ -56,6 +73,10 @@ OP_LIST_RUNS_FOR_REPO = "actions/list-workflow-runs-for-repo"
 OP_LIST_WORKFLOW_RUNS = "actions/list-workflow-runs"
 OP_GET_RUN = "actions/get-workflow-run"
 OP_DOWNLOAD_RUN_LOGS = "actions/download-workflow-run-logs"
+OP_LIST_RUN_JOBS = "actions/list-jobs-for-workflow-run"
+OP_RERUN_RUN = "actions/re-run-workflow"
+OP_RERUN_FAILED_JOBS = "actions/re-run-workflow-failed-jobs"
+OP_CANCEL_RUN = "actions/cancel-workflow-run"
 
 PATH_OWNER = "owner"
 PATH_REPO = "repo"
@@ -64,11 +85,42 @@ PATH_WORKFLOW_ID = "workflow_id"
 
 QUERY_PER_PAGE = "per_page"
 QUERY_STATUS = "status"
+QUERY_FILTER = "filter"
 
 FIELD_ID = "id"
 FIELD_HTML_URL = "html_url"
 FIELD_WORKFLOWS = "workflows"
 FIELD_WORKFLOW_RUNS = "workflow_runs"
+FIELD_JOBS = "jobs"
+FIELD_STEPS = "steps"
+FIELD_RUN_ATTEMPT = "run_attempt"
+FIELD_STARTED_AT = "started_at"
+FIELD_COMPLETED_AT = "completed_at"
+FIELD_RUNNER_NAME = "runner_name"
+
+# The fork's ``get-jobs``: one page of ``JOBS_PER_PAGE`` jobs, the ``filter`` sent explicitly (``latest``, GitHub's
+# default, is the newest attempt only; ``all`` every attempt), the conclusions ``--failed-only`` prints, and the widths
+# of the id, status and conclusion columns (a step line's status and conclusion take the same widths).
+JOBS_PER_PAGE = 100
+JOBS_FILTER_LATEST = "latest"
+JOBS_FILTER_ALL = "all"
+FAILED_JOB_CONCLUSIONS = ("failure", "cancelled", "timed_out")
+JOB_ID_WIDTH = 14
+JOB_STATUS_WIDTH = 12
+JOB_CONCLUSION_WIDTH = 12
+SECONDS_PER_MINUTE = 60.0
+NO_RUNNER = "(none)"
+NO_LABELS = "-"
+LABEL_SEPARATOR = ","
+#: A GitHub timestamp's UTC designator, and the offset ``datetime.fromisoformat`` reads before Python 3.11.
+UTC_DESIGNATOR = "Z"
+UTC_OFFSET = "+00:00"
+#: ``(wall_seconds, billed_minutes)`` of one job, either ``None`` when it cannot be measured (``_job_billed_minutes``).
+JobTiming = Tuple[Optional[float], Optional[int]]
+
+#: The last segment of the fork's ``rerun`` path, which its line names after the run id.
+RERUN_WHOLE_RUN_SEGMENT = "/rerun"
+RERUN_FAILED_JOBS_SEGMENT = "/rerun-failed-jobs"
 
 # The fork's ``wait-run`` verdicts and defaults. 1 is the wrapper's API-error exit and 2 its usage or credential
 # refusal, so a caller can tell "the run failed" from "the API call failed".
@@ -97,6 +149,9 @@ CMD_LIST_RUNS = "list-runs"
 CMD_GET_RUN = "get-run"
 CMD_WAIT_RUN = "wait-run"
 CMD_GET_LOGS = "get-logs"
+CMD_GET_JOBS = "get-jobs"
+CMD_RERUN = "rerun"
+CMD_CANCEL = "cancel"
 
 ARG_RUN_ID = "run_id"
 OPTION_WORKFLOW = "--workflow"
@@ -105,6 +160,11 @@ OPTION_LIMIT = "--limit"
 OPTION_TIMEOUT_SECONDS = "--timeout-seconds"
 OPTION_INTERVAL_SECONDS = "--interval-seconds"
 OPTION_FAILED_ONLY = "--failed-only"
+OPTION_ALL_ATTEMPTS = "--all-attempts"
+OPTION_SHOW_STEPS = "--show-steps"
+OPTION_SHOW_RUNNER = "--show-runner"
+OPTION_TIMING = "--timing"
+OPTION_STEP_STATUS = "--step-status"
 ACTION_STORE_TRUE = "store_true"
 
 
@@ -261,6 +321,148 @@ def cmd_get_logs(*, transport: Transport, owner: str, repo: str, args: argparse.
             print_line(text=_entry_text(archive=archive, name=name))
 
 
+def _parse_timestamp(*, value: str) -> Optional[datetime]:
+    """A GitHub ISO-8601 timestamp (``2026-11-10T10:00:00Z``) as an aware UTC datetime, as the fork's
+    ``_parse_iso8601_utc``; ``None`` for a blank or unparseable value, so a job still running (no ``completed_at``)
+    shows no timing rather than failing the command."""
+    if not value:
+        return None
+    text = value.strip()
+    if text.endswith(UTC_DESIGNATOR):
+        text = f"{text[: -len(UTC_DESIGNATOR)]}{UTC_OFFSET}"
+    try:
+        parsed = datetime.fromisoformat(text)  # positional: fromisoformat takes its string positional-only
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(tz=timezone.utc)
+
+
+def _job_billed_minutes(*, job: Mapping[str, Any]) -> JobTiming:
+    """``(wall_seconds, billed_minutes)`` of a job from its start and completion times, as the fork's
+    ``_job_billed_minutes``: GitHub bills a job's duration rounded UP to a whole minute, so a job of 0 < d <= 60 s bills
+    one. ``(None, None)`` when either time is missing or unparseable; a negative duration has no billed minutes."""
+    started = _parse_timestamp(value=str(job.get(FIELD_STARTED_AT, "")))
+    completed = _parse_timestamp(value=str(job.get(FIELD_COMPLETED_AT, "")))
+    if started is None or completed is None:
+        return None, None
+    wall_seconds = (completed - started).total_seconds()
+    if wall_seconds < 0:
+        return wall_seconds, None
+    return wall_seconds, math.ceil(wall_seconds / SECONDS_PER_MINUTE)  # positional: math.ceil is positional-only
+
+
+def _job_columns(*, job: Mapping[str, Any]) -> str:
+    """The fork's ``get-jobs`` columns of one job, before any suffix; a job without a conclusion shows ``None``."""
+    return (
+        f"{job[FIELD_ID]:<{JOB_ID_WIDTH}} {job[FIELD_STATUS]:<{JOB_STATUS_WIDTH}} "
+        f"{str(job.get(FIELD_CONCLUSION)):<{JOB_CONCLUSION_WIDTH}} {job[FIELD_NAME]}"
+    )
+
+
+def _timing_suffix(*, timing: JobTiming) -> str:
+    """``--timing``'s suffix of one job: its wall seconds and billed minutes, ``?`` for both when it is unbilled."""
+    wall_seconds, billed = timing
+    if billed is None:
+        return "  [wall=? billed=?]"
+    return f"  [wall={wall_seconds:.0f}s billed={billed}min]"
+
+
+def _runner_suffix(*, job: Mapping[str, Any]) -> str:
+    """``--show-runner``'s suffix of one job: where it ran, ``(none)`` without a runner name and ``-`` without
+    labels."""
+    runner_name = job.get(FIELD_RUNNER_NAME) or ""
+    labels = job.get(FIELD_LABELS) or []
+    rendered_labels = LABEL_SEPARATOR.join(str(label) for label in labels) if labels else NO_LABELS
+    return f"  [runner={runner_name or NO_RUNNER} labels={rendered_labels}]"
+
+
+def _job_line(
+    *, job: Mapping[str, Any], show_attempt: bool, timing: Optional[JobTiming], args: argparse.Namespace
+) -> str:
+    """The fork's ``get-jobs`` line of one job: its columns, then the attempt, steps, timing (``timing`` is ``None``
+    without ``--timing``) and runner suffixes, in that order."""
+    line = _job_columns(job=job)
+    if show_attempt:
+        line = f"{line}  [attempt={job.get(FIELD_RUN_ATTEMPT)}]"
+    if args.show_steps:
+        line = f"{line}  [steps={len(job.get(FIELD_STEPS, []))}]"
+    if timing is not None:
+        line = f"{line}{_timing_suffix(timing=timing)}"
+    if args.show_runner:
+        line = f"{line}{_runner_suffix(job=job)}"
+    return line
+
+
+def _step_line(*, step: Mapping[str, Any]) -> str:
+    """``--step-status``'s line of one step, printed under its job."""
+    return (
+        f"    step {step.get(FIELD_NUMBER)} {str(step.get(FIELD_STATUS)):<{JOB_STATUS_WIDTH}} "
+        f"{str(step.get(FIELD_CONCLUSION)):<{JOB_CONCLUSION_WIDTH}} {step.get(FIELD_NAME)}"
+    )
+
+
+def _billed_total_line(*, minutes: int) -> str:
+    """``--timing``'s last line: the three columns blank, then the billed minutes of the printed jobs."""
+    blank = f"{'':<{JOB_ID_WIDTH}} {'':<{JOB_STATUS_WIDTH}} {'':<{JOB_CONCLUSION_WIDTH}}"
+    return f"{blank} TOTAL billed minutes (sum of per-job rounded-up): {minutes}"
+
+
+def cmd_get_jobs(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> None:
+    """Print the jobs of ONE page of the run's jobs, as the fork does: the newest attempt's, or every attempt's with
+    ``--all-attempts``; with ``--failed-only`` only the failed, cancelled and timed-out ones.
+
+    The attempts are counted over the whole page, before ``--failed-only`` leaves any job out, so a page of two
+    attempts gives every printed line its attempt suffix.
+    """
+    jobs_filter = JOBS_FILTER_ALL if args.all_attempts else JOBS_FILTER_LATEST
+    data = registry.call(
+        transport=transport,
+        operation_id=OP_LIST_RUN_JOBS,
+        path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+        query={QUERY_PER_PAGE: JOBS_PER_PAGE, QUERY_FILTER: jobs_filter},
+    )
+    jobs = _listed(data=data, item_key=FIELD_JOBS, what=FIELD_JOBS)
+    show_attempt = len({job.get(FIELD_RUN_ATTEMPT) for job in jobs}) > 1
+    billed_total = 0
+    for job in jobs:
+        if args.failed_only and job.get(FIELD_CONCLUSION) not in FAILED_JOB_CONCLUSIONS:
+            continue
+        timing = _job_billed_minutes(job=job) if args.timing else None
+        if timing is not None and timing[1] is not None:
+            billed_total += timing[1]
+        print_line(text=_job_line(job=job, show_attempt=show_attempt, timing=timing, args=args))
+        if args.step_status:
+            for step in job.get(FIELD_STEPS, []):
+                print_line(text=_step_line(step=step))
+    if args.timing:
+        print_line(text=_billed_total_line(minutes=billed_total))
+
+
+def cmd_rerun(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> None:
+    """Ask GitHub to re-run the run, or with ``--failed-only`` its failed jobs, with a ``POST`` with no body."""
+    operation_id, segment = OP_RERUN_RUN, RERUN_WHOLE_RUN_SEGMENT
+    if args.failed_only:
+        operation_id, segment = OP_RERUN_FAILED_JOBS, RERUN_FAILED_JOBS_SEGMENT
+    registry.call(
+        transport=transport,
+        operation_id=operation_id,
+        path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+    )
+    print_line(text=f"Rerun requested for run {args.run_id}{segment}")
+
+
+def cmd_cancel(*, transport: Transport, owner: str, repo: str, args: argparse.Namespace) -> None:
+    """Ask GitHub to cancel the run with a ``POST`` with no body."""
+    registry.call(
+        transport=transport,
+        operation_id=OP_CANCEL_RUN,
+        path_params=_run_params(owner=owner, repo=repo, run_id=args.run_id),
+    )
+    print_line(text=f"Cancel requested for run {args.run_id}")
+
+
 def _add_command(
     *, subparsers: argparse._SubParsersAction[argparse.ArgumentParser], name: str, help_text: str, handler: Handler
 ) -> argparse.ArgumentParser:
@@ -270,8 +472,52 @@ def _add_command(
     return parser
 
 
+def _register_get_jobs(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    """``get-jobs``, as the fork's ``_register_actions_subcommands``: the run and six flags."""
+    parser = _add_command(
+        subparsers=subparsers, name=CMD_GET_JOBS, help_text="List jobs for a run", handler=cmd_get_jobs
+    )
+    parser.add_argument(ARG_RUN_ID, type=int)
+    parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
+    parser.add_argument(
+        OPTION_ALL_ATTEMPTS,
+        action=ACTION_STORE_TRUE,
+        help=(
+            "Include jobs from EARLIER attempts of a re-run run (API filter=all). Without this, only "
+            "the newest attempt is listed, so a failure that was re-run to green is unreachable — "
+            "including its log. Use when investigating a flake that a re-run has already hidden."
+        ),
+    )
+    parser.add_argument(
+        OPTION_SHOW_STEPS,
+        action=ACTION_STORE_TRUE,
+        help="Append [steps=N] per job; steps=0 evidences a startup/billing (quota) failure",
+    )
+    parser.add_argument(
+        OPTION_SHOW_RUNNER,
+        action=ACTION_STORE_TRUE,
+        help=(
+            "Append [runner=NAME labels=...] per job — WHERE it ran. Required to verify a relocation "
+            "(every job must show a fallback label with a NON-EMPTY runner name) and to tell a "
+            "fallback job that never started from a refused hosted job"
+        ),
+    )
+    parser.add_argument(
+        OPTION_TIMING,
+        action=ACTION_STORE_TRUE,
+        help="Append [wall=Ns billed=Mmin] per job (billed = wall rounded UP to a whole minute) "
+        "and print the run's TOTAL billed minutes (sum of per-job rounded durations)",
+    )
+    parser.add_argument(
+        OPTION_STEP_STATUS,
+        action=ACTION_STORE_TRUE,
+        help="Print, under each job, one line per step: `step <number> <status> <conclusion> <name>`, live while "
+        "the job runs",
+    )
+
+
 def _register_reads(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    """``list-workflows``, ``list-runs``, ``get-run`` and ``get-logs``, as the fork's
+    """``list-workflows``, ``list-runs``, ``get-run``, ``get-jobs`` and ``get-logs``, as the fork's
     ``_register_actions_subcommands``."""
     _add_command(
         subparsers=subparsers,
@@ -290,6 +536,8 @@ def _register_reads(*, subparsers: argparse._SubParsersAction[argparse.ArgumentP
     parser = _add_command(subparsers=subparsers, name=CMD_GET_RUN, help_text="Show a single run", handler=cmd_get_run)
     parser.add_argument(ARG_RUN_ID, type=int)
 
+    _register_get_jobs(subparsers=subparsers)
+
     parser = _add_command(
         subparsers=subparsers,
         name=CMD_GET_LOGS,
@@ -298,6 +546,18 @@ def _register_reads(*, subparsers: argparse._SubParsersAction[argparse.ArgumentP
     )
     parser.add_argument(ARG_RUN_ID, type=int)
     parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
+
+
+def _register_run_actions(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    """``rerun`` and ``cancel``, as the fork's ``_register_actions_subcommands``."""
+    parser = _add_command(subparsers=subparsers, name=CMD_RERUN, help_text="Rerun a workflow run", handler=cmd_rerun)
+    parser.add_argument(ARG_RUN_ID, type=int)
+    parser.add_argument(OPTION_FAILED_ONLY, action=ACTION_STORE_TRUE)
+
+    parser = _add_command(
+        subparsers=subparsers, name=CMD_CANCEL, help_text="Cancel an in-progress run", handler=cmd_cancel
+    )
+    parser.add_argument(ARG_RUN_ID, type=int)
 
 
 def _register_wait(*, subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -316,4 +576,5 @@ def _register_wait(*, subparsers: argparse._SubParsersAction[argparse.ArgumentPa
 def register(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     """Add the CI subcommands to the entry script's ``subparsers``, each carrying its handler (D6)."""
     _register_reads(subparsers=subparsers)
+    _register_run_actions(subparsers=subparsers)
     _register_wait(subparsers=subparsers)

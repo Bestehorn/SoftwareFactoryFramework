@@ -1,0 +1,156 @@
+# tasks: T1 T2
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 src/payload/test/test_github_wrapper_compat.py test/test_github_wrapper_fork_parity.py test/test_github_wrapper_contract.py test/test_github_wrapper_coverage.py test/test_setup_prompts_github_wrapper.py test/test_setup_prompts_gitlab_wrapper.py test/test_toolchain_integrity.py test/test_layout.py test/test_instruction_corpus_budget.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [804 items]
+
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 26%]
+............F.FFF.F...F.FF...F.F.................F...................... [ 35%]
+........................................................................ [ 44%]
+........................................................................ [ 53%]
+................................F.F..F.................................. [ 62%]
+........................................................................ [ 71%]
+........................................................................ [ 80%]
+........................................................................ [ 89%]
+........................................................................ [ 98%]
+............                                                             [100%]
+================================== FAILURES ===================================
+__ test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-jobs/exit-0/latest-attempt: exit code 2, the golden is 0; stdout ''
+___ test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-jobs/exit-0/all-attempts: exit code 2, the golden is 0; stdout ''
+___ test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-jobs/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+___ test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-jobs/exit-0/every-column: exit code 2, the golden is 0; stdout ''
+____ test_a_subcommand_matches_its_golden_case[get-jobs/exit-1/not-found] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: get-jobs/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+______ test_a_subcommand_matches_its_golden_case[rerun/exit-0/whole-run] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: rerun/exit-0/whole-run: exit code 2, the golden is 0; stdout ''
+_____ test_a_subcommand_matches_its_golden_case[rerun/exit-0/failed-only] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: rerun/exit-0/failed-only: exit code 2, the golden is 0; stdout ''
+______ test_a_subcommand_matches_its_golden_case[rerun/exit-1/not-found] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: rerun/exit-1/not-found: exit code 2, the golden is 1; stdout ''
+_____ test_a_subcommand_matches_its_golden_case[cancel/exit-0/requested] ______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: cancel/exit-0/requested: exit code 2, the golden is 0; stdout ''
+_ test_a_subcommand_matches_its_golden_case[cancel/exit-1/already-completed] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\test_github_wrapper_compat.py:132: in test_a_subcommand_matches_its_golden_case
+    fx.assert_outcome(
+D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\test\github_wrapper_fixtures.py:3085: in assert_outcome
+    assert outcome.exit_code == case.exit_code, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: cancel/exit-1/already-completed: exit code 2, the golden is 1; stdout ''
+____________________ test_the_usage_names_the_ci_commands _____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+src\payload\test\test_github_wrapper_compat.py:350: in test_the_usage_names_the_ci_commands
+    assert missing == [], f"the usage of {ENTRY_SCRIPT} does not carry: {missing}"
+E   AssertionError: the usage of D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-72\src\payload\scripts\github_wrapper.py does not carry: ['python scripts/github_wrapper.py get-jobs <run_id> --failed-only', 'python scripts/github_wrapper.py get-jobs <run_id> --show-steps', 'python scripts/github_wrapper.py get-jobs <run_id> --step-status', 'python scripts/github_wrapper.py get-jobs <run_id> --timing', 'python scripts/github_wrapper.py get-jobs <run_id> --all-attempts', 'python scripts/github_wrapper.py rerun <run_id> --failed-only', 'python scripts/github_wrapper.py cancel <run_id>']
+E   assert ['python scri...ed-only', ...] == []
+E     
+E     Left contains 7 more items, first extra item: [0m[33m'[39;49;00m[33mpython scripts/github_wrapper.py get-jobs <run_id> --failed-only[39;49;00m[33m'[39;49;00m[90m[39;49;00m
+E     Use -v to get more diff
+______________ test_the_parsers_match_option_by_option[get-jobs] ______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:290: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:212: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'get-jobs'
+E   assert 'get-jobs' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_______________ test_the_parsers_match_option_by_option[rerun] ________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:290: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:212: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'rerun'
+E   assert 'rerun' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+_______________ test_the_parsers_match_option_by_option[cancel] _______________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_github_wrapper_fork_parity.py:290: in test_the_parsers_match_option_by_option
+    product_parser = _subparser(parser=product._build_parser(), spelling=spelling, wrapper=PRODUCT_NAME)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test\test_github_wrapper_fork_parity.py:212: in _subparser
+    assert name in choices, f"{wrapper}'s parser has no subcommand {named!r}"
+E   AssertionError: the product's parser has no subcommand 'cancel'
+E   assert 'cancel' in {'enqueue-pr': ArgumentParser(prog='-c enqueue-pr', usage=None, description=None, formatter_class=<class 'argparse.Hel...one, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True), ...}
+=========================== short test summary info ===========================
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/latest-attempt]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/all-attempts]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-0/every-column]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[get-jobs/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/whole-run]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-0/failed-only]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[rerun/exit-1/not-found]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-0/requested]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_a_subcommand_matches_its_golden_case[cancel/exit-1/already-completed]
+FAILED src/payload/test/test_github_wrapper_compat.py::test_the_usage_names_the_ci_commands
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[get-jobs]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[rerun]
+FAILED test/test_github_wrapper_fork_parity.py::test_the_parsers_match_option_by_option[cancel]
+================= 14 failed, 790 passed in 194.36s (0:03:14) ==================
+exit=1

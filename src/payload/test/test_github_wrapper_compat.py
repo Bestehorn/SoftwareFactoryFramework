@@ -6,9 +6,10 @@ Installed from ``src/payload/test/test_github_wrapper_compat.py`` to ``test/test
 (loaded by path) runs through the entry script's ``main(argv=...)`` in a temporary project, the fixture
 ``credentials/github-pat.txt`` and a ``.git/config`` with a GitHub ``origin``, against the fake GitHub host: standard
 output is read with ``capsys``, the exit code is ``main``'s return value or its ``SystemExit``. The golden values are
-the installed fork's own output; ``test/test_github_wrapper_fork_parity.py`` runs the same table against the fork in the
-framework repository. The delivery verbs reach a faked ``subprocess.run`` in place of the steward, and one test runs the
-script by path in a child interpreter that stops at its credential refusal. No test opens a connection.
+the own output of the fork the product replaced, the copy of ``scripts/github_wrapper.py`` at the tag
+``v2026.11.10.1``; ``test/test_github_wrapper_fork_parity.py`` runs the same table against that copy in the framework
+repository. The delivery verbs reach a faked ``subprocess.run`` in place of the steward, and one test runs the script by
+path in a child interpreter that stops at its credential refusal. No test opens a connection.
 
 Run: ``python scripts/run_tests.py test/test_github_wrapper_compat.py`` (no network).
 """
@@ -325,3 +326,25 @@ def test_the_usage_names_the_raw_body_input(monkeypatch: pytest.MonkeyPatch) -> 
     assert isinstance(usage, str), f"{ENTRY_SCRIPT} has no module docstring"
     missing = [text for text in USAGE_RAW_BODY_TEXTS if text not in usage]
     assert missing == [], f"the usage of {ENTRY_SCRIPT} does not name: {missing}"
+
+
+# Issue #72 AC-7: the usage lines of `get-jobs`, `rerun` and `cancel` in the module docstring of the copy at the tag
+# v2026.11.10.1, each without the `# ...` comment some of them end with, as the entry script words its own comments.
+USAGE_CI_LINES = (
+    "python scripts/github_wrapper.py get-jobs <run_id> --failed-only",
+    "python scripts/github_wrapper.py get-jobs <run_id> --show-steps",
+    "python scripts/github_wrapper.py get-jobs <run_id> --step-status",
+    "python scripts/github_wrapper.py get-jobs <run_id> --timing",
+    "python scripts/github_wrapper.py get-jobs <run_id> --all-attempts",
+    "python scripts/github_wrapper.py rerun <run_id> --failed-only",
+    "python scripts/github_wrapper.py cancel <run_id>",
+)
+
+
+def test_the_usage_names_the_ci_commands(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Issue #72 AC-7: the entry script's ``__doc__`` carries the copy's usage lines of ``get-jobs``, ``rerun`` and
+    ``cancel``."""
+    usage = load_wrapper(monkeypatch=monkeypatch).__doc__
+    assert isinstance(usage, str), f"{ENTRY_SCRIPT} has no module docstring"
+    missing = [line for line in USAGE_CI_LINES if line not in usage]
+    assert missing == [], f"the usage of {ENTRY_SCRIPT} does not carry: {missing}"

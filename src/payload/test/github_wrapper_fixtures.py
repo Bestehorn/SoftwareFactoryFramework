@@ -5,7 +5,7 @@ never collected, since its name matches no ``test_*.py`` pattern. Installed from
 ``src/payload/test/github_wrapper_fixtures.py`` to ``test/github_wrapper_fixtures.py``, beside the suites that load it.
 
 ``FakeGitHub.install`` patches ``urllib.request.HTTPSHandler.https_open`` and ``HTTPHandler.http_open``. Every opener
-in the process (the product wrapper's and the installed fork's) then reaches the fake instead of a socket, while
+in the process (the product wrapper's and the replaced fork's) then reaches the fake instead of a socket, while
 urllib's ``HTTPErrorProcessor`` and redirect handling, and any handler a wrapper adds, run unchanged on its answers.
 An answer is a ``urllib.response.addinfourl`` with ``msg`` set, which ``HTTPErrorProcessor.http_response`` reads, as
 ``AbstractHTTPHandler.do_open`` sets it on a real response. Each request is recorded with its method, URL, body and
@@ -29,10 +29,12 @@ so a request carrying userinfo never matches a route without it.
 
 The golden table ``CASES`` (design "Testing Strategy", UB-1.1) holds, for each case, the argv, the host state (the
 temporary project's files and the fake host's routes), the exact standard output, the exit code and the requests other
-than ``GET`` (method, path, decoded query, JSON body). Every value is the installed fork's own output:
-``test/test_github_wrapper_fork_parity.py`` runs every case that is not ``c_only`` against the fork, and
-``test_github_wrapper_compat.py`` runs every case against the product's entry script. Both build the project with
-``enter_project`` and judge with ``assert_outcome`` and ``assert_log``, so the two compare alike.
+than ``GET`` (method, path, decoded query, JSON body). Every value is the own output of the fork the product replaced,
+the copy of ``scripts/github_wrapper.py`` at the tag ``v2026.11.10.1``, as
+``git show v2026.11.10.1:scripts/github_wrapper.py`` prints it: ``test/test_github_wrapper_fork_parity.py`` runs every
+case that is neither ``c_only`` nor a delivery verb's against that copy, and ``test_github_wrapper_compat.py`` runs
+every case against the product's entry script. Both build the project with ``enter_project`` and judge with
+``assert_outcome`` and ``assert_log``, so the two compare alike.
 """
 
 from __future__ import annotations
@@ -2616,8 +2618,422 @@ def _get_logs_cases() -> Tuple[GoldenCase, ...]:
     )
 
 
-#: The golden cases of the issues, claim, pull-request and CI subcommands of UB-1.1, and of each nested ``issue …``
-#: spelling, every value the installed fork's own output.
+# ---------------------------------------------------------------------------------------------------------------------
+# ``get-jobs``, ``rerun`` and ``cancel`` (issue #72): the copy's ``cmd_get_jobs``, ``cmd_rerun`` and ``cmd_cancel``
+# ---------------------------------------------------------------------------------------------------------------------
+
+ACCEPTED = 202
+CONFLICT = 409
+
+FIELD_JOBS = "jobs"
+FIELD_RUN_ATTEMPT = "run_attempt"
+FIELD_STARTED_AT = "started_at"
+FIELD_COMPLETED_AT = "completed_at"
+FIELD_STEPS = "steps"
+FIELD_RUNNER_NAME = "runner_name"
+QUERY_FILTER = "filter"
+JOBS_FILTER_LATEST = "latest"
+JOBS_FILTER_ALL = "all"
+JOBS_PER_PAGE = 100  # the copy's one page of ``get-jobs``: it reads no other
+#: The copy's ``get-jobs`` column widths: the job's id, its status and its conclusion, before its name.
+JOB_ID_WIDTH = 14
+JOB_STATUS_WIDTH = 12
+JOB_CONCLUSION_WIDTH = 12
+RUN_QUEUED = "queued"
+CONCLUSION_CANCELLED = "cancelled"
+CONCLUSION_TIMED_OUT = "timed_out"
+CONCLUSION_SKIPPED = "skipped"
+JOB_STARTED = "2026-11-10T10:00:00Z"
+FIRST_ATTEMPT = 1
+SECOND_ATTEMPT = 2
+STEP_DONE: RunOutcome = (RUN_COMPLETED, CONCLUSION_SUCCESS)
+LABEL_HOSTED = "ubuntu-latest"
+RUN_ALREADY_COMPLETED = error_reply(status=CONFLICT, message="Cannot cancel a workflow run that is completed.")
+
+
+def step_entry(*, number: int, name: str, outcome: RunOutcome) -> Dict[str, Any]:
+    """A step of a job as the jobs endpoint lists it, cut to the fields ``get-jobs --step-status`` reads."""
+    status, conclusion = outcome
+    return {FIELD_NAME: name, FIELD_STATUS: status, FIELD_CONCLUSION: conclusion, FIELD_NUMBER: number}
+
+
+def job_entry(
+    *,
+    job_id: int,
+    name: str,
+    outcome: RunOutcome,
+    run_attempt: int = FIRST_ATTEMPT,
+    started_at: Optional[str] = JOB_STARTED,
+    completed_at: Optional[str] = None,
+    steps: Sequence[Mapping[str, Any]] = (),
+    runner_name: Optional[str] = None,
+    labels: Sequence[str] = (),
+) -> Dict[str, Any]:
+    """A job of run ``RUN_ID`` as the jobs endpoint lists it, cut to the fields ``get-jobs`` reads; a job still running
+    or queued has a ``null`` ``completed_at``, as GitHub sends it."""
+    status, conclusion = outcome
+    return {
+        FIELD_ID: job_id,
+        FIELD_RUN_ATTEMPT: run_attempt,
+        FIELD_NAME: name,
+        FIELD_STATUS: status,
+        FIELD_CONCLUSION: conclusion,
+        FIELD_STARTED_AT: started_at,
+        FIELD_COMPLETED_AT: completed_at,
+        FIELD_STEPS: [dict(step) for step in steps],
+        FIELD_RUNNER_NAME: runner_name,
+        FIELD_LABELS: list(labels),
+    }
+
+
+def jobs_query(*, jobs_filter: str) -> Dict[str, QueryValue]:
+    """The query of the copy's one ``get-jobs`` request: its ``per_page`` and ``filter``."""
+    return {QUERY_PER_PAGE: JOBS_PER_PAGE, QUERY_FILTER: jobs_filter}
+
+
+def jobs_page(*, run_path: str, jobs_filter: str, jobs: Sequence[Mapping[str, Any]]) -> StaticRouteSpec:
+    """``GET`` of the run's jobs with the copy's query, answered with ``jobs`` and a ``link`` to a page 2 that no route
+    answers: the copy reads one page, so a wrapper that follows the link fails the test on an unrouted request."""
+    query = jobs_query(jobs_filter=jobs_filter)
+    next_page = f"{API_ORIGIN}{run_path}/jobs?{urlencode(query={**query, QUERY_PAGE: FIRST_PAGE + 1})}"
+    return StaticRouteSpec(
+        method=METHOD_GET,
+        url=f"{run_path}/jobs",
+        query=query,
+        replies=(
+            Reply(
+                body={FIELD_TOTAL_COUNT: len(jobs), FIELD_JOBS: list(jobs)},
+                headers={HEADER_LINK: f'<{next_page}>; rel="next"'},
+            ),
+        ),
+    )
+
+
+def job_line(*, job: Mapping[str, Any]) -> str:
+    """The copy's ``get-jobs`` columns of one job, before any suffix: ``<id> <status> <conclusion> <name>``, a job
+    without a conclusion showing ``None``."""
+    return (
+        f"{job[FIELD_ID]:<{JOB_ID_WIDTH}} {job[FIELD_STATUS]:<{JOB_STATUS_WIDTH}} "
+        f"{str(job[FIELD_CONCLUSION]):<{JOB_CONCLUSION_WIDTH}} {job[FIELD_NAME]}"
+    )
+
+
+def billed_total_line(*, minutes: int) -> str:
+    """The copy's last ``get-jobs --timing`` line: the three columns blank, then the billed minutes of the printed
+    jobs."""
+    blank = f"{'':<{JOB_ID_WIDTH}} {'':<{JOB_STATUS_WIDTH}} {'':<{JOB_CONCLUSION_WIDTH}}"
+    return f"{blank} TOTAL billed minutes (sum of per-job rounded-up): {minutes}\n"
+
+
+def _get_jobs_attempt_cases(*, command: str) -> Tuple[GoldenCase, ...]:
+    """The latest attempt by default, every attempt with ``--all-attempts``; ``[attempt=<n>]`` once the page holds
+    jobs of two attempts."""
+    lint = job_entry(job_id=92568369585, name="verify (lint)", outcome=STEP_DONE, completed_at="2026-11-10T10:01:30Z")
+    running = job_entry(job_id=92568369586, name="verify (tests)", outcome=(RUN_IN_PROGRESS, None))
+    failed = job_entry(
+        job_id=92568369586,
+        name="verify (tests)",
+        outcome=(RUN_COMPLETED, CONCLUSION_FAILURE),
+        completed_at="2026-11-10T10:04:00Z",
+    )
+    passed_on_rerun = job_entry(
+        job_id=92572952687,
+        name="verify (tests)",
+        outcome=STEP_DONE,
+        run_attempt=SECOND_ATTEMPT,
+        started_at="2026-11-10T10:20:00Z",
+        completed_at="2026-11-10T10:24:00Z",
+    )
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/latest-attempt",
+            argv=(command, str(RUN_ID)),
+            stdout=(
+                "92568369585    completed    success      verify (lint)\n"
+                "92568369586    in_progress  None         verify (tests)\n"
+            ),
+            exit_code=EXIT_OK,
+            routes=(jobs_page(run_path=RUN_PATH, jobs_filter=JOBS_FILTER_LATEST, jobs=(lint, running)),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/all-attempts",
+            argv=(command, str(RUN_ID), "--all-attempts"),
+            stdout=(
+                f"{job_line(job=lint)}  [attempt=1]\n"
+                f"{job_line(job=failed)}  [attempt=1]\n"
+                f"{job_line(job=passed_on_rerun)}  [attempt=2]\n"
+            ),
+            exit_code=EXIT_OK,
+            routes=(jobs_page(run_path=RUN_PATH, jobs_filter=JOBS_FILTER_ALL, jobs=(lint, failed, passed_on_rerun)),),
+        ),
+    )
+
+
+def _get_jobs_failed_only_case(*, command: str) -> GoldenCase:
+    """``--failed-only --timing``: only the ``failure``, ``cancelled`` and ``timed_out`` jobs are printed, and only
+    their billed minutes are in the TOTAL. The one job of the second attempt is the ``success`` job left out, so every
+    printed line still carries the attempt suffix: the attempts are counted over the whole page."""
+    passed = job_entry(
+        job_id=92572952690,
+        name="verify (lint)",
+        outcome=STEP_DONE,
+        run_attempt=SECOND_ATTEMPT,
+        started_at="2026-11-10T10:20:00Z",
+        completed_at="2026-11-10T10:21:01Z",  # 61 s: billed 2 minutes, but not printed
+    )
+    failed = job_entry(
+        job_id=92568369590,
+        name="build",
+        outcome=(RUN_COMPLETED, CONCLUSION_FAILURE),
+        completed_at="2026-11-10T10:02:05Z",  # 125 s: billed 3 minutes
+    )
+    cancelled = job_entry(
+        job_id=92568369591,
+        name="verify (tests)",
+        outcome=(RUN_COMPLETED, CONCLUSION_CANCELLED),
+        completed_at="2026-11-10T10:00:30Z",  # 30 s: billed 1 minute
+    )
+    timed_out = job_entry(
+        job_id=92568369592,
+        name="e2e",
+        outcome=(RUN_COMPLETED, CONCLUSION_TIMED_OUT),
+        completed_at="2026-11-10T10:10:00Z",  # 600 s: billed 10 minutes
+    )
+    skipped = job_entry(
+        job_id=92568369593,
+        name="deploy",
+        outcome=(RUN_COMPLETED, CONCLUSION_SKIPPED),
+        started_at="2026-11-10T10:10:00Z",
+        completed_at="2026-11-10T10:10:00Z",
+    )
+    return GoldenCase(
+        name=f"{command}/exit-0/failed-only",
+        argv=(command, str(RUN_ID), "--failed-only", "--timing"),
+        stdout=(
+            f"{job_line(job=failed)}  [attempt=1]  [wall=125s billed=3min]\n"
+            f"{job_line(job=cancelled)}  [attempt=1]  [wall=30s billed=1min]\n"
+            f"{job_line(job=timed_out)}  [attempt=1]  [wall=600s billed=10min]\n"
+            f"{billed_total_line(minutes=14)}"
+        ),
+        exit_code=EXIT_OK,
+        routes=(
+            jobs_page(
+                run_path=RUN_PATH,
+                jobs_filter=JOBS_FILTER_LATEST,
+                jobs=(passed, failed, cancelled, timed_out, skipped),
+            ),
+        ),
+    )
+
+
+def _get_jobs_every_column_case(*, command: str) -> GoldenCase:
+    """Every option on jobs of one attempt, so no attempt suffix although ``--all-attempts`` is given: the steps, the
+    timing (a running and a queued job unbilled, one under a minute billed a whole one), the runner and its labels (or
+    their absence), then each step's line under its job, and the TOTAL."""
+    set_up = step_entry(number=1, name="Set up job", outcome=STEP_DONE)
+    linted = job_entry(
+        job_id=92568369600,
+        name="verify (lint)",
+        outcome=STEP_DONE,
+        completed_at="2026-11-10T10:01:30Z",  # 90 s: billed 2 minutes
+        steps=(set_up, step_entry(number=2, name="Run ruff", outcome=STEP_DONE)),
+        runner_name="GitHub Actions 2",
+        labels=(LABEL_HOSTED,),
+    )
+    running = job_entry(
+        job_id=92568369601,
+        name="verify (tests)",
+        outcome=(RUN_IN_PROGRESS, None),
+        steps=(set_up, step_entry(number=2, name="Run tests", outcome=(RUN_IN_PROGRESS, None))),
+        runner_name="ci-runner-01",
+        labels=("self-hosted", "linux", "x64"),
+    )
+    never_started = job_entry(
+        job_id=92568369602,
+        name="build",
+        outcome=(RUN_COMPLETED, CONCLUSION_FAILURE),
+        completed_at="2026-11-10T10:00:03Z",  # 3 s, no step run: billed 1 minute
+        runner_name="",
+    )
+    queued = job_entry(job_id=92568369603, name="deploy", outcome=(RUN_QUEUED, None), labels=(LABEL_HOSTED,))
+    return GoldenCase(
+        name=f"{command}/exit-0/every-column",
+        argv=(command, str(RUN_ID), "--all-attempts", "--show-steps", "--timing", "--show-runner", "--step-status"),
+        stdout=(
+            f"{job_line(job=linted)}  [steps=2]  [wall=90s billed=2min]"
+            "  [runner=GitHub Actions 2 labels=ubuntu-latest]\n"
+            "    step 1 completed    success      Set up job\n"
+            "    step 2 completed    success      Run ruff\n"
+            f"{job_line(job=running)}  [steps=2]  [wall=? billed=?]"
+            "  [runner=ci-runner-01 labels=self-hosted,linux,x64]\n"
+            "    step 1 completed    success      Set up job\n"
+            "    step 2 in_progress  None         Run tests\n"
+            f"{job_line(job=never_started)}  [steps=0]  [wall=3s billed=1min]  [runner=(none) labels=-]\n"
+            f"{job_line(job=queued)}  [steps=0]  [wall=? billed=?]  [runner=(none) labels=ubuntu-latest]\n"
+            f"{billed_total_line(minutes=3)}"
+        ),
+        exit_code=EXIT_OK,
+        routes=(
+            jobs_page(run_path=RUN_PATH, jobs_filter=JOBS_FILTER_ALL, jobs=(linted, running, never_started, queued)),
+        ),
+    )
+
+
+def _get_jobs_timing_edges_case(*, command: str) -> GoldenCase:
+    """``--timing`` on the times the copy's ``_parse_iso8601_utc`` and ``_job_billed_minutes`` set apart: a blank
+    ``started_at`` leaves its job unbilled; a start with no time zone is read as UTC, so against a ``Z`` completion it
+    bills what the same start with ``Z`` would; a completion before the start leaves its job unbilled. Only the second
+    job's minutes are in the TOTAL."""
+    blank_start = job_entry(
+        job_id=92568369610,
+        name="verify (lint)",
+        outcome=STEP_DONE,
+        started_at="",
+        completed_at="2026-11-10T10:01:30Z",
+    )
+    start_without_zone = job_entry(
+        job_id=92568369611,
+        name="verify (tests)",
+        outcome=STEP_DONE,
+        started_at="2026-11-10T10:00:00",  # no time zone: UTC, so 105 s, billed 2 minutes
+        completed_at="2026-11-10T10:01:45Z",
+    )
+    completed_before_start = job_entry(
+        job_id=92568369612,
+        name="build",
+        outcome=(RUN_COMPLETED, CONCLUSION_FAILURE),
+        started_at="2026-11-10T10:05:00Z",
+        completed_at="2026-11-10T10:00:00Z",  # 300 s before the start: a negative duration, unbilled
+    )
+    return GoldenCase(
+        name=f"{command}/exit-0/timing-edges",
+        argv=(command, str(RUN_ID), "--timing"),
+        stdout=(
+            f"{job_line(job=blank_start)}  [wall=? billed=?]\n"
+            f"{job_line(job=start_without_zone)}  [wall=105s billed=2min]\n"
+            f"{job_line(job=completed_before_start)}  [wall=? billed=?]\n"
+            f"{billed_total_line(minutes=2)}"
+        ),
+        exit_code=EXIT_OK,
+        routes=(
+            jobs_page(
+                run_path=RUN_PATH,
+                jobs_filter=JOBS_FILTER_LATEST,
+                jobs=(blank_start, start_without_zone, completed_before_start),
+            ),
+        ),
+    )
+
+
+def _get_jobs_cases() -> Tuple[GoldenCase, ...]:
+    """Every page the copy is answered with names a next page, which it never reads (``jobs_page``)."""
+    command = "get-jobs"
+    return (
+        *_get_jobs_attempt_cases(command=command),
+        _get_jobs_failed_only_case(command=command),
+        _get_jobs_every_column_case(command=command),
+        _get_jobs_timing_edges_case(command=command),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command, "4243"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(
+                StaticRouteSpec(
+                    method=METHOD_GET,
+                    url=f"{MISSING_RUN_PATH}/jobs",
+                    query=jobs_query(jobs_filter=JOBS_FILTER_LATEST),
+                    replies=(NOT_FOUND,),
+                ),
+            ),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, str(RUN_ID)),
+            usage=(command, str(RUN_ID), "--steps"),  # the option the copy never had, which the ladder text named
+            credential=EMPTY_CREDENTIAL,
+            repository=FOREIGN_ORIGIN,
+        ),
+    )
+
+
+def _rerun_cases() -> Tuple[GoldenCase, ...]:
+    """A ``POST`` with no body, answered ``201`` with an empty object, then the copy's one line naming the run and the
+    path's last segment."""
+    command = "rerun"
+    whole_run = f"{RUN_PATH}/rerun"
+    failed_jobs = f"{RUN_PATH}/rerun-failed-jobs"
+    missing = f"{MISSING_RUN_PATH}/rerun"
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/whole-run",
+            argv=(command, str(RUN_ID)),
+            stdout=f"Rerun requested for run {RUN_ID}/rerun\n",
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=whole_run, replies=(Reply(status=CREATED, body={}),)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=whole_run),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-0/failed-only",
+            argv=(command, str(RUN_ID), "--failed-only"),
+            stdout=f"Rerun requested for run {RUN_ID}/rerun-failed-jobs\n",
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=failed_jobs, replies=(Reply(status=CREATED, body={}),)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=failed_jobs),),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/not-found",
+            argv=(command, "4243"),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=missing, replies=(NOT_FOUND,)),),
+            writes=(NonGetRequest(method=METHOD_POST, path=missing),),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, str(RUN_ID)),
+            usage=(command, "last"),
+            credential=TWO_TOKEN_CREDENTIAL,
+            repository=UNPARSEABLE_ORIGIN,
+        ),
+    )
+
+
+def _cancel_cases() -> Tuple[GoldenCase, ...]:
+    """A ``POST`` with no body, answered ``202`` with an empty object; ``409`` for a run already completed."""
+    command = "cancel"
+    cancel_path = f"{RUN_PATH}/cancel"
+    cancel = NonGetRequest(method=METHOD_POST, path=cancel_path)
+    return (
+        GoldenCase(
+            name=f"{command}/exit-0/requested",
+            argv=(command, str(RUN_ID)),
+            stdout=f"Cancel requested for run {RUN_ID}\n",
+            exit_code=EXIT_OK,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=cancel_path, replies=(Reply(status=ACCEPTED, body={}),)),),
+            writes=(cancel,),
+        ),
+        GoldenCase(
+            name=f"{command}/exit-1/already-completed",
+            argv=(command, str(RUN_ID)),
+            stdout="",
+            exit_code=EXIT_API_ERROR,
+            routes=(StaticRouteSpec(method=METHOD_POST, url=cancel_path, replies=(RUN_ALREADY_COMPLETED,)),),
+            writes=(cancel,),
+        ),
+        *_refusal_cases(
+            command=command,
+            argv=(command, str(RUN_ID)),
+            usage=(command, str(RUN_ID), "--failed-only"),  # an option of rerun's that cancel does not take
+            credential=PLACEHOLDER_CREDENTIAL,
+            repository=NO_ORIGIN,
+        ),
+    )
+
+
+#: The golden cases of the issues, claim, pull-request and CI subcommands of UB-1.1 (the CI ones with issue #72's
+#: ``get-jobs``, ``rerun`` and ``cancel``), and of each nested ``issue …`` spelling, every value the own output of the
+#: copy at the tag ``v2026.11.10.1``.
 CASES: Tuple[GoldenCase, ...] = (
     *_list_issues_cases(),
     *_get_issue_cases(),
@@ -2652,6 +3068,9 @@ CASES: Tuple[GoldenCase, ...] = (
     *_get_run_cases(),
     *_wait_run_cases(),
     *_get_logs_cases(),
+    *_get_jobs_cases(),
+    *_rerun_cases(),
+    *_cancel_cases(),
 )
 
 
