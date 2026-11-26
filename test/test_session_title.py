@@ -61,19 +61,38 @@ ISSUE_WORK_ACTIVITIES = (
     "`needs you`",
 )
 ISSUE_WORK_BULLET = "- **Issue work**"
-# The set-only trigger the rename had before issue #73; none of it may survive.
+# The orchestrator's phase-to-activity mapping, one pair per phase that has an activity of its own (AC-5).
+PHASE_MAPPING_PHRASES = (
+    "SELECT `selecting`",
+    "FIX's waves `implementing`",
+    "PROOF_GATE `verifying`",
+    "PR until its CI is green, `CI`",
+    "QUEUE `queued`",
+    "MERGE_CLEANUP `merging`",
+)
+ORCHESTRATOR_TRIGGER = "each time the set or the activity below changes"
+# The trigger each work command states (AC-3), and the set-only trigger it had before issue #73.
+COMMAND_TRIGGER = "each time the set or the activity changes"
 SET_ONLY_IN_ORCHESTRATOR = ("each time the set below changes, and at no other time", "only when the set next changes")
 SET_ONLY_IN_COMMANDS = ("only when the set changes", "each time that set changes")
-# The doc's statement of the form, of when and how to rename, and its four kept properties.
+# The doc's statement of the form, of when and how to rename (AC-1), and its four kept properties (AC-2).
 DOC_FORM_PHRASES = (
     "`<subject> · <activity>`",
     "`<subject> — done`",
     '"self"',
     "ToolSearch",
     TITLE_TOOL,
+    "Rename each time the subject or the activity changes",
     "never within a phase",
 )
-DOC_PROPERTY_PHRASES = ("never delegate", "before the close-out", "not a blocker", "Kiro")
+DOC_PROPERTY_PHRASES = (
+    "never delegate",
+    "comes before the close-out",
+    "no rename follows the SESSION verdict",
+    "not a blocker",
+    "never ask about the title",
+    "Kiro",
+)
 # The kinds of session "The forms" gives a bullet for, each by a name its bullet carries.
 DOC_KINDS = (
     "/work-issue",
@@ -188,7 +207,9 @@ def test_every_main_session_command_renames_by_the_shared_rule(name: str) -> Non
 @pytest.mark.parametrize("name", WORK_ENTRY_POINTS)
 def test_no_work_entry_point_limits_the_rename_to_the_set(name: str) -> None:
     _, body = _split_front_matter(path=COMMANDS_DIR / name)
-    kept = [phrase for phrase in SET_ONLY_IN_COMMANDS if phrase in _collapsed(text=body)]
+    text = _collapsed(text=body)
+    assert COMMAND_TRIGGER in text, f"{name} does not rename {COMMAND_TRIGGER!r}"
+    kept = [phrase for phrase in SET_ONLY_IN_COMMANDS if phrase in text]
     assert not kept, f"{name} still renames only when the issue set changes: {kept}"
 
 
@@ -223,6 +244,9 @@ def test_the_orchestrator_renames_when_the_activity_changes() -> None:
     assert DOC_POINTER in section, f"the Session title section does not point at {DOC_POINTER}"
     unmapped = [activity for activity in ISSUE_WORK_ACTIVITIES if activity not in section]
     assert not unmapped, f"the Session title section maps no phase to the activities {unmapped}"
+    missing_pairs = [pair for pair in PHASE_MAPPING_PHRASES if pair not in section]
+    assert not missing_pairs, f"the Session title section lacks the phase-to-activity pairs {missing_pairs}"
+    assert ORCHESTRATOR_TRIGGER in section, f"the Session title section does not rename {ORCHESTRATOR_TRIGGER!r}"
     kept = [phrase for phrase in SET_ONLY_IN_ORCHESTRATOR if phrase in section]
     assert not kept, f"the Session title section still renames only when the set changes: {kept}"
 

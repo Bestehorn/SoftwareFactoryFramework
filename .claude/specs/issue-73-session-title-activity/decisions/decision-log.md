@@ -35,3 +35,12 @@ round.
 **Driver:** `proportionality.md` tier S review cap of 2 iterations; both fixes restate test text and add no criterion.
 **Evidence:** review/spec-review-agent/iteration-02.md#B1, #C1; review/review-latest.md.
 **Artifacts touched:** change.md, review/review-latest.md
+
+## DL-005 — 2026-11-26T15:05:00Z — issue-work-orchestrator — phase:PROOF_GATE
+
+**Decision:** Reject the proof (cycle 1 of 3) and strengthen the test: required phrases for the doc's trigger, its
+end and no-question clauses, each work command's trigger and the orchestrator's phase-to-activity pairs.
+**Driver:** adversarial verifier REFUTED AC-1, AC-2, AC-3, AC-5 — mutants M9 to M12 survived at 65 passed.
+**Alternatives considered:** a structural parse of the mapping (more code, same kill set).
+**Evidence:** evidence/verify/refutation-report.md § 3 (M9–M12) and verdict table.
+**Artifacts touched:** test/test_session_title.py, change.md § Tests
