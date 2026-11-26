@@ -74,32 +74,20 @@ Every edited file keeps its line style, within 120 columns.
 `test/test_session_title.py`, files read as UTF-8 from `Path(__file__).resolve().parents[1]`; every phrase is matched
 after collapsing each whitespace run, line breaks included, to one space:
 
-- AC-1 — the doc holds `<subject> · <activity>`, `<subject> — done`, `"self"`, `ToolSearch`, the tool,
-  `Rename each time the subject or the activity changes` and `never within a phase`; under `## The forms`, each of
-  the seven kinds has exactly one bullet, found by its bold label, that names the kind and holds its `Activities:`
-  (or `Activity:`) and a backticked ` · ` example.
-- AC-2 — the doc holds `never delegate`, `A subagent ignores this rule`, `comes before the close-out`,
-  `no rename follows the SESSION verdict`, `not a blocker`, `A decline or an error changes nothing else`,
-  `never ask about the title`, `Kiro` and `the session skips this rule`.
-- AC-3 — each listed agent and command body holds a rename verb, not negated (`never`, `not`, `n't`, `no`, any
-  case), followed within
-  its sentence by the tool, and names `.claude/docs/session-title.md`; in each work
-  command's body the tool is followed, within its clause (no `.`, `,` or `;` between), by
-  `each time the set or the activity changes`, and the body holds neither `only when the set changes` nor
-  `each time that set changes`.
-- AC-4 — each listed command allowlists the tool, each listed agent's `tools` names it, and every agent under
-  `clients/claude/agents/` names in `tools` each desktop-app tool its body names.
-- AC-5 — the orchestrator section holds both activity forms, the pointer, every issue-work activity the doc
-  lists, the tool followed within its clause by `each time the set or the activity below changes`, and the
-  mapping clauses, every phase kept beside its activity: `LOAD_ISSUES and SELECT `selecting``,
-  `PREPARE, CLASSIFY and FIX while the spec is written `spec``, `the spec's review loop `spec review``,
-  `DOCUMENT, and PR until its CI is green, `CI``, `the direct merge, its trunk run and MERGE_CLEANUP `merging``,
-  `` `needs you` while `AWAITING_USER` holds a reason ``, `FIX's waves `implementing``, `PROOF_GATE `verifying``
-  and `QUEUE `queued``; and no longer holds `each time the set below changes, and at no other time` or
-  `only when the set next changes`.
-- AC-6 — Part 8.1's template, between its `## Fleet conventions` and `## This project`, holds `<subject> ·
-  <activity>`, `renamed when either changes` and the doc's path; a line matching
-  `cp +clients/claude/docs/session-title\.md +\.claude/docs/` exists.
+- AC-1 — the doc holds `DOC_FORM_PHRASES` (the form, the trigger, the tool and its load); each of the seven kinds
+  has one `## The forms` bullet, found by its bold label (`DOC_KINDS`), naming the kind, its activities and a ` · `
+  example.
+- AC-2 — the doc holds `DOC_PROPERTY_PHRASES`, one clause per kept property.
+- AC-3 — each listed body holds an un-negated rename verb followed in its sentence by the tool
+  (`RENAME_INSTRUCTION_RE`) and the doc's path; each work command's rename clause carries `COMMAND_TRIGGER` and no
+  `SET_ONLY_IN_COMMANDS` phrase.
+- AC-4 — each listed command allowlists the tool, each listed agent's `tools` names it, and every agent names in
+  `tools` each desktop-app tool its body names.
+- AC-5 — the orchestrator section holds the activity forms, the pointer, the issue-work activities, the rename clause
+  carrying `ORCHESTRATOR_TRIGGER`, every `PHASE_MAPPING_PHRASES` clause (each phase beside its activity) and no
+  `SET_ONLY_IN_ORCHESTRATOR` phrase.
+- AC-6 — Part 8.1's Fleet conventions hold `FLEET_LINE_PHRASES` (the form, the trigger, the doc's path); a
+  `DOC_COPY_RE` line copies the doc.
 - UB-1, UB-2, UB-3 — the existing tests, unchanged.
 - E2E: not applicable; CI's `tests` group runs the test (`pyproject.toml` `testpaths` includes `test`).
 
