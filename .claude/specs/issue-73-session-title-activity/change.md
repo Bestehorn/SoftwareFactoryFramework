@@ -92,9 +92,9 @@ after collapsing each whitespace run, line breaks included, to one space:
 
 ## Tasks (one wave)
 
-- [ ] T1 TEST: the tests of § Tests, captured red before I1 (AC-1 to AC-6 fail on today's text, except AC-4's every-agent guard; UB pass) — Files:
+- [x] T1 TEST: the tests of § Tests, captured red before I1 (AC-1 to AC-6 fail on today's text, except AC-4's every-agent guard; UB pass) — Files:
   `test/test_session_title.py` — Validates: AC-1 to AC-6, UB-1 to UB-3
-- [ ] I1 IMPL: every file of § Files but the test; T1 green — Validates: AC-1 to AC-6
+- [x] I1 IMPL: every file of § Files but the test; T1 green — Validates: AC-1 to AC-6
 
 ## Residuals
 
