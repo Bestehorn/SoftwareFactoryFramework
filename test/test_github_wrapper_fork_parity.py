@@ -11,6 +11,11 @@ against the fork in the temporary project and with the fixture token the compati
 fake GitHub host, comparing standard output, exit code and the requests other than ``GET``. The fork's ``main()``
 takes no ``argv``, so ``sys.argv`` is set.
 
+Oracle pin (DL-003, AC-7): the file the ``fork_script`` fixture yields is ``FORK_REVISION`` byte for byte, as the
+test's own ``git show`` prints it; it lies outside the repository's ``scripts/`` and ``src/``; and neither its source
+nor the module it loads as reaches the product's ``github_api`` package, which ``scripts/github_wrapper.py`` imports
+since ``v2026.11.26``. However the fixture is built, the product is never its own oracle.
+
 Parser parity (P, UB-1.1): for each caller-used subcommand of the fork's parser and each nested ``issue …`` spelling,
 the subparser the fork's ``_build_parser()`` builds and the one the product's entry script,
 ``src/payload/scripts/github_wrapper.py``, builds take the same arguments, option by option and positional by
@@ -74,6 +79,14 @@ PRODUCT_SCRIPT = ROOT / "src" / "payload" / "scripts" / "github_wrapper.py"
 PRODUCT_MODULE = "github_wrapper_product"
 FORK_NAME = "the fork"
 PRODUCT_NAME = "the product"
+#: The product's package, which the entry script that replaced the fork imports and the fork never did: an oracle that
+#: reaches it is the product compared with itself (DL-003).
+PRODUCT_PACKAGE = "github_api"
+PRODUCT_PACKAGE_BYTES = PRODUCT_PACKAGE.encode(encoding="ascii")
+MODULE_SEPARATOR = "."
+#: Where the repository keeps the wrappers' code: the installed toolchain and the product. The fork is in neither.
+REPOSITORY_CODE_DIRECTORIES = (ROOT / "scripts", ROOT / "src")
+NAME_SEPARATOR = ", "
 
 #: The fork's option no caller passes, which the product does not carry (UB-1.1, UB-2.1): left out of the fork's side.
 FORK_ONLY_OPTIONS = frozenset({"--token-stdin"})
@@ -145,6 +158,40 @@ def run_fork(*, script: Path, argv: Any, monkeypatch: pytest.MonkeyPatch) -> int
         return fx.exit_code_of(exc=exc)
     assert isinstance(result, int), f"the fork's main returned {result!r}, not an exit code"
     return result
+
+
+def _module_name_of(*, value: Any) -> Optional[str]:
+    """The name of the module ``value`` is, or of the one it was defined in; ``None`` for a value naming none."""
+    name = value.__name__ if isinstance(value, ModuleType) else getattr(value, "__module__", None)
+    return name if isinstance(name, str) else None
+
+
+def _is_in_package(*, module_name: Optional[str], package: str) -> bool:
+    """Whether ``module_name`` is ``package`` or one of its submodules."""
+    if module_name is None:
+        return False
+    return module_name == package or module_name.startswith(f"{package}{MODULE_SEPARATOR}")
+
+
+def test_the_oracle_is_the_replaced_copy(fork_script: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """DL-003, AC-7: the file every parity test runs as the fork lies outside the repository's ``scripts/`` and
+    ``src/``, is ``FORK_REVISION`` byte for byte as this test's own ``git show`` prints it, and neither its source nor
+    any global of the module it loads as reaches the product's ``github_api`` package."""
+    location = fork_script.resolve()
+    inside = [str(directory) for directory in REPOSITORY_CODE_DIRECTORIES if location.is_relative_to(directory)]
+    assert not inside, f"the fork {location} is under {NAME_SEPARATOR.join(inside)}, where the wrappers' code lives"
+    shown = subprocess.run(args=[GIT, GIT_SHOW, FORK_REVISION], cwd=ROOT, capture_output=True, check=False)
+    assert shown.returncode == 0, f"cannot read {FORK_REVISION}: {shown.stderr.decode(errors='replace').strip()}"
+    source = fork_script.read_bytes()
+    assert source == shown.stdout, f"the fork {location} is not {FORK_REVISION} byte for byte"
+    assert PRODUCT_PACKAGE_BYTES not in source, f"the fork's source names the product's package {PRODUCT_PACKAGE!r}"
+    fork = fx.load_script(path=fork_script, name=FORK_MODULE, monkeypatch=monkeypatch)
+    reached = sorted(
+        name
+        for name, value in vars(fork).items()
+        if _is_in_package(module_name=_module_name_of(value=value), package=PRODUCT_PACKAGE)
+    )
+    assert not reached, f"the fork reaches the product's {PRODUCT_PACKAGE!r} through {NAME_SEPARATOR.join(reached)}"
 
 
 @pytest.mark.parametrize(argnames="case", argvalues=FORK_CASES, ids=fx.case_name)

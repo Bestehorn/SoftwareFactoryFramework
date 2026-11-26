@@ -2879,6 +2879,52 @@ def _get_jobs_every_column_case(*, command: str) -> GoldenCase:
     )
 
 
+def _get_jobs_timing_edges_case(*, command: str) -> GoldenCase:
+    """``--timing`` on the times the copy's ``_parse_iso8601_utc`` and ``_job_billed_minutes`` set apart: a blank
+    ``started_at`` leaves its job unbilled; a start with no time zone is read as UTC, so against a ``Z`` completion it
+    bills what the same start with ``Z`` would; a completion before the start leaves its job unbilled. Only the second
+    job's minutes are in the TOTAL."""
+    blank_start = job_entry(
+        job_id=92568369610,
+        name="verify (lint)",
+        outcome=STEP_DONE,
+        started_at="",
+        completed_at="2026-11-10T10:01:30Z",
+    )
+    start_without_zone = job_entry(
+        job_id=92568369611,
+        name="verify (tests)",
+        outcome=STEP_DONE,
+        started_at="2026-11-10T10:00:00",  # no time zone: UTC, so 105 s, billed 2 minutes
+        completed_at="2026-11-10T10:01:45Z",
+    )
+    completed_before_start = job_entry(
+        job_id=92568369612,
+        name="build",
+        outcome=(RUN_COMPLETED, CONCLUSION_FAILURE),
+        started_at="2026-11-10T10:05:00Z",
+        completed_at="2026-11-10T10:00:00Z",  # 300 s before the start: a negative duration, unbilled
+    )
+    return GoldenCase(
+        name=f"{command}/exit-0/timing-edges",
+        argv=(command, str(RUN_ID), "--timing"),
+        stdout=(
+            f"{job_line(job=blank_start)}  [wall=? billed=?]\n"
+            f"{job_line(job=start_without_zone)}  [wall=105s billed=2min]\n"
+            f"{job_line(job=completed_before_start)}  [wall=? billed=?]\n"
+            f"{billed_total_line(minutes=2)}"
+        ),
+        exit_code=EXIT_OK,
+        routes=(
+            jobs_page(
+                run_path=RUN_PATH,
+                jobs_filter=JOBS_FILTER_LATEST,
+                jobs=(blank_start, start_without_zone, completed_before_start),
+            ),
+        ),
+    )
+
+
 def _get_jobs_cases() -> Tuple[GoldenCase, ...]:
     """Every page the copy is answered with names a next page, which it never reads (``jobs_page``)."""
     command = "get-jobs"
@@ -2886,6 +2932,7 @@ def _get_jobs_cases() -> Tuple[GoldenCase, ...]:
         *_get_jobs_attempt_cases(command=command),
         _get_jobs_failed_only_case(command=command),
         _get_jobs_every_column_case(command=command),
+        _get_jobs_timing_edges_case(command=command),
         GoldenCase(
             name=f"{command}/exit-1/not-found",
             argv=(command, "4243"),
