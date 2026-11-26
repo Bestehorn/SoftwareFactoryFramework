@@ -2,7 +2,7 @@
 description: Compile the project's agent memory — turn findings-ledger rows and lessons older than six weeks into tests, hooks or one-line rules, archive the rest to docs/archive/, move incident narratives out of the always-loaded rules, and bring the instruction corpus and the capped docs back under budget. Nothing is deleted from git; what changes is what every session loads.
 argument-hint: "[nothing — optionally --weeks N to change the six-week window]"
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, mcp__ccd_session_mgmt__set_session_title
 ---
 
 Bring this project's memory back to a shape every session can afford to load, without
@@ -24,6 +24,11 @@ check recurrence with `python scripts/memory_compile.py search <terms>`, which s
 archive. What stays with this command is the human-judgment part: PROMOTE a row that
 recurred or caused measured damage to an issue, ENFORCE one with a test, hook or rule line,
 fill in a lesson's `Enforced-by`.
+
+**Session title** (Claude desktop app; `.claude/docs/session-title.md` is the rule): `Memory · measuring` at
+Step 1, `Memory · compiling` for Steps 2 to 5, `Memory · proving` at Step 6, `Memory · committing` at Step 7 and
+`Memory — done` after it, renamed with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`); a
+declined rename is not a blocker.
 
 **Step 1 — Measure.** Run `python scripts/memory_compile.py report`. It prints every
 capped file with its size and cap — each host's corpus on its own: the always-loaded one

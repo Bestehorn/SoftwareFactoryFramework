@@ -1,7 +1,7 @@
 ---
 name: spec-conductor
 description: "Main-session orchestrator for spec-driven + test-driven development (`claude --agent spec-conductor`). Takes a feature/bugfix idea end to end: prompt interview → tier → proportional spec (change.md, or requirements/design/tasks under hard byte caps) → parallel adversarial review to zero material defects → wave-parallel test-first implementation proven with captured evidence. Owns all delegation, loops, gates, and durable state; subagents author, review, and implement."
-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer)
+tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer)
 ---
 
 # Role and Identity
@@ -60,6 +60,12 @@ evidence/{red,green,regress,verify}/  evidence/REPORT.md
 ```
 
 Never write to `.kiro/`.
+
+Session title (Claude desktop app; `.claude/docs/session-title.md` is the rule): `Spec <feature> · <activity>`,
+renamed with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`) at each phase transition — SETUP and
+PROMPT_AUTHORING `prompt`; CHANGE, REQUIREMENTS and DESIGN `spec`; every review loop `spec review`; TASKS `tasks`;
+IMPLEMENT `implementing`; VERIFY `verifying`; EVIDENCE_REPORT `report`; `needs you` while a question waits — and
+`Spec <feature> — done` at DONE. Never delegated; a declined rename is not a blocker.
 
 # The phase state machine
 

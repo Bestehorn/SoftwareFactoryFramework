@@ -720,11 +720,13 @@ Then reply with the SESSION verdict below — it is the whole of the final messa
 
 # Session title (Claude desktop app)
 
-The session's title names the issues it is working on, so the operator can tell sessions apart in the
-sidebar. Rename THIS session with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`; a deferred
-tool is loaded first with `ToolSearch` `select:mcp__ccd_session_mgmt__set_session_title`) each time the set
-below changes, and at no other time. Only the main session can rename itself, so never delegate it. A
-session without the tool (the CLI, Kiro) skips this section.
+The session's title names the issues it is working on and what it is doing with them, so the operator can tell
+sessions apart in the sidebar and see where each stands. `.claude/docs/session-title.md` is the rule every main
+session follows — the form `<subject> · <activity>`, the tool and its `ToolSearch` load, and the kept properties
+(never delegated; the last rename before the close-out, none after the SESSION verdict; a declined rename is not a
+blocker and never a question; a session without the tool, the CLI or Kiro, skips this section). This section is its
+issue-work part: rename THIS session with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`) each
+time the set or the activity below changes, and at no other time.
 
 - **The set** — every issue this session CLAIMED whose work here has not finished. An issue joins when its
   claim succeeds (SELECT step 4; `/work-issue` Step 2) and leaves when it is closed (RESOLVE) or landed and
@@ -732,23 +734,26 @@ session without the tool (the CLI, Kiro) skips this section.
   A queued, returned or escalated issue stays. Filing an issue does not add it; claiming it does. After
   every change APPEND `SESSION_ISSUES:` with the whole set, ascending and space-separated (`none` when
   empty; the last value wins), to `resume_state.md`, so a compaction or a new process keeps it.
-- **The title** — the ids as the wrapper names them, without `#`, ascending, joined by `, `:
+- **The subject** — the ids as the wrapper names them, without `#`, ascending, joined by `, `; the title adds the
+  activity while an issue is in the set:
 
-  | Mode | Set | Title |
-  |---|---|---|
-  | `SINGLE_ISSUE` (`/work-issue`) | 77 | `Issue 77` |
-  | `SINGLE_ISSUE` | 77 and 80 | `Issues 77, 80` |
-  | `SINGLE_ISSUE` | empty: its last issue, 77, finished | `Issue 77 — done` |
-  | `AUTO` (`/auto-work`) | 12, 15 and 19 | `Auto-Work 12, 15, 19` |
-  | `AUTO` | empty, between two issues | `Auto-Work` |
-  | `AUTO` | empty at DONE | `Auto-Work — done` |
-  | `ISSUE_LOOP` (`/issues-work`) | as `AUTO`, with `Issues-Work` | `Issues-Work 12, 15` |
+  | Mode | Set | Subject | While working |
+  |---|---|---|---|
+  | `SINGLE_ISSUE` (`/work-issue`) | 77 | `Issue 77` | `Issue 77 · CI` |
+  | `SINGLE_ISSUE` | 77 and 80 | `Issues 77, 80` | `Issues 77, 80 · 80 spec` |
+  | `SINGLE_ISSUE` | empty: its last issue, 77, finished | `Issue 77 — done` | — |
+  | `AUTO` (`/auto-work`) | 12, 15 and 19 | `Auto-Work 12, 15, 19` | `Auto-Work 12, 15, 19 · 19 queued` |
+  | `AUTO` | 12 and 15 | `Auto-Work 12, 15` | `Auto-Work 12, 15 · 15 implementing` |
+  | `AUTO` | empty, between two issues | `Auto-Work` | `Auto-Work · selecting` |
+  | `AUTO` | empty at DONE | `Auto-Work — done` | — |
+  | `ISSUE_LOOP` (`/issues-work`) | as `AUTO` | `Issues-Work 12, 15` | `Issues-Work 12, 15 · 12 CI` |
 
-- **Timing.** Rename before the close-out, never after the SESSION verdict: on `SESSION: CAN CLOSE` the
-  archive is the turn's last call.
-- **A refused rename is not a blocker.** The app asks the operator before it replaces a title they typed and
-  declines where nobody can approve; a decline or an error changes nothing else — keep working, keep
-  `SESSION_ISSUES` current, and rename again only when the set next changes. Never ask about the title.
+- **The activity** — the phase of the issue the session is on now, in the doc's words: LOAD_ISSUES and SELECT
+  `selecting`; PREPARE, CLASSIFY and FIX while the spec is written `spec`; the spec's review loop `spec review`;
+  FIX's waves `implementing`; PROOF_GATE `verifying`; DOCUMENT, and PR until its CI is green, `CI`; QUEUE
+  `queued`; the direct merge, its trunk run and MERGE_CLEANUP `merging`; `needs you` while `AWAITING_USER` holds a
+  reason. With more than one issue in the set the activity names its issue first (`15 implementing`). HAND_OFF and
+  RESOLVE take the issue out of the set, so a finished single issue reads `Issue 77 — done` before the close-out.
 
 # The SESSION verdict (the fixed final message — every exit)
 

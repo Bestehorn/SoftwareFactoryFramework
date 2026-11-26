@@ -104,12 +104,14 @@ filing delegated from a run is as quick to read as the run itself.
 
 ### The session title names the work (Claude desktop app)
 
-While it runs, a session's title lists the issues it is working on — `Issue 77`, `Issues 77, 80`,
-`Auto-Work 12, 15, 19`, `Issues-Work 12, 15` — so the sidebar shows which session holds which issue. An issue
-joins when its claim succeeds and leaves when it is closed or handed off; a finished run reads `Issue 77 — done`
+While it runs, a session's title names the issues it is working on and what it is doing with them —
+`Issue 77 · CI`, `Issues 77, 80 · 80 spec`, `Auto-Work 12, 15 · 15 implementing`, `Issues-Work 12, 15 · 12 CI` —
+so the sidebar shows which session holds which issue and where it stands. An issue joins when its claim succeeds
+and leaves when it is closed or handed off; the activity follows the phase; a finished run reads `Issue 77 — done`
 or `Auto-Work — done`. The rename uses the app's `set_session_title` tool on the session itself, is never
 delegated (a subagent cannot rename its session), and is skipped where the tool does not exist (the CLI, Kiro).
-The agent definition's "Session title" section is the rule.
+Every other main session uses the same form by the same rule, `clients/claude/docs/session-title.md`; the agent
+definition's "Session title" section is its issue-work part.
 
 ## How it relates to the other issue agents
 

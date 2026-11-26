@@ -1,0 +1,270 @@
+# tasks: T1
+run_tests: D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe -m pytest -ra --tb=short --continue-on-collection-errors -n 2 test/test_session_title.py
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.2.0, pluggy-1.7.0
+rootdir: D:\Code Workspace\CodingProjectSetupPrompt\.claude\worktrees\issue-73
+configfile: pyproject.toml
+plugins: hypothesis-6.170.15, cov-7.1.0, xdist-3.8.0
+created: 2/2 workers
+2 workers [65 items]
+
+..................................FFFFFFFFFFFFFF..FFFFFFFFFFFFFFF        [100%]
+================================== FAILURES ===================================
+__ test_every_main_session_command_renames_by_the_shared_rule[auto-work.md] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:182: in test_every_main_session_command_renames_by_the_shared_rule
+    assert DOC_POINTER in body, f"{name} does not point at {DOC_POINTER}"
+E   AssertionError: auto-work.md does not point at .claude/docs/session-title.md
+E   assert '.claude/docs/session-title.md' in "\n\nWork this project's open-issue backlog AUTONOMOUSLY, end to end, following\n`.claude/agents/issue-work-orchestrat...rkable issues still remaining, the SESSION\nverdict's head says so (`NOT DONE — <n> workable issues remain: <why>`).\n"
+__ test_every_main_session_command_renames_by_the_shared_rule[work-issue.md] __
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:182: in test_every_main_session_command_renames_by_the_shared_rule
+    assert DOC_POINTER in body, f"{name} does not point at {DOC_POINTER}"
+E   AssertionError: work-issue.md does not point at .claude/docs/session-title.md
+E   assert '.claude/docs/session-title.md' in '\n\nTake issue **$ARGUMENTS** (call it issue X) from open to **merged and verified** — or, where the merge\nsteward l...he ACTUAL reason (the literal `<reason>` is\n     rejected as a placeholder), and surface one clarity-first message.\n'
+_ test_every_main_session_command_renames_by_the_shared_rule[issues-work.md] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:182: in test_every_main_session_command_renames_by_the_shared_rule
+    assert DOC_POINTER in body, f"{name} does not point at {DOC_POINTER}"
+E   AssertionError: issues-work.md does not point at .claude/docs/session-title.md
+E   assert '.claude/docs/session-title.md' in '\n\nRun the autonomous issue-work lifecycle for this project, following the agent\ndefinition in `.claude/agents/issu...ate files (appending, never editing in place), escalate only once when\ngenuinely blocked, and never touch `.kiro/`.\n'
+_ test_every_main_session_command_renames_by_the_shared_rule[spec-implement.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: spec-implement.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\nRun the IMPLEMENT_LOOP + VERIFY + EVIDENCE_REPORT phases for the spec at\n`.claude/specs/$ARGUMENTS/` (if no slug...d`.\nHonor the spec-drift guard (do not let the implementer edit requirements/design/\ntasks). Never touch `.kiro/`.\n'
+___ test_every_main_session_command_renames_by_the_shared_rule[spec-new.md] ___
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: spec-new.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\nYou are starting the PROMPT_AUTHORING phase of the spec-driven workflow for this\nrequest: **$ARGUMENTS**\n\nRead...uctor` (which will resume\nfrom this prompt) or step through with `/spec-review`, `/spec-tasks`,\n`/spec-implement`.\n'
+_ test_every_main_session_command_renames_by_the_shared_rule[close-session.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: close-session.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\n<!-- archive_session is allowlisted because the final step invokes it on SESSION: CAN CLOSE, without asking\n    ...e closed.\n\nNo AI attribution in any comment, commit or issue text (`no-ai-attribution.md`). Never touch\n`.kiro/`.\n'
+_ test_every_main_session_command_renames_by_the_shared_rule[spec-review.md] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: spec-review.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\nRun a single review-panel pass over the spec at `.claude/specs/$ARGUMENTS/` (if no\nslug is given, use the most r...age GAPs) is met. If not met, list the A/B findings the user (or the conductor)\nmust resolve. Never touch `.kiro/`.\n'
+_ test_every_main_session_command_renames_by_the_shared_rule[continue-work.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: continue-work.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\nYou stopped before the work was finished. Resume it now and carry it to completion. If the\nrecorded phase belong...rules/continuous-work.md`) — and only when you are genuinely ending\nthe turn, never as a substitute for continuing.\n'
+__ test_every_main_session_command_renames_by_the_shared_rule[spec-tasks.md] __
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: spec-tasks.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\nGenerate (or regenerate) `tasks.md` for the spec at `.claude/specs/$ARGUMENTS/` (if no\nslug is given, use the mo...B count and the coverage report. Tell the user whether tasks are\nready for `/spec-implement`. Never touch `.kiro/`.\n'
+__ test_every_main_session_command_renames_by_the_shared_rule[supervise.md] ___
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: supervise.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\nBring back the sessions an API error stopped. A provider 400 or 5xx, an expired credential or a\nrate limit ends ...worktree, branch or issue, and\nnever retry an `exhausted` run. No AI attribution anywhere (`no-ai-attribution.md`).\n'
+_ test_every_main_session_command_renames_by_the_shared_rule[compile-memory.md] _
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:181: in test_every_main_session_command_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: compile-memory.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in "\n\nBring this project's memory back to a shape every session can afford to load, without\nlosing anything it learned...t's `Kiro always-on steering`\n(100,000) and `fileMatch steering` (45,000) rows — the same labels the report prints.\n"
+_ test_every_main_session_agent_renames_by_the_shared_rule[issue-work-orchestrator.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:197: in test_every_main_session_agent_renames_by_the_shared_rule
+    assert DOC_POINTER in body, f"{name} does not point at {DOC_POINTER}"
+E   AssertionError: issue-work-orchestrator.md does not point at .claude/docs/session-title.md
+E   assert '.claude/docs/session-title.md' in "\n\n# Role and Identity\n\nYou are the **Issue Work Orchestrator** — a main-session agent that drives a project's\nEN...to do next or\nwhether to continue — until DONE, pausing only for a single batched escalation if\ngenuinely blocked.\n"
+_ test_every_main_session_agent_renames_by_the_shared_rule[spec-conductor.md] _
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:196: in test_every_main_session_agent_renames_by_the_shared_rule
+    assert TITLE_TOOL in body, f"{name} does not tell the session to rename itself"
+E   AssertionError: spec-conductor.md does not tell the session to rename itself
+E   assert 'mcp__ccd_session_mgmt__set_session_title' in '\n\n# Role and Identity\n\nYou are the **Spec Conductor** — the main-session orchestrator for spec-driven,\ntest-driv... review it to zero material\ndefects in parallel, implement it in waves, prove it, report the table and the PR link.\n'
+____ test_no_work_entry_point_limits_the_rename_to_the_set[work-issue.md] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:190: in test_no_work_entry_point_limits_the_rename_to_the_set
+    assert not kept, f"{name} still renames only when the issue set changes: {kept}"
+E   AssertionError: work-issue.md still renames only when the issue set changes: ['only when the set changes']
+E   assert not ['only when the set changes']
+_____ test_no_work_entry_point_limits_the_rename_to_the_set[auto-work.md] _____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:190: in test_no_work_entry_point_limits_the_rename_to_the_set
+    assert not kept, f"{name} still renames only when the issue set changes: {kept}"
+E   AssertionError: auto-work.md still renames only when the issue set changes: ['only when the set changes']
+E   assert not ['only when the set changes']
+___________ test_the_orchestrator_renames_when_the_activity_changes ___________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:220: in test_the_orchestrator_renames_when_the_activity_changes
+    assert not missing, f"the Session title section lacks the activity forms {missing}"
+E   AssertionError: the Session title section lacks the activity forms ['`Issue 77 · CI`', '`Auto-Work 12, 15 · 15 implementing`']
+E   assert not ['`Issue 77 · CI`', '`Auto-Work 12, 15 · 15 implementing`']
+____ test_no_work_entry_point_limits_the_rename_to_the_set[issues-work.md] ____
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:190: in test_no_work_entry_point_limits_the_rename_to_the_set
+    assert not kept, f"{name} still renames only when the issue set changes: {kept}"
+E   AssertionError: issues-work.md still renames only when the issue set changes: ['each time that set changes']
+E   assert not ['each time that set changes']
+________________ test_the_doc_lists_the_issue_work_activities _________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:229: in test_the_doc_lists_the_issue_work_activities
+    bullets = [bullet for bullet in _form_bullets(doc=_read(path=DOC)) if bullet.startswith(ISSUE_WORK_BULLET)]
+                                                      ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+________ test_the_doc_gives_every_kind_of_session_a_form[/work-issue] _________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:243: in test_the_doc_gives_every_kind_of_session_a_form
+    bullets = _form_bullets(doc=_read(path=DOC))
+                                ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+_______________ test_the_doc_states_the_form_and_how_to_rename ________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:236: in test_the_doc_states_the_form_and_how_to_rename
+    doc = _collapsed(text=_read(path=DOC))
+                          ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+_______ test_the_doc_gives_every_kind_of_session_a_form[spec-conductor] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:243: in test_the_doc_gives_every_kind_of_session_a_form
+    bullets = _form_bullets(doc=_read(path=DOC))
+                                ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+_______ test_the_doc_gives_every_kind_of_session_a_form[/close-session] _______
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:243: in test_the_doc_gives_every_kind_of_session_a_form
+    bullets = _form_bullets(doc=_read(path=DOC))
+                                ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+_______ test_the_doc_gives_every_kind_of_session_a_form[/continue-work] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:243: in test_the_doc_gives_every_kind_of_session_a_form
+    bullets = _form_bullets(doc=_read(path=DOC))
+                                ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+_________ test_the_doc_gives_every_kind_of_session_a_form[/supervise] _________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:243: in test_the_doc_gives_every_kind_of_session_a_form
+    bullets = _form_bullets(doc=_read(path=DOC))
+                                ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+______ test_the_doc_gives_every_kind_of_session_a_form[/compile-memory] _______
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:243: in test_the_doc_gives_every_kind_of_session_a_form
+    bullets = _form_bullets(doc=_read(path=DOC))
+                                ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+____ test_the_doc_gives_every_kind_of_session_a_form[interactive session] _____
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:243: in test_the_doc_gives_every_kind_of_session_a_form
+    bullets = _form_bullets(doc=_read(path=DOC))
+                                ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+___________________ test_the_doc_keeps_the_four_properties ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:250: in test_the_doc_keeps_the_four_properties
+    doc = _collapsed(text=_read(path=DOC))
+                          ^^^^^^^^^^^^^^^
+test\test_session_title.py:102: in _read
+    assert path.is_file(), f"{path.relative_to(ROOT)} does not exist"
+E   AssertionError: clients\claude\docs\session-title.md does not exist
+E   assert False
+E    +  where False = is_file()
+E    +    where is_file = WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/clients/claude/docs/session-title.md').is_file
+_________________ test_the_claude_md_template_names_the_rule __________________
+[gw0] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:263: in test_the_claude_md_template_names_the_rule
+    assert DOC_POINTER in fleet, f"the CLAUDE.md template's Fleet conventions do not name {DOC_POINTER}"
+E   AssertionError: the CLAUDE.md template's Fleet conventions do not name .claude/docs/session-title.md
+E   assert '.claude/docs/session-title.md' in '## Fleet conventions (all agents and the main session) - `continuous-work.md`: work until finished; only the four Pro...ges, never an AI trailer. - Memory is compiled (`/compile-memory`): `test/test_instruction_corpus_budget.py` caps it. '
+___________________ test_the_setup_prompt_installs_the_doc ____________________
+[gw1] win32 -- Python 3.14.2 D:\Code Workspace\CodingProjectSetupPrompt\venv\Scripts\python.exe
+test\test_session_title.py:267: in test_the_setup_prompt_installs_the_doc
+    assert DOC_COPY_RE.search(_read(path=SETUP_CLAUDE)), "the setup prompt does not copy the doc into .claude/docs/"
+E   AssertionError: the setup prompt does not copy the doc into .claude/docs/
+E   assert None
+E    +  where None = <built-in method search of re.Pattern object at 0x0000029492371380>('# Claude Code Project Setup Prompt — v1 (Dual-IDE, Migration-Aware)\n# ==============================================...ard lands the trunk (Part 7.1).\n- Per-issue worktrees under .claude/worktrees/ (gitignore them).\n\n# END OF PROMPT\n')
+E    +    where <built-in method search of re.Pattern object at 0x0000029492371380> = re.compile('^cp +clients/claude/docs/session-title\\.md +\\.claude/docs/', re.MULTILINE).search
+E    +    and   '# Claude Code Project Setup Prompt — v1 (Dual-IDE, Migration-Aware)\n# ==============================================...ard lands the trunk (Part 7.1).\n- Per-issue worktrees under .claude/worktrees/ (gitignore them).\n\n# END OF PROMPT\n' = _read(path=WindowsPath('D:/Code Workspace/CodingProjectSetupPrompt/.claude/worktrees/issue-73/prompts/setup-claude.txt'))
+=========================== short test summary info ===========================
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[auto-work.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[work-issue.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[issues-work.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[spec-implement.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[spec-new.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[close-session.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[spec-review.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[continue-work.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[spec-tasks.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[supervise.md]
+FAILED test/test_session_title.py::test_every_main_session_command_renames_by_the_shared_rule[compile-memory.md]
+FAILED test/test_session_title.py::test_every_main_session_agent_renames_by_the_shared_rule[issue-work-orchestrator.md]
+FAILED test/test_session_title.py::test_every_main_session_agent_renames_by_the_shared_rule[spec-conductor.md]
+FAILED test/test_session_title.py::test_no_work_entry_point_limits_the_rename_to_the_set[work-issue.md]
+FAILED test/test_session_title.py::test_no_work_entry_point_limits_the_rename_to_the_set[auto-work.md]
+FAILED test/test_session_title.py::test_the_orchestrator_renames_when_the_activity_changes
+FAILED test/test_session_title.py::test_no_work_entry_point_limits_the_rename_to_the_set[issues-work.md]
+FAILED test/test_session_title.py::test_the_doc_lists_the_issue_work_activities
+FAILED test/test_session_title.py::test_the_doc_gives_every_kind_of_session_a_form[/work-issue]
+FAILED test/test_session_title.py::test_the_doc_states_the_form_and_how_to_rename
+FAILED test/test_session_title.py::test_the_doc_gives_every_kind_of_session_a_form[spec-conductor]
+FAILED test/test_session_title.py::test_the_doc_gives_every_kind_of_session_a_form[/close-session]
+FAILED test/test_session_title.py::test_the_doc_gives_every_kind_of_session_a_form[/continue-work]
+FAILED test/test_session_title.py::test_the_doc_gives_every_kind_of_session_a_form[/supervise]
+FAILED test/test_session_title.py::test_the_doc_gives_every_kind_of_session_a_form[/compile-memory]
+FAILED test/test_session_title.py::test_the_doc_gives_every_kind_of_session_a_form[interactive session]
+FAILED test/test_session_title.py::test_the_doc_keeps_the_four_properties - A...
+FAILED test/test_session_title.py::test_the_claude_md_template_names_the_rule
+FAILED test/test_session_title.py::test_the_setup_prompt_installs_the_doc - A...
+======================== 29 failed, 36 passed in 3.46s ========================

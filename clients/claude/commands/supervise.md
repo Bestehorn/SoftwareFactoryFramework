@@ -2,7 +2,7 @@
 description: Host supervisor — find the runs whose last turn an API error ended (recorded by the stop-failure-recorder gate) and that their own run watchdog has not brought back, and resume each through the harness's cross-session messaging, with a bounded backoff. Reads run state; never touches another run's worktree, branch or issue.
 argument-hint: "[nothing — optionally a run id to look at only that run]"
 disable-model-invocation: true
-allowed-tools: Read, Grep, Glob, Bash(python .claude/hooks/supervisor.py:*), ListAgents, SendMessage
+allowed-tools: Read, Grep, Glob, Bash(python .claude/hooks/supervisor.py:*), ListAgents, SendMessage, mcp__ccd_session_mgmt__set_session_title
 ---
 
 Bring back the sessions an API error stopped. A provider 400 or 5xx, an expired credential or a
@@ -14,6 +14,10 @@ the watchdog existed, one whose watchdog expired, or one whose process came back
 Run it by hand, or unattended every 15 minutes: a Desktop scheduled task (one per project), or
 `/loop 15m /supervise` in a session kept for the purpose (that session holds no claim and does no
 other work).
+
+**Session title** (Claude desktop app; `.claude/docs/session-title.md` is the rule): `Supervisor · scanning` at
+step 1, `Supervisor · resuming` while step 2 resumes a run, renamed with `mcp__ccd_session_mgmt__set_session_title`
+(`session_id: "self"`); a declined rename is not a blocker.
 
 **1. Scan.** `python .claude/hooks/supervisor.py scan --json` judges every resume request the
 `stop-failure-recorder` gate left (`.claude/agent-state/issue-work-orchestrator/.resume-requests/`):

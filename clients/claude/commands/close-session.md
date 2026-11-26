@@ -2,7 +2,7 @@
 description: End-of-session close-out — confirm the assigned work is actually complete (landed and closed, or landed with only its post-deploy check handed off per config/delivery.json) INCLUDING every task item on its issue (reopening an issue closed over unfinished items), wait out the PR's own running CI in the foreground, clean up this session's own files, temp residue, worktree/branch/lock and claim markers, record a terminal Phase, then report the SESSION verdict over one fixed nine-row table — and archive only after it.
 argument-hint: "[nothing]"
 disable-model-invocation: true
-allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, AskUserQuestion, CronList, CronDelete, mcp__ccd_session_mgmt__archive_session, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch, WebFetch, AskUserQuestion, CronList, CronDelete, mcp__ccd_session_mgmt__archive_session, mcp__ccd_session_mgmt__set_session_title, Agent(spec-author, spec-researcher, spec-review-agent, test-architect, standards-reviewer, best-practice-reviewer, security-reviewer, devops-iac-reviewer, adversarial-verifier, spec-implementer, code-merge-reviewer)
 ---
 
 <!-- archive_session is allowlisted because the final step invokes it on SESSION: CAN CLOSE, without asking
@@ -46,6 +46,12 @@ no paragraph under the table, and no prose restatement of a failure. A question 
 goes through `AskUserQuestion`, not through sentences. `no-guessing.md` still binds and
 `no-output-shortening.md` still governs what you READ (read complete output; report the
 deciding number).
+
+**Session title** (Claude desktop app; `.claude/docs/session-title.md` is the rule). Run on its own, this command
+renames the session at its first step to the subject its title already names with the activity `closing out`
+(`Issue 77 · closing out`), with `mcp__ccd_session_mgmt__set_session_title` (`session_id: "self"`), and renames
+nothing after the SESSION verdict. Run as the last step of `/work-issue` or the orchestrator, it keeps their
+`<subject> — done`. A declined rename is not a blocker.
 
 **Step 1 — Is the work actually DONE? (gate: nothing else runs until this passes)**
    For every issue this session was working, check against the project's standards, not your
