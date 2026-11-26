@@ -31,3 +31,11 @@
 **Alternatives considered:** none
 **Evidence:** review/spec-review-agent/iteration-02.md C1.
 **Artifacts touched:** change.md § Tests AC-2, AC-6
+
+## DL-005 — 2026-11-26T18:30:00Z — issue-work-orchestrator — phase:VERIFY
+
+**Decision:** Accept the verifier's REFUTED AC-3 AC-7 as test gaps and rework tests only: T1 gains get-jobs cases reaching `_parse_timestamp`'s blank and zone-less timestamps and `_job_billed_minutes`' negative duration (M48); T2 pins the parity oracle to the tag's copy (M47: pointing `fork_script` back at `scripts/github_wrapper.py` survived).
+**Driver:** evidence/verify/refutation-report.md (47 of 49 mutants killed; M47, M48 survived); the code under them is as designed.
+**Alternatives considered:** none — a surviving mutant is a missing test.
+**Evidence:** evidence/verify/mutants.txt (M47, M48).
+**Artifacts touched:** src/payload/test/github_wrapper_fixtures.py, test/test_github_wrapper_fork_parity.py
